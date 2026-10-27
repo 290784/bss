@@ -18,7 +18,8 @@
     "test:e2e": "node tests/e2e/smoke.mjs",
     "db:migrate": "tsx scripts/migrate.ts",
     "db:seed-demo": "tsx --conditions=react-server scripts/seed-demo.ts",
-    "check": "npm run typecheck && npm run lint && npm run test && npm run build"
+    "check": "npm run typecheck && npm run lint && npm run test && npm run build",
+    "db:check": "tsx scripts/db-check.ts"
   },
   "dependencies": {
     "@date-fns/tz": "1.5.0",

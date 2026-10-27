@@ -2,15 +2,18 @@ import postgres from "postgres";
 import { migrate } from "../../scripts/migrate";
 import { withSystem, withTenant, type Sql, type Tx } from "@/server/db";
 import { createOrganizationForUser } from "@/server/modules/onboarding";
+import { normalizeDatabaseUrl } from "@/server/db-url";
 
 export const TEST_URL = process.env.TEST_DATABASE_URL ?? "postgres://postgres@127.0.0.1:5432/beauty_os_test";
 
+const conn = () => normalizeDatabaseUrl(TEST_URL);
+
 export async function freshDatabase(): Promise<Sql> {
-  const admin = postgres(TEST_URL, { max: 1, onnotice: () => {} });
+  const admin = postgres(conn().url, { ssl: conn().ssl, max: 1, onnotice: () => {} });
   await admin.unsafe("drop schema if exists app cascade");
   await admin.end();
   await migrate(TEST_URL, () => {});
-  return postgres(TEST_URL, { max: 10, prepare: false, onnotice: () => {} });
+  return postgres(conn().url, { ssl: conn().ssl, max: 10, prepare: false, onnotice: () => {} });
 }
 
 let n = 0;
