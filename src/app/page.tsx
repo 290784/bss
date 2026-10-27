@@ -1,9 +1,16 @@
 import Link from "next/link";
-import { ArrowRight, BellRing, CalendarDays, Check, Globe, LineChart, ShieldCheck, Sparkles, Users, Wallet } from "lucide-react";
+import { ArrowRight, BellRing, CalendarDays, Check, Globe, LineChart, Search, ShieldCheck, Users, Wallet } from "lucide-react";
 import { Logo } from "@/components/brand/logo";
-import { ButtonLink } from "@/components/ui/button";
 import { PLANS } from "@/domain/plans";
 import { getSession } from "@/server/auth/session";
+import { HeroWidget } from "@/components/marketing/hero-widget";
+import { BookingDemo } from "@/components/marketing/booking-demo";
+import { dmSans, interTight } from "@/components/marketing/fonts";
+import { cn } from "@/lib/cn";
+
+const pill = (tone: "dark" | "light") =>
+  cn("inline-flex h-10 items-center rounded-full px-4 whitespace-nowrap sm:px-5 text-[15px] font-medium transition-opacity hover:opacity-80",
+    tone === "dark" ? "bg-ink-warm text-white" : "bg-[#f1efec] text-ink-warm");
 
 const FEATURES = [
   { icon: CalendarDays, title: "Agenda que evita conflitos", text: "Visão por dia, semana e mês, por profissional. Considera duração, tempo de limpeza, pausas e bloqueios — e impede dois agendamentos no mesmo horário." },
@@ -28,43 +35,49 @@ const FAQ = [
 export default async function LandingPage() {
   const session = await getSession();
   return (
-    <div className="bg-canvas">
-      <header className="sticky top-0 z-30 border-b border-line/70 bg-canvas/85 backdrop-blur">
-        <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4">
+    <div className={cn(dmSans.variable, interTight.variable, "bg-white font-hero text-ink-warm")}>
+      <header className="sticky top-0 z-30 bg-white/90 backdrop-blur">
+        <div className="mx-auto flex h-[72px] max-w-[1240px] items-center justify-between gap-6 px-4 sm:px-6">
           <Logo />
-          <nav className="hidden items-center gap-7 text-sm text-ink-soft md:flex">
-            <a href="#recursos" className="hover:text-ink">Recursos</a>
-            <a href="#como-funciona" className="hover:text-ink">Como funciona</a>
-            <a href="#planos" className="hover:text-ink">Planos</a>
-            <a href="#perguntas" className="hover:text-ink">Dúvidas</a>
+          <nav className="hidden flex-1 items-center gap-6 text-[15px] font-medium text-ink-warm lg:flex" aria-label="Seções">
+            <a href="#agendamento-online" className="hover:opacity-70">Agendamento online</a>
+            <a href="#recursos" className="hover:opacity-70">Recursos</a>
+            <a href="#como-funciona" className="hover:opacity-70">Como funciona</a>
+            <a href="#planos" className="hover:opacity-70">Planos</a>
+            <a href="#perguntas" className="hover:opacity-70">Dúvidas</a>
           </nav>
           <div className="flex items-center gap-2">
-            {session ? <ButtonLink href="/app" size="sm">Abrir minha agenda</ButtonLink> : <>
-              <Link href="/entrar" className="hidden px-3 text-sm font-medium text-ink-soft hover:text-ink sm:inline">Entrar</Link>
-              <ButtonLink href="/cadastro" size="sm">Teste grátis</ButtonLink>
+            {session ? <Link href="/app" className={pill("dark")}>Abrir minha agenda</Link> : <>
+              <span className="hidden sm:contents"><Link href="/entrar" className={pill("light")}>Entrar</Link></span>
+              <Link href="/cadastro" className={pill("dark")}>Começar grátis</Link>
             </>}
           </div>
         </div>
       </header>
 
-      <section className="mx-auto grid max-w-6xl gap-12 px-4 pt-16 pb-20 lg:grid-cols-[1.05fr_1fr] lg:items-center lg:pt-24">
-        <div>
-          <p className="inline-flex items-center gap-2 rounded-full border border-champagne-300 bg-champagne-100 px-3 py-1 text-xs font-medium text-champagne-600">
-            <Sparkles className="h-3.5 w-3.5" />Gestão para beleza e estética
-          </p>
-          <h1 className="mt-5 font-display text-[44px] leading-[1.05] font-normal tracking-[-0.02em] text-ink sm:text-[56px]">
-            Menos tempo administrando. <em className="text-plum-600">Mais clientes voltando.</em>
+      <section className="mx-auto grid max-w-[1240px] items-center gap-10 px-4 pt-10 pb-16 sm:px-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,560px)] lg:gap-16 lg:pt-16 lg:pb-24">
+        <div className="max-w-[640px]">
+          <p className="text-[15px] text-ink-warm/70">Teste grátis por 14 dias · sem cartão de crédito</p>
+          <h1 className="mt-4 font-hero text-[44px] leading-[1.12] font-bold tracking-[-0.02em] text-ink-warm sm:text-[60px] lg:text-[66px]">
+            Agenda cheia, cabeça leve.
+            <br />
+            Conheça o{" "}
+            <span className="inline-grid h-[0.92em] w-[0.92em] translate-y-[0.08em] place-items-center rounded-[0.18em] bg-plum-700 align-baseline" aria-label="Beauty">
+              <span className="font-display text-[0.62em] leading-none font-medium text-champagne-100" aria-hidden>B</span>
+            </span>{" "}
+            OS.
           </h1>
-          <p className="mt-6 max-w-xl text-lg leading-relaxed text-ink-soft">
-            Agenda inteligente, agendamento online, ficha de clientes e indicadores claros — em um só lugar, feito para quem atende sozinha ou com equipe.
+          <p className="mt-6 max-w-[34em] text-[18px] leading-[1.55] text-ink-warm/80 sm:text-[19px]">
+            Agenda inteligente, agendamento online 24h, lembretes e indicadores claros. Atenda mais, perca menos horários e veja suas clientes voltando — com um sistema feito para beleza e estética.
           </p>
           <div className="mt-8 flex flex-wrap items-center gap-3">
-            <ButtonLink href="/cadastro" size="lg">Começar teste grátis <ArrowRight className="h-4 w-4" /></ButtonLink>
-            <a href="#como-funciona" className="px-2 text-sm font-medium text-ink-soft hover:text-ink">Ver como funciona</a>
+            <Link href="/cadastro" className="inline-flex h-[52px] items-center gap-2 rounded-lg bg-ink-warm px-6 text-[17px] font-medium text-white transition-opacity hover:opacity-85">
+              Começar grátis <ArrowRight className="h-4 w-4" />
+            </Link>
+            <a href="#agendamento-online" className="px-2 text-[15px] font-medium text-ink-warm/70 hover:text-ink-warm">Ver como funciona</a>
           </div>
-          <p className="mt-4 text-[13px] text-muted">14 dias com todos os recursos · sem cartão de crédito · cancele quando quiser</p>
         </div>
-        <ProductPreview />
+        <HeroWidget />
       </section>
 
       <section className="border-y border-line bg-surface/60 py-6">
@@ -73,9 +86,49 @@ export default async function LandingPage() {
         </ul>
       </section>
 
+      <section id="agendamento-online" className="mx-auto max-w-[1240px] px-4 pt-6 pb-10 sm:px-6">
+        <div className="grid items-center gap-10 overflow-hidden rounded-[24px] bg-mkt-card px-6 py-10 sm:px-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,460px)] lg:py-14">
+          <div className="max-w-[520px]">
+            <p className="flex items-center gap-2 text-[16px] font-semibold text-ink-warm"><Search className="h-5 w-5 text-[#1fb3d9]" strokeWidth={2.6} />Agendamento online</p>
+            <h2 className="mt-4 font-tight text-[36px] leading-[1.15] font-extrabold tracking-[-0.025em] text-ink-warm sm:text-[44px]">Encontre o horário perfeito, mais rápido.</h2>
+            <p className="mt-5 text-[18px] leading-[1.55] text-ink-warm/75">
+              Sua cliente escolhe o serviço e a profissional e vê só horários realmente livres — respeitando expediente, pausas, tempo de preparação e bloqueios. Você confirma na hora ou revisa antes.
+            </p>
+            <Link href="/cadastro" className="mt-7 inline-flex h-11 items-center gap-2 rounded-lg bg-ink-warm px-5 text-[15px] font-medium text-white hover:opacity-85">Criar minha página <ArrowRight className="h-4 w-4" /></Link>
+          </div>
+          <BookingDemo />
+        </div>
+        <div className="mt-6 grid gap-6 md:grid-cols-2">
+          <div className="flex flex-col justify-between gap-8 rounded-[24px] bg-mkt-card p-8 sm:p-10">
+            <div>
+              <p className="flex items-center gap-2 text-[15px] font-semibold text-ink-warm"><BellRing className="h-5 w-5 text-[#813afc]" strokeWidth={2.4} />Lembretes</p>
+              <h3 className="mt-3 font-tight text-[28px] leading-[1.2] font-extrabold tracking-[-0.02em] text-ink-warm">Menos faltas, sem mandar mensagem uma a uma.</h3>
+              <p className="mt-3 text-[16px] leading-[1.55] text-ink-warm/70">Confirmação e lembrete 24h antes, cancelados automaticamente quando a cliente remarca. Integração com o WhatsApp oficial em preparação.</p>
+            </div>
+            <div className="flex flex-col gap-2" aria-hidden>
+              <span className="self-start rounded-2xl rounded-bl-md bg-white px-4 py-2.5 text-[14px] text-ink-warm shadow-sm">Oi, Ana! Lembrete: amanhã às 14:30, Design de sobrancelhas</span>
+              <span className="self-end rounded-2xl rounded-br-md bg-ink-warm px-4 py-2.5 text-[14px] text-white">Confirmado!</span>
+            </div>
+          </div>
+          <div className="flex flex-col justify-between gap-8 rounded-[24px] bg-mkt-card p-8 sm:p-10">
+            <div>
+              <p className="flex items-center gap-2 text-[15px] font-semibold text-ink-warm"><LineChart className="h-5 w-5 text-[#13a85a]" strokeWidth={2.4} />Indicadores</p>
+              <h3 className="mt-3 font-tight text-[28px] leading-[1.2] font-extrabold tracking-[-0.02em] text-ink-warm">Saiba quanto recebeu — e quem sumiu.</h3>
+              <p className="mt-3 text-[16px] leading-[1.55] text-ink-warm/70">Recebido, ocupação da agenda, faltas e clientes para reativar, cada número com a explicação de como é calculado.</p>
+            </div>
+            <div className="flex h-24 items-end gap-2" aria-hidden>
+              {[38, 52, 44, 66, 58, 80, 72, 94].map((h, i) => (
+                <span key={i} className="flex-1 rounded-t-md bg-[linear-gradient(var(--color-bar-green-to),var(--color-bar-green-from))]" style={{ height: `${h}%`, opacity: 0.55 + i * 0.06 }} />
+              ))}
+            </div>
+          </div>
+        </div>
+        <p className="mt-3 text-center text-[12px] text-ink-warm/45">Ilustrações da interface com dados de exemplo.</p>
+      </section>
+
       <section id="recursos" className="mx-auto max-w-6xl px-4 py-24">
         <div className="max-w-2xl">
-          <h2 className="font-display text-4xl font-normal tracking-[-0.01em]">Tudo o que o seu dia a dia pede, sem planilhas nem caderninho</h2>
+          <h2 className="font-tight text-[36px] leading-[1.15] font-extrabold tracking-[-0.025em] text-ink-warm sm:text-[40px]">Tudo o que o seu dia a dia pede, sem planilhas nem caderninho</h2>
           <p className="mt-4 text-ink-soft">Cada recurso existe para resolver um problema concreto: horários perdidos, clientes que não voltam e tempo gasto com tarefas repetitivas.</p>
         </div>
         <div className="mt-14 grid gap-x-10 gap-y-12 sm:grid-cols-2 lg:grid-cols-3">
@@ -89,9 +142,9 @@ export default async function LandingPage() {
         </div>
       </section>
 
-      <section id="como-funciona" className="bg-plum-900 py-24 text-champagne-100">
+      <section id="como-funciona" className="bg-ink-warm py-24 text-champagne-100">
         <div className="mx-auto max-w-6xl px-4">
-          <h2 className="max-w-xl font-display text-4xl font-light">Do cadastro ao primeiro agendamento em poucos minutos</h2>
+          <h2 className="max-w-xl font-tight text-[36px] leading-[1.15] font-extrabold tracking-[-0.025em] sm:text-[40px]">Do cadastro ao primeiro agendamento em poucos minutos</h2>
           <ol className="mt-14 grid gap-8 md:grid-cols-4">
             {[
               ["Conte o que você faz", "Escolha seu segmento e já começamos com serviços sugeridos para você ajustar."],
@@ -111,14 +164,14 @@ export default async function LandingPage() {
 
       <section id="planos" className="mx-auto max-w-6xl px-4 py-24">
         <div className="max-w-2xl">
-          <h2 className="font-display text-4xl font-normal">Planos para cada momento do seu negócio</h2>
+          <h2 className="font-tight text-[36px] leading-[1.15] font-extrabold tracking-[-0.025em] text-ink-warm sm:text-[40px]">Planos para cada momento do seu negócio</h2>
           <p className="mt-4 text-ink-soft">Os valores estão sendo definidos. Comece agora com o teste gratuito e avisaremos antes de qualquer cobrança.</p>
         </div>
         <div className="mt-12 grid gap-4 md:grid-cols-2 lg:grid-cols-4">
           {Object.values(PLANS).map((p) => (
             <div key={p.id} className={`flex flex-col rounded-2xl border p-6 ${p.id === "studio" ? "border-plum-500 bg-surface shadow-[var(--shadow-pop)]" : "border-line bg-surface"}`}>
               <div className="flex items-center justify-between">
-                <h3 className="font-display text-2xl">{p.name}</h3>
+                <h3 className="font-tight text-2xl font-extrabold tracking-[-0.02em]">{p.name}</h3>
                 {p.id === "studio" && <span className="rounded-full bg-plum-50 px-2 py-0.5 text-xs font-medium text-plum-700">Incluído no teste</span>}
               </div>
               <p className="mt-1 text-sm text-muted">{p.tagline}</p>
@@ -137,7 +190,7 @@ export default async function LandingPage() {
 
       <section id="perguntas" className="border-t border-line bg-surface/60 py-24">
         <div className="mx-auto grid max-w-6xl gap-12 px-4 lg:grid-cols-[1fr_1.4fr]">
-          <h2 className="font-display text-4xl font-normal">Perguntas frequentes</h2>
+          <h2 className="font-tight text-[36px] leading-[1.15] font-extrabold tracking-[-0.025em] text-ink-warm sm:text-[40px]">Perguntas frequentes</h2>
           <div className="divide-y divide-line">
             {FAQ.map((f) => (
               <details key={f.q} className="group py-5">
@@ -153,8 +206,8 @@ export default async function LandingPage() {
 
       <section className="mx-auto max-w-6xl px-4 py-24 text-center">
         <ShieldCheck className="mx-auto h-8 w-8 text-plum-500" strokeWidth={1.5} />
-        <h2 className="mx-auto mt-4 max-w-2xl font-display text-4xl font-normal">Comece hoje e veja sua agenda organizada ainda esta semana</h2>
-        <ButtonLink href="/cadastro" size="lg" className="mt-8">Criar conta grátis <ArrowRight className="h-4 w-4" /></ButtonLink>
+        <h2 className="mx-auto mt-4 max-w-2xl font-tight text-[36px] leading-[1.15] font-extrabold tracking-[-0.025em] text-ink-warm sm:text-[40px]">Comece hoje e veja sua agenda organizada ainda esta semana</h2>
+        <Link href="/cadastro" className="mt-8 inline-flex h-[52px] items-center gap-2 rounded-lg bg-ink-warm px-6 text-[17px] font-medium text-white hover:opacity-85">Criar conta grátis <ArrowRight className="h-4 w-4" /></Link>
       </section>
 
       <footer className="border-t border-line">
@@ -169,42 +222,5 @@ export default async function LandingPage() {
         </div>
       </footer>
     </div>
-  );
-}
-
-/** Ilustração da interface (composição estática, não um print de dados reais). */
-function ProductPreview() {
-  const rows = [
-    { t: "09:00", n: "Cliente A", s: "Manicure + pedicure", st: "border-l-st-completed bg-st-completed-bg", h: 76 },
-    { t: "10:30", n: "Cliente B", s: "Alongamento em gel", st: "border-l-st-confirmed bg-st-confirmed-bg", h: 112 },
-    { t: "13:00", n: "Cliente C", s: "Design de sobrancelhas", st: "border-l-st-pending bg-st-pending-bg", h: 52 },
-  ];
-  return (
-    <figure className="relative" aria-label="Ilustração da agenda do Beauty OS">
-      <div className="absolute -inset-6 -z-10 rounded-[32px] bg-gradient-to-br from-plum-100 via-champagne-100 to-transparent" aria-hidden />
-      <div className="overflow-hidden rounded-2xl border border-line bg-surface shadow-[var(--shadow-pop)]">
-        <div className="flex items-center justify-between border-b border-line px-5 py-3">
-          <div><div className="text-xs text-muted">Terça-feira</div><div className="font-display text-lg">Agenda de hoje</div></div>
-          <div className="flex gap-1.5"><span className="rounded-md bg-sunken px-2 py-1 text-[11px]">Dia</span><span className="rounded-md px-2 py-1 text-[11px] text-muted">Semana</span></div>
-        </div>
-        <div className="grid grid-cols-3 gap-px border-b border-line bg-line text-center">
-          {[["Ocupação", "78%"], ["Confirmados", "6"], ["A receber", "R$ 240"]].map(([l, v]) => (
-            <div key={l} className="bg-surface px-3 py-3"><div className="text-[11px] text-muted">{l}</div><div className="text-lg font-semibold tabular">{v}</div></div>
-          ))}
-        </div>
-        <div className="flex flex-col gap-2 p-4">
-          {rows.map((r) => (
-            <div key={r.t} className="flex gap-3">
-              <span className="w-10 pt-1 text-[11px] text-muted tabular">{r.t}</span>
-              <div className={`flex-1 rounded-md border-l-[3px] px-3 py-2 ${r.st}`} style={{ minHeight: r.h * 0.6 }}>
-                <div className="text-[13px] font-medium">{r.n}</div><div className="text-[11px] text-ink-soft">{r.s}</div>
-              </div>
-            </div>
-          ))}
-          <div className="flex gap-3"><span className="w-10 pt-1 text-[11px] text-muted tabular">15:00</span><div className="flex-1 rounded-md border border-dashed border-line-strong px-3 py-2 text-[12px] text-muted">Horário livre · aparece na sua página de agendamento</div></div>
-        </div>
-      </div>
-      <figcaption className="mt-3 text-center text-[11px] text-muted">Ilustração da interface</figcaption>
-    </figure>
   );
 }
