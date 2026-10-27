@@ -97,7 +97,7 @@ function HoursStep({ onDone }: { onDone: () => void }) {
             return (
               <button key={d} type="button" aria-pressed={on}
                 onClick={() => setDays(on ? days.filter((x) => x !== i) : [...days, i].sort())}
-                className={cn("h-10 min-w-12 rounded-[10px] border px-3 text-sm font-medium transition-colors",
+                className={cn("lift h-10 min-w-12 rounded-[10px] border px-3 text-sm font-medium",
                   on ? "border-violet-300 btn-glow text-white" : "border-line-strong bg-surface text-ink-soft hover:bg-sunken")}>
                 {d}
               </button>

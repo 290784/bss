@@ -5,6 +5,7 @@ import { Sparkle, Sparkles } from "@/components/brand/sparkles";
 import { PLANS } from "@/domain/plans";
 import { getSession } from "@/server/auth/session";
 import { HeroWidget } from "@/components/marketing/hero-widget";
+import { GlowCard } from "@/components/marketing/glow-card";
 import { BookingDemo } from "@/components/marketing/booking-demo";
 import { cn } from "@/lib/cn";
 import { BRAND } from "@/lib/brand";
@@ -110,7 +111,7 @@ export default async function LandingPage() {
           <BookingDemo />
         </div>
         <div className="mt-6 grid gap-6 md:grid-cols-2">
-          <div className="flex flex-col justify-between gap-8 glass relative overflow-hidden rounded-[28px] p-8 sm:p-10">
+          <GlowCard className="glass flex flex-col justify-between gap-8 rounded-[28px] p-8 sm:p-10">
             <div>
               <p className="flex items-center gap-2 text-[15px] font-semibold text-ink"><BellRing className="h-5 w-5 text-violet-200" strokeWidth={2.4} />Lembretes</p>
               <h3 className="mt-3 font-tight text-[28px] leading-[1.2] font-extrabold tracking-[-0.02em] text-ink">Menos faltas, sem mandar mensagem uma a uma.</h3>
@@ -120,8 +121,8 @@ export default async function LandingPage() {
               <span className="self-start rounded-2xl rounded-bl-md bg-white/10 px-4 py-2.5 text-[14px] text-ink ring-1 ring-white/10">Oi, Ana! Lembrete: amanhã às 14:30, Design de sobrancelhas</span>
               <span className="self-end btn-glow rounded-2xl rounded-br-md px-4 py-2.5 text-[14px] text-white">Confirmado!</span>
             </div>
-          </div>
-          <div className="flex flex-col justify-between gap-8 glass relative overflow-hidden rounded-[28px] p-8 sm:p-10">
+          </GlowCard>
+          <GlowCard className="glass flex flex-col justify-between gap-8 rounded-[28px] p-8 sm:p-10">
             <div>
               <p className="flex items-center gap-2 text-[15px] font-semibold text-ink"><LineChart className="h-5 w-5 text-violet-200" strokeWidth={2.4} />Indicadores</p>
               <h3 className="mt-3 font-tight text-[28px] leading-[1.2] font-extrabold tracking-[-0.02em] text-ink">Saiba quanto recebeu — e quem sumiu.</h3>
@@ -132,7 +133,7 @@ export default async function LandingPage() {
                 <span key={i} className="flex-1 rounded-t-md bg-[linear-gradient(var(--color-bar-green-to),var(--color-bar-green-from))]" style={{ height: `${h}%`, opacity: 0.55 + i * 0.06 }} />
               ))}
             </div>
-          </div>
+          </GlowCard>
         </div>
         <p className="mt-3 text-center text-[12px] text-muted">Ilustrações da interface com dados de exemplo.</p>
       </section>
@@ -144,11 +145,11 @@ export default async function LandingPage() {
         </div>
         <div className="mt-14 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {FEATURES.map((f) => (
-            <div key={f.title} className="glass rounded-[24px] p-6 transition hover:bg-white/[0.06]">
+            <GlowCard key={f.title} className="glass rounded-[24px] p-6">
               <div className="bg-royal ring-glass grid h-12 w-12 place-items-center rounded-2xl text-violet-100 shadow-[0_0_24px_-6px_rgb(171_61_245/0.7)]"><f.icon className="h-5 w-5" strokeWidth={1.75} /></div>
               <h3 className="mt-4 text-[17px] font-semibold">{f.title}</h3>
               <p className="mt-2 text-[15px] leading-relaxed text-ink-soft">{f.text}</p>
-            </div>
+            </GlowCard>
           ))}
         </div>
       </section>
@@ -181,7 +182,7 @@ export default async function LandingPage() {
         </div>
         <div className="mt-12 grid gap-4 md:grid-cols-2 lg:grid-cols-4">
           {Object.values(PLANS).map((p) => (
-            <div key={p.id} className={cn("relative flex flex-col overflow-hidden rounded-[24px] p-6", p.id === "studio" ? "bg-royal ring-glass shadow-[0_30px_70px_-30px_rgb(147_3_197/0.9)]" : "glass")}>
+            <GlowCard key={p.id} className={cn("flex flex-col rounded-[24px] p-6", p.id === "studio" ? "bg-royal ring-glass shadow-[0_30px_70px_-30px_rgb(147_3_197/0.9)]" : "glass")}>
               <div className="flex items-center justify-between">
                 <h3 className="font-tight text-2xl font-extrabold tracking-[-0.02em]">{p.name}</h3>
                 {p.id === "studio" && <span className="inline-flex items-center gap-1 rounded-full bg-white/15 px-2 py-0.5 text-xs font-medium text-violet-100"><Sparkle size={9} />Incluído no teste</span>}
@@ -195,7 +196,7 @@ export default async function LandingPage() {
                 {p.features.includes("automations") && <li className="flex gap-2"><Check className="h-4 w-4 shrink-0 text-violet-200" />Automações de relacionamento</li>}
                 {p.features.includes("reports_advanced") && <li className="flex gap-2"><Check className="h-4 w-4 shrink-0 text-violet-200" />Relatórios por profissional</li>}
               </ul>
-            </div>
+            </GlowCard>
           ))}
         </div>
       </section>

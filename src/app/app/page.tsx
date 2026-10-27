@@ -87,7 +87,7 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
               <ul className="mt-4 grid gap-2 sm:grid-cols-2">
                 {activation.map((a) => (
                   <li key={a.label}>
-                    <Link href={a.href} className={cn("flex items-center gap-2.5 rounded-lg border px-3 py-2 text-sm", a.done ? "border-transparent bg-st-completed-bg text-st-completed" : "border-line hover:border-accent")}>
+                    <Link href={a.href} className={cn("lift flex items-center gap-2.5 rounded-xl border px-3 py-2 text-sm", a.done ? "border-transparent bg-st-completed-bg text-st-completed" : "border-line hover:border-accent")}>
                       <span className={cn("grid h-5 w-5 place-items-center rounded-full border", a.done ? "border-st-completed bg-st-completed text-white" : "border-line-strong")}>{a.done && <Check className="h-3 w-3" />}</span>
                       {a.label}
                     </Link>
@@ -134,7 +134,7 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
               <ul className="flex flex-col divide-y divide-line">
                 {activeToday.slice(0, 8).map((a) => (
                   <li key={a.id}>
-                    <Link href={`/app/agenda?data=${todayKey}&agendamento=${a.id}`} className="flex items-center gap-3 py-2.5 hover:opacity-80">
+                    <Link href={`/app/agenda?data=${todayKey}&agendamento=${a.id}`} className="-mx-2 flex items-center gap-3 rounded-xl px-2 py-2.5 transition hover:bg-white/[0.04] active:scale-[0.99]">
                       <span className="w-11 text-sm font-semibold tabular">{localTime(a.starts_at, tz)}</span>
                       <span className={cn("h-8 w-1 rounded-full", STATUS_STYLE[a.status].dot)} aria-hidden />
                       <span className="min-w-0 flex-1">
@@ -180,7 +180,7 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
               <ul className="divide-y divide-line">
                 {d.reactivate.map((c) => (
                   <li key={c.id}>
-                    <Link href={`/app/clientes/${c.id}`} className="flex items-center justify-between py-2.5 text-sm hover:opacity-80">
+                    <Link href={`/app/clientes/${c.id}`} className="-mx-2 flex items-center justify-between rounded-xl px-2 py-2.5 text-sm transition hover:bg-white/[0.04] active:scale-[0.99]">
                       <span className="font-medium">{c.full_name}</span>
                       <span className="text-xs text-muted">{c.visits} visita(s) · última em {formatInTz(c.last_visit, tz, { day: "2-digit", month: "2-digit", year: "numeric" })}</span>
                     </Link>

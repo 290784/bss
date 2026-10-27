@@ -1,88 +1,102 @@
 "use client";
-import { useEffect, useRef, useState, type ReactNode } from "react";
-import { BarChart3, Bell, CalendarCheck2, ChevronDown, HeartHandshake, Tag } from "lucide-react";
+import { useCallback, useRef, type ReactNode } from "react";
+import { BarChart3, Bell, CalendarCheck2, HeartHandshake, Tag } from "lucide-react";
 import { cn } from "@/lib/cn";
 import { usePrefersReducedMotion, useInView } from "./motion";
+import { StoryBars, useAutoplay, useSwipe } from "./carousel";
 
 /**
  * Carrossel do hero: cada card mostra um recurso real do produto em forma de ilustração
- * (esqueletos no lugar de dados). Um dock de ícones em arco troca o card; cada card tem
- * um halo de cor próprio. Avança sozinho, pausa com o mouse em cima, fora da tela ou
- * com "reduzir movimento".
+ * (esqueletos no lugar de dados), com uma legenda curta para ler. Avança sozinho em ritmo
+ * de leitura (~5 s por card); pausa com o mouse em cima, com o botão de pausa, fora da tela
+ * e por 12 s depois de qualquer toque. Troca por clique no card, no dock, nas barras,
+ * arrastando o dedo para os lados ou pelas setas do teclado.
  */
 
-type Slide = { key: string; label: string; icon: typeof Bell; tile: string; glyph: string; halo: string; render: () => ReactNode };
+type Slide = { key: string; label: string; desc: string; icon: typeof Bell; tile: string; glyph: string; halo: string; render: () => ReactNode };
 
 const SLIDES: Slide[] = [
-  { key: "lembretes", label: "Lembretes", icon: Bell, tile: "bg-[#eacffc]", glyph: "text-[#5a0891]", halo: "var(--color-halo-lavender)", render: () => <RemindersCard /> },
-  { key: "online", label: "Agendamento online", icon: CalendarCheck2, tile: "bg-[#d59efa]", glyph: "text-[#3c0561]", halo: "var(--color-halo-orange)", render: () => <OnlineCard /> },
-  { key: "receita", label: "Faturamento", icon: BarChart3, tile: "bg-[#c06ef7]", glyph: "text-[#ffffff]", halo: "var(--color-halo-pink)", render: () => <RevenueCard /> },
-  { key: "retorno", label: "Clientes de volta", icon: HeartHandshake, tile: "bg-[#ab3df5]", glyph: "text-[#ffffff]", halo: "var(--color-halo-green)", render: () => <ReturnCard /> },
-  { key: "promo", label: "Promoções", icon: Tag, tile: "bg-[#960df2]", glyph: "text-[#ffffff]", halo: "var(--color-halo-cyan)", render: () => <PromoCard /> },
+  { key: "lembretes", label: "Lembretes", desc: "Confirmação e lembrete 24h antes, sem mandar uma a uma.", icon: Bell, tile: "bg-[#eacffc]", glyph: "text-[#5a0891]", halo: "var(--color-halo-lavender)", render: () => <RemindersCard /> },
+  { key: "online", label: "Agendamento online", desc: "Sua cliente escolhe um horário livre, a qualquer hora.", icon: CalendarCheck2, tile: "bg-[#d59efa]", glyph: "text-[#3c0561]", halo: "var(--color-halo-orange)", render: () => <OnlineCard /> },
+  { key: "receita", label: "Faturamento", desc: "Quanto você recebeu no mês, dia a dia.", icon: BarChart3, tile: "bg-[#c06ef7]", glyph: "text-[#ffffff]", halo: "var(--color-halo-pink)", render: () => <RevenueCard /> },
+  { key: "retorno", label: "Clientes de volta", desc: "Quem voltou e quem precisa de um convite para voltar.", icon: HeartHandshake, tile: "bg-[#ab3df5]", glyph: "text-[#ffffff]", halo: "var(--color-halo-green)", render: () => <ReturnCard /> },
+  { key: "promo", label: "Promoções", desc: "Ofertas para preencher horários vagos.", icon: Tag, tile: "bg-[#960df2]", glyph: "text-[#ffffff]", halo: "var(--color-halo-cyan)", render: () => <PromoCard /> },
 ];
 
-const DWELL_MS = 2600;
+/** Tempo de cada card: o suficiente para ler o título e a legenda com calma. */
+const DURATIONS = SLIDES.map(() => 5200);
 const STEP = 70; // distância entre ícones do dock
 
 export function HeroWidget() {
-  const [active, setActive] = useState(0);
-  const [hover, setHover] = useState(false);
   const reduced = usePrefersReducedMotion();
   const ref = useRef<HTMLDivElement>(null);
+  const stageRef = useRef<HTMLDivElement>(null);
   const inView = useInView(ref);
-  const playing = !reduced && !hover && inView;
+  const auto = useAutoplay({ count: SLIDES.length, durations: DURATIONS, active: !reduced && inView });
+  const wasSwipe = useSwipe(stageRef, auto.next, auto.prev);
+  const onKey = useCallback((e: React.KeyboardEvent) => {
+    if (e.key === "ArrowRight") { e.preventDefault(); auto.next(); }
+    if (e.key === "ArrowLeft") { e.preventDefault(); auto.prev(); }
+  }, [auto]);
 
-  useEffect(() => {
-    if (!playing) return;
-    const t = setTimeout(() => setActive((i) => (i + 1) % SLIDES.length), DWELL_MS);
-    return () => clearTimeout(t);
-  }, [playing, active]);
-
+  const active = auto.index;
   const slide = SLIDES[active]!;
   return (
-    <div ref={ref} className="relative mx-auto aspect-[66/73] w-full max-w-[560px] select-none"
-      onMouseEnter={() => setHover(true)} onMouseLeave={() => setHover(false)}
-      role="region" aria-roledescription="carrossel" aria-label="Recursos da Gê">
-      {/* Halo desfocado com a cor do card ativo */}
-      <div className="absolute inset-[8%] rounded-full opacity-60 blur-[70px] transition-[background-color] duration-700" style={{ backgroundColor: slide.halo }} aria-hidden />
-      {/* Contorno em arco atrás da pilha */}
-      <svg className="absolute inset-x-[6%] top-[4%] h-[70%] w-[88%] text-violet-200/25" viewBox="0 0 100 80" fill="none" aria-hidden preserveAspectRatio="none">
-        <path d="M4 80 V40 a46 38 0 0 1 92 0 V80" stroke="currentColor" strokeWidth="0.4" />
-      </svg>
+    <div ref={ref} className="relative mx-auto w-full max-w-[560px] select-none" {...auto.hoverProps}
+      role="region" aria-roledescription="carrossel" aria-label="Recursos da Gê" tabIndex={0} onKeyDown={onKey}
+      onPointerDown={auto.hold}>
+      <StoryBars className="relative z-20 mx-auto mb-2 max-w-[420px] px-2" count={SLIDES.length} index={active} durations={DURATIONS}
+        running={auto.running} onGo={auto.go} paused={auto.userPaused || reduced} onTogglePause={auto.togglePause} labels={SLIDES.map((x) => x.label)} />
 
-      <div className="absolute inset-x-[9%] top-[8%] bottom-[36%] sm:top-[10%] sm:bottom-[30%]" aria-live="polite">
-        <div key={slide.key} className="absolute inset-0 flex items-center justify-center motion-safe:[animation:mkt-card-in_.45s_cubic-bezier(.2,.8,.2,1)]">
-          {slide.render()}
+      <div className="relative aspect-[66/88] w-full sm:aspect-[66/73]">
+        {/* Halo desfocado com a cor do card ativo */}
+        <div className="absolute inset-[8%] rounded-full opacity-60 blur-[70px] transition-[background-color] duration-1000" style={{ backgroundColor: slide.halo }} aria-hidden />
+        {/* Contorno em arco atrás da pilha */}
+        <svg className="absolute inset-x-[6%] top-[4%] h-[70%] w-[88%] text-violet-200/25" viewBox="0 0 100 80" fill="none" aria-hidden preserveAspectRatio="none">
+          <path d="M4 80 V40 a46 38 0 0 1 92 0 V80" stroke="currentColor" strokeWidth="0.4" />
+        </svg>
+
+        {/* Palco: clicar avança, arrastar troca */}
+        <div ref={stageRef} className="absolute inset-x-[9%] top-[3%] bottom-[40%] cursor-pointer touch-pan-y sm:top-[6%] sm:bottom-[33%]"
+          onClick={() => { if (!wasSwipe()) auto.next(); }} aria-live="polite">
+          <div key={slide.key} className="absolute inset-0 flex items-center justify-center transition-transform duration-300 active:scale-[0.98] motion-safe:[animation:mkt-card-in_.7s_cubic-bezier(.2,.8,.2,1)]">
+            {slide.render()}
+          </div>
+        </div>
+
+        {/* Legenda do card: entra junto, com tempo de leitura */}
+        <div className="absolute inset-x-[6%] bottom-[24%] text-center sm:bottom-[24%]">
+          <p key={slide.key} className="motion-safe:[animation:mkt-rise_.6s_ease-out_.15s_both]">
+            <span className="block text-[15px] font-semibold text-violet-100">{slide.label}</span>
+            <span className="mt-0.5 block text-[13px] leading-snug text-ink-soft">{slide.desc}</span>
+          </p>
+        </div>
+
+        {/* Dock em arco */}
+        <div className="absolute inset-x-0 bottom-[2%] h-28 overflow-hidden sm:bottom-[3%] sm:h-32">
+          <div className="absolute top-0 left-1/2 h-full">
+            {SLIDES.map((s, i) => {
+              let offset = i - active;
+              if (offset > 2) offset -= SLIDES.length;
+              if (offset < -2) offset += SLIDES.length;
+              const dist = Math.abs(offset);
+              const size = dist === 0 ? 77 : dist === 1 ? 58 : 50;
+              const Icon = s.icon;
+              return (
+                <button key={s.key} onClick={() => auto.go(i)} aria-label={s.label} aria-pressed={dist === 0} title={s.label}
+                  className={cn("group absolute top-1/2 grid place-items-center rounded-[22px] bg-[#0c0820] ring-1 ring-white/20 shadow-[0_8px_28px_-8px_rgb(150_13_242/0.7)] transition-all duration-700 ease-[cubic-bezier(.2,.8,.2,1)] hover:ring-violet-200/70 active:brightness-125",
+                    dist === 2 && "opacity-45 hover:opacity-80")}
+                  style={{ width: size, height: size, transform: `translate(calc(${offset * STEP}px - 50%), calc(-50% + ${dist * dist * 5}px))`, zIndex: 10 - dist }}>
+                  <span className={cn("grid place-items-center rounded-[16px] transition-all duration-700 group-hover:scale-105 group-active:scale-90", s.tile)} style={{ width: size - 14, height: size - 14 }}>
+                    <Icon className={cn(s.glyph)} style={{ width: size * 0.42, height: size * 0.42 }} strokeWidth={2.2} />
+                  </span>
+                </button>
+              );
+            })}
+          </div>
         </div>
       </div>
-
-      {/* Dock em arco */}
-      <div className="absolute inset-x-0 bottom-[6%] h-28 overflow-hidden sm:bottom-[7%] sm:h-32">
-        <div className="absolute top-0 left-1/2 h-full">
-          {SLIDES.map((s, i) => {
-            let offset = i - active;
-            if (offset > 2) offset -= SLIDES.length;
-            if (offset < -2) offset += SLIDES.length;
-            const dist = Math.abs(offset);
-            const size = dist === 0 ? 77 : dist === 1 ? 58 : 50;
-            const Icon = s.icon;
-            return (
-              <button key={s.key} onClick={() => setActive(i)} aria-label={s.label} aria-pressed={dist === 0}
-                className={cn("absolute top-1/2 grid place-items-center rounded-[22px] bg-[#0c0820] ring-1 ring-white/20 shadow-[0_8px_28px_-8px_rgb(150_13_242/0.7)] transition-all duration-500 ease-out",
-                  dist === 2 && "opacity-45")}
-                style={{ width: size, height: size, transform: `translate(calc(${offset * STEP}px - 50%), calc(-50% + ${dist * dist * 5}px))`, zIndex: 10 - dist }}>
-                <span className={cn("grid place-items-center rounded-[16px] transition-all duration-500", s.tile)} style={{ width: size - 14, height: size - 14 }}>
-                  <Icon className={cn(s.glyph)} style={{ width: size * 0.42, height: size * 0.42 }} strokeWidth={2.2} />
-                </span>
-              </button>
-            );
-          })}
-        </div>
-      </div>
-      <div className="absolute bottom-[2%] left-1/2 flex -translate-x-1/2 flex-col items-center text-[#c06ef7]" aria-hidden>
-        {[0, 1, 2].map((i) => <ChevronDown key={i} className="-mt-2 h-4 w-4 first:mt-0 motion-safe:[animation:mkt-chevron_1.6s_ease-in-out_infinite]" style={{ animationDelay: `${i * 0.15}s` }} />)}
-      </div>
-      <p className="sr-only">Recurso em destaque: {slide.label}</p>
+      <p className="mt-1 text-center text-[11px] text-muted">Toque no card, arraste para o lado ou use as setas.</p>
     </div>
   );
 }

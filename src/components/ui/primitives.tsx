@@ -5,8 +5,8 @@ import { cn } from "@/lib/cn";
 import { Sparkle } from "@/components/brand/sparkles";
 import { STATUS_LABEL, type AppointmentStatus } from "@/domain/appointment-status";
 
-export function Card({ className, ...props }: ComponentProps<"div">) {
-  return <div className={cn("rounded-[var(--radius-card)] border border-line bg-surface shadow-[var(--shadow-card)]", className)} {...props} />;
+export function Card({ className, interactive, ...props }: ComponentProps<"div"> & { interactive?: boolean }) {
+  return <div className={cn("rounded-[var(--radius-card)] border border-line bg-surface shadow-[var(--shadow-card)]", interactive ? "lift" : "glow-hover", className)} {...props} />;
 }
 
 export function CardHeader({ title, description, action, className }: { title: ReactNode; description?: ReactNode; action?: ReactNode; className?: string }) {
