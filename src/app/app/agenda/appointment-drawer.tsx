@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import { useCallback, useEffect, useState, useTransition } from "react";
-import { CalendarClock, Globe, MessageCircle, Phone, Receipt, Undo2, Zap } from "lucide-react";
+import { CalendarClock, CheckCheck, Copy, ExternalLink, Globe, MessageCircle, Phone, Plus, Receipt, TrendingUp, Undo2, Zap } from "lucide-react";
 import { Dialog, ConfirmDialog } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Checkbox, Field, FormMessage, Input, Select } from "@/components/ui/form";
@@ -12,7 +12,7 @@ import { formatMoney, parseMoneyToCents } from "@/lib/money";
 import { formatPhone } from "@/lib/text";
 import { canReschedule, nextStatuses, STATUS_LABEL, type AppointmentStatus } from "@/domain/appointment-status";
 import type { AgendaProfessional } from "./agenda-view";
-import { changeStatusAction, getAppointmentAction, recordPaymentAction, refundAction, rescheduleAction, type AppointmentDetailDTO } from "./actions";
+import { addServiceAction, changeStatusAction, getAppointmentAction, recordPaymentAction, refundAction, rescheduleAction, type AppointmentDetailDTO } from "./actions";
 
 const METHOD_LABEL: Record<string, string> = { pix: "PIX", cash: "Dinheiro", credit_card: "Crédito", debit_card: "Débito", bank_transfer: "Transferência", other: "Outro" };
 const MSG_STATUS: Record<string, { label: string; variant: "neutral" | "success" | "warning" | "danger" }> = {
@@ -77,6 +77,7 @@ export function AppointmentDrawer({ id, timeZone, professionals, readOnly, onClo
               <StatusBadge status={data.status} />
               {data.source === "online" && <Badge variant="plum"><Globe className="h-3 w-3" />Online</Badge>}
               {data.squeezeIn && <Badge variant="champagne"><Zap className="h-3 w-3" />Encaixe</Badge>}
+              {data.clientConfirmedAt && <Badge variant="success"><CheckCheck className="h-3 w-3" />Cliente confirmou presença</Badge>}
             </div>
 
             {mode === "reschedule" && (
@@ -108,6 +109,45 @@ export function AppointmentDrawer({ id, timeZone, professionals, readOnly, onClo
                 <li className="flex justify-between bg-canvas/60 px-3 py-2 font-medium"><span>Total</span><span className="tabular">{formatMoney(due)}</span></li>
               </ul>
             </section>
+
+            {(data.status === "pending" || data.status === "confirmed") && (
+              <ClientConfirmation data={data} timeZone={timeZone} onCopied={() => toast("Link do comprovante copiado.")} />
+            )}
+
+            {data.suggestions.length > 0 && (data.status === "pending" || data.status === "confirmed" || data.status === "completed") && (
+              <section aria-labelledby="upsell-title">
+                <h3 id="upsell-title" className="mb-1 flex items-center gap-1.5 text-[13px] font-semibold text-ink-soft"><TrendingUp className="h-4 w-4 text-accent-text" />Para subir o ticket</h3>
+                <p className="mb-2 text-xs text-muted">Sugestões a partir do histórico do seu estabelecimento.</p>
+                <ul className="flex flex-col gap-2">
+                  {data.suggestions.map((sg) => (
+                    <li key={sg.id} className="rounded-xl border border-line p-3 text-sm">
+                      <div className="flex items-start justify-between gap-3">
+                        <div>
+                          <div className="font-medium text-ink">{sg.name}</div>
+                          <div className="mt-0.5 text-xs text-muted">{sg.reason}</div>
+                        </div>
+                        <span className="shrink-0 text-right text-[13px] tabular text-ink-soft">+{formatMoney(sg.priceCents)}<span className="block text-xs text-muted">+{sg.minutes} min</span></span>
+                      </div>
+                      <div className="mt-2 flex flex-wrap items-center gap-2">
+                        <Badge variant={sg.fitsRightAfter ? "success" : "neutral"}>{sg.fitsRightAfter ? "Cabe logo depois" : "Sem horário livre logo depois"}</Badge>
+                        <span className="flex-1" />
+                        {data.clientPhone && (
+                          <a href={`https://wa.me/${data.clientPhone}?text=${encodeURIComponent(offerText(data, sg, timeZone))}`} target="_blank" rel="noreferrer"
+                            className="inline-flex h-8 items-center gap-1.5 rounded-lg border border-line-strong px-3 text-[13px] font-medium hover:bg-sunken">
+                            <MessageCircle className="h-3.5 w-3.5" />Oferecer
+                          </a>
+                        )}
+                        {!readOnly && sg.fitsRightAfter && data.status !== "completed" && (
+                          <Button size="sm" disabled={pending} onClick={() => run(() => addServiceAction({ appointmentId: data.id, serviceId: sg.id }))}>
+                            <Plus className="h-3.5 w-3.5" />Adicionar
+                          </Button>
+                        )}
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              </section>
+            )}
 
             {data.canSeeFinance && (
               <section>
@@ -179,6 +219,45 @@ export function AppointmentDrawer({ id, timeZone, professionals, readOnly, onClo
   );
 }
 
+const firstName = (n: string) => n.trim().split(" ")[0] ?? n;
+const whenText = (d: AppointmentDetailDTO, tz: string) =>
+  `${formatInTz(new Date(d.startsAt), tz, { weekday: "long", day: "2-digit", month: "long" })} às ${localTime(new Date(d.startsAt), tz)}`;
+
+function confirmationText(d: AppointmentDetailDTO, tz: string) {
+  return `Oi, ${firstName(d.clientName)}! Seu horário está ${d.status === "pending" ? "reservado e em análise" : "confirmado"} ✨\n` +
+    `${d.services.map((s) => s.service_name).join(" + ")} · ${whenText(d, tz)} com ${d.professionalName}.\n` +
+    `Comprovante completo, com endereço e botão para confirmar presença: ${d.receiptUrl}`;
+}
+function offerText(d: AppointmentDetailDTO, sg: AppointmentDetailDTO["suggestions"][number], tz: string) {
+  return `Oi, ${firstName(d.clientName)}! Para o seu horário de ${whenText(d, tz)}, que tal aproveitar e fazer também ${sg.name} ` +
+    `(${sg.minutes} min, ${formatMoney(sg.priceCents)})?${sg.fitsRightAfter ? " Tenho horário livre logo em seguida." : ""}`;
+}
+
+/** Confirmação completa para a cliente: comprovante com link próprio, enviado pelo WhatsApp da equipe. */
+function ClientConfirmation({ data, timeZone, onCopied }: { data: AppointmentDetailDTO; timeZone: string; onCopied: () => void }) {
+  return (
+    <section>
+      <h3 className="mb-1 text-[13px] font-semibold text-ink-soft">Confirmação para a cliente</h3>
+      <p className="mb-2 text-xs text-muted">Comprovante com serviços, horário, profissional, endereço, botão para salvar na agenda e para confirmar presença.</p>
+      <div className="flex flex-wrap gap-2">
+        {data.clientPhone && (
+          <a href={`https://wa.me/${data.clientPhone}?text=${encodeURIComponent(confirmationText(data, timeZone))}`} target="_blank" rel="noreferrer"
+            className="inline-flex h-8 items-center gap-1.5 rounded-lg btn-glow px-3 text-[13px] font-medium text-white">
+            <MessageCircle className="h-3.5 w-3.5" />Enviar no WhatsApp
+          </a>
+        )}
+        <button type="button" onClick={() => navigator.clipboard?.writeText(data.receiptUrl).then(onCopied)}
+          className="inline-flex h-8 items-center gap-1.5 rounded-lg border border-line-strong px-3 text-[13px] font-medium hover:bg-sunken">
+          <Copy className="h-3.5 w-3.5" />Copiar link
+        </button>
+        <a href={data.receiptUrl} target="_blank" rel="noreferrer" className="inline-flex h-8 items-center gap-1.5 rounded-lg px-3 text-[13px] font-medium text-accent-text hover:bg-sunken">
+          <ExternalLink className="h-3.5 w-3.5" />Ver comprovante
+        </a>
+      </div>
+    </section>
+  );
+}
+
 function Info({ label, value }: { label: string; value: React.ReactNode }) {
   return <div><div className="text-xs text-muted">{label}</div><div className="mt-0.5 text-ink">{value}</div></div>;
 }
@@ -191,6 +270,8 @@ function describeEvent(e: { type: string; data: Record<string, unknown> }, tz: s
     case "status_changed": return `Status: ${STATUS_LABEL[d.from as AppointmentStatus]} → ${STATUS_LABEL[d.to as AppointmentStatus]}${d.reason ? ` (${d.reason})` : ""}`;
     case "payment_recorded": return `Pagamento de ${formatMoney(Number(d.amountCents))} registrado${d.isDeposit ? " (sinal)" : ""}`;
     case "payment_refunded": return `Estorno de ${formatMoney(Number(d.amountCents))}: ${d.reason}`;
+    case "client_confirmed": return "A cliente confirmou presença pelo comprovante";
+    case "service_added": return `Serviço adicionado: ${d.name} (+${formatMoney(Number(d.priceCents))})`;
     default: return e.type;
   }
 }

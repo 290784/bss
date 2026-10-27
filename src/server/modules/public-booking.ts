@@ -6,6 +6,7 @@ import { isDateKey, localTime } from "@/lib/time";
 import { createAppointment } from "@/server/modules/appointments";
 import { loadPolicy, loadServices, slotsForProfessional, totals } from "@/server/modules/scheduling";
 import { notifyStaff } from "@/server/modules/notifications";
+import { suggestRelatedServices, upsellLine } from "@/server/modules/upsell";
 import { trackEvent } from "@/server/modules/audit";
 
 /**
@@ -131,15 +132,17 @@ export async function bookOnline(tx: Tx, biz: PublicBusiness, input: z.infer<typ
         }, { source: "online", clientNotes: input.notes, now }),
       );
       const prof = biz.professionals.find((p) => p.id === pid);
+      const first = input.fullName.trim().split(" ")[0];
+      const suggestions = await suggestRelatedServices(tx, biz.id, appt.id);
       await notifyStaff(tx, biz.id, {
         type: "online_booking",
-        title: status === "pending" ? "Nova solicitação de agendamento" : "Novo agendamento online",
-        body: `${input.fullName.split(" ")[0]} · ${service.name} · ${input.date.split("-").reverse().join("/")} às ${input.time}${prof ? ` com ${prof.display_name}` : ""}`,
+        title: status === "pending" ? `${first} pediu um horário — falta você aprovar` : `${first} confirmou um agendamento`,
+        body: `${service.name} · ${input.date.split("-").reverse().join("/")} às ${input.time}${prof ? ` com ${prof.display_name}` : ""}.${upsellLine(suggestions)}`,
         link: `/app/agenda?data=${input.date}&agendamento=${appt.id}`,
         professionalId: pid,
       });
       await trackEvent(tx, "booking.online_created", biz.id, null, { status });
-      return { appointmentId: appt.id, status, professionalName: prof?.display_name ?? null };
+      return { appointmentId: appt.id, status, professionalName: prof?.display_name ?? null, token: appt.public_token };
     } catch (err) {
       lastError = err;
       if (!(err instanceof DomainError)) throw err;

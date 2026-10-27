@@ -14,8 +14,13 @@ Nenhuma integração externa está ativa. Abaixo, o contrato já preparado e o q
   iniciadas pela empresa (lembretes). Há cobrança por conversa/mensagem conforme a tabela vigente da Meta —
   verificar antes de definir preços dos planos. Não usar bibliotecas não oficiais.
 - **E-mail:** Resend/Postmark/SES com domínio verificado (SPF/DKIM).
+- Variáveis enviadas ao provedor: `cliente` (primeiro nome), `negocio`, `inicio` (ISO), `servicos`
+  e `link` — o comprovante completo do agendamento (`/b/<slug>/agendamento/<token>`), com serviços,
+  horário, profissional, endereço, arquivo de calendário e botão "Confirmar presença".
 - Enquanto não houver provedor, os jobs vencidos ficam `skipped` com "Canal não conectado"
-  e a interface informa que nada foi enviado.
+  e a interface informa que nada foi enviado. Até lá, a equipe envia a confirmação completa pelo
+  botão "Enviar no WhatsApp" do agendamento (abre o WhatsApp da própria equipe com o texto e o link
+  prontos — não usa API).
 
 ## Cobrança da assinatura — **não integrado**
 - Tabela `app.subscriptions` e regras em `src/domain/plans.ts` prontas.

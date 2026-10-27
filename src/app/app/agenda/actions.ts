@@ -5,8 +5,10 @@ import { actionContext, tenant } from "@/server/context";
 import { DomainError, type ActionState } from "@/server/errors";
 import { can } from "@/domain/permissions";
 import { APPOINTMENT_STATUSES } from "@/domain/appointment-status";
+import { suggestRelatedServices } from "@/server/modules/upsell";
+import { receiptUrl } from "@/server/modules/receipt";
 import {
-  changeStatus, createAppointment, createAppointmentSchema, getAppointmentDetail, rescheduleAppointment, rescheduleSchema,
+  addServiceSchema, addServiceToAppointment, changeStatus, createAppointment, createAppointmentSchema, getAppointmentDetail, rescheduleAppointment, rescheduleSchema,
 } from "@/server/modules/appointments";
 import { recordPayment, recordPaymentSchema, refundPayment, refundSchema } from "@/server/modules/payments";
 import { clientSchema, createClient, findPossibleDuplicates } from "@/server/modules/clients";
@@ -92,10 +94,25 @@ export async function refundAction(input: unknown): Promise<ActionState> {
   }
 }
 
+export async function addServiceAction(input: unknown): Promise<ActionState> {
+  try {
+    const ctx = await actionContext("agenda.manage");
+    const data = addServiceSchema.parse(input);
+    const r = await tenant(ctx, (tx) => addServiceToAppointment(tx, actorOf(ctx), data));
+    revalidatePath("/app", "layout");
+    return { ok: true, message: `${r.name} adicionado ao atendimento.` };
+  } catch (err) {
+    return fail(err);
+  }
+}
+
 export async function getAppointmentAction(id: string) {
   const ctx = await actionContext(undefined, { write: false });
   if (!z.uuid().safeParse(id).success) return null;
-  const d = await tenant(ctx, (tx) => getAppointmentDetail(tx, ctx.org.id, id, { withPayments: can(ctx.role, "finance.view") }));
+  const [d, suggestions] = await tenant(ctx, async (tx) => {
+    const detail = await getAppointmentDetail(tx, ctx.org.id, id, { withPayments: can(ctx.role, "finance.view") });
+    return [detail, detail ? await suggestRelatedServices(tx, ctx.org.id, id) : []] as const;
+  });
   if (!d) return null;
   return {
     id: d.id, status: d.status, source: d.source, version: d.version,
@@ -109,6 +126,9 @@ export async function getAppointmentAction(id: string) {
     events: d.events.map((e) => ({ ...e, created_at: e.created_at.toISOString() })),
     messages: d.messages.map((m) => ({ ...m, scheduled_for: m.scheduled_for.toISOString() })),
     payments: d.payments.map((p) => ({ ...p, paid_at: p.paid_at.toISOString() })),
+    suggestions,
+    receiptUrl: receiptUrl(ctx.org.slug, d.public_token),
+    clientConfirmedAt: d.client_confirmed_at?.toISOString() ?? null,
     canSeeFinance: can(ctx.role, "finance.view"),
     canRecordPayment: can(ctx.role, "finance.record"),
   };
