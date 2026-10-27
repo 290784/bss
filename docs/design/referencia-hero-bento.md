@@ -5,7 +5,7 @@ Aplicado em `src/app/page.tsx` e `src/components/marketing/`. Adotamos **padrõe
 nenhum logotipo, texto, cor-assinatura ou produto de terceiros foi copiado.
 
 ## O que foi adotado
-| Padrão do documento | Como ficou no Beauty OS |
+| Padrão do documento | Como ficou na Gê |
 |---|---|
 | Hero em 2 colunas (texto ≈ 10% da borda, widget à direita) | `max-w-[1240px]`, texto à esquerda, `HeroWidget` à direita; empilha no celular |
 | Tile da marca substituindo uma palavra no título ("K.") | "Conheça o [B] OS." — tile ameixa com o "B" do logotipo |

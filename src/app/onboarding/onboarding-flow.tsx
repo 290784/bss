@@ -27,7 +27,7 @@ export function OnboardingFlow({
           <li key={s.n} className="flex flex-1 items-center gap-2">
             <span className={cn(
               "grid h-8 w-8 shrink-0 place-items-center rounded-full text-[13px] font-semibold",
-              step > s.n ? "bg-ink-warm text-white" : step === s.n ? "bg-plum-100 text-plum-700 ring-2 ring-plum-500" : "bg-sunken text-muted",
+              step > s.n ? "btn-glow text-white" : step === s.n ? "bg-accent-muted text-accent-text ring-2 ring-accent" : "bg-sunken text-muted",
             )} aria-current={step === s.n ? "step" : undefined}>
               {step > s.n ? <Check className="h-4 w-4" /> : s.n}
             </span>
@@ -98,7 +98,7 @@ function HoursStep({ onDone }: { onDone: () => void }) {
               <button key={d} type="button" aria-pressed={on}
                 onClick={() => setDays(on ? days.filter((x) => x !== i) : [...days, i].sort())}
                 className={cn("h-10 min-w-12 rounded-[10px] border px-3 text-sm font-medium transition-colors",
-                  on ? "border-ink-warm bg-ink-warm text-white" : "border-line-strong bg-surface text-ink-soft hover:bg-sunken")}>
+                  on ? "border-violet-300 btn-glow text-white" : "border-line-strong bg-surface text-ink-soft hover:bg-sunken")}>
                 {d}
               </button>
             );
@@ -145,7 +145,7 @@ function ServicesStep({ presets, onBack }: { presets: Preset[]; onBack: () => vo
       <ul className="divide-y divide-line rounded-xl border border-line">
         {items.map((s, i) => (
           <li key={i} className={cn("grid grid-cols-[auto_1fr] items-center gap-x-3 gap-y-2 p-3 sm:grid-cols-[auto_1fr_120px_110px]", !s.on && "opacity-50")}>
-            <input type="checkbox" checked={s.on} onChange={(e) => update(i, { on: e.target.checked })} className="h-[18px] w-[18px] accent-plum-600" aria-label={`Oferecer ${s.name}`} />
+            <input type="checkbox" checked={s.on} onChange={(e) => update(i, { on: e.target.checked })} className="h-[18px] w-[18px] accent-accent-strong" aria-label={`Oferecer ${s.name}`} />
             <span className="text-sm font-medium">{s.name}</span>
             <label className="col-start-2 flex items-center gap-1.5 text-[13px] text-muted sm:col-start-auto">
               R$ <Input value={s.priceText} onChange={(e) => update(i, { priceText: e.target.value })} inputMode="decimal" className="h-9" aria-label={`Preço de ${s.name}`} />

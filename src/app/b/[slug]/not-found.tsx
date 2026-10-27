@@ -5,7 +5,7 @@ export default function NotFound() {
       <div>
         <h1 className="font-tight tracking-[-0.02em] text-2xl font-extrabold">Agendamento online indisponível</h1>
         <p className="mt-2 text-sm text-muted">Este endereço não existe ou o estabelecimento desativou o agendamento online. Entre em contato diretamente com o negócio.</p>
-        <Link href="/" className="mt-6 inline-block text-sm text-plum-600 underline">Conheça o Beauty OS</Link>
+        <Link href="/" className="mt-6 inline-block text-sm text-accent-text underline">Conheça a Gê</Link>
       </div>
     </div>
   );

@@ -5,7 +5,7 @@ export function LegalPage({ title, updated, children }: { title: string; updated
     <div className="min-h-dvh bg-canvas">
       <header className="mx-auto max-w-3xl px-4 py-6"><Logo /></header>
       <main className="mx-auto max-w-3xl px-4 pb-20">
-        <div className="mb-8 rounded-xl border border-champagne-300 bg-champagne-100 px-4 py-3 text-[13px] text-champagne-600">
+        <div className="mb-8 rounded-xl border border-highlight-border bg-highlight-subtle px-4 py-3 text-[13px] text-highlight-text">
           Documento inicial, sujeito a revisão jurídica antes do lançamento comercial. Não constitui garantia de conformidade legal.
         </div>
         <h1 className="font-tight tracking-[-0.02em] text-4xl font-extrabold">{title}</h1>

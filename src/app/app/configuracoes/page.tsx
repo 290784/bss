@@ -52,7 +52,7 @@ export default async function SettingsPage() {
           <OrganizationForm org={org} readOnly={ctx.access === "read_only"} />
         </div>
         <div className="flex flex-col gap-6">
-          <Card className="border-transparent bg-ink-warm p-5 text-white">
+          <Card className="bg-royal ring-glass relative overflow-hidden border-transparent p-5 text-white">
             <h2 className="text-[15px] font-semibold">Página de agendamento</h2>
             <p className="mt-1 mb-3 text-xs text-white/65">{org.online_booking_enabled ? "Ativa — clientes podem solicitar horários." : "Desativada — a página mostra que o agendamento online está indisponível."}</p>
             <CopyLink url={`${appUrl}/b/${ctx.org.slug}`} />
@@ -64,7 +64,7 @@ export default async function SettingsPage() {
             <div className="px-5 pt-3 pb-5">
               <ul className="flex flex-col gap-2">
                 {Object.values(PLANS).map((p) => (
-                  <li key={p.id} className={cn("rounded-lg border px-3 py-2 text-sm", ctx.plan.id === p.id ? "border-plum-500 bg-plum-50" : "border-line")}>
+                  <li key={p.id} className={cn("rounded-lg border px-3 py-2 text-sm", ctx.plan.id === p.id ? "border-accent bg-accent-subtle" : "border-line")}>
                     <div className="flex items-center justify-between font-medium">{p.name}{ctx.plan.id === p.id && <Badge variant="plum">Atual</Badge>}</div>
                     <div className="text-xs text-muted">{p.tagline} · até {p.maxProfessionals} profissional(is) · {p.maxUnits} unidade(s)</div>
                   </li>

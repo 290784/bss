@@ -1,21 +1,23 @@
 import Link from "next/link";
 import { cn } from "@/lib/cn";
 
+/** Monograma: "G" cursivo sobre o degradê Royal Violet, com contorno fino e um brilho. */
 export function LogoMark({ className }: { className?: string }) {
   return (
-    <svg viewBox="0 0 32 32" className={cn("h-7 w-7", className)} aria-hidden>
-      <rect width="32" height="32" rx="9" fill="#5a2647" />
-      <path d="M10 22.5V9.5h6.2c2.7 0 4.3 1.3 4.3 3.4 0 1.4-.8 2.4-2 2.8 1.6.3 2.6 1.5 2.6 3.1 0 2.3-1.8 3.7-4.6 3.7H10Z" fill="none" stroke="#f6ebe1" strokeWidth="1.8" strokeLinejoin="round" />
-      <circle cx="23.5" cy="9" r="1.6" fill="#e6c9ae" />
-    </svg>
+    <span className={cn("bg-royal ring-glass relative grid h-8 w-8 shrink-0 place-items-center overflow-hidden rounded-[10px] shadow-[0_0_18px_-4px_rgb(171_61_245/0.7)]", className)} aria-hidden>
+      <span className="translate-x-[1px] translate-y-[3px] font-script text-[26px] leading-none text-violet-100">G</span>
+      <svg viewBox="0 0 10 10" className="absolute top-[3px] right-[3px] h-[9px] w-[9px] text-white">
+        <path d="M5 0 C5.4 3.6 6.4 4.6 10 5 C6.4 5.4 5.4 6.4 5 10 C4.6 6.4 3.6 5.4 0 5 C3.6 4.6 4.6 3.6 5 0Z" fill="currentColor" />
+      </svg>
+    </span>
   );
 }
 
 export function Logo({ href = "/", className }: { href?: string; className?: string }) {
   return (
-    <Link href={href} className={cn("inline-flex items-center gap-2.5", className)} aria-label="Beauty OS — início">
+    <Link href={href} className={cn("inline-flex items-center gap-2", className)} aria-label="Gê — início">
       <LogoMark />
-      <span className="font-display text-[19px] font-medium tracking-[-0.01em] whitespace-nowrap text-ink">Beauty OS</span>
+      <span className="translate-y-[2px] font-script text-[34px] leading-none whitespace-nowrap text-violet-100">Gê</span>
     </Link>
   );
 }

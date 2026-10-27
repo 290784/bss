@@ -19,9 +19,9 @@ export function ToastProvider({ children }: { children: ReactNode }) {
       <div aria-live="polite" className="pointer-events-none fixed inset-x-0 bottom-20 z-[60] flex flex-col items-center gap-2 px-4 lg:bottom-6 lg:items-end lg:pr-6">
         {toasts.map((t) => (
           <div key={t.id} role="status" className={cn(
-            "pointer-events-auto flex max-w-sm items-center gap-2.5 rounded-xl bg-ink px-4 py-3 text-sm text-white shadow-[var(--shadow-pop)] [animation:toast-in_.2s_ease-out]",
+            "pointer-events-auto flex max-w-sm items-center gap-2.5 rounded-xl bg-raised px-4 py-3 text-sm text-ink ring-1 ring-accent-border shadow-[var(--shadow-pop)] [animation:toast-in_.2s_ease-out]",
           )}>
-            {t.tone === "success" ? <CheckCircle2 className="h-4 w-4 shrink-0 text-[#9fd3b5]" /> : <AlertCircle className="h-4 w-4 shrink-0 text-[#f0a5a5]" />}
+            {t.tone === "success" ? <CheckCircle2 className="h-4 w-4 shrink-0 text-st-completed" /> : <AlertCircle className="h-4 w-4 shrink-0 text-st-noshow" />}
             {t.message}
           </div>
         ))}

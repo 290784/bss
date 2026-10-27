@@ -92,8 +92,8 @@ export function NewAppointmentDialog({
               {available.map((s) => {
                 const on = serviceIds.includes(s.id);
                 return (
-                  <label key={s.id} className={cn("flex cursor-pointer items-center gap-3 px-3 py-2.5", on && "bg-plum-50/60")}>
-                    <input type="checkbox" checked={on} className="h-[18px] w-[18px] accent-plum-600"
+                  <label key={s.id} className={cn("flex cursor-pointer items-center gap-3 px-3 py-2.5", on && "bg-accent-subtle/60")}>
+                    <input type="checkbox" checked={on} className="h-[18px] w-[18px] accent-accent-strong"
                       onChange={() => setServiceIds(on ? serviceIds.filter((x) => x !== s.id) : [...serviceIds, s.id])} />
                     <span className="flex-1 text-sm">{s.name}</span>
                     <span className="text-[13px] text-muted tabular">{s.minutes} min · {formatMoney(s.priceCents)}</span>
@@ -123,7 +123,7 @@ export function NewAppointmentDialog({
               <div className="flex max-h-32 flex-wrap gap-1.5 overflow-y-auto">
                 {slots.times.map((t) => (
                   <button key={t} type="button" onClick={() => setTime(t)}
-                    className={cn("h-8 rounded-lg border px-2.5 text-[13px] tabular", t === time ? "border-ink-warm bg-ink-warm text-white" : "border-line-strong bg-surface hover:border-plum-500")}>
+                    className={cn("h-8 rounded-lg border px-2.5 text-[13px] tabular", t === time ? "border-violet-300 btn-glow text-white" : "border-line-strong bg-surface hover:border-accent")}>
                     {t}
                   </button>
                 ))}
@@ -184,9 +184,9 @@ function ClientPicker({ value, onChange, canCreate }: { value: { id: string; nam
   if (value)
     return (
       <Field label="Cliente">
-        <div className="flex h-10 items-center justify-between rounded-[10px] border border-plum-200 bg-plum-50 px-3">
-          <span className="text-sm font-medium text-plum-700">{value.name}</span>
-          <button onClick={() => onChange(null)} className="rounded p-1 text-plum-700 hover:bg-plum-100" aria-label="Trocar cliente"><X className="h-4 w-4" /></button>
+        <div className="flex h-10 items-center justify-between rounded-[10px] border border-accent-border bg-accent-subtle px-3">
+          <span className="text-sm font-medium text-accent-text">{value.name}</span>
+          <button onClick={() => onChange(null)} className="rounded p-1 text-accent-text hover:bg-accent-muted" aria-label="Trocar cliente"><X className="h-4 w-4" /></button>
         </div>
       </Field>
     );
@@ -210,7 +210,7 @@ function ClientPicker({ value, onChange, canCreate }: { value: { id: string; nam
         </ul>
       )}
       {showCreate && !creating && (
-        <button type="button" onClick={() => setCreating(true)} className="mt-1 inline-flex items-center gap-1.5 self-start text-[13px] font-medium text-plum-600 hover:underline">
+        <button type="button" onClick={() => setCreating(true)} className="mt-1 inline-flex items-center gap-1.5 self-start text-[13px] font-medium text-accent-text hover:underline">
           <UserPlus className="h-3.5 w-3.5" /> Cadastrar “{q.trim()}”
         </button>
       )}
@@ -222,7 +222,7 @@ function ClientPicker({ value, onChange, canCreate }: { value: { id: string; nam
             <ul className="flex flex-col gap-1">
               {dups.map((d) => (
                 <li key={d.id}>
-                  <button type="button" onClick={() => onChange({ id: d.id, name: d.full_name })} className="w-full rounded-lg border border-line bg-surface px-3 py-2 text-left text-sm hover:border-plum-500">
+                  <button type="button" onClick={() => onChange({ id: d.id, name: d.full_name })} className="w-full rounded-lg border border-line bg-surface px-3 py-2 text-left text-sm hover:border-accent">
                     Usar <strong>{d.full_name}</strong> <span className="text-xs text-muted">({d.reason})</span>
                   </button>
                 </li>

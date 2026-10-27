@@ -41,12 +41,12 @@ export default async function ClientsPage({ searchParams }: { searchParams: Prom
         <form className="flex-1" role="search">
           <input type="hidden" name="segmento" value={segment} />
           <input name="q" defaultValue={sp.q} placeholder="Buscar por nome, telefone ou e-mail" aria-label="Buscar"
-            className="h-10 w-full rounded-[10px] border border-line-strong bg-surface px-3 text-sm focus:border-plum-500 focus:ring-2 focus:ring-plum-100 focus:outline-none md:max-w-sm" />
+            className="h-10 w-full rounded-[10px] border border-line-strong bg-surface px-3 text-sm focus:border-accent focus:ring-2 focus:ring-accent-muted focus:outline-none md:max-w-sm" />
         </form>
         <nav className="-mx-4 flex gap-1.5 overflow-x-auto px-4 md:mx-0 md:px-0" aria-label="Segmentos">
           {(Object.entries(SEGMENTS) as [Segment, string][]).filter(([k]) => finance || k !== "high_value").map(([k, label]) => (
             <Link key={k} href={`/app/clientes?${new URLSearchParams({ ...(sp.q ? { q: sp.q } : {}), segmento: k })}`} aria-current={k === segment ? "page" : undefined}
-              className={cn("h-8 shrink-0 rounded-full border px-3 text-[13px] leading-[30px] font-medium", k === segment ? "border-ink-warm bg-ink-warm text-white" : "border-line bg-surface text-ink-soft hover:border-line-strong")}>
+              className={cn("h-8 shrink-0 rounded-full border px-3 text-[13px] leading-[30px] font-medium", k === segment ? "border-violet-300 btn-glow text-white" : "border-line bg-surface text-ink-soft hover:border-line-strong")}>
               {label}
             </Link>
           ))}
@@ -70,7 +70,7 @@ export default async function ClientsPage({ searchParams }: { searchParams: Prom
               <tbody className="divide-y divide-line">
                 {rows.slice(0, PAGE).map((c) => (
                   <tr key={c.id} className="hover:bg-canvas/70">
-                    <td className="px-4 py-3"><Link href={`/app/clientes/${c.id}`} className="font-medium text-ink hover:text-plum-600">{c.full_name}</Link></td>
+                    <td className="px-4 py-3"><Link href={`/app/clientes/${c.id}`} className="font-medium text-ink hover:text-accent-text">{c.full_name}</Link></td>
                     <td className="px-4 py-3 text-ink-soft tabular">{formatPhone(c.phone_normalized) || c.email || "—"}</td>
                     <td className="px-4 py-3 text-right tabular">{c.visits}</td>
                     <td className="px-4 py-3 text-ink-soft tabular">{c.last_visit ? formatInTz(c.last_visit, tz, { day: "2-digit", month: "2-digit", year: "numeric" }) : "—"}</td>
@@ -85,8 +85,8 @@ export default async function ClientsPage({ searchParams }: { searchParams: Prom
       </Card>
       {(page > 1 || hasMore) && (
         <div className="mt-4 flex justify-between text-sm">
-          {page > 1 ? <Link href={`/app/clientes?${qs({ pagina: String(page - 1) })}`} className="text-plum-600 hover:underline">← Anterior</Link> : <span />}
-          {hasMore && <Link href={`/app/clientes?${qs({ pagina: String(page + 1) })}`} className="text-plum-600 hover:underline">Próxima →</Link>}
+          {page > 1 ? <Link href={`/app/clientes?${qs({ pagina: String(page - 1) })}`} className="text-accent-text hover:underline">← Anterior</Link> : <span />}
+          {hasMore && <Link href={`/app/clientes?${qs({ pagina: String(page + 1) })}`} className="text-accent-text hover:underline">Próxima →</Link>}
         </div>
       )}
     </div>

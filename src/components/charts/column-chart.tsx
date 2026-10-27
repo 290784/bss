@@ -64,7 +64,7 @@ export function ColumnChart({ data, series, height = 220 }: { data: ColumnDatum[
                 return (
                   <div key={i} className="relative flex h-full flex-1 items-end justify-center" onMouseEnter={() => setHover(i)} onFocus={() => setHover(i)} tabIndex={0}
                     aria-label={`${d.longLabel}: ${s.format(v)}`}>
-                    <div className={cn("w-[min(24px,70%)] rounded-t-[4px] transition-colors", hover === i ? "bg-plum-700" : "bg-plum-500")}
+                    <div className={cn("w-[min(24px,70%)] rounded-t-[4px] transition-colors", hover === i ? "bg-accent-text" : "bg-accent")}
                       style={{ height: `${(v / max) * 100}%`, minHeight: v > 0 ? 2 : 0 }} />
                     {i % labelEvery === 0 && <span className="absolute -bottom-5 text-[11px] text-muted tabular">{d.label}</span>}
                   </div>
@@ -72,9 +72,9 @@ export function ColumnChart({ data, series, height = 220 }: { data: ColumnDatum[
               })}
             </div>
             {hover !== null && data[hover] && (
-              <div className="pointer-events-none absolute z-10 -translate-x-1/2 rounded-lg bg-ink px-2.5 py-1.5 text-xs whitespace-nowrap text-white shadow-[var(--shadow-pop)]"
+              <div className="pointer-events-none absolute z-10 -translate-x-1/2 rounded-lg bg-raised px-2.5 py-1.5 text-xs whitespace-nowrap text-ink ring-1 ring-line-strong shadow-[var(--shadow-pop)]"
                 style={{ left: `${((hover + 0.5) / data.length) * 100}%`, bottom: `calc(${((data[hover].values[active] ?? 0) / max) * 100}% + 8px)` }}>
-                <div className="text-white/70">{data[hover].longLabel}</div>
+                <div className="text-muted">{data[hover].longLabel}</div>
                 <div className="font-semibold tabular">{s.format(data[hover].values[active] ?? 0)}</div>
               </div>
             )}

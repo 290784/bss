@@ -6,7 +6,7 @@ import { Button } from "./button";
 
 const control =
   "rounded-[10px] border border-line-strong bg-surface px-3 text-[15px] text-ink placeholder:text-muted/70 " +
-  "transition-colors hover:border-[#c7b9ad] focus:border-plum-500 focus:outline-none focus:ring-2 focus:ring-plum-100 " +
+  "transition-colors hover:border-[#5a4a80] focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent-muted " +
   "disabled:bg-sunken disabled:text-muted aria-[invalid=true]:border-danger";
 
 export function Input({ className, ...props }: ComponentProps<"input">) {
@@ -48,7 +48,7 @@ export function Field({
 export function Checkbox({ label, description, className, ...props }: ComponentProps<"input"> & { label: ReactNode; description?: ReactNode }) {
   return (
     <label className={cn("flex cursor-pointer items-start gap-3 text-sm", className)}>
-      <input type="checkbox" className="mt-0.5 h-[18px] w-[18px] shrink-0 accent-plum-600" {...props} />
+      <input type="checkbox" className="mt-0.5 h-[18px] w-[18px] shrink-0 accent-accent-strong" {...props} />
       <span>
         <span className="text-ink">{label}</span>
         {description && <span className="mt-0.5 block text-[13px] text-muted">{description}</span>}
@@ -93,7 +93,7 @@ export function SubmitButton({ children, pendingLabel, pending: pendingProp, ...
 export function FormMessage({ state }: { state: { ok: boolean; message?: string } | null }) {
   if (!state || state.ok || !state.message) return null;
   return (
-    <div role="alert" className="rounded-[10px] border border-[#ecc9c9] bg-st-noshow-bg px-3 py-2.5 text-sm text-danger">
+    <div role="alert" className="rounded-[10px] border border-[#5a2a3a] bg-st-noshow-bg px-3 py-2.5 text-sm text-danger">
       {state.message}
     </div>
   );

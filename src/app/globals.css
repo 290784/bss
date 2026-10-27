@@ -1,95 +1,122 @@
 @import "tailwindcss";
 
 /*
- * Beauty OS — tokens do design system.
+ * Gê — tokens do design system.
  * Paleta: off-white quente, grafite, ameixa (marca) e um champanhe delicado como destaque.
  * Contraste: texto principal sobre fundo ≥ 12:1; ameixa sobre branco ≥ 8:1; branco sobre ameixa ≥ 8:1.
  */
 @theme {
+  /*
+   * Gê — tema "Royal Violet" (escuro).
+   * Base: noite #02060e com degradês diagonais até o violeta real #9303c5.
+   * Escala de violetas da marca: #eacffc #d59efa #c06ef7 #ab3df5 #960df2 #780ac2 #5a0891 #3c0561.
+   * Contraste (sobre --color-surface): ink 17,4:1 · ink-soft 12,7:1 · muted 7,2:1 · accent-text 9,3:1; branco sobre o botão (#960df2) 5,8:1.
+   */
   --font-sans: var(--font-dm-sans), ui-sans-serif, system-ui, sans-serif;
-  --font-display: var(--font-fraunces), ui-serif, Georgia, serif;
-
-  --color-canvas: #faf9f7;
-  --color-surface: #ffffff;
-  --color-sunken: #f2f1ef;
-  --color-line: #e7dfd8;
-  --color-line-strong: #d6cbc1;
-
-  --color-ink: #1f1b1e;
-  --color-ink-soft: #4a4248;
-  --color-muted: #6f656c;
-
-  --color-plum-50: #f7eff4;
-  --color-plum-100: #eedbe6;
-  --color-plum-200: #dcb7cc;
-  --color-plum-500: #8a3f6c;
-  --color-plum-600: #6e2f56;
-  --color-plum-700: #5a2647;
-  --color-plum-900: #2e1324;
-
-  --color-champagne-100: #f6ebe1;
-  --color-champagne-300: #e6c9ae;
-  --color-champagne-600: #9a6b43;
-
-  /* Estados de agendamento — consistentes em toda a interface */
-  --color-st-pending: #a8660a;
-  --color-st-pending-bg: #fdf3e2;
-  --color-st-confirmed: #2f5f8a;
-  --color-st-confirmed-bg: #e8f0f8;
-  --color-st-completed: #2f6b4f;
-  --color-st-completed-bg: #e6f2eb;
-  --color-st-cancelled: #6f656c;
-  --color-st-cancelled-bg: #efebe8;
-  --color-st-noshow: #a23a3a;
-  --color-st-noshow-bg: #fbe9e9;
-
-  --color-danger: #a23a3a;
-  --color-success: #2f6b4f;
-
-  /* Landing (marketing): base quase monocromática, cor concentrada em halos e destaques */
+  --font-display: var(--font-inter-tight), var(--font-dm-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-script: var(--font-allura), "Brush Script MT", cursive;
   --font-hero: var(--font-dm-sans), ui-sans-serif, system-ui, sans-serif;
   --font-tight: var(--font-inter-tight), var(--font-dm-sans), ui-sans-serif, system-ui, sans-serif;
-  --color-ink-warm: #15100b;
-  --color-mkt-card: #f2f1ef;
-  --color-mkt-shape: #e4e3e0;
-  --color-halo-lavender: #e7dafd;
-  --color-halo-orange: #ffdcc7;
-  --color-halo-pink: #ffd6e4;
-  --color-halo-green: #c8f3da;
-  --color-halo-cyan: #cdf1fb;
-  --color-sticker: #fef455;
-  --color-badge: #d61c11;
-  --color-bar-green-from: #1cc96e;
-  --color-bar-green-to: #49f49c;
-  --color-slot-1: #64e3a2;
-  --color-slot-2: #7be4fe;
-  --color-slot-3: #e5dbfd;
 
-  --radius-card: 18px;
-  --shadow-card: 0 1px 2px rgb(31 27 30 / 0.04), 0 1px 1px rgb(31 27 30 / 0.03);
-  --shadow-pop: 0 12px 32px -8px rgb(46 19 36 / 0.22), 0 2px 6px rgb(46 19 36 / 0.08);
+  --color-night: #02060e;
+  --color-royal: #9303c5;
+  --color-violet-100: #eacffc;
+  --color-violet-200: #d59efa;
+  --color-violet-300: #c06ef7;
+  --color-violet-400: #ab3df5;
+  --color-violet-500: #960df2;
+  --color-violet-600: #780ac2;
+  --color-violet-700: #5a0891;
+  --color-violet-800: #3c0561;
+
+  /* Superfícies */
+  --color-canvas: #05040d;
+  --color-surface: #0f0b1f;
+  --color-raised: #19122f;
+  --color-sunken: #160f2a;
+  --color-line: #261d3d;
+  --color-line-strong: #3a2c5a;
+
+  /* Texto */
+  --color-ink: #f8f0ff;
+  --color-ink-soft: #dccbf1;
+  --color-muted: #a995c6;
+
+  /* Destaque (violeta) — nomes semânticos */
+  --color-accent-subtle: #1c1035;
+  --color-accent-muted: #2a1650;
+  --color-accent-border: #5a2a8f;
+  --color-accent: #ab3df5;
+  --color-accent-strong: #960df2;
+  --color-accent-text: #d59efa;
+  --color-accent-deep: #3c0561;
+
+  /* Realce (avisos suaves, conta demo, horários vagos) */
+  --color-highlight-subtle: #241038;
+  --color-highlight-border: #6b2fa3;
+  --color-highlight-text: #eacffc;
+
+  /* Estados de agendamento — tons claros sobre fundo translúcido */
+  --color-st-pending: #f6c26b;
+  --color-st-pending-bg: rgb(246 194 107 / 0.14);
+  --color-st-confirmed: #9fc2ff;
+  --color-st-confirmed-bg: rgb(159 194 255 / 0.14);
+  --color-st-completed: #6fdba5;
+  --color-st-completed-bg: rgb(111 219 165 / 0.13);
+  --color-st-cancelled: #a995c6;
+  --color-st-cancelled-bg: rgb(169 149 198 / 0.12);
+  --color-st-noshow: #ff8fa3;
+  --color-st-noshow-bg: rgb(255 143 163 / 0.14);
+
+  --color-danger: #ff8fa3;
+  --color-success: #6fdba5;
+
+  /* Landing */
+  --color-mkt-card: #120c25;
+  --color-mkt-shape: #1d1338;
+  --color-halo-lavender: #780ac2;
+  --color-halo-orange: #9303c5;
+  --color-halo-pink: #c06ef7;
+  --color-halo-green: #5a0891;
+  --color-halo-cyan: #ab3df5;
+  --color-sticker: #eacffc;
+  --color-badge: #ff4d7d;
+  --color-bar-green-from: #ab3df5;
+  --color-bar-green-to: #eacffc;
+  --color-slot-1: #c06ef7;
+  --color-slot-2: #d59efa;
+  --color-slot-3: #3a2c5a;
+
+  --radius-card: 22px;
+  --shadow-card: 0 0 0 1px rgb(234 207 252 / 0.04), 0 12px 32px -18px rgb(0 0 0 / 0.8);
+  --shadow-pop: 0 24px 60px -20px rgb(0 0 0 / 0.85), 0 0 0 1px rgb(234 207 252 / 0.08), 0 0 40px -10px rgb(150 13 242 / 0.35);
 }
+
 
 @layer base {
   html {
     -webkit-text-size-adjust: 100%;
-    color-scheme: light;
+    color-scheme: dark;
   }
   body {
-    background: var(--color-canvas);
+    background:
+      radial-gradient(1200px 600px at 100% -10%, rgb(147 3 197 / 0.22), transparent 60%),
+      radial-gradient(900px 500px at -10% 110%, rgb(90 8 145 / 0.25), transparent 60%),
+      var(--color-canvas);
+    background-attachment: fixed;
     color: var(--color-ink);
     font-family: var(--font-sans);
         -webkit-font-smoothing: antialiased;
   }
   :focus-visible {
-    outline: 2px solid var(--color-plum-500);
+    outline: 2px solid var(--color-violet-300);
     outline-offset: 2px;
   }
   ::selection {
-    background: var(--color-plum-100);
+    background: rgb(171 61 245 / 0.45);
   }
   dialog::backdrop {
-    background: rgb(31 27 30 / 0.38);
+    background: rgb(2 6 14 / 0.72);
     backdrop-filter: blur(2px);
   }
   input[type="number"]::-webkit-inner-spin-button { opacity: 0.4; }
@@ -97,8 +124,38 @@
 
 @layer components {
   .tabular { font-variant-numeric: tabular-nums; }
+
+  /* Gê: degradê "Royal Violet" (noite → violeta real) */
+  .bg-royal {
+    background: linear-gradient(150deg, var(--color-night) 0%, #1a0533 38%, var(--color-violet-700) 72%, var(--color-royal) 100%);
+  }
+  .bg-royal-rev {
+    background: linear-gradient(330deg, var(--color-night) 0%, #1a0533 38%, var(--color-violet-700) 72%, var(--color-royal) 100%);
+  }
+  /* Botão principal: degradê violeta com brilho */
+  .btn-glow {
+    background: linear-gradient(135deg, var(--color-violet-400) 0%, var(--color-violet-500) 45%, var(--color-violet-600) 100%);
+    box-shadow: 0 0 0 1px rgb(234 207 252 / 0.25) inset, 0 8px 24px -6px rgb(150 13 242 / 0.6), 0 0 32px -8px rgb(192 110 247 / 0.55);
+  }
+  .btn-glow:hover { filter: brightness(1.08) saturate(1.05); }
+  /* Texto cintilante (brilho que percorre o texto) */
+  .text-shimmer {
+    background: linear-gradient(100deg, var(--color-violet-200) 0%, #ffffff 22%, var(--color-violet-100) 40%, var(--color-violet-300) 60%, #ffffff 78%, var(--color-violet-200) 100%);
+    background-size: 220% 100%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    animation: shimmer-text 6s linear infinite;
+  }
+  /* Contorno fino e luminoso, como os cards da referência */
+  .ring-glass { box-shadow: 0 0 0 1px rgb(255 255 255 / 0.14) inset; }
+  .glass {
+    background: linear-gradient(160deg, rgb(255 255 255 / 0.07), rgb(255 255 255 / 0.02));
+    box-shadow: 0 0 0 1px rgb(234 207 252 / 0.12) inset;
+    backdrop-filter: blur(12px);
+  }
   .skeleton {
-    background: linear-gradient(90deg, var(--color-sunken) 0%, #ece5df 50%, var(--color-sunken) 100%);
+    background: linear-gradient(90deg, var(--color-sunken) 0%, #241a40 50%, var(--color-sunken) 100%);
     background-size: 200% 100%;
     animation: shimmer 1.4s ease-in-out infinite;
     border-radius: 8px;
@@ -106,6 +163,9 @@
 }
 
 @keyframes shimmer { to { background-position: -200% 0; } }
+@keyframes shimmer-text { to { background-position: -220% 0; } }
+@keyframes twinkle { 0%, 100% { opacity: 0; transform: scale(0.4) rotate(0deg); } 50% { opacity: 1; transform: scale(1) rotate(20deg); } }
+@keyframes float-glow { 0%, 100% { transform: translate3d(0, 0, 0); } 50% { transform: translate3d(0, -10px, 0); } }
 /* Landing: troca de card por dissolução + escala, subida com fade, crescimento de barras, adesivo */
 @keyframes mkt-card-in { from { opacity: 0; transform: translateY(14px) scale(0.94); filter: blur(4px); } }
 @keyframes mkt-rise { from { opacity: 0; transform: translateY(16px); } }

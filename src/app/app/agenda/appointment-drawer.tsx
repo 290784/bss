@@ -93,10 +93,10 @@ export function AppointmentDrawer({ id, timeZone, professionals, readOnly, onClo
               <Info label="Contato" value={data.clientPhone ? (
                 <span className="flex items-center gap-2">
                   <span className="tabular">{formatPhone(data.clientPhone)}</span>
-                  <a href={`https://wa.me/${data.clientPhone}`} target="_blank" rel="noreferrer" className="text-plum-600" aria-label="Abrir WhatsApp"><MessageCircle className="h-4 w-4" /></a>
-                  <a href={`tel:+${data.clientPhone}`} className="text-plum-600" aria-label="Ligar"><Phone className="h-4 w-4" /></a>
+                  <a href={`https://wa.me/${data.clientPhone}`} target="_blank" rel="noreferrer" className="text-accent-text" aria-label="Abrir WhatsApp"><MessageCircle className="h-4 w-4" /></a>
+                  <a href={`tel:+${data.clientPhone}`} className="text-accent-text" aria-label="Ligar"><Phone className="h-4 w-4" /></a>
                 </span>) : "—"} />
-              <Info label="Ficha" value={<Link href={`/app/clientes/${data.clientId}`} className="font-medium text-plum-600 hover:underline">Ver histórico da cliente</Link>} />
+              <Info label="Ficha" value={<Link href={`/app/clientes/${data.clientId}`} className="font-medium text-accent-text hover:underline">Ver histórico da cliente</Link>} />
             </section>
 
             <section>
@@ -206,7 +206,7 @@ function RescheduleForm({ data, timeZone, professionals, pending, onCancel, onSu
   const [pro, setPro] = useState(data.professionalId);
   const [squeezeIn, setSqueezeIn] = useState(data.squeezeIn);
   return (
-    <div className="flex flex-col gap-3 rounded-xl border border-plum-200 bg-plum-50/50 p-4">
+    <div className="flex flex-col gap-3 rounded-xl border border-accent-border bg-accent-subtle/50 p-4">
       <div className="text-sm font-semibold">Reagendar</div>
       <div className="grid grid-cols-2 gap-3">
         <Field label="Nova data" htmlFor="rd"><Input id="rd" type="date" value={date} onChange={(e) => setDate(e.target.value)} /></Field>

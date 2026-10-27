@@ -2,6 +2,7 @@ import type { ComponentProps, ReactNode } from "react";
 import type { LucideIcon } from "lucide-react";
 import { Info } from "lucide-react";
 import { cn } from "@/lib/cn";
+import { Sparkle } from "@/components/brand/sparkles";
 import { STATUS_LABEL, type AppointmentStatus } from "@/domain/appointment-status";
 
 export function Card({ className, ...props }: ComponentProps<"div">) {
@@ -24,7 +25,7 @@ export function PageHeader({ title, description, actions }: { title: string; des
   return (
     <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
       <div className="min-w-0">
-        <h1 className="font-tight text-[28px] leading-tight font-extrabold tracking-[-0.01em] text-ink">{title}</h1>
+        <h1 className="flex items-center gap-2 font-tight text-[28px] leading-tight font-extrabold tracking-[-0.02em] text-ink">{title}<Sparkle size={14} className="motion-safe:[animation:twinkle_3.6s_ease-in-out_infinite]" /></h1>
         {description && <p className="mt-1 text-sm text-muted">{description}</p>}
       </div>
       {actions && <div className="flex flex-wrap items-center gap-2">{actions}</div>}
@@ -34,8 +35,8 @@ export function PageHeader({ title, description, actions }: { title: string; des
 
 const tone = {
   neutral: "bg-sunken text-ink-soft",
-  plum: "bg-plum-50 text-plum-700",
-  champagne: "bg-champagne-100 text-champagne-600",
+  plum: "bg-accent-subtle text-accent-text",
+  champagne: "bg-highlight-subtle text-highlight-text",
   success: "bg-st-completed-bg text-st-completed",
   warning: "bg-st-pending-bg text-st-pending",
   danger: "bg-st-noshow-bg text-st-noshow",
@@ -66,7 +67,7 @@ export function StatusBadge({ status }: { status: AppointmentStatus }) {
 export function EmptyState({ icon: Icon, title, description, action, className }: { icon: LucideIcon; title: string; description?: ReactNode; action?: ReactNode; className?: string }) {
   return (
     <div className={cn("flex flex-col items-center justify-center px-6 py-12 text-center", className)}>
-      <div className="mb-4 grid h-12 w-12 place-items-center rounded-2xl bg-plum-50 text-plum-600">
+      <div className="mb-4 grid h-12 w-12 place-items-center rounded-2xl bg-accent-subtle text-accent-text">
         <Icon className="h-5 w-5" strokeWidth={1.75} />
       </div>
       <h3 className="text-[15px] font-semibold text-ink">{title}</h3>
@@ -87,7 +88,7 @@ export function InfoTip({ text, label = "Como é calculado" }: { text: string; l
       <button type="button" className="rounded-full p-0.5 text-muted hover:text-ink focus:text-ink" aria-label={`${label}: ${text}`}>
         <Info className="h-3.5 w-3.5" />
       </button>
-      <span role="tooltip" className="pointer-events-none absolute bottom-full left-1/2 z-30 mb-2 hidden w-64 max-w-[70vw] -translate-x-1/2 rounded-lg bg-ink px-3 py-2 text-xs leading-relaxed font-normal text-white shadow-[var(--shadow-pop)] group-focus-within:block group-hover:block">
+      <span role="tooltip" className="pointer-events-none absolute bottom-full left-1/2 z-30 mb-2 hidden w-64 max-w-[70vw] -translate-x-1/2 rounded-lg bg-raised px-3 py-2 text-xs leading-relaxed font-normal text-ink ring-1 ring-line-strong shadow-[var(--shadow-pop)] group-focus-within:block group-hover:block">
         {text}
       </span>
     </span>
@@ -99,7 +100,7 @@ export function Avatar({ name, color, className }: { name: string; color?: strin
   const ini = ((parts[0]?.[0] ?? "") + (parts.length > 1 ? parts.at(-1)![0] : "")).toUpperCase();
   return (
     <span
-      className={cn("grid h-8 w-8 shrink-0 place-items-center rounded-full text-xs font-semibold", !color && "bg-plum-100 text-plum-700", className)}
+      className={cn("grid h-8 w-8 shrink-0 place-items-center rounded-full text-xs font-semibold", !color && "bg-accent-muted text-accent-text", className)}
       style={color ? { backgroundColor: color + "1f", color } : undefined}
       aria-hidden
     >
@@ -110,7 +111,7 @@ export function Avatar({ name, color, className }: { name: string; color?: strin
 
 export function DemoBanner() {
   return (
-    <div className="border-b border-champagne-300 bg-champagne-100 px-4 py-2 text-center text-[13px] text-champagne-600">
+    <div className="border-b border-highlight-border bg-highlight-subtle px-4 py-2 text-center text-[13px] text-highlight-text">
       Você está em uma <strong>conta de demonstração</strong>. Os dados desta organização são fictícios e isolados das contas reais.
     </div>
   );

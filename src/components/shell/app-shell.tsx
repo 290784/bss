@@ -55,7 +55,7 @@ export function AppShell({ items, user, org, memberships, notifications, banner,
             <form action="/app/clientes" className="relative ml-auto w-full max-w-md lg:ml-0" role="search">
               <Search className="pointer-events-none absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-muted" />
               <input name="q" placeholder="Buscar cliente por nome, telefone ou e-mail" aria-label="Buscar clientes"
-                className="h-10 w-full rounded-[10px] border border-line bg-surface pr-3 pl-9 text-sm placeholder:text-muted focus:border-plum-500 focus:ring-2 focus:ring-plum-100 focus:outline-none" />
+                className="h-10 w-full rounded-[10px] border border-line bg-surface pr-3 pl-9 text-sm placeholder:text-muted focus:border-accent focus:ring-2 focus:ring-accent-muted focus:outline-none" />
             </form>
             <Notifications key={notifications.map((n) => n.id + n.read).join()} items={notifications} />
           </header>
@@ -69,7 +69,7 @@ export function AppShell({ items, user, org, memberships, notifications, banner,
           const Icon = ICONS[it.icon];
           const active = isActive(pathname, it.href);
           return (
-            <Link key={it.href} href={it.href} className={cn("flex flex-col items-center gap-1 py-2.5 text-[11px] font-medium", active ? "text-plum-600" : "text-muted")} aria-current={active ? "page" : undefined}>
+            <Link key={it.href} href={it.href} className={cn("flex flex-col items-center gap-1 py-2.5 text-[11px] font-medium", active ? "text-accent-text" : "text-muted")} aria-current={active ? "page" : undefined}>
               <Icon className="h-5 w-5" strokeWidth={active ? 2.2 : 1.8} />{it.label}
             </Link>
           );
@@ -81,7 +81,7 @@ export function AppShell({ items, user, org, memberships, notifications, banner,
 
       {mobileOpen && (
         <div className="fixed inset-0 z-50 lg:hidden" role="dialog" aria-modal="true" aria-label="Menu">
-          <div className="absolute inset-0 bg-ink/40" onClick={() => setMobileOpen(false)} />
+          <div className="absolute inset-0 bg-night/70" onClick={() => setMobileOpen(false)} />
           <div className="absolute inset-y-0 left-0 flex w-[84%] max-w-xs flex-col bg-surface px-3 py-5 shadow-[var(--shadow-pop)]">
             <div className="flex items-center justify-between px-2">
               <Logo href="/app" />
@@ -109,7 +109,7 @@ function NavLink({ item, active }: { item: NavItem; active: boolean }) {
   return (
     <Link href={item.href} aria-current={active ? "page" : undefined}
       className={cn("flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors",
-        active ? "bg-plum-50 font-medium text-plum-700" : "text-ink-soft hover:bg-sunken hover:text-ink")}>
+        active ? "bg-accent-subtle font-medium text-accent-text" : "text-ink-soft hover:bg-sunken hover:text-ink")}>
       <Icon className="h-[18px] w-[18px]" strokeWidth={active ? 2.1 : 1.8} />
       {item.label}
     </Link>

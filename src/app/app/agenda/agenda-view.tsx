@@ -136,7 +136,7 @@ export function AgendaView(props: Props) {
           </span>
         ))}
         <label className="inline-flex cursor-pointer items-center gap-1.5">
-          <input type="checkbox" className="accent-plum-600" checked={showCancelled} onChange={(e) => setShowCancelled(e.target.checked)} />
+          <input type="checkbox" className="accent-accent-strong" checked={showCancelled} onChange={(e) => setShowCancelled(e.target.checked)} />
           Mostrar cancelados ({counts.cancelled ?? 0})
         </label>
       </div>
@@ -305,7 +305,7 @@ function Column({
       })}
       {now && now.key === dayKey && now.minute >= bounds.start && now.minute <= bounds.end && (
         <div className="pointer-events-none absolute inset-x-0 z-10 flex items-center" style={{ top: (now.minute - bounds.start) * PX_PER_MIN }} aria-hidden>
-          <span className="-ml-1 h-2 w-2 rounded-full bg-plum-600" /><span className="h-px flex-1 bg-plum-600" />
+          <span className="-ml-1 h-2 w-2 rounded-full bg-accent-strong" /><span className="h-px flex-1 bg-accent-strong" />
         </div>
       )}
     </div>
@@ -360,9 +360,9 @@ function WeekGrid({ rangeStart, today, timeZone, pros, items, timeOff, onSlot, o
           <div className="sticky top-0 z-20 flex border-b border-line bg-surface">
             <div className="w-12 shrink-0" />
             {days.map((d, i) => (
-              <div key={d} className={cn("flex-1 border-l border-line px-3 py-2 text-center", d === today && "bg-plum-50")}>
+              <div key={d} className={cn("flex-1 border-l border-line px-3 py-2 text-center", d === today && "bg-accent-subtle")}>
                 <div className="text-xs text-muted">{WEEK_LABELS[i]}</div>
-                <div className={cn("text-[15px] font-semibold tabular", d === today && "text-plum-700")}>{d.slice(8)}</div>
+                <div className={cn("text-[15px] font-semibold tabular", d === today && "text-accent-text")}>{d.slice(8)}</div>
               </div>
             ))}
           </div>
@@ -410,7 +410,7 @@ function MonthGrid({ rangeStart, date, today, timeZone, items, pros, onDay }: Pr
             <button key={d} onClick={() => onDay(d)}
               className={cn("flex min-h-[92px] flex-col gap-1 border-r border-b border-line p-1.5 text-left hover:bg-sunken/60 sm:min-h-[112px] sm:p-2 [&:nth-child(7n)]:border-r-0", !inMonth && "bg-canvas/50 text-muted")}
               aria-label={`${d.split("-").reverse().join("/")}: ${list.length} atendimento(s)`}>
-              <span className={cn("grid h-6 w-6 place-items-center rounded-full text-[13px] font-medium tabular", d === today && "bg-ink-warm text-white")}>{Number(d.slice(8))}</span>
+              <span className={cn("grid h-6 w-6 place-items-center rounded-full text-[13px] font-medium tabular", d === today && "btn-glow text-white")}>{Number(d.slice(8))}</span>
               {list.slice(0, 3).map((i) => {
                 const pro = pros.find((p) => p.id === i.professionalId);
                 return (
@@ -421,7 +421,7 @@ function MonthGrid({ rangeStart, date, today, timeZone, items, pros, onDay }: Pr
                 );
               })}
               {list.length > 0 && (
-                <span className="mt-auto text-[11px] font-medium text-plum-700 sm:text-xs">
+                <span className="mt-auto text-[11px] font-medium text-accent-text sm:text-xs">
                   <span className="sm:hidden">{list.length}</span>
                   <span className="hidden sm:inline">{list.length > 3 ? `+${list.length - 3} mais` : ""}</span>
                 </span>
