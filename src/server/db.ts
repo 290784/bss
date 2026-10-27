@@ -17,7 +17,8 @@ const globalForDb = globalThis as unknown as { __beautyDb?: Sql };
 
 export function getSql(): Sql {
   if (!globalForDb.__beautyDb) {
-    const url = process.env.DATABASE_URL;
+    // DATABASE_URL (padrão) ou POSTGRES_URL (nome usado pela integração Supabase/Vercel).
+    const url = process.env.DATABASE_URL || process.env.POSTGRES_URL;
     if (!url) throw new Error("DATABASE_URL não configurada.");
     globalForDb.__beautyDb = postgres(url, {
       max: Number(process.env.DATABASE_POOL_SIZE ?? 5),
