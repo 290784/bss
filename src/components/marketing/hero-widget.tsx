@@ -1,5 +1,5 @@
 "use client";
-import { useCallback, useRef, type ReactNode } from "react";
+import { useCallback, useRef, useState, type ReactNode } from "react";
 import { BarChart3, Bell, CalendarCheck2, HeartHandshake, Tag } from "lucide-react";
 import { cn } from "@/lib/cn";
 import { usePrefersReducedMotion, useInView } from "./motion";
@@ -72,31 +72,96 @@ export function HeroWidget() {
           </p>
         </div>
 
-        {/* Dock em arco */}
-        <div className="absolute inset-x-0 bottom-[2%] h-28 overflow-hidden sm:bottom-[3%] sm:h-32">
-          <div className="absolute top-0 left-1/2 h-full">
-            {SLIDES.map((s, i) => {
-              let offset = i - active;
-              if (offset > 2) offset -= SLIDES.length;
-              if (offset < -2) offset += SLIDES.length;
-              const dist = Math.abs(offset);
-              const size = dist === 0 ? 77 : dist === 1 ? 58 : 50;
-              const Icon = s.icon;
-              return (
-                <button key={s.key} onClick={() => auto.go(i)} aria-label={s.label} aria-pressed={dist === 0} title={s.label}
-                  className={cn("group absolute top-1/2 grid place-items-center rounded-[22px] bg-[#0c0820] ring-1 ring-white/20 shadow-[0_8px_28px_-8px_rgb(150_13_242/0.7)] transition-all duration-700 ease-[cubic-bezier(.2,.8,.2,1)] hover:ring-violet-200/70 active:brightness-125",
-                    dist === 2 && "opacity-45 hover:opacity-80")}
-                  style={{ width: size, height: size, transform: `translate(calc(${offset * STEP}px - 50%), calc(-50% + ${dist * dist * 5}px))`, zIndex: 10 - dist }}>
-                  <span className={cn("grid place-items-center rounded-[16px] transition-all duration-700 group-hover:scale-105 group-active:scale-90", s.tile)} style={{ width: size - 14, height: size - 14 }}>
-                    <Icon className={cn(s.glyph)} style={{ width: size * 0.42, height: size * 0.42 }} strokeWidth={2.2} />
-                  </span>
-                </button>
-              );
-            })}
-          </div>
-        </div>
+        {/* Dock em arco: toque seleciona; arrastar gira como uma roleta e encaixa ao soltar */}
+        <Dock active={active} onSelect={auto.go} onDrag={auto.hold} />
       </div>
-      <p className="mt-1 text-center text-[11px] text-muted">Toque no card, arraste para o lado ou use as setas.</p>
+      <p className="mt-1 text-center text-[11px] text-muted">Toque ou arraste os ícones, ou deslize o card para o lado.</p>
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Dock arrastável
+
+/** Posição contínua de cada ícone em relação ao centro, com volta circular (roleta). */
+function wrapOffset(raw: number, n: number) {
+  return ((((raw + n / 2) % n) + n) % n) - n / 2;
+}
+/** Tamanho interpolado pela distância ao centro: 77 → 58 → 50 px. */
+function sizeAt(dist: number) {
+  if (dist <= 1) return 77 - 19 * dist;
+  if (dist <= 2) return 58 - 8 * (dist - 1);
+  return 50;
+}
+
+function Dock({ active, onSelect, onDrag }: { active: number; onSelect: (i: number) => void; onDrag: () => void }) {
+  const n = SLIDES.length;
+  const [drag, setDrag] = useState<number | null>(null); // deslocamento horizontal em px durante o arraste
+  const g = useRef<{ x: number; y: number; axis: "x" | "y" | null; lastX: number; lastT: number; v: number; step: number } | null>(null);
+  const dragged = useRef(false);
+
+  const down = (e: React.PointerEvent) => {
+    g.current = { x: e.clientX, y: e.clientY, axis: null, lastX: e.clientX, lastT: e.timeStamp, v: 0, step: 0 };
+    dragged.current = false;
+  };
+  const move = (e: React.PointerEvent) => {
+    const s = g.current;
+    if (!s) return;
+    const dx = e.clientX - s.x, dy = e.clientY - s.y;
+    if (!s.axis) {
+      if (Math.abs(dx) < 6 && Math.abs(dy) < 6) return;
+      s.axis = Math.abs(dx) > Math.abs(dy) ? "x" : "y"; // vertical: deixa a página rolar
+      if (s.axis === "x") { (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId); onDrag(); }
+    }
+    if (s.axis !== "x") return;
+    dragged.current = true;
+    const dt = Math.max(e.timeStamp - s.lastT, 1);
+    s.v = 0.8 * ((e.clientX - s.lastX) / dt) + 0.2 * s.v; // px/ms, suavizado
+    s.lastX = e.clientX; s.lastT = e.timeStamp;
+    // Vibração leve a cada ícone que passa pelo centro (Android; ignorado onde não existe).
+    const step = Math.round(-dx / STEP);
+    if (step !== s.step) { s.step = step; navigator.vibrate?.(4); }
+    setDrag(dx);
+  };
+  const up = () => {
+    const s = g.current;
+    g.current = null;
+    if (!s || s.axis !== "x" || drag === null) { setDrag(null); return; }
+    // Encaixa no ícone mais próximo; um "peteleco" rápido soma no máximo ~1 ícone de impulso.
+    // Cada gesto anda no máximo metade da roleta (2 ícones), para nunca "dar a volta" sem querer.
+    const momentum = Math.max(-1.6, Math.min(1.6, s.v)) * 0.6;
+    const half = Math.floor(n / 2);
+    const steps = Math.max(-half, Math.min(half, Math.round(-drag / STEP - momentum)));
+    setDrag(null);
+    if (steps !== 0) onSelect(active + steps);
+  };
+
+  const dragging = drag !== null;
+  return (
+    <div className={cn("absolute inset-x-0 bottom-[2%] h-28 touch-pan-y overflow-hidden select-none sm:bottom-[3%] sm:h-32", dragging ? "cursor-grabbing" : "cursor-grab")}
+      onPointerDown={down} onPointerMove={move} onPointerUp={up} onPointerCancel={up}
+      onClickCapture={(e) => { if (dragged.current) { e.preventDefault(); e.stopPropagation(); dragged.current = false; } }}
+      role="group" aria-label="Escolher recurso (toque ou arraste)">
+      <div className="absolute top-0 left-1/2 h-full">
+        {SLIDES.map((s, i) => {
+          const pos = wrapOffset(i - active + (drag ?? 0) / STEP, n);
+          const dist = Math.abs(pos);
+          const size = sizeAt(dist);
+          const Icon = s.icon;
+          const opacity = dist <= 1.5 ? 1 : Math.max(0, 1 - (dist - 1.5) * 0.9);
+          return (
+            <button key={s.key} onClick={() => onSelect(i)} aria-label={s.label} aria-pressed={i === active} title={s.label} tabIndex={0}
+              className={cn("group absolute top-1/2 grid place-items-center rounded-[22px] bg-[#0c0820] ring-1 ring-white/20 shadow-[0_8px_28px_-8px_rgb(150_13_242/0.7)] hover:ring-violet-200/70 active:brightness-125",
+                !dragging && "transition-all duration-700 ease-[cubic-bezier(.2,.8,.2,1)]")}
+              style={{ width: size, height: size, opacity, transform: `translate(calc(${pos * STEP}px - 50%), calc(-50% + ${dist * dist * 5}px))`, zIndex: 10 - Math.round(dist) }}>
+              <span className={cn("pointer-events-none grid place-items-center rounded-[16px] group-hover:scale-105 group-active:scale-90", !dragging && "transition-all duration-700", s.tile)}
+                style={{ width: size - 14, height: size - 14 }}>
+                <Icon className={cn(s.glyph)} style={{ width: size * 0.42, height: size * 0.42 }} strokeWidth={2.2} />
+              </span>
+            </button>
+          );
+        })}
+      </div>
     </div>
   );
 }
