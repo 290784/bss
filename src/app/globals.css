@@ -1,0 +1,97 @@
+@import "tailwindcss";
+
+/*
+ * Beauty OS — tokens do design system.
+ * Paleta: off-white quente, grafite, ameixa (marca) e um champanhe delicado como destaque.
+ * Contraste: texto principal sobre fundo ≥ 12:1; ameixa sobre branco ≥ 8:1; branco sobre ameixa ≥ 8:1.
+ */
+@theme {
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-fraunces), ui-serif, Georgia, serif;
+
+  --color-canvas: #faf7f4;
+  --color-surface: #ffffff;
+  --color-sunken: #f3eee9;
+  --color-line: #e7dfd8;
+  --color-line-strong: #d6cbc1;
+
+  --color-ink: #1f1b1e;
+  --color-ink-soft: #4a4248;
+  --color-muted: #6f656c;
+
+  --color-plum-50: #f7eff4;
+  --color-plum-100: #eedbe6;
+  --color-plum-200: #dcb7cc;
+  --color-plum-500: #8a3f6c;
+  --color-plum-600: #6e2f56;
+  --color-plum-700: #5a2647;
+  --color-plum-900: #2e1324;
+
+  --color-champagne-100: #f6ebe1;
+  --color-champagne-300: #e6c9ae;
+  --color-champagne-600: #9a6b43;
+
+  /* Estados de agendamento — consistentes em toda a interface */
+  --color-st-pending: #a8660a;
+  --color-st-pending-bg: #fdf3e2;
+  --color-st-confirmed: #2f5f8a;
+  --color-st-confirmed-bg: #e8f0f8;
+  --color-st-completed: #2f6b4f;
+  --color-st-completed-bg: #e6f2eb;
+  --color-st-cancelled: #6f656c;
+  --color-st-cancelled-bg: #efebe8;
+  --color-st-noshow: #a23a3a;
+  --color-st-noshow-bg: #fbe9e9;
+
+  --color-danger: #a23a3a;
+  --color-success: #2f6b4f;
+
+  --radius-card: 14px;
+  --shadow-card: 0 1px 2px rgb(31 27 30 / 0.04), 0 1px 1px rgb(31 27 30 / 0.03);
+  --shadow-pop: 0 12px 32px -8px rgb(46 19 36 / 0.22), 0 2px 6px rgb(46 19 36 / 0.08);
+}
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+    color-scheme: light;
+  }
+  body {
+    background: var(--color-canvas);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    font-feature-settings: "cv11", "ss01";
+    -webkit-font-smoothing: antialiased;
+  }
+  :focus-visible {
+    outline: 2px solid var(--color-plum-500);
+    outline-offset: 2px;
+  }
+  ::selection {
+    background: var(--color-plum-100);
+  }
+  dialog::backdrop {
+    background: rgb(31 27 30 / 0.38);
+    backdrop-filter: blur(2px);
+  }
+  input[type="number"]::-webkit-inner-spin-button { opacity: 0.4; }
+}
+
+@layer components {
+  .tabular { font-variant-numeric: tabular-nums; }
+  .skeleton {
+    background: linear-gradient(90deg, var(--color-sunken) 0%, #ece5df 50%, var(--color-sunken) 100%);
+    background-size: 200% 100%;
+    animation: shimmer 1.4s ease-in-out infinite;
+    border-radius: 8px;
+  }
+}
+
+@keyframes shimmer { to { background-position: -200% 0; } }
+@keyframes toast-in { from { opacity: 0; transform: translateY(8px) scale(0.98); } }
+@keyframes sheet-in { from { transform: translateX(100%); } }
+@keyframes sheet-up { from { transform: translateY(100%); } }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+}
