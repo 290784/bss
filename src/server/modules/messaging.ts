@@ -1,4 +1,5 @@
 import type { Sql, Tx } from "@/server/db";
+import { receiptUrl } from "@/server/modules/receipt";
 
 /**
  * Motor de mensagens (outbox).
@@ -93,7 +94,7 @@ export async function enqueueCancellationNotice(tx: Tx, appt: ApptForMessages) {
 type ClaimedJob = {
   id: string; channel: Channel; template: Template; idempotency_key: string; attempts: number; max_attempts: number;
   to_phone: string | null; to_email: string | null; client_name: string | null; starts_at: Date | null;
-  org_name: string; timezone: string;
+  org_name: string; timezone: string; org_slug: string; public_token: string | null; services: string | null;
 };
 
 export async function dispatchDueMessages(sql: Sql, providers: MessageProvider[], limit = 50) {
@@ -111,7 +112,8 @@ export async function dispatchDueMessages(sql: Sql, providers: MessageProvider[]
     )
     select j.id, j.channel, j.template, j.idempotency_key, j.attempts, j.max_attempts,
            c.phone_normalized as to_phone, c.email as to_email, c.full_name as client_name,
-           a.starts_at, o.name as org_name, o.timezone
+           a.starts_at, o.name as org_name, o.timezone, o.slug as org_slug, a.public_token,
+           (select string_agg(s.service_name, ' + ' order by s.position) from app.appointment_services s where s.appointment_id = a.id) as services
     from claimed j
     join app.organizations o on o.id = j.organization_id
     left join app.clients c on c.id = j.client_id
@@ -138,6 +140,9 @@ export async function dispatchDueMessages(sql: Sql, providers: MessageProvider[]
           cliente: job.client_name?.split(" ")[0] ?? "",
           negocio: job.org_name,
           inicio: job.starts_at ? job.starts_at.toISOString() : "",
+          servicos: job.services ?? "",
+          // Comprovante completo: serviços, horário, profissional, endereço, calendário e "confirmar presença".
+          link: job.public_token ? receiptUrl(job.org_slug, job.public_token) : "",
         },
       });
       result.sent++;

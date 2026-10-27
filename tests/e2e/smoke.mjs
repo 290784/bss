@@ -157,15 +157,43 @@ try {
     if ((await p2.getByLabel("Seu nome").inputValue()) !== "Carla Online") throw new Error("campos apagados após erro de validação");
     await p2.locator('input[name="acceptPolicy"]').check();
     await p2.getByRole("button", { name: /Solicitar agendamento/ }).click();
-    await p2.getByText("Solicitação enviada!").waitFor();
-    await shot(p2, "07-publico-confirmado");
+    // Comprovante completo abre num link próprio
+    await p2.waitForURL(/\/agendamento\/[a-f0-9]{64}\?novo=1$/);
+    await p2.getByTestId("receipt-status").filter({ hasText: "Solicitação recebida" }).waitFor();
+    for (const t of ["Pronto, Carla!", "Manicure", "Total", "Salvar na agenda"]) await p2.getByText(t).first().waitFor();
+    await noHorizontalScroll(p2, "comprovante");
+    await shot(p2, "07-publico-comprovante");
+    const ics = await p2.request.get(p2.url().replace("?novo=1", "") + "/calendario");
+    if (ics.status() !== 200 || !(ics.headers()["content-type"] ?? "").includes("text/calendar") || !(await ics.text()).includes("BEGIN:VEVENT"))
+      throw new Error("arquivo de calendário inválido");
   });
 
   globalThis.__page = page;
-  await step("equipe recebe notificação da solicitação online", async () => {
+  await step("equipe recebe aviso, aprova e vê confirmação + sugestões", async () => {
     await page.goto(`${BASE}/app`);
     await page.getByRole("button", { name: /Notificações \(1 novas\)/ }).click();
-    await page.getByText("Nova solicitação de agendamento").waitFor();
+    await page.getByText("Carla pediu um horário — falta você aprovar").click();
+    await page.waitForURL(/agendamento=/);
+    await page.getByRole("dialog").getByRole("button", { name: "Confirmar", exact: true }).click();
+    await page.getByRole("dialog").getByText("Confirmação para a cliente").waitFor();
+    await page.getByRole("dialog").getByRole("link", { name: /Enviar no WhatsApp/ }).waitFor();
+    await shot(page, "07b-drawer-confirmacao");
+  });
+
+  globalThis.__page = p2;
+  await step("cliente confirma presença pelo comprovante", async () => {
+    await p2.goto(p2.url().replace("?novo=1", ""));
+    await p2.getByTestId("receipt-status").filter({ hasText: "Agendamento confirmado" }).waitFor();
+    await p2.getByRole("button", { name: "Confirmar presença" }).click();
+    await p2.getByTestId("attendance-confirmed").waitFor();
+    await shot(p2, "07c-presenca-confirmada");
+  });
+
+  globalThis.__page = page;
+  await step("equipe é avisada de que a cliente confirmou presença", async () => {
+    await page.goto(`${BASE}/app`);
+    await page.getByRole("button", { name: /Notificações \(1 novas\)/ }).click();
+    await page.getByText("Carla confirmou presença").waitFor();
   });
 
   await step("isolamento: página de cliente de outra empresa não abre", async () => {

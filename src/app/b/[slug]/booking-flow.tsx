@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState, useTransition } from "react";
+import { useRouter } from "next/navigation";
 import { ArrowLeft, CalendarCheck, Check, Clock, Sparkles } from "lucide-react";
 import { Card } from "@/components/ui/primitives";
 import { Button } from "@/components/ui/button";
@@ -22,7 +23,7 @@ export function BookingFlow({ slug, timeZone, days, requiresApproval, cancellati
   const [date, setDate] = useState<string | null>(null);
   const [time, setTime] = useState<string | null>(null);
   const [slotResult, setSlotResult] = useState<{ key: string; list: { time: string }[]; message?: string } | null>(null);
-  const [done, setDone] = useState<{ status: string; professionalName: string | null } | null>(null);
+  const [done, setDone] = useState(false);
   const [refresh, setRefresh] = useState(0);
   const [notice, setNotice] = useState<string | null>(null);
 
@@ -50,20 +51,13 @@ export function BookingFlow({ slug, timeZone, days, requiresApproval, cancellati
   if (services.length === 0)
     return <Card className="p-8 text-center text-sm text-muted">Nenhum serviço disponível para agendamento online no momento.</Card>;
 
+  // Concluído: o comprovante completo abre em seguida (DetailsForm navega para ele).
   if (done)
     return (
       <Card className="p-8 text-center">
         <div className="mx-auto grid h-14 w-14 place-items-center rounded-full bg-st-completed-bg text-st-completed"><Check className="h-7 w-7" /></div>
-        <h2 className="mt-4 font-tight tracking-[-0.02em] text-2xl font-extrabold">{done.status === "pending" ? "Solicitação enviada!" : "Horário reservado!"}</h2>
-        <p className="mt-2 text-sm text-ink-soft">
-          {service?.name} · <span className="first-letter:uppercase">{date && formatInTz(zonedDateTime(date, "12:00", timeZone), timeZone, { weekday: "long", day: "numeric", month: "long" })}</span> às {time}
-          {done.professionalName ? ` com ${done.professionalName}` : ""}.
-        </p>
-        <p className="mt-3 text-sm text-muted">
-          {done.status === "pending"
-            ? "O estabelecimento vai revisar e confirmar seu horário pelo contato informado."
-            : "Seu horário está confirmado. Se precisar remarcar, fale diretamente com o estabelecimento."}
-        </p>
+        <h2 className="mt-4 font-tight tracking-[-0.02em] text-2xl font-extrabold">Tudo certo!</h2>
+        <p className="mt-2 text-sm text-ink-soft">Abrindo o seu comprovante…</p>
       </Card>
     );
 
@@ -155,7 +149,7 @@ export function BookingFlow({ slug, timeZone, days, requiresApproval, cancellati
           <DetailsForm slug={slug} serviceId={service.id} professionalId={pro ?? null} date={date} time={time}
             summary={`${service.name} · ${formatInTz(zonedDateTime(date, "12:00", timeZone), timeZone, { weekday: "short", day: "numeric", month: "short" })} às ${time} · ${formatMoney(service.priceCents)}`}
             requiresApproval={requiresApproval} cancellationNoticeHours={cancellationNoticeHours} policyText={policyText}
-            onConflict={() => { setTime(null); setRefresh((n) => n + 1); setNotice("Esse horário acabou de ser reservado por outra pessoa. Escolha outro, por favor."); }} onDone={setDone} />
+            onConflict={() => { setTime(null); setRefresh((n) => n + 1); setNotice("Esse horário acabou de ser reservado por outra pessoa. Escolha outro, por favor."); }} onDone={() => setDone(true)} />
         )}
       </div>
     </Card>
@@ -165,8 +159,9 @@ export function BookingFlow({ slug, timeZone, days, requiresApproval, cancellati
 function DetailsForm({ slug, serviceId, professionalId, date, time, summary, requiresApproval, cancellationNoticeHours, policyText, onConflict, onDone }: {
   slug: string; serviceId: string; professionalId: string | null; date: string; time: string; summary: string;
   requiresApproval: boolean; cancellationNoticeHours: number; policyText: string | null;
-  onConflict: () => void; onDone: (r: { status: string; professionalName: string | null }) => void;
+  onConflict: () => void; onDone: () => void;
 }) {
+  const router = useRouter();
   const [error, setError] = useState<string | null>(null);
   const [fe, setFe] = useState<Record<string, string[] | undefined>>({});
   const [pending, start] = useTransition();
@@ -177,7 +172,7 @@ function DetailsForm({ slug, serviceId, professionalId, date, time, summary, req
       fullName: form.get("fullName"), phone: form.get("phone"), email: form.get("email") ?? "", notes: form.get("notes") || undefined,
       acceptPolicy: form.get("acceptPolicy") === "on", marketingConsent: form.get("marketingConsent") === "on", website: form.get("website"),
     });
-    if (r.ok) onDone({ status: r.status, professionalName: r.professionalName });
+    if (r.ok) { onDone(); router.replace(`/b/${slug}/agendamento/${r.token}?novo=1`); }
     else {
       const fieldErrors = ("fieldErrors" in r && r.fieldErrors) || {};
       setError(Object.keys(fieldErrors).length ? "Revise os campos destacados." : r.message);

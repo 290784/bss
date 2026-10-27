@@ -62,7 +62,7 @@ export async function createAppointment(
     select id, archived_at from app.clients where organization_id = ${orgId} and id = ${input.clientId}`;
   if (!client) throw new DomainError("Cliente não encontrada.");
 
-  let appt: { id: string; organization_id: string; client_id: string; starts_at: Date; status: string };
+  let appt: { id: string; organization_id: string; client_id: string; starts_at: Date; status: string; public_token: string };
   try {
     [appt] = (await tx`
       insert into app.appointments (organization_id, professional_id, client_id, starts_at, ends_at, blocked_until,
@@ -70,7 +70,7 @@ export async function createAppointment(
       values (${orgId}, ${input.professionalId}, ${input.clientId}, ${start}, ${end}, ${blockedUntil},
         ${input.status}, ${opts.source ?? "staff"}, ${input.squeezeIn}, ${t.priceCents}, ${input.internalNotes ?? null},
         ${opts.clientNotes ?? null}, ${actor.userId})
-      returning id, organization_id, client_id, starts_at, status`) as unknown as [typeof appt];
+      returning id, organization_id, client_id, starts_at, status, public_token`) as unknown as [typeof appt];
   } catch (err) {
     translateConflict(err);
   }
@@ -175,6 +175,46 @@ export async function changeStatus(
   return { ...cur, status: to };
 }
 
+export const addServiceSchema = z.object({ appointmentId: z.uuid(), serviceId: z.uuid() });
+
+/**
+ * Acrescenta um serviço ao fim do atendimento (venda adicional). O fim do horário se estende;
+ * a mesma validação de expediente/conflito da criação vale aqui, e a restrição do banco
+ * continua impedindo sobreposição.
+ */
+export async function addServiceToAppointment(tx: Tx, actor: Actor, input: z.infer<typeof addServiceSchema>) {
+  const orgId = actor.organizationId;
+  const policy = await loadPolicy(tx, orgId);
+  const [cur] = await tx<{ id: string; status: AppointmentStatus; starts_at: Date; ends_at: Date; professional_id: string; allow_overlap: boolean }[]>`
+    select id, status, starts_at, ends_at, professional_id, allow_overlap
+    from app.appointments where organization_id = ${orgId} and id = ${input.appointmentId} for update`;
+  if (!cur) throw new DomainError("Agendamento não encontrado.");
+  if (cur.status !== "pending" && cur.status !== "confirmed")
+    throw new DomainError("Só dá para acrescentar serviços a agendamentos aguardando ou confirmados.");
+  const [svc] = await loadServices(tx, orgId, [input.serviceId]);
+  const already = await tx`select 1 from app.appointment_services where appointment_id = ${cur.id} and service_id = ${svc!.id}`;
+  if (already.length) throw new DomainError("Este serviço já está no agendamento.");
+  if (!(await professionalCanDo(tx, orgId, cur.professional_id, [svc!.id])))
+    throw new DomainError("A profissional deste horário não realiza este serviço.");
+
+  const end = new Date(cur.ends_at.getTime() + svc!.duration_minutes * MIN);
+  const blockedUntil = new Date(end.getTime() + svc!.buffer_after_minutes * MIN);
+  await assertSlotBookable(tx, orgId, cur.professional_id, localDateKey(cur.starts_at, policy.timezone),
+    { start: cur.starts_at, end }, blockedUntil, policy, { excludeAppointmentId: cur.id, squeezeIn: cur.allow_overlap });
+  try {
+    await tx`update app.appointments set ends_at = ${end}, blocked_until = ${blockedUntil},
+               price_cents = price_cents + ${svc!.price_cents}, updated_at = now(), version = version + 1
+             where id = ${cur.id}`;
+  } catch (err) {
+    translateConflict(err);
+  }
+  await tx`insert into app.appointment_services (organization_id, appointment_id, service_id, service_name, price_cents, duration_minutes, position)
+           select ${orgId}, ${cur.id}, ${svc!.id}, ${svc!.name}, ${svc!.price_cents}, ${svc!.duration_minutes}, coalesce(max(position) + 1, 0)
+           from app.appointment_services where appointment_id = ${cur.id}`;
+  await logEvent(tx, actor, cur.id, "service_added", { name: svc!.name, priceCents: svc!.price_cents, minutes: svc!.duration_minutes });
+  return { name: svc!.name, priceCents: svc!.price_cents };
+}
+
 async function logEvent(tx: Tx, actor: Actor, appointmentId: string, type: string, data: Record<string, unknown>) {
   await tx`insert into app.appointment_events (organization_id, appointment_id, actor_user_id, type, data)
            values (${actor.organizationId}, ${appointmentId}, ${actor.userId}, ${type}, ${tx.json(data as never)})`;
@@ -217,7 +257,7 @@ export async function listAgenda(tx: Tx, orgId: string, from: Date, to: Date, pr
 }
 
 export async function getAppointmentDetail(tx: Tx, orgId: string, id: string, opts: { withPayments: boolean }) {
-  const [a] = await tx<(AgendaItem & { internal_notes: string | null; client_notes: string | null; cancel_reason: string | null; professional_name: string; created_at: Date })[]>`
+  const [a] = await tx<(AgendaItem & { internal_notes: string | null; client_notes: string | null; cancel_reason: string | null; professional_name: string; created_at: Date; public_token: string; client_confirmed_at: Date | null })[]>`
     select a.*, c.full_name as client_name, c.phone_normalized as client_phone, p.display_name as professional_name, '' as services, 0 as paid_cents
     from app.appointments a join app.clients c on c.id = a.client_id join app.professionals p on p.id = a.professional_id
     where a.organization_id = ${orgId} and a.id = ${id}`;
