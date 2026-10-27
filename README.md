@@ -1,4 +1,4 @@
-# Beauty OS
+# Gê
 
 Plataforma SaaS multi-tenant de gestão para profissionais e negócios de beleza e estética:
 agenda inteligente, agendamento online, CRM de clientes, registro de pagamentos e indicadores.
@@ -46,7 +46,7 @@ DEMO_PASSWORD=uma-senha npm run db:seed-demo   # opcional: conta de demonstraç�
 npm run dev                           # http://localhost:3000
 ```
 
-A conta de demonstração (`demo@beautyos.dev`) é uma organização marcada como `is_demo`;
+A conta de demonstração (`demo@beautyos.dev`, e-mail de teste local) é uma organização marcada como `is_demo`;
 a interface exibe um aviso permanente e os dados ficam isolados pelo mesmo RLS das contas reais.
 O seed é bloqueado em produção, a menos que `ALLOW_DEMO_SEED=1`.
 
@@ -87,7 +87,7 @@ docs/                    arquitetura, roadmap, integrações, segurança/LGPD
 
 Pensado para **Vercel + Supabase (PostgreSQL)**. Passos em [docs/DEPLOY.md](docs/DEPLOY.md).
 
-## Nome
+## Nome e identidade
 
-"Beauty OS" é nome de trabalho. Alternativas a avaliar (disponibilidade de domínio e marca não verificada):
-**Ateliê**, **Aurea**, **Lumê**, **Rituale**, **Agendê**.
+**Gê** — o nome aparece em cursiva (Allura) com o monograma "G" sobre o degradê *Royal Violet*.
+Tema escuro com a escala de violetas da marca; detalhes em [docs/design/tema-royal-violet.md](docs/design/tema-royal-violet.md).

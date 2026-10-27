@@ -15,7 +15,7 @@ export function DangerZone() {
     <Card>
       <CardHeader title="Privacidade e dados" />
       <div className="flex flex-col gap-3 px-5 pt-3 pb-5 text-sm text-ink-soft">
-        <p>Exporte a lista de clientes em CSV pela página <Link className="text-plum-600 underline" href="/app/clientes">Clientes</Link>. A exportação completa (agenda e financeiro) está no roteiro.</p>
+        <p>Exporte a lista de clientes em CSV pela página <Link className="text-accent-text underline" href="/app/clientes">Clientes</Link>. A exportação completa (agenda e financeiro) está no roteiro.</p>
         <div><Button variant="danger" size="sm" onClick={() => setOpen(true)}>Solicitar exclusão da minha conta</Button></div>
       </div>
       <ConfirmDialog open={open} onClose={() => setOpen(false)} danger title="Solicitar exclusão da conta?" confirmLabel="Enviar solicitação"

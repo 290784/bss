@@ -37,7 +37,7 @@ export function TeamManager({ professionals, services, timeOff, timeZone, atLimi
           <h2 className="text-[15px] font-semibold">Profissionais</h2>
           {!readOnly && <Button size="sm" onClick={() => setEditing("new")} disabled={atLimit} title={atLimit ? "Limite do plano atingido" : undefined}><Plus className="h-4 w-4" />Adicionar</Button>}
         </div>
-        {atLimit && !readOnly && <p className="mb-3 rounded-lg bg-champagne-100 px-3 py-2 text-[13px] text-champagne-600">Você atingiu o limite de profissionais do plano atual. Para adicionar mais, será preciso fazer upgrade.</p>}
+        {atLimit && !readOnly && <p className="mb-3 rounded-lg bg-highlight-subtle px-3 py-2 text-[13px] text-highlight-text">Você atingiu o limite de profissionais do plano atual. Para adicionar mais, será preciso fazer upgrade.</p>}
         <div className="grid gap-3 md:grid-cols-2">
           {professionals.map((p) => (
             <Card key={p.id} className={cn("p-4", !p.is_active && "opacity-60")}>
@@ -172,7 +172,7 @@ function HoursDialog({ pro, onClose, onSaved }: { pro: Pro; onClose: () => void;
             <li key={d} className="py-3">
               <div className="flex items-center justify-between">
                 <Checkbox checked={r.on} onChange={(e) => upd(d, (x) => ({ ...x, on: e.target.checked }))} label={DAYS[d]} />
-                {r.on && r.periods.length < 2 && <button className="text-xs font-medium text-plum-600" onClick={() => upd(d, (x) => ({ ...x, periods: [...x.periods, { start: "14:00", end: "18:00" }] }))}>+ período</button>}
+                {r.on && r.periods.length < 2 && <button className="text-xs font-medium text-accent-text" onClick={() => upd(d, (x) => ({ ...x, periods: [...x.periods, { start: "14:00", end: "18:00" }] }))}>+ período</button>}
               </div>
               {r.on && (
                 <div className="mt-2 flex flex-col gap-2 pl-8">

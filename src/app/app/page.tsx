@@ -15,6 +15,7 @@ import { cn } from "@/lib/cn";
 import { STATUS_LABEL } from "@/domain/appointment-status";
 import { DashboardChart } from "./dashboard-chart";
 import { CopyLink } from "./copy-link";
+import { Sparkles } from "@/components/brand/sparkles";
 
 export const metadata: Metadata = { title: "Início" };
 
@@ -86,7 +87,7 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
               <ul className="mt-4 grid gap-2 sm:grid-cols-2">
                 {activation.map((a) => (
                   <li key={a.label}>
-                    <Link href={a.href} className={cn("flex items-center gap-2.5 rounded-lg border px-3 py-2 text-sm", a.done ? "border-transparent bg-st-completed-bg text-st-completed" : "border-line hover:border-plum-500")}>
+                    <Link href={a.href} className={cn("flex items-center gap-2.5 rounded-lg border px-3 py-2 text-sm", a.done ? "border-transparent bg-st-completed-bg text-st-completed" : "border-line hover:border-accent")}>
                       <span className={cn("grid h-5 w-5 place-items-center rounded-full border", a.done ? "border-st-completed bg-st-completed text-white" : "border-line-strong")}>{a.done && <Check className="h-3 w-3" />}</span>
                       {a.label}
                     </Link>
@@ -94,7 +95,8 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
                 ))}
               </ul>
             </div>
-            <div className="rounded-2xl bg-ink-warm p-4 text-white md:w-72">
+            <div className="bg-royal ring-glass relative overflow-hidden rounded-[22px] p-4 text-white md:w-72">
+              <Sparkles points={[[82, 14, 8, 0.2], [92, 62, 6, 1.6], [60, 82, 5, 2.4]]} />
               <div className="flex items-center gap-2 text-sm font-medium"><Link2 className="h-4 w-4" />Sua página de agendamento</div>
               <p className="mt-1 mb-3 text-xs text-white/65">Coloque na bio do Instagram e envie no WhatsApp.</p>
               <CopyLink url={`${appUrl}/b/${ctx.org.slug}`} />
@@ -104,8 +106,8 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
       )}
 
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-        {d.revenue && <Kpi label="Recebido" metric="revenue_received" value={formatMoney(d.revenue.value)} change={d.revenue.change} />}
-        <Kpi label="Valor agendado" metric="scheduled_value" value={formatMoney(d.scheduledValue.value)} change={d.scheduledValue.change} />
+        {d.revenue && <Kpi highlight label="Recebido" metric="revenue_received" value={formatMoney(d.revenue.value)} change={d.revenue.change} />}
+        <Kpi highlight={!d.revenue} label="Valor agendado" metric="scheduled_value" value={formatMoney(d.scheduledValue.value)} change={d.scheduledValue.change} />
         <Kpi label="Atendimentos" metric="appointments_count" value={String(d.appointments.value)} change={d.appointments.change} />
         <Kpi label="Ocupação da agenda" metric="occupancy" value={d.occupancy.value === null ? "—" : `${Math.round(d.occupancy.value * 100)}%`}
           sub={d.occupancy.capacityMinutes ? `${Math.round(d.occupancy.bookedMinutes / 60)}h de ${Math.round(d.occupancy.capacityMinutes / 60)}h` : "Sem expediente no período"} />
@@ -124,7 +126,7 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
           </div>
         </Card>
         <Card>
-          <CardHeader title="Hoje" description={`${activeToday.length} atendimento(s)`} action={<Link href="/app/agenda" className="text-[13px] font-medium text-plum-600 hover:underline">Abrir agenda</Link>} />
+          <CardHeader title="Hoje" description={`${activeToday.length} atendimento(s)`} action={<Link href="/app/agenda" className="text-[13px] font-medium text-accent-text hover:underline">Abrir agenda</Link>} />
           <div className="px-5 pt-3 pb-5">
             {activeToday.length === 0 ? (
               <EmptyState className="py-6" icon={Clock} title="Nenhum atendimento hoje" description="Compartilhe sua página de agendamento para preencher a agenda." />
@@ -146,8 +148,8 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
               </ul>
             )}
             {gaps.length > 0 && (
-              <div className="mt-4 rounded-xl bg-champagne-100 p-3">
-                <div className="mb-1.5 text-[13px] font-medium text-champagne-600">Horários vagos hoje</div>
+              <div className="mt-4 rounded-xl bg-highlight-subtle p-3">
+                <div className="mb-1.5 text-[13px] font-medium text-highlight-text">Horários vagos hoje</div>
                 <ul className="flex flex-wrap gap-1.5">
                   {gaps.slice(0, 6).map((g, i) => (
                     <li key={i} className="rounded-md bg-surface px-2 py-1 text-xs text-ink-soft tabular">
@@ -219,12 +221,13 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
   );
 }
 
-function Kpi({ label, value, change, sub, metric, invert }: { label: string; value: string; change?: number | null; sub?: string; metric: MetricKey; invert?: boolean }) {
+function Kpi({ label, value, change, sub, metric, invert, highlight }: { label: string; value: string; change?: number | null; sub?: string; metric: MetricKey; invert?: boolean; highlight?: boolean }) {
   const good = change !== undefined && change !== null && (invert ? change < 0 : change > 0);
   const bad = change !== undefined && change !== null && (invert ? change > 0 : change < 0);
   return (
-    <Card className="p-4">
-      <div className="flex items-center gap-1 text-[13px] text-muted">{label}<InfoTip text={METRIC_DEFINITIONS[metric]} /></div>
+    <Card className={cn("relative overflow-hidden p-4", highlight && "bg-royal ring-glass border-transparent shadow-[0_20px_50px_-24px_rgb(147_3_197/0.9)]")}>
+      {highlight && <Sparkles points={[[86, 18, 9, 0.3], [70, 70, 6, 1.7], [94, 78, 5, 2.6]]} />}
+      <div className={cn("relative flex items-center gap-1 text-[13px]", highlight ? "text-violet-100" : "text-muted")}>{label}<InfoTip text={METRIC_DEFINITIONS[metric]} /></div>
       <div className="mt-1.5 text-[22px] leading-tight font-semibold tracking-[-0.01em] tabular sm:text-2xl">{value}</div>
       <div className="mt-1 flex min-h-[18px] flex-wrap items-center gap-x-1.5 gap-y-0.5 text-xs">
         {change !== undefined && (change === null

@@ -71,8 +71,8 @@ export function BookingFlow({ slug, timeZone, days, requiresApproval, cancellati
     <Card className="overflow-hidden">
       <ol className="flex border-b border-line text-[12px] font-medium" aria-label="Etapas">
         {["Serviço", "Profissional", "Horário", "Seus dados"].map((l, i) => (
-          <li key={l} className={cn("flex-1 py-3 text-center", step === i + 1 ? "text-ink-warm" : step > i + 1 ? "text-ink-soft" : "text-muted")}>
-            <span className={cn("mx-auto mb-1 block h-1 w-10 rounded-full", step >= i + 1 ? "bg-ink-warm" : "bg-line")} aria-hidden />{l}
+          <li key={l} className={cn("flex-1 py-3 text-center", step === i + 1 ? "text-ink" : step > i + 1 ? "text-ink-soft" : "text-muted")}>
+            <span className={cn("mx-auto mb-1 block h-1 w-10 rounded-full", step >= i + 1 ? "btn-glow" : "bg-line")} aria-hidden />{l}
           </li>
         ))}
       </ol>
@@ -92,7 +92,7 @@ export function BookingFlow({ slug, timeZone, days, requiresApproval, cancellati
               {services.map((s) => (
                 <li key={s.id}>
                   <button onClick={() => chooseService(s)}
-                    className="flex w-full items-start justify-between gap-4 rounded-xl border border-line p-4 text-left transition-colors hover:border-plum-500 hover:bg-plum-50/40">
+                    className="flex w-full items-start justify-between gap-4 rounded-xl border border-line p-4 text-left transition-colors hover:border-accent hover:bg-accent-subtle/40">
                     <span>
                       <span className="block font-medium">{s.name}</span>
                       {s.description && <span className="mt-0.5 block text-[13px] text-muted">{s.description}</span>}
@@ -110,11 +110,11 @@ export function BookingFlow({ slug, timeZone, days, requiresApproval, cancellati
           <>
             <h2 className="mb-3 text-lg font-semibold">Com quem?</h2>
             <ul className="grid gap-2 sm:grid-cols-2">
-              <li><button onClick={() => setPro(null)} className="flex w-full items-center gap-3 rounded-xl border border-line p-4 text-left hover:border-plum-500"><span className="grid h-10 w-10 place-items-center rounded-full bg-champagne-100 text-champagne-600"><Sparkles className="h-4 w-4" /></span><span><span className="block font-medium">Sem preferência</span><span className="text-xs text-muted">Mais horários disponíveis</span></span></button></li>
+              <li><button onClick={() => setPro(null)} className="flex w-full items-center gap-3 rounded-xl border border-line p-4 text-left hover:border-accent"><span className="grid h-10 w-10 place-items-center rounded-full bg-highlight-subtle text-highlight-text"><Sparkles className="h-4 w-4" /></span><span><span className="block font-medium">Sem preferência</span><span className="text-xs text-muted">Mais horários disponíveis</span></span></button></li>
               {prosForService.map((p) => (
                 <li key={p.id}>
-                  <button onClick={() => setPro(p.id)} className="flex w-full items-center gap-3 rounded-xl border border-line p-4 text-left hover:border-plum-500">
-                    <span className="grid h-10 w-10 place-items-center rounded-full bg-plum-100 text-sm font-semibold text-plum-700">{p.name.slice(0, 1)}</span>
+                  <button onClick={() => setPro(p.id)} className="flex w-full items-center gap-3 rounded-xl border border-line p-4 text-left hover:border-accent">
+                    <span className="grid h-10 w-10 place-items-center rounded-full bg-accent-muted text-sm font-semibold text-accent-text">{p.name.slice(0, 1)}</span>
                     <span><span className="block font-medium">{p.name}</span>{p.specialty && <span className="text-xs text-muted">{p.specialty}</span>}</span>
                   </button>
                 </li>
@@ -131,8 +131,8 @@ export function BookingFlow({ slug, timeZone, days, requiresApproval, cancellati
             <div className="-mx-5 mb-5 flex snap-x gap-2 overflow-x-auto px-5 pb-1 sm:-mx-6 sm:px-6">
               {days.map((d) => (
                 <button key={d} onClick={() => { setDate(d); setTime(null); }} aria-pressed={date === d}
-                  className={cn("flex w-14 shrink-0 snap-start flex-col items-center rounded-xl border py-2.5", date === d ? "border-ink-warm bg-ink-warm text-white" : "border-line hover:border-plum-500")}>
-                  <span className={cn("text-[11px] uppercase", date === d ? "text-plum-100" : "text-muted")}>{WD[localWeekday(d)]}</span>
+                  className={cn("flex w-14 shrink-0 snap-start flex-col items-center rounded-xl border py-2.5", date === d ? "border-violet-300 btn-glow text-white" : "border-line hover:border-accent")}>
+                  <span className={cn("text-[11px] uppercase", date === d ? "text-accent-muted" : "text-muted")}>{WD[localWeekday(d)]}</span>
                   <span className="text-lg font-semibold tabular">{Number(d.slice(8))}</span>
                 </button>
               ))}
@@ -144,7 +144,7 @@ export function BookingFlow({ slug, timeZone, days, requiresApproval, cancellati
               : (
                 <div className="grid grid-cols-4 gap-2 sm:grid-cols-6">
                   {slots.list.map((s) => (
-                    <button key={s.time} onClick={() => { setTime(s.time); setNotice(null); }} className="h-10 rounded-lg border border-line text-sm font-medium tabular hover:border-ink-warm hover:bg-sunken">{s.time}</button>
+                    <button key={s.time} onClick={() => { setTime(s.time); setNotice(null); }} className="h-10 rounded-lg border border-line text-sm font-medium tabular hover:border-violet-300 hover:bg-sunken">{s.time}</button>
                   ))}
                 </div>
               )}
@@ -187,7 +187,7 @@ function DetailsForm({ slug, serviceId, professionalId, date, time, summary, req
   });
   return (
     <ActionForm action={submit} className="flex flex-col gap-4" noValidate>
-      <div className="flex items-center gap-2 rounded-xl bg-sunken px-4 py-3 text-sm font-medium text-ink-warm"><CalendarCheck className="h-4 w-4 shrink-0" />{summary}</div>
+      <div className="flex items-center gap-2 rounded-xl bg-sunken px-4 py-3 text-sm font-medium text-ink"><CalendarCheck className="h-4 w-4 shrink-0" />{summary}</div>
       {error && <FormMessage state={{ ok: false, message: error }} />}
       <Field label="Seu nome" htmlFor="fullName" error={fe.fullName}><Input id="fullName" name="fullName" autoComplete="name" required /></Field>
       <Field label="WhatsApp" htmlFor="phone" error={fe.phone} hint="Usado para confirmar o horário."><Input id="phone" name="phone" type="tel" inputMode="tel" autoComplete="tel" placeholder="(11) 90000-0000" required /></Field>
