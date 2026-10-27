@@ -8,13 +8,11 @@ const { chromium } = require("playwright");
 const BASE = process.env.BASE_URL ?? "http://localhost:3000";
 const b = await chromium.launch();
 const ok = (c, m) => { console.log(c ? "✔" : "✘", m); if (!c) process.exitCode = 1; };
-const m = await (await b.newContext({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true })).newPage();
+const m = await (await b.newContext({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true, reducedMotion: "reduce" })).newPage();
 const errs = []; m.on("pageerror", (e) => errs.push(e.message));
 await m.goto(BASE + "/"); await m.waitForTimeout(800);
 const sel = () => m.locator('[role=group][aria-label^="Escolher recurso"] button[aria-pressed=true]').getAttribute("aria-label");
 const dock = m.locator('[role=group][aria-label^="Escolher recurso"]');
-// Pausa o avanço automático: só o gesto pode trocar o ícone durante o teste.
-await m.getByRole("button", { name: "Pausar animação" }).first().tap();
 await dock.scrollIntoViewIfNeeded(); await m.waitForTimeout(300);
 const box = await dock.boundingBox(); const y = box.y + box.height / 2; const cx = box.x + box.width / 2;
 const cdp = await m.context().newCDPSession(m);
@@ -58,9 +56,8 @@ ok(await sel() === before, "arrasto vertical não mexe no dock");
 ok((await m.evaluate(() => scrollY)) > sy0, "arrasto vertical rola a página normalmente");
 
 // 6) mouse no computador também arrasta
-const d = await (await b.newContext({ viewport: { width: 1440, height: 900 } })).newPage();
+const d = await (await b.newContext({ viewport: { width: 1440, height: 900 }, reducedMotion: "reduce" })).newPage();
 await d.goto(BASE + "/"); await d.waitForTimeout(800);
-await d.getByRole("button", { name: "Pausar animação" }).first().click();
 const db = await d.locator('[role=group][aria-label^="Escolher recurso"]').boundingBox();
 await d.mouse.move(db.x + db.width / 2, db.y + db.height / 2); await d.mouse.down();
 await d.mouse.move(db.x + db.width / 2 - 75, db.y + db.height / 2, { steps: 15 }); await d.mouse.up(); await d.waitForTimeout(900);

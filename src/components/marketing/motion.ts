@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState, useSyncExternalStore, type RefObject } from "react";
+import { useEffect, useRef, useState, useSyncExternalStore, type RefObject } from "react";
 
 const QUERY = "(prefers-reduced-motion: reduce)";
 const subscribe = (cb: () => void) => {
@@ -13,15 +13,29 @@ export function usePrefersReducedMotion() {
 }
 
 /** Visível na tela (e aba ativa) — animações automáticas só rodam quando alguém pode vê-las. */
-export function useInView(ref: RefObject<Element | null>, threshold = 0.25) {
+export function useInView(ref: RefObject<Element | null>, threshold = 0.25, onEnter?: () => void) {
   const [intersecting, setIntersecting] = useState(false);
   const [tabVisible, setTabVisible] = useState(true);
+  const enter = useRef(onEnter);
+  useEffect(() => { enter.current = onEnter; });
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
-    const io = new IntersectionObserver(([e]) => setIntersecting(!!e?.isIntersecting), { threshold });
+    let wasIn = false, tabWasHidden = false;
+    const io = new IntersectionObserver(([e]) => {
+      const now = !!e?.isIntersecting;
+      if (now && !wasIn) enter.current?.();
+      wasIn = now;
+      setIntersecting(now);
+    }, { threshold });
     io.observe(el);
-    const onVis = () => setTabVisible(document.visibilityState === "visible");
+    const onVis = () => {
+      const visible = document.visibilityState === "visible";
+      // Voltou para a aba com o elemento na tela: conta como "voltou para a tela".
+      if (visible && tabWasHidden && wasIn) enter.current?.();
+      tabWasHidden = !visible;
+      setTabVisible(visible);
+    };
     document.addEventListener("visibilitychange", onVis);
     return () => { io.disconnect(); document.removeEventListener("visibilitychange", onVis); };
   }, [ref, threshold]);

@@ -1,15 +1,16 @@
 "use client";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ArrowLeft, Bookmark, Clock, ExternalLink, Search, Share2, SlidersHorizontal, X } from "lucide-react";
 import { cn } from "@/lib/cn";
 import { useInView, usePrefersReducedMotion } from "./motion";
-import { StoryBars, useAutoplay, useDragSwipe } from "./carousel";
+import { useAutoplay } from "./carousel";
 
 /**
  * Demonstração do agendamento online em etapas: busca → digitação → sugestões →
  * resultados → serviço com "melhor horário". Ilustração (dados de exemplo, sem avaliações
- * ou números inventados apresentados como reais). Ritmo de leitura, com legenda por etapa,
- * barra de etapas arrastável, pausa, toque para avançar e card que acompanha o dedo.
+ * ou números inventados apresentados como reais). Funciona como um vídeo: roda sozinho em
+ * looping no ritmo de leitura, recomeça quando a pessoa volta para a tela e um toque revê
+ * do início. Nada precisa ser clicado para avançar.
  */
 
 const QUERY = "Sobrancelha";
@@ -27,42 +28,38 @@ const TYPE_MS = 2600; // digitação calma, letra a letra
 
 export function BookingDemo() {
   const ref = useRef<HTMLDivElement>(null);
-  const inView = useInView(ref);
+  const restartRef = useRef<() => void>(() => {});
+  const inView = useInView(ref, 0.25, () => restartRef.current());
   const reduced = usePrefersReducedMotion();
   const auto = useAutoplay({ count: STEPS.length, durations: DURATIONS, active: !reduced && inView });
-  const swipe = useDragSwipe({ onLeft: auto.next, onRight: auto.prev, onStart: auto.hold });
+  useEffect(() => { restartRef.current = auto.restart; }, [auto.restart]);
   const step = reduced ? STEPS.length - 1 : auto.index;
   const stage: Stage = STEPS[step]!.stage;
 
-  // Letras digitadas na etapa atual (zera ao trocar de etapa).
-  const [typed, setTyped] = useState({ step: -1, n: 0 });
-  const n = typed.step === step ? typed.n : 0;
+  // Letras digitadas na etapa atual (zera ao trocar de etapa ou recomeçar).
+  const visit = `${auto.cycle}-${step}`;
+  const [typed, setTyped] = useState({ visit: "", n: 0 });
+  const n = typed.visit === visit ? typed.n : 0;
   useEffect(() => {
     if (stage !== "typing" || n >= QUERY.length) return;
-    const t = setTimeout(() => setTyped({ step, n: n + 1 }), TYPE_MS / QUERY.length);
+    const t = setTimeout(() => setTyped({ visit, n: n + 1 }), TYPE_MS / QUERY.length);
     return () => clearTimeout(t);
-  }, [stage, n, step]);
-
-  const onKey = useCallback((e: React.KeyboardEvent) => {
-    if (e.key === "ArrowRight") { e.preventDefault(); auto.next(); }
-    if (e.key === "ArrowLeft") { e.preventDefault(); auto.prev(); }
-  }, [auto]);
+  }, [stage, n, visit]);
 
   const text = stage === "empty" ? "" : stage === "typing" ? QUERY.slice(0, n) : QUERY;
   const showSearch = stage === "empty" || stage === "typing" || stage === "suggest";
 
   return (
-    <div ref={ref} className="relative mx-auto w-full max-w-[440px] select-none" {...auto.hoverProps} onPointerDown={auto.hold}
-      role="region" aria-label="Demonstração do agendamento online" tabIndex={0} onKeyDown={onKey}>
-      <StoryBars className="relative z-20 mb-3 px-[6%]" count={STEPS.length} index={step} durations={DURATIONS} running={auto.running}
-        onGo={auto.go} onScrub={auto.hold} paused={auto.userPaused || reduced} onTogglePause={auto.togglePause} labels={STEPS.map((x) => x.caption)} />
-    <div className="relative aspect-[5/6] w-full cursor-grab touch-pan-y active:cursor-grabbing" role="img" aria-label={STEPS[step]!.caption}
-      {...swipe.bind} onClick={() => auto.next()}>
+    <div ref={ref} className="relative mx-auto w-full max-w-[440px] select-none" role="region" aria-label="Demonstração do agendamento online">
+    {/* Toque/clique revê do início; o resto é automático, em looping */}
+    <div role="button" tabIndex={0} onClick={auto.restart} title="Rever do início"
+      onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); auto.restart(); } }}
+      aria-label={`${STEPS[step]!.caption}. Toque para rever do início`} className="relative aspect-[5/6] w-full cursor-pointer">
       {/* Formas de fundo */}
       <span className="absolute top-[6%] -left-[10%] h-[62%] w-[62%] rounded-full bg-mkt-shape" aria-hidden />
       <span className="absolute -right-[8%] bottom-[2%] h-[56%] w-[56%] rounded-full bg-mkt-shape" aria-hidden />
 
-      <div style={swipe.style} className="absolute inset-x-[6%] inset-y-[4%] overflow-hidden rounded-[28px] bg-[#0c0820] ring-1 ring-white/15 shadow-[0_30px_70px_-25px_rgb(0_0_0/0.9),0_0_50px_-20px_rgb(192_110_247/0.6)]">
+      <div key={auto.cycle} className="absolute inset-x-[6%] inset-y-[4%] overflow-hidden rounded-[28px] bg-[#0c0820] ring-1 ring-white/15 shadow-[0_30px_70px_-25px_rgb(0_0_0/0.9),0_0_50px_-20px_rgb(192_110_247/0.6)]">
         {showSearch ? (
           <div className="p-4">
             <div className="flex items-center gap-2">
@@ -162,6 +159,7 @@ export function BookingDemo() {
       <p key={step} className="mt-3 text-center text-[15px] font-medium text-violet-100 motion-safe:[animation:mkt-rise_.6s_ease-out_both]" aria-live="polite">
         <span className="mr-1.5 text-[13px] text-muted tabular">{step + 1}/{STEPS.length}</span>{STEPS[step]!.caption}
       </p>
+      <p className="mt-1 text-center text-[11px] text-muted">Toque no vídeo para rever do início.</p>
     </div>
   );
 }

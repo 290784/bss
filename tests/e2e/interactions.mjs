@@ -8,7 +8,7 @@ const { chromium } = require("playwright");
 const BASE = process.env.BASE_URL ?? "http://localhost:3000";
 const b = await chromium.launch();
 const ok = (c, m) => { console.log(c ? "✔" : "✘", m); if (!c) process.exitCode = 1; };
-const sel = (p) => p.locator('[aria-roledescription="carrossel"] [role=tab][aria-selected=true]').getAttribute("aria-label");
+const sel = (p) => p.locator('[role=group][aria-label^="Escolher recurso"] button[aria-pressed=true]').getAttribute("aria-label");
 
 // Desktop
 const p = await (await b.newContext({ viewport: { width: 1440, height: 900 } })).newPage();
@@ -20,14 +20,12 @@ await p.locator('[aria-roledescription="carrossel"] [aria-live]').first().click(
 ok(await sel(p) === "Faturamento", "hero: clique no card avança");
 await p.mouse.move(5, 5); await p.waitForTimeout(7000);
 ok(await sel(p) === "Faturamento", "hero: depois de clicar, segura 12 s para a pessoa ler");
-await p.locator('[aria-roledescription="carrossel"] [role=tab]').nth(4).click();
-ok(await sel(p) === "Promoções", "hero: barra de progresso leva ao card escolhido");
-await p.getByRole("button", { name: "Pausar animação" }).first().click();
-await p.mouse.move(5, 5); await p.waitForTimeout(18000);
-ok(await sel(p) === "Promoções", "hero: botão de pausa mantém o card parado");
-await p.getByRole("button", { name: "Retomar animação" }).first().click();
+ok(await p.getByRole("button", { name: /Pausar animação|Retomar animação/ }).count() === 0 && await p.locator('[role=tab][aria-label="Lembretes"]').count() === 0,
+  "sem barra de etapas nem botão de pausa no hero e na demonstração");
+await p.locator('[role=group][aria-label^="Escolher recurso"] button[aria-label="Promoções"]').click();
+ok(await sel(p) === "Promoções", "hero: dock leva ao card escolhido");
 await p.locator('[aria-roledescription="carrossel"]').focus(); await p.keyboard.press("ArrowRight");
-ok(await sel(p) === "Lembretes", "hero: seta do teclado troca o card");
+ok(await sel(p) === "Lembretes", "hero: seta do teclado troca o card (em looping)");
 
 // Hover nos cards (sobe/brilha)
 const card = p.locator("#recursos .glass").first();
@@ -39,6 +37,7 @@ ok(glow.includes("rgb"), "card de recurso brilha ao passar o mouse");
 const demo = p.locator('[aria-label="Demonstração do agendamento online"]');
 await demo.scrollIntoViewIfNeeded(); await p.mouse.move(5, 5);
 const cap = () => demo.locator("p[aria-live]").innerText();
+await p.goto(BASE + "/"); await demo.scrollIntoViewIfNeeded(); await p.mouse.move(5, 5);
 await p.waitForTimeout(1500); const c1 = await cap();
 await p.waitForTimeout(2500); const c2 = await cap();
 ok(c1.includes("abre o seu link") && c2.includes("Busca o serviço"), `demo: legendas no ritmo (${c1.replace(/\n/g," ")} → ${c2.replace(/\n/g," ")})`);
