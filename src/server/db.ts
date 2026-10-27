@@ -1,5 +1,6 @@
 import "server-only";
 import postgres from "postgres";
+import { normalizeDatabaseUrl, pickDatabaseUrl } from "@/server/db-url";
 
 /**
  * Duas formas de acesso ao banco:
@@ -18,12 +19,15 @@ const globalForDb = globalThis as unknown as { __beautyDb?: Sql };
 export function getSql(): Sql {
   if (!globalForDb.__beautyDb) {
     // DATABASE_URL (padrão) ou POSTGRES_URL (nome usado pela integração Supabase/Vercel).
-    const url = process.env.DATABASE_URL || process.env.POSTGRES_URL;
-    if (!url) throw new Error("DATABASE_URL não configurada.");
+    const found = pickDatabaseUrl(["DATABASE_URL", "POSTGRES_URL"]);
+    if (!found) throw new Error("Banco de dados não configurado: defina DATABASE_URL nas variáveis de ambiente.");
+    const { url, ssl } = normalizeDatabaseUrl(found.value);
     globalForDb.__beautyDb = postgres(url, {
+      ssl,
       max: Number(process.env.DATABASE_POOL_SIZE ?? 5),
       idle_timeout: 20,
-      prepare: false, // compatível com poolers em modo transação (ex.: Supabase/PgBouncer)
+      connect_timeout: 15,
+      prepare: false, // compatível com poolers em modo transação (ex.: Supabase/PgBouncer, Neon pooled)
       onnotice: () => {},
     });
   }

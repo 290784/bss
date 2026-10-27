@@ -13,15 +13,17 @@ import { createAppointment, changeStatus } from "../src/server/modules/appointme
 import { recordPayment } from "../src/server/modules/payments";
 import { withSystem, withTenant, type Tx } from "../src/server/db";
 import { addDaysToKey, localDateKey } from "../src/lib/time";
+import { normalizeDatabaseUrl, pickDatabaseUrl } from "../src/server/db-url";
 
 const EMAIL = "demo@beautyos.dev";
 
 async function main() {
-  const url = process.env.DATABASE_URL;
-  if (!url) throw new Error("DATABASE_URL não definida");
+  const found = pickDatabaseUrl(["DATABASE_URL", "POSTGRES_URL"]);
+  if (!found) throw new Error("DATABASE_URL não definida");
+  const { url, ssl } = normalizeDatabaseUrl(found.value);
   if (process.env.NODE_ENV === "production" && process.env.ALLOW_DEMO_SEED !== "1")
     throw new Error("Seed de demonstração bloqueado em produção (defina ALLOW_DEMO_SEED=1 conscientemente).");
-  const sql = postgres(url, { max: 4, prepare: false, onnotice: () => {} });
+  const sql = postgres(url, { ssl, max: 4, prepare: false, onnotice: () => {} });
   const password = process.env.DEMO_PASSWORD ?? randomBytes(9).toString("base64url");
 
   const [exists] = await sql`select id from app.users where lower(email) = ${EMAIL}`;

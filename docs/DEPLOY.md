@@ -31,3 +31,19 @@ variáveis estiverem marcadas também para Preview.
 1. Abra a URL, crie sua conta e faça o onboarding.
 2. Não rode `db:seed-demo` em produção (é bloqueado por padrão).
 3. Ative backups no provedor do banco antes de cadastrar clientes reais.
+
+## Solução de problemas do banco
+Rode o diagnóstico (local ou com a URL de produção): `DATABASE_URL="..." npm run db:check`.
+
+| Mensagem | Causa | Solução |
+|---|---|---|
+| `unrecognized configuration parameter "channel_binding"` / `"pgbouncer"` | parâmetros de outros clientes na URL (padrão do Neon/Prisma) | **corrigido**: a aplicação remove esses parâmetros automaticamente |
+| "Tabelas não encontradas" (`42P01`) | migrações não rodaram | o build roda `db:migrate`; confira se o deploy usou o `vercel.json` atual |
+| "não pode criar papéis (CREATEROLE)" | usuário sem permissão | use o usuário dono (Neon: owner; Supabase: `postgres`) |
+| "O papel app_tenant já existe… outro usuário" | servidor compartilhado com outro projeto | rode o `GRANT` indicado na mensagem ou use um banco novo |
+| "Usuário ou senha incorretos" (`28P01`) | URL copiada errada ou senha trocada | copie de novo a connection string |
+| "Nenhuma URL de banco definida" | variável ausente | conecte o banco ao projeto (Storage) ou defina `DATABASE_URL` |
+
+Validado localmente simulando o Neon: servidor PostgreSQL novo, dono **sem** superusuário, URL com
+`channel_binding=require` — migração, diagnóstico, 24 testes de integração (incluindo isolamento entre
+empresas) e o fluxo completo no navegador passaram.
