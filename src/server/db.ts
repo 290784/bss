@@ -1,6 +1,6 @@
 import "server-only";
 import postgres from "postgres";
-import { normalizeDatabaseUrl, pickDatabaseUrl } from "@/server/db-url";
+import { missingDatabaseMessage, normalizeDatabaseUrl, pickDatabaseUrl } from "@/server/db-url";
 
 /**
  * Duas formas de acesso ao banco:
@@ -20,7 +20,7 @@ export function getSql(): Sql {
   if (!globalForDb.__beautyDb) {
     // DATABASE_URL (padrão) ou POSTGRES_URL (nome usado pela integração Supabase/Vercel).
     const found = pickDatabaseUrl(["DATABASE_URL", "POSTGRES_URL"]);
-    if (!found) throw new Error("Banco de dados não configurado: defina DATABASE_URL nas variáveis de ambiente.");
+    if (!found) throw new Error(missingDatabaseMessage());
     const { url, ssl } = normalizeDatabaseUrl(found.value);
     globalForDb.__beautyDb = postgres(url, {
       ssl,

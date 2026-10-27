@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { explainDatabaseError, normalizeDatabaseUrl } from "@/server/db-url";
+import { explainDatabaseError, missingDatabaseMessage, normalizeDatabaseUrl, pickDatabaseUrl } from "@/server/db-url";
 
 describe("normalizeDatabaseUrl", () => {
   it("remove channel_binding (padrão do Neon) e força SSL", () => {
@@ -32,5 +32,22 @@ describe("normalizeDatabaseUrl", () => {
   it("traduz erros comuns", () => {
     expect(explainDatabaseError({ code: "28P01" })).toMatch(/senha/);
     expect(explainDatabaseError({ code: "42P01" })).toMatch(/migrações/);
+  });
+});
+
+describe("pickDatabaseUrl com prefixo da Vercel", () => {
+  it("prefere o nome exato", () => {
+    expect(pickDatabaseUrl(["DATABASE_URL"], { DATABASE_URL: "postgres://a/b", STORAGE_DATABASE_URL: "postgres://c/d" })?.name).toBe("DATABASE_URL");
+  });
+  it("aceita o mesmo nome com prefixo quando o exato não existe", () => {
+    const env = { STORAGE_DATABASE_URL: "postgres://c/d", STORAGE_DATABASE_URL_UNPOOLED: "postgres://e/f" };
+    expect(pickDatabaseUrl(["DATABASE_URL_UNPOOLED", "DATABASE_URL"], env)?.name).toBe("STORAGE_DATABASE_URL_UNPOOLED");
+    expect(pickDatabaseUrl(["DATABASE_URL"], env)?.name).toBe("STORAGE_DATABASE_URL");
+  });
+  it("mensagem cita o ambiente da Vercel e lista só nomes, nunca valores", () => {
+    const m = missingDatabaseMessage({ VERCEL: "1", VERCEL_ENV: "preview", PGHOST: "segredo.neon.tech" });
+    expect(m).toContain("PGHOST");
+    expect(m).not.toContain("segredo");
+    expect(m).toContain("ambiente Preview");
   });
 });

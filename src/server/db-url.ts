@@ -28,13 +28,42 @@ export function normalizeDatabaseUrl(raw: string): { url: string; ssl: false | "
   return { url: u.toString(), ssl, host: u.hostname };
 }
 
-/** Primeira URL configurada, na ordem de preferência. */
-export function pickDatabaseUrl(names: string[]): { name: string; value: string } | null {
+/**
+ * Primeira URL configurada, na ordem de preferência. Se nenhum nome exato existir, aceita os mesmos
+ * nomes com prefixo — a Vercel permite um prefixo ao conectar um banco (ex.: STORAGE_DATABASE_URL,
+ * NEON_DATABASE_URL_UNPOOLED).
+ */
+export function pickDatabaseUrl(names: string[], env: Record<string, string | undefined> = process.env): { name: string; value: string } | null {
   for (const name of names) {
-    const value = process.env[name];
+    const value = env[name];
     if (value && value.trim()) return { name, value };
   }
+  for (const name of names) {
+    const prefixed = Object.keys(env).filter((k) => k.endsWith(`_${name}`) && env[k]?.trim()).sort();
+    if (prefixed[0]) return { name: prefixed[0], value: env[prefixed[0]]! };
+  }
   return null;
+}
+
+/** Nomes (nunca valores) de variáveis que parecem de banco — para mensagens de diagnóstico. */
+export function databaseLikeEnvNames(env: Record<string, string | undefined> = process.env): string[] {
+  return Object.keys(env).filter((k) => /(DATABASE|POSTGRES|^PG|NEON|SUPABASE)/.test(k) && !/^npm_/.test(k)).sort();
+}
+
+/** Mensagem para quando nenhuma URL foi encontrada, com o próximo passo concreto. */
+export function missingDatabaseMessage(env: Record<string, string | undefined> = process.env): string {
+  const seen = databaseLikeEnvNames(env);
+  const where = env.VERCEL_ENV === "preview" ? "Preview" : env.VERCEL_ENV === "development" ? "Development" : "Production";
+  return [
+    "Nenhuma URL do banco definida (DATABASE_URL).",
+    seen.length
+      ? `Variáveis parecidas encontradas: ${seen.join(", ")}. Se alguma for a connection string do banco, renomeie para DATABASE_URL.`
+      : "Nenhuma variável de banco encontrada neste ambiente.",
+    env.VERCEL
+      ? `Na Vercel (ambiente ${where}): abra o projeto → Storage → Create Database (Neon) ou "Connect" num banco existente, ` +
+        `marque o ambiente ${where} e faça um novo deploy (Deployments → ⋯ → Redeploy).`
+      : "Localmente: copie .env.example para .env.local e preencha DATABASE_URL.",
+  ].join(" ");
 }
 
 /** Traduz erros comuns de conexão/permissão em instruções compreensíveis. */

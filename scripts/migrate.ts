@@ -7,7 +7,7 @@
 import postgres from "postgres";
 import { readdir, readFile } from "node:fs/promises";
 import path from "node:path";
-import { explainDatabaseError, normalizeDatabaseUrl, pickDatabaseUrl } from "../src/server/db-url";
+import { explainDatabaseError, missingDatabaseMessage, normalizeDatabaseUrl, pickDatabaseUrl } from "../src/server/db-url";
 
 /** Migrações preferem a conexão direta (sem pooler), quando o provedor oferece uma. */
 export const MIGRATION_URL_VARS = ["MIGRATION_DATABASE_URL", "DATABASE_URL_UNPOOLED", "POSTGRES_URL_NON_POOLING", "DATABASE_URL", "POSTGRES_URL"];
@@ -77,7 +77,7 @@ async function preflight(sql: postgres.Sql, log: (m: string) => void) {
 if (import.meta.url === `file://${process.argv[1]}`) {
   const found = pickDatabaseUrl(MIGRATION_URL_VARS);
   if (!found) {
-    console.error("✘ Nenhuma URL de banco definida. Configure DATABASE_URL (ou conecte um banco Neon/Supabase ao projeto na Vercel).");
+    console.error(`✘ ${missingDatabaseMessage()}`);
     process.exit(1);
   }
   console.log(`Usando ${found.name} para migrar.`);

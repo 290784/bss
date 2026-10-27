@@ -42,7 +42,8 @@ Rode o diagnóstico (local ou com a URL de produção): `DATABASE_URL="..." npm 
 | "não pode criar papéis (CREATEROLE)" | usuário sem permissão | use o usuário dono (Neon: owner; Supabase: `postgres`) |
 | "O papel app_tenant já existe… outro usuário" | servidor compartilhado com outro projeto | rode o `GRANT` indicado na mensagem ou use um banco novo |
 | "Usuário ou senha incorretos" (`28P01`) | URL copiada errada ou senha trocada | copie de novo a connection string |
-| "Nenhuma URL de banco definida" | variável ausente | conecte o banco ao projeto (Storage) ou defina `DATABASE_URL` |
+| "Nenhuma URL do banco definida" | nenhum banco conectado **a este ambiente** | Storage → conecte o banco marcando Production **e** Preview; depois Redeploy. Deploys de *preview* (branches/PRs) só recebem variáveis marcadas como Preview |
+| variáveis com prefixo (`STORAGE_DATABASE_URL`…) | prefixo escolhido ao conectar o banco | **suportado**: o app reconhece o prefixo automaticamente |
 
 Validado localmente simulando o Neon: servidor PostgreSQL novo, dono **sem** superusuário, URL com
 `channel_binding=require` — migração, diagnóstico, 24 testes de integração (incluindo isolamento entre

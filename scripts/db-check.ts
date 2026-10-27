@@ -3,11 +3,11 @@
  * Testa a conexão que o app usa em produção, as migrações e o papel restrito (RLS).
  */
 import postgres from "postgres";
-import { explainDatabaseError, normalizeDatabaseUrl, pickDatabaseUrl } from "../src/server/db-url";
+import { explainDatabaseError, missingDatabaseMessage, normalizeDatabaseUrl, pickDatabaseUrl } from "../src/server/db-url";
 
 async function main() {
   const found = pickDatabaseUrl(["DATABASE_URL", "POSTGRES_URL"]);
-  if (!found) return fail("Nenhuma URL de banco definida (DATABASE_URL).");
+  if (!found) return fail(missingDatabaseMessage());
   const { url, ssl, host } = normalizeDatabaseUrl(found.value);
   console.log(`• Usando ${found.name} → ${host} (SSL: ${ssl ? "sim" : "não"})`);
   const sql = postgres(url, { ssl, max: 1, connect_timeout: 15, prepare: false, onnotice: () => {} });
