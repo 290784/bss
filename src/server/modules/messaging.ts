@@ -1,5 +1,6 @@
 import type { Sql, Tx } from "@/server/db";
 import { receiptUrl } from "@/server/modules/receipt";
+import { confirmationMessage } from "@/lib/messages";
 
 /**
  * Motor de mensagens (outbox).
@@ -94,7 +95,8 @@ export async function enqueueCancellationNotice(tx: Tx, appt: ApptForMessages) {
 type ClaimedJob = {
   id: string; channel: Channel; template: Template; idempotency_key: string; attempts: number; max_attempts: number;
   to_phone: string | null; to_email: string | null; client_name: string | null; starts_at: Date | null;
-  org_name: string; timezone: string; org_slug: string; public_token: string | null; services: string | null;
+  org_name: string; timezone: string; org_slug: string; public_token: string | null; services: string[] | null;
+  professional_name: string | null; appt_status: string | null;
 };
 
 export async function dispatchDueMessages(sql: Sql, providers: MessageProvider[], limit = 50) {
@@ -113,11 +115,13 @@ export async function dispatchDueMessages(sql: Sql, providers: MessageProvider[]
     select j.id, j.channel, j.template, j.idempotency_key, j.attempts, j.max_attempts,
            c.phone_normalized as to_phone, c.email as to_email, c.full_name as client_name,
            a.starts_at, o.name as org_name, o.timezone, o.slug as org_slug, a.public_token,
-           (select string_agg(s.service_name, ' + ' order by s.position) from app.appointment_services s where s.appointment_id = a.id) as services
+           (select array_agg(s.service_name order by s.position) from app.appointment_services s where s.appointment_id = a.id) as services,
+           p.display_name as professional_name, a.status as appt_status
     from claimed j
     join app.organizations o on o.id = j.organization_id
     left join app.clients c on c.id = j.client_id
-    left join app.appointments a on a.id = j.appointment_id`);
+    left join app.appointments a on a.id = j.appointment_id
+    left join app.professionals p on p.id = a.professional_id`);
 
   const result = { sent: 0, failed: 0, skipped: 0 };
   for (const job of claimed) {
@@ -130,6 +134,7 @@ export async function dispatchDueMessages(sql: Sql, providers: MessageProvider[]
                 where id = ${job.id}`;
       continue;
     }
+    const link = job.public_token ? receiptUrl(job.org_slug, job.public_token) : "";
     try {
       const res = await provider.send({
         idempotencyKey: job.idempotency_key,
@@ -140,9 +145,15 @@ export async function dispatchDueMessages(sql: Sql, providers: MessageProvider[]
           cliente: job.client_name?.split(" ")[0] ?? "",
           negocio: job.org_name,
           inicio: job.starts_at ? job.starts_at.toISOString() : "",
-          servicos: job.services ?? "",
+          servicos: (job.services ?? []).join(" + "),
           // Comprovante completo: serviços, horário, profissional, endereço, calendário e "confirmar presença".
-          link: job.public_token ? receiptUrl(job.org_slug, job.public_token) : "",
+          link,
+          // Texto pronto no tom da casa (o provedor usa quando o canal aceita texto livre).
+          ...(job.template === "appointment_confirmation" && job.starts_at && job.client_name && link
+            ? { mensagem: confirmationMessage({
+                clientName: job.client_name, services: job.services ?? [], startsAt: job.starts_at, timeZone: job.timezone,
+                professionalName: job.professional_name ?? "", url: link, pending: job.appt_status === "pending" }) }
+            : {}),
         },
       });
       result.sent++;

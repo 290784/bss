@@ -176,7 +176,11 @@ try {
     await page.waitForURL(/agendamento=/);
     await page.getByRole("dialog").getByRole("button", { name: "Confirmar", exact: true }).click();
     await page.getByRole("dialog").getByText("Confirmação para a cliente").waitFor();
-    await page.getByRole("dialog").getByRole("link", { name: /Enviar no WhatsApp/ }).waitFor();
+    await page.getByRole("dialog").getByRole("button", { name: "Concluir atendimento" }).waitFor(); // já recarregou como confirmado
+    const wa = await page.getByRole("dialog").getByRole("link", { name: /Enviar no WhatsApp/ }).getAttribute("href");
+    const text = decodeURIComponent(new URL(wa).searchParams.get("text") ?? "");
+    if (!/^Oi, Carla! 😊 Tudo bem\? Passando pra confirmar seu horário de manicure, na .+ \(\d\d\/\d\d\), às \d+h(\d\d)?, com .+\.\n\nDeixei aqui o link com o endereço e a confirmação de presença, tá bom\? 💚\n\n🔗 Ver meu agendamento:\nhttp\S+\/agendamento\/[a-f0-9]{64}\n\nTe esperamos! 🥰$/.test(text))
+      throw new Error("mensagem de confirmação fora do padrão: " + text);
     await shot(page, "07b-drawer-confirmacao");
   });
 
