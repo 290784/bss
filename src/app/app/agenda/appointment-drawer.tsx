@@ -10,6 +10,7 @@ import { useToast } from "@/components/ui/toast";
 import { formatInTz, localDateKey, localTime } from "@/lib/time";
 import { formatMoney, parseMoneyToCents } from "@/lib/money";
 import { formatPhone } from "@/lib/text";
+import { confirmationMessage } from "@/lib/messages";
 import { canReschedule, nextStatuses, STATUS_LABEL, type AppointmentStatus } from "@/domain/appointment-status";
 import type { AgendaProfessional } from "./agenda-view";
 import { addServiceAction, changeStatusAction, getAppointmentAction, recordPaymentAction, refundAction, rescheduleAction, type AppointmentDetailDTO } from "./actions";
@@ -224,9 +225,10 @@ const whenText = (d: AppointmentDetailDTO, tz: string) =>
   `${formatInTz(new Date(d.startsAt), tz, { weekday: "long", day: "2-digit", month: "long" })} às ${localTime(new Date(d.startsAt), tz)}`;
 
 function confirmationText(d: AppointmentDetailDTO, tz: string) {
-  return `Oi, ${firstName(d.clientName)}! Seu horário está ${d.status === "pending" ? "reservado e em análise" : "confirmado"} ✨\n` +
-    `${d.services.map((s) => s.service_name).join(" + ")} · ${whenText(d, tz)} com ${d.professionalName}.\n` +
-    `Comprovante completo, com endereço e botão para confirmar presença: ${d.receiptUrl}`;
+  return confirmationMessage({
+    clientName: d.clientName, services: d.services.map((s) => s.service_name), startsAt: new Date(d.startsAt), timeZone: tz,
+    professionalName: d.professionalName, url: d.receiptUrl, pending: d.status === "pending",
+  });
 }
 function offerText(d: AppointmentDetailDTO, sg: AppointmentDetailDTO["suggestions"][number], tz: string) {
   return `Oi, ${firstName(d.clientName)}! Para o seu horário de ${whenText(d, tz)}, que tal aproveitar e fazer também ${sg.name} ` +

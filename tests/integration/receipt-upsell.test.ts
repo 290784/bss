@@ -139,5 +139,7 @@ describe("agendamento online → comprovante, aviso à equipe e sugestões", () 
     const mine = sent.find((m) => m.idempotencyKey.includes(apptId) && m.template === "appointment_confirmation");
     expect(mine?.variables.link).toMatch(new RegExp(`/b/${A.slug}/agendamento/${token}$`));
     expect(mine?.variables.servicos).toBe("Manicure + Esmaltação em gel");
+    expect(mine?.variables.mensagem).toMatch(/^Oi, Carla! 😊 Tudo bem\? Passando pra confirmar seu horário de manicure e esmaltação em gel, na .+-feira \(\d\d\/\d\d\), às 10h, com /);
+    expect(mine?.variables.mensagem).toContain(`🔗 Ver meu agendamento:\n${mine?.variables.link}`);
   });
 });

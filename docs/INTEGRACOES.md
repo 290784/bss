@@ -14,8 +14,9 @@ Nenhuma integração externa está ativa. Abaixo, o contrato já preparado e o q
   iniciadas pela empresa (lembretes). Há cobrança por conversa/mensagem conforme a tabela vigente da Meta —
   verificar antes de definir preços dos planos. Não usar bibliotecas não oficiais.
 - **E-mail:** Resend/Postmark/SES com domínio verificado (SPF/DKIM).
-- Variáveis enviadas ao provedor: `cliente` (primeiro nome), `negocio`, `inicio` (ISO), `servicos`
-  e `link` — o comprovante completo do agendamento (`/b/<slug>/agendamento/<token>`), com serviços,
+- Variáveis enviadas ao provedor: `cliente` (primeiro nome), `negocio`, `inicio` (ISO), `servicos`,
+  `mensagem` (só na confirmação: texto pronto no tom da casa, de `src/lib/messages.ts`; no WhatsApp oficial
+  mensagens iniciadas pela empresa precisam de template aprovado com o mesmo texto) e `link` — o comprovante completo do agendamento (`/b/<slug>/agendamento/<token>`), com serviços,
   horário, profissional, endereço, arquivo de calendário e botão "Confirmar presença".
 - Enquanto não houver provedor, os jobs vencidos ficam `skipped` com "Canal não conectado"
   e a interface informa que nada foi enviado. Até lá, a equipe envia a confirmação completa pelo
