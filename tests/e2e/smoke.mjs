@@ -214,9 +214,13 @@ try {
   globalThis.__page = p2;
   await step("cliente confirma presença pelo comprovante", async () => {
     await p2.goto(p2.url().replace("?novo=1", ""));
-    await p2.getByTestId("receipt-status").filter({ hasText: "Agendamento confirmado" }).waitFor();
+    await p2.getByTestId("receipt-status").filter({ hasText: "Confirme sua presença" }).waitFor();
+    // Abrir o link não confirma nada: só o toque no botão.
+    await p2.reload(); await p2.getByTestId("receipt-status").filter({ hasText: "Confirme sua presença" }).waitFor();
+    await shot(p2, "07c0-confirme-presenca");
     await p2.getByRole("button", { name: "Confirmar presença" }).click();
     await p2.getByTestId("attendance-confirmed").waitFor();
+    await p2.getByTestId("receipt-status").filter({ hasText: "Presença confirmada" }).waitFor();
     await shot(p2, "07c-presenca-confirmada");
   });
 

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { CalendarPlus, CheckCircle2, Clock, Hourglass, MapPin, MessageCircle, Phone, ShieldCheck, Sparkle, User, XCircle } from "lucide-react";
+import { BellRing, CalendarPlus, CheckCircle2, Clock, Hourglass, MapPin, MessageCircle, Phone, ShieldCheck, Sparkle, User, XCircle } from "lucide-react";
 import { withSystem } from "@/server/db";
 import { Sparkles } from "@/components/brand/sparkles";
 import { Card } from "@/components/ui/primitives";
@@ -17,8 +17,9 @@ type Params = { params: Promise<{ slug: string; token: string }>; searchParams: 
 // Comprovante pessoal: nunca indexar nem vazar o endereço em links externos.
 export const metadata: Metadata = { title: "Seu agendamento", robots: { index: false, follow: false }, referrer: "no-referrer" };
 
-const STATUS: Record<Receipt["status"], { title: string; text: string; icon: typeof CheckCircle2; tone: string }> = {
-  confirmed: { title: "Agendamento confirmado", text: "Seu horário está reservado.", icon: CheckCircle2, tone: "text-st-completed bg-st-completed-bg" },
+type Status = { title: string; text: string; icon: typeof CheckCircle2; tone: string };
+const STATUS: Record<Receipt["status"], Status> = {
+  confirmed: { title: "Horário reservado", text: "Seu horário está reservado.", icon: CheckCircle2, tone: "text-st-completed bg-st-completed-bg" },
   pending: { title: "Solicitação recebida", text: "O estabelecimento vai revisar e confirmar seu horário.", icon: Hourglass, tone: "text-violet-100 bg-white/10" },
   completed: { title: "Atendimento concluído", text: "Obrigada pela visita!", icon: CheckCircle2, tone: "text-st-completed bg-st-completed-bg" },
   cancelled: { title: "Agendamento cancelado", text: "Este horário foi cancelado.", icon: XCircle, tone: "text-danger bg-st-noshow-bg" },
@@ -31,13 +32,20 @@ export default async function ReceiptPage({ params, searchParams }: Params) {
   const r = await withSystem((tx) => getReceipt(tx, slug, token));
   if (!r) notFound();
   const tz = r.business.timezone;
-  const st = STATUS[r.status];
   const upcoming = r.startsAt > new Date() && (r.status === "confirmed" || r.status === "pending");
+  // A presença só é confirmada quando a cliente toca no botão — nunca ao abrir o link.
+  const askPresence = upcoming && r.status === "confirmed" && !r.clientConfirmedAt;
+  const st: Status = askPresence
+    ? { title: "Confirme sua presença", text: "Toque no botão abaixo para avisar que você vem. Assim já te esperamos!", icon: BellRing, tone: "text-violet-100 bg-white/10" }
+    : r.status === "confirmed" && r.clientConfirmedAt
+      ? { title: "Presença confirmada", text: "Obrigada por confirmar. Te esperamos!", icon: CheckCircle2, tone: "text-st-completed bg-st-completed-bg" }
+      : STATUS[r.status];
   const minutes = r.services.reduce((a, s) => a + s.minutes, 0);
   const total = r.priceCents - r.discountCents;
   const bizPhone = normalizePhone(r.business.phone);
   const when = formatInTz(r.startsAt, tz, { weekday: "long", day: "numeric", month: "long", year: "numeric" });
   const services = r.services.map((s) => s.name).join(" + ");
+  const waReschedule = encodeURIComponent(`Olá! Sou ${r.clientFirstName}, tenho horário de ${services} em ${when} às ${localTime(r.startsAt, tz)}, mas não vou conseguir ir. Podemos remarcar?`);
   const waText = encodeURIComponent(`Olá! Sou ${r.clientFirstName}, tenho horário de ${services} em ${when} às ${localTime(r.startsAt, tz)}.`);
 
   return (
@@ -62,6 +70,15 @@ export default async function ReceiptPage({ params, searchParams }: Params) {
               <p className="text-[13px] text-muted">{st.text}</p>
             </div>
           </div>
+          {askPresence && (
+            <div className="border-b border-line px-5 py-4">
+              <ConfirmAttendanceButton slug={slug} token={token} />
+              {bizPhone && (
+                <a href={`https://wa.me/${bizPhone}?text=${waReschedule}`} target="_blank" rel="noreferrer"
+                  className="mt-3 block text-center text-[13px] font-medium text-accent-text hover:underline">Não vou conseguir ir — falar com o estabelecimento</a>
+              )}
+            </div>
+          )}
 
           <dl className="grid gap-4 px-5 py-5 text-[15px]">
             <Row icon={Clock} label="Quando">
@@ -97,13 +114,11 @@ export default async function ReceiptPage({ params, searchParams }: Params) {
 
         {upcoming && (
           <Card className="flex flex-col gap-3 p-5">
-            {r.status === "confirmed" && (r.clientConfirmedAt ? (
+            {r.status === "confirmed" && r.clientConfirmedAt && (
               <p className="flex items-center justify-center gap-2 rounded-xl bg-st-completed-bg px-4 py-3 text-sm font-semibold text-st-completed" data-testid="attendance-confirmed">
                 <CheckCircle2 className="h-5 w-5" />Presença confirmada. Te esperamos!
               </p>
-            ) : (
-              <ConfirmAttendanceButton slug={slug} token={token} />
-            ))}
+            )}
             <div className="grid gap-2 sm:grid-cols-2">
               <a href={`/b/${slug}/agendamento/${token}/calendario`} className={buttonClass("secondary", "lg", "w-full")}>
                 <CalendarPlus className="h-5 w-5" />Salvar na agenda
