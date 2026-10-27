@@ -33,7 +33,7 @@ export function ServicesManager({ services, professionals, readOnly }: { service
               <h2 className="mb-2 text-[13px] font-semibold tracking-wide text-muted uppercase">{cat}</h2>
               <Card className="divide-y divide-line">
                 {list.map((s) => (
-                  <div key={s.id} className="flex flex-col gap-2 px-4 py-3 sm:flex-row sm:items-center">
+                  <div key={s.id} className="flex flex-col gap-2 px-4 py-3 transition hover:bg-white/[0.03] sm:flex-row sm:items-center">
                     <button className="min-w-0 flex-1 text-left" onClick={() => !readOnly && setEditing(s)} disabled={readOnly}>
                       <div className="flex items-center gap-2 text-sm font-medium">
                         {s.name}

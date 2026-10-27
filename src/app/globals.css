@@ -138,6 +138,29 @@
     box-shadow: 0 0 0 1px rgb(234 207 252 / 0.25) inset, 0 8px 24px -6px rgb(150 13 242 / 0.6), 0 0 32px -8px rgb(192 110 247 / 0.55);
   }
   .btn-glow:hover { filter: brightness(1.08) saturate(1.05); }
+  /*
+   * Interação de cards clicáveis: sobe e brilha ao passar o mouse (só em dispositivos com mouse,
+   * para não "grudar" no toque), afunda ao clicar/tocar, anel visível no foco por teclado.
+   */
+  .lift {
+    -webkit-tap-highlight-color: transparent;
+    transition: transform 0.28s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.28s ease, background-color 0.28s ease, border-color 0.28s ease;
+  }
+  @media (hover: hover) {
+    .lift:hover {
+      transform: translateY(-3px);
+      border-color: rgb(213 158 250 / 0.45);
+      box-shadow: 0 0 0 1px rgb(213 158 250 / 0.3) inset, 0 18px 40px -18px rgb(150 13 242 / 0.75);
+    }
+  }
+  .lift:active { transform: translateY(0) scale(0.975); transition-duration: 0.12s; }
+  .lift:focus-visible { outline: 2px solid var(--color-violet-300); outline-offset: 3px; }
+  /* Cards informativos (não clicáveis): só realçam, sem "pular". */
+  .glow-hover { transition: box-shadow 0.35s ease, border-color 0.35s ease, background-color 0.35s ease; }
+  @media (hover: hover) {
+    .glow-hover:hover { box-shadow: 0 0 0 1px rgb(213 158 250 / 0.28) inset, 0 20px 50px -24px rgb(150 13 242 / 0.7); }
+  }
+
   /* Texto cintilante (brilho que percorre o texto) */
   .text-shimmer {
     background: linear-gradient(100deg, var(--color-violet-200) 0%, #ffffff 22%, var(--color-violet-100) 40%, var(--color-violet-300) 60%, #ffffff 78%, var(--color-violet-200) 100%);
@@ -163,6 +186,8 @@
 }
 
 @keyframes shimmer { to { background-position: -200% 0; } }
+@keyframes toast-time { from { transform: scaleX(1); } to { transform: scaleX(0); } }
+@keyframes story-fill { from { width: 0%; } to { width: 100%; } }
 @keyframes shimmer-text { to { background-position: -220% 0; } }
 @keyframes twinkle { 0%, 100% { opacity: 0; transform: scale(0.4) rotate(0deg); } 50% { opacity: 1; transform: scale(1) rotate(20deg); } }
 @keyframes float-glow { 0%, 100% { transform: translate3d(0, 0, 0); } 50% { transform: translate3d(0, -10px, 0); } }
@@ -180,4 +205,5 @@
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+  .lift:hover, .lift:active { transform: none; }
 }

@@ -289,7 +289,7 @@ function Column({
         const pro = pros.find((p) => p.id === item.professionalId);
         return (
           <button key={item.id} data-appt onClick={() => onOpen(item.id)}
-            className={cn("absolute overflow-hidden rounded-md border-l-[3px] px-2 py-1 text-left shadow-sm transition-[filter] hover:brightness-[0.97] focus-visible:z-10", STATUS_STYLE[item.status].block)}
+            className={cn("absolute overflow-hidden rounded-lg border-l-[3px] px-2 py-1 text-left shadow-sm transition duration-200 hover:z-10 hover:shadow-[0_0_0_1px_rgb(213_158_250/0.45),0_10px_24px_-10px_rgb(150_13_242/0.7)] hover:brightness-125 active:scale-[0.97] focus-visible:z-10 [-webkit-tap-highlight-color:transparent]", STATUS_STYLE[item.status].block)}
             style={{ top: (s - bounds.start) * PX_PER_MIN + 1, height: height - 2, left: `calc(${(col / cols) * 100}% + 3px)`, width: `calc(${100 / cols}% - 6px)` }}
             aria-label={`${localTime(new Date(item.startsAt), tz)} ${item.clientName}, ${item.services}, ${STATUS_LABEL[item.status]}`}>
             <div className="flex items-center gap-1 text-[11px] text-ink-soft tabular">
@@ -408,7 +408,7 @@ function MonthGrid({ rangeStart, date, today, timeZone, items, pros, onDay }: Pr
           const inMonth = d.startsWith(month);
           return (
             <button key={d} onClick={() => onDay(d)}
-              className={cn("flex min-h-[92px] flex-col gap-1 border-r border-b border-line p-1.5 text-left hover:bg-sunken/60 sm:min-h-[112px] sm:p-2 [&:nth-child(7n)]:border-r-0", !inMonth && "bg-canvas/50 text-muted")}
+              className={cn("flex min-h-[92px] flex-col gap-1 border-r border-b border-line p-1.5 text-left transition hover:bg-accent-subtle active:bg-accent-muted sm:min-h-[112px] sm:p-2 [&:nth-child(7n)]:border-r-0", !inMonth && "bg-canvas/50 text-muted")}
               aria-label={`${d.split("-").reverse().join("/")}: ${list.length} atendimento(s)`}>
               <span className={cn("grid h-6 w-6 place-items-center rounded-full text-[13px] font-medium tabular", d === today && "btn-glow text-white")}>{Number(d.slice(8))}</span>
               {list.slice(0, 3).map((i) => {

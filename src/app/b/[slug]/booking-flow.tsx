@@ -92,7 +92,7 @@ export function BookingFlow({ slug, timeZone, days, requiresApproval, cancellati
               {services.map((s) => (
                 <li key={s.id}>
                   <button onClick={() => chooseService(s)}
-                    className="flex w-full items-start justify-between gap-4 rounded-xl border border-line p-4 text-left transition-colors hover:border-accent hover:bg-accent-subtle/40">
+                    className="lift flex w-full items-start justify-between gap-4 rounded-2xl border border-line bg-surface p-4 text-left">
                     <span>
                       <span className="block font-medium">{s.name}</span>
                       {s.description && <span className="mt-0.5 block text-[13px] text-muted">{s.description}</span>}
@@ -110,10 +110,10 @@ export function BookingFlow({ slug, timeZone, days, requiresApproval, cancellati
           <>
             <h2 className="mb-3 text-lg font-semibold">Com quem?</h2>
             <ul className="grid gap-2 sm:grid-cols-2">
-              <li><button onClick={() => setPro(null)} className="flex w-full items-center gap-3 rounded-xl border border-line p-4 text-left hover:border-accent"><span className="grid h-10 w-10 place-items-center rounded-full bg-highlight-subtle text-highlight-text"><Sparkles className="h-4 w-4" /></span><span><span className="block font-medium">Sem preferência</span><span className="text-xs text-muted">Mais horários disponíveis</span></span></button></li>
+              <li><button onClick={() => setPro(null)} className="lift flex w-full items-center gap-3 rounded-2xl border border-line bg-surface p-4 text-left"><span className="grid h-10 w-10 place-items-center rounded-full bg-highlight-subtle text-highlight-text"><Sparkles className="h-4 w-4" /></span><span><span className="block font-medium">Sem preferência</span><span className="text-xs text-muted">Mais horários disponíveis</span></span></button></li>
               {prosForService.map((p) => (
                 <li key={p.id}>
-                  <button onClick={() => setPro(p.id)} className="flex w-full items-center gap-3 rounded-xl border border-line p-4 text-left hover:border-accent">
+                  <button onClick={() => setPro(p.id)} className="lift flex w-full items-center gap-3 rounded-2xl border border-line bg-surface p-4 text-left">
                     <span className="grid h-10 w-10 place-items-center rounded-full bg-accent-muted text-sm font-semibold text-accent-text">{p.name.slice(0, 1)}</span>
                     <span><span className="block font-medium">{p.name}</span>{p.specialty && <span className="text-xs text-muted">{p.specialty}</span>}</span>
                   </button>
@@ -131,7 +131,7 @@ export function BookingFlow({ slug, timeZone, days, requiresApproval, cancellati
             <div className="-mx-5 mb-5 flex snap-x gap-2 overflow-x-auto px-5 pb-1 sm:-mx-6 sm:px-6">
               {days.map((d) => (
                 <button key={d} onClick={() => { setDate(d); setTime(null); }} aria-pressed={date === d}
-                  className={cn("flex w-14 shrink-0 snap-start flex-col items-center rounded-xl border py-2.5", date === d ? "border-violet-300 btn-glow text-white" : "border-line hover:border-accent")}>
+                  className={cn("lift flex w-14 shrink-0 snap-start flex-col items-center rounded-xl border py-2.5", date === d ? "border-violet-300 btn-glow text-white" : "border-line hover:border-accent")}>
                   <span className={cn("text-[11px] uppercase", date === d ? "text-accent-muted" : "text-muted")}>{WD[localWeekday(d)]}</span>
                   <span className="text-lg font-semibold tabular">{Number(d.slice(8))}</span>
                 </button>
@@ -144,7 +144,7 @@ export function BookingFlow({ slug, timeZone, days, requiresApproval, cancellati
               : (
                 <div className="grid grid-cols-4 gap-2 sm:grid-cols-6">
                   {slots.list.map((s) => (
-                    <button key={s.time} onClick={() => { setTime(s.time); setNotice(null); }} className="h-10 rounded-lg border border-line text-sm font-medium tabular hover:border-violet-300 hover:bg-sunken">{s.time}</button>
+                    <button key={s.time} onClick={() => { setTime(s.time); setNotice(null); }} className="lift h-10 rounded-lg border border-line bg-surface text-sm font-medium tabular hover:border-violet-300 hover:bg-sunken">{s.time}</button>
                   ))}
                 </div>
               )}
