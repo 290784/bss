@@ -5,6 +5,7 @@ import { listProfessionals, listTimeOff } from "@/server/modules/team";
 import { listServices } from "@/server/modules/catalog";
 import { can } from "@/domain/permissions";
 import { addDaysToKey, isDateKey, localDateKey, localWeekday, zonedDateTime } from "@/lib/time";
+import { receiptUrl } from "@/server/modules/receipt";
 import { AgendaView, type AgendaViewMode } from "./agenda-view";
 
 export const metadata: Metadata = { title: "Agenda" };
@@ -58,6 +59,7 @@ export default async function AgendaPage({ searchParams }: { searchParams: Promi
       initialProfessionalId={sp.profissional ?? null}
       openAppointmentId={sp.agendamento ?? null}
       readOnly={ctx.access === "read_only"}
+      canManage={ctx.access !== "read_only" && can(ctx.role, "agenda.manage")}
       canSeeAll={seeAll}
       canCreateClients={can(ctx.role, "clients.manage")}
       professionals={visiblePros.map((p) => ({ id: p.id, name: p.display_name, color: p.color, serviceIds: p.service_ids, hours: p.hours }))}
@@ -66,6 +68,8 @@ export default async function AgendaPage({ searchParams }: { searchParams: Promi
         id: a.id, professionalId: a.professional_id, clientName: a.client_name, startsAt: a.starts_at.toISOString(),
         endsAt: a.ends_at.toISOString(), status: a.status, source: a.source, services: a.services, squeezeIn: a.allow_overlap,
         priceCents: a.price_cents - a.discount_cents, paidCents: a.paid_cents,
+        serviceNames: a.service_names, clientPhone: a.client_phone, receiptUrl: receiptUrl(ctx.org.slug, a.public_token),
+        clientConfirmedAt: a.client_confirmed_at?.toISOString() ?? null, confirmationSentAt: a.confirmation_sent_at?.toISOString() ?? null,
       }))}
       timeOff={data.timeOff.map((t) => ({ id: t.id, professionalId: t.professional_id, startsAt: t.starts_at.toISOString(), endsAt: t.ends_at.toISOString(), reason: t.reason }))}
     />

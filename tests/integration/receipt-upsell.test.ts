@@ -2,7 +2,7 @@ import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import type { Sql } from "@/server/db";
 import { withSystem } from "@/server/db";
 import { asTenant, createOrg, freshDatabase, futureDate } from "../support/db";
-import { addServiceToAppointment, changeStatus, createAppointment } from "@/server/modules/appointments";
+import { addServiceToAppointment, changeStatus, createAppointment, listAgenda, recordConfirmationSent } from "@/server/modules/appointments";
 import { bookOnline, getPublicBusiness } from "@/server/modules/public-booking";
 import { confirmAttendance, getReceipt, receiptIcs } from "@/server/modules/receipt";
 import { suggestRelatedServices } from "@/server/modules/upsell";
@@ -131,6 +131,21 @@ describe("agendamento online → comprovante, aviso à equipe e sugestões", () 
       addServiceToAppointment(tx, actor(), { appointmentId: apptId, serviceId: svc.massagem! }))).rejects.toThrow(/não realiza/);
     const r = (await withSystem((tx) => getReceipt(tx, A.slug, token), sql))!;
     expect(r.services.map((s) => s.name)).toEqual(["Manicure", "Esmaltação em gel"]); // comprovante já mostra o novo total
+  });
+
+  it("reenvio da confirmação fica registrado e aparece na agenda", async () => {
+    const day = new Date(Date.parse(`${date}T00:00:00-03:00`));
+    const range = [day, new Date(day.getTime() + 86_400_000)] as const;
+    let [item] = (await asTenant(sql, A.ownerId, A.orgId, (tx) => listAgenda(tx, A.orgId, ...range))).filter((i) => i.id === apptId);
+    expect(item).toMatchObject({ confirmation_sent_at: null, public_token: token, service_names: ["Manicure", "Esmaltação em gel"] });
+    expect(item!.client_confirmed_at).toBeInstanceOf(Date);
+    await asTenant(sql, A.ownerId, A.orgId, (tx) => recordConfirmationSent(tx, actor(), apptId));
+    await asTenant(sql, A.ownerId, A.orgId, (tx) => recordConfirmationSent(tx, actor(), apptId));
+    [item] = (await asTenant(sql, A.ownerId, A.orgId, (tx) => listAgenda(tx, A.orgId, ...range))).filter((i) => i.id === apptId);
+    expect(item!.confirmation_sent_at).toBeInstanceOf(Date);
+    const ev = await sql`select data from app.appointment_events where appointment_id = ${apptId} and type = 'confirmation_sent'`;
+    expect(ev).toHaveLength(2);
+    expect(ev[0]!.data).toEqual({ via: "whatsapp" });
   });
 
   it("a mensagem de confirmação leva o link do comprovante (quando houver canal conectado)", async () => {

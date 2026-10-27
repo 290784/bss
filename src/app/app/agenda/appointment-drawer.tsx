@@ -13,7 +13,7 @@ import { formatPhone } from "@/lib/text";
 import { confirmationMessage } from "@/lib/messages";
 import { canReschedule, nextStatuses, STATUS_LABEL, type AppointmentStatus } from "@/domain/appointment-status";
 import type { AgendaProfessional } from "./agenda-view";
-import { addServiceAction, changeStatusAction, getAppointmentAction, recordPaymentAction, refundAction, rescheduleAction, type AppointmentDetailDTO } from "./actions";
+import { addServiceAction, changeStatusAction, confirmationSentAction, getAppointmentAction, recordPaymentAction, refundAction, rescheduleAction, type AppointmentDetailDTO } from "./actions";
 
 const METHOD_LABEL: Record<string, string> = { pix: "PIX", cash: "Dinheiro", credit_card: "Crédito", debit_card: "Débito", bank_transfer: "Transferência", other: "Outro" };
 const MSG_STATUS: Record<string, { label: string; variant: "neutral" | "success" | "warning" | "danger" }> = {
@@ -112,7 +112,8 @@ export function AppointmentDrawer({ id, timeZone, professionals, readOnly, onClo
             </section>
 
             {(data.status === "pending" || data.status === "confirmed") && (
-              <ClientConfirmation data={data} timeZone={timeZone} onCopied={() => toast("Link do comprovante copiado.")} />
+              <ClientConfirmation data={data} timeZone={timeZone} onCopied={() => toast("Link do comprovante copiado.")}
+                onSent={readOnly ? undefined : () => { confirmationSentAction(data.id).then(() => { load(); onChanged(); }); }} />
             )}
 
             {data.suggestions.length > 0 && (data.status === "pending" || data.status === "confirmed" || data.status === "completed") && (
@@ -236,16 +237,18 @@ function offerText(d: AppointmentDetailDTO, sg: AppointmentDetailDTO["suggestion
 }
 
 /** Confirmação completa para a cliente: comprovante com link próprio, enviado pelo WhatsApp da equipe. */
-function ClientConfirmation({ data, timeZone, onCopied }: { data: AppointmentDetailDTO; timeZone: string; onCopied: () => void }) {
+function ClientConfirmation({ data, timeZone, onCopied, onSent }: { data: AppointmentDetailDTO; timeZone: string; onCopied: () => void; onSent?: () => void }) {
+  const lastSent = data.events.find((e) => e.type === "confirmation_sent");
   return (
     <section>
       <h3 className="mb-1 text-[13px] font-semibold text-ink-soft">Confirmação para a cliente</h3>
       <p className="mb-2 text-xs text-muted">Comprovante com serviços, horário, profissional, endereço, botão para salvar na agenda e para confirmar presença.</p>
+      {lastSent && <p className="mb-2 text-xs text-ink-soft">Última confirmação enviada em {formatInTz(new Date(lastSent.created_at), timeZone, { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" })}.</p>}
       <div className="flex flex-wrap gap-2">
         {data.clientPhone && (
           <a href={`https://wa.me/${data.clientPhone}?text=${encodeURIComponent(confirmationText(data, timeZone))}`} target="_blank" rel="noreferrer"
-            className="inline-flex h-8 items-center gap-1.5 rounded-lg btn-glow px-3 text-[13px] font-medium text-white">
-            <MessageCircle className="h-3.5 w-3.5" />Enviar no WhatsApp
+            onClick={onSent} className="inline-flex h-8 items-center gap-1.5 rounded-lg btn-glow px-3 text-[13px] font-medium text-white">
+            <MessageCircle className="h-3.5 w-3.5" />{lastSent ? "Reenviar no WhatsApp" : "Enviar no WhatsApp"}
           </a>
         )}
         <button type="button" onClick={() => navigator.clipboard?.writeText(data.receiptUrl).then(onCopied)}
@@ -273,6 +276,7 @@ function describeEvent(e: { type: string; data: Record<string, unknown> }, tz: s
     case "payment_recorded": return `Pagamento de ${formatMoney(Number(d.amountCents))} registrado${d.isDeposit ? " (sinal)" : ""}`;
     case "payment_refunded": return `Estorno de ${formatMoney(Number(d.amountCents))}: ${d.reason}`;
     case "client_confirmed": return "A cliente confirmou presença pelo comprovante";
+    case "confirmation_sent": return "Confirmação enviada pelo WhatsApp";
     case "service_added": return `Serviço adicionado: ${d.name} (+${formatMoney(Number(d.priceCents))})`;
     default: return e.type;
   }

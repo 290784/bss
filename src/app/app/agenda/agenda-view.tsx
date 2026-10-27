@@ -1,7 +1,7 @@
 "use client";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState, useSyncExternalStore } from "react";
-import { CalendarDays, ChevronLeft, ChevronRight, Globe, Plus, Zap } from "lucide-react";
+import { CalendarDays, ChevronLeft, ChevronRight, Globe, MessageCircle, Plus, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Select } from "@/components/ui/form";
 import { EmptyState, STATUS_STYLE } from "@/components/ui/primitives";
@@ -10,6 +10,7 @@ import { addDaysToKey, formatInTz, localDateKey, localTime, localWeekday, minute
 import { STATUS_LABEL, type AppointmentStatus } from "@/domain/appointment-status";
 import { NewAppointmentDialog, type NewDraft } from "./new-appointment";
 import { AppointmentDrawer } from "./appointment-drawer";
+import { BlockSendButton, canSendConfirmation, ConfirmationContext, ConfirmationsDialog } from "./confirmations";
 
 export type AgendaViewMode = "dia" | "semana" | "mes";
 export type AgendaProfessional = { id: string; name: string; color: string; serviceIds: string[]; hours: { weekday: number; start: string; end: string }[] };
@@ -17,12 +18,13 @@ export type AgendaService = { id: string; name: string; priceCents: number; minu
 export type AgendaItemDTO = {
   id: string; professionalId: string; clientName: string; startsAt: string; endsAt: string; status: AppointmentStatus;
   source: "staff" | "online"; services: string; squeezeIn: boolean; priceCents: number; paidCents: number;
+  serviceNames: string[]; clientPhone: string | null; receiptUrl: string; clientConfirmedAt: string | null; confirmationSentAt: string | null;
 };
 export type TimeOffDTO = { id: string; professionalId: string | null; startsAt: string; endsAt: string; reason: string | null };
 
 type Props = {
   view: AgendaViewMode; date: string; today: string; rangeStart: string; rangeEnd: string; timeZone: string;
-  initialProfessionalId: string | null; openAppointmentId: string | null; readOnly: boolean; canSeeAll: boolean; canCreateClients: boolean;
+  initialProfessionalId: string | null; openAppointmentId: string | null; readOnly: boolean; canManage: boolean; canSeeAll: boolean; canCreateClients: boolean;
   professionals: AgendaProfessional[]; services: AgendaService[]; items: AgendaItemDTO[]; timeOff: TimeOffDTO[];
 };
 
@@ -36,6 +38,7 @@ export function AgendaView(props: Props) {
   const [showCancelled, setShowCancelled] = useState(false);
   const [draft, setDraft] = useState<NewDraft | null>(null);
   const [openId, setOpenId] = useState<string | null>(props.openAppointmentId);
+  const [showConfirmations, setShowConfirmations] = useState(false);
 
   const go = (params: Partial<{ data: string; visao: AgendaViewMode }>) => {
     const sp = new URLSearchParams({ data: params.data ?? date, visao: params.visao ?? view });
@@ -76,6 +79,9 @@ export function AgendaView(props: Props) {
     return `${formatInTz(s, timeZone, { day: "numeric", month: "short" })} – ${formatInTz(e, timeZone, { day: "numeric", month: "short", year: "numeric" })}`;
   }, [date, view, timeZone, props.rangeStart, props.rangeEnd]);
 
+  // Ainda sem envio nem confirmação da cliente: o número no botão "Confirmações".
+  const [nowMs] = useState(() => Date.now());
+  const toSend = visibleItems.filter((i) => canSendConfirmation(i, nowMs) && !i.confirmationSentAt && !i.clientConfirmedAt).length;
   const counts = useMemo(() => {
     const c: Record<string, number> = {};
     for (const i of items.filter((i) => visiblePros.some((p) => p.id === i.professionalId))) c[i.status] = (c[i.status] ?? 0) + 1;
@@ -89,6 +95,7 @@ export function AgendaView(props: Props) {
     );
 
   return (
+    <ConfirmationContext.Provider value={{ canManage: props.canManage, timeZone, pros: professionals, now: nowMs }}>
     <div className="flex flex-col gap-4">
       <div className="flex flex-col gap-3 xl:flex-row xl:items-center xl:justify-between">
         <div className="flex items-center gap-2">
@@ -119,6 +126,12 @@ export function AgendaView(props: Props) {
               <option value="all">Todas as profissionais</option>
               {professionals.map((p) => <option key={p.id} value={p.id}>{p.name}</option>)}
             </Select>
+          )}
+          {props.canManage && (
+            <Button variant="secondary" onClick={() => setShowConfirmations(true)} title="Enviar ou reenviar confirmações pelo WhatsApp">
+              <MessageCircle className="h-4 w-4" /> Confirmações
+              {toSend > 0 && <span className="grid h-5 min-w-5 place-items-center rounded-full bg-badge px-1 text-[11px] font-semibold text-white tabular">{toSend}</span>}
+            </Button>
           )}
           {!readOnly && (
             <Button onClick={() => setDraft({ date, time: "", professionalId: visiblePros[0]?.id ?? "" })} title="Novo agendamento (N)">
@@ -166,7 +179,9 @@ export function AgendaView(props: Props) {
           onClose={() => { setOpenId(null); if (props.openAppointmentId) router.replace(`/app/agenda?data=${date}&visao=${view}`); }}
           onChanged={() => router.refresh()} />
       )}
+      <ConfirmationsDialog open={showConfirmations} onClose={() => setShowConfirmations(false)} items={visibleItems} title={title} />
     </div>
+    </ConfirmationContext.Provider>
   );
 }
 
@@ -288,19 +303,22 @@ function Column({
         const height = Math.max((e - s) * PX_PER_MIN, 24);
         const pro = pros.find((p) => p.id === item.professionalId);
         return (
-          <button key={item.id} data-appt onClick={() => onOpen(item.id)}
-            className={cn("absolute overflow-hidden rounded-lg border-l-[3px] px-2 py-1 text-left shadow-sm transition duration-200 hover:z-10 hover:shadow-[0_0_0_1px_rgb(213_158_250/0.45),0_10px_24px_-10px_rgb(150_13_242/0.7)] hover:brightness-125 active:scale-[0.97] focus-visible:z-10 [-webkit-tap-highlight-color:transparent]", STATUS_STYLE[item.status].block)}
-            style={{ top: (s - bounds.start) * PX_PER_MIN + 1, height: height - 2, left: `calc(${(col / cols) * 100}% + 3px)`, width: `calc(${100 / cols}% - 6px)` }}
-            aria-label={`${localTime(new Date(item.startsAt), tz)} ${item.clientName}, ${item.services}, ${STATUS_LABEL[item.status]}`}>
-            <div className="flex items-center gap-1 text-[11px] text-ink-soft tabular">
-              {showPro && pro && <span className="h-1.5 w-1.5 shrink-0 rounded-full" style={{ background: pro.color }} />}
-              {localTime(new Date(item.startsAt), tz)}
-              {item.source === "online" && <Globe className="h-3 w-3" aria-label="Online" />}
-              {item.squeezeIn && <Zap className="h-3 w-3" aria-label="Encaixe" />}
-            </div>
-            <div className="truncate text-[13px] leading-tight font-medium text-ink">{item.clientName}</div>
-            {height > 44 && <div className="truncate text-[12px] text-ink-soft">{item.services}</div>}
-          </button>
+          <div key={item.id} data-appt className="absolute hover:z-10 focus-within:z-10"
+            style={{ top: (s - bounds.start) * PX_PER_MIN + 1, height: height - 2, left: `calc(${(col / cols) * 100}% + 3px)`, width: `calc(${100 / cols}% - 6px)` }}>
+            <button onClick={() => onOpen(item.id)}
+              className={cn("absolute inset-0 overflow-hidden rounded-lg border-l-[3px] py-1 pl-2 pr-7 text-left shadow-sm transition duration-200 hover:z-10 hover:shadow-[0_0_0_1px_rgb(213_158_250/0.45),0_10px_24px_-10px_rgb(150_13_242/0.7)] hover:brightness-125 active:scale-[0.97] focus-visible:z-10 [-webkit-tap-highlight-color:transparent]", STATUS_STYLE[item.status].block)}
+              aria-label={`${localTime(new Date(item.startsAt), tz)} ${item.clientName}, ${item.services}, ${STATUS_LABEL[item.status]}`}>
+              <div className="flex items-center gap-1 text-[11px] text-ink-soft tabular">
+                {showPro && pro && <span className="h-1.5 w-1.5 shrink-0 rounded-full" style={{ background: pro.color }} />}
+                {localTime(new Date(item.startsAt), tz)}
+                {item.source === "online" && <Globe className="h-3 w-3" aria-label="Online" />}
+                {item.squeezeIn && <Zap className="h-3 w-3" aria-label="Encaixe" />}
+              </div>
+              <div className="truncate text-[13px] leading-tight font-medium text-ink">{item.clientName}</div>
+              {height > 44 && <div className="truncate text-[12px] text-ink-soft">{item.services}</div>}
+            </button>
+            {height >= 40 && <BlockSendButton item={item} />}
+          </div>
         );
       })}
       {now && now.key === dayKey && now.minute >= bounds.start && now.minute <= bounds.end && (

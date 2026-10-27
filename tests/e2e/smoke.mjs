@@ -184,6 +184,33 @@ try {
     await shot(page, "07b-drawer-confirmacao");
   });
 
+  await step("agenda: reenviar confirmação pela lista e pelo atalho do horário", async () => {
+    const day = new URL(page.url()).searchParams.get("data");
+    await page.goto(`${BASE}/app/agenda?data=${day}`);
+    // Atalho no bloco do horário
+    const quick = page.getByRole("link", { name: "Enviar confirmação para Carla Online" });
+    await quick.waitFor();
+    const wa1 = await quick.getAttribute("href");
+    if (!wa1.startsWith("https://wa.me/") || !decodeURIComponent(wa1).includes("Passando pra confirmar")) throw new Error("atalho sem a mensagem");
+    // Lista "Confirmações" (o wa.me é simulado: o teste não depende de internet)
+    await page.context().route("https://wa.me/**", (r) => r.fulfill({ contentType: "text/html", body: "WhatsApp" }));
+    await page.getByRole("button", { name: /Confirmações/ }).click();
+    const dlg = page.getByRole("dialog");
+    await dlg.getByText("Ainda não enviada").waitFor();
+    const [popup] = await Promise.all([page.waitForEvent("popup"), dlg.getByRole("link", { name: "Enviar" }).click()]);
+    if (!popup.url().includes("wa.me") && !popup.url().includes("whatsapp")) throw new Error("não abriu o WhatsApp: " + popup.url());
+    await popup.close();
+    await dlg.getByText(/^Enviada \d\d\/\d\d/).waitFor();
+    await dlg.getByRole("link", { name: "Reenviar" }).waitFor();
+    await shot(page, "07d-confirmacoes");
+    await page.keyboard.press("Escape");
+    await page.getByRole("link", { name: "Reenviar confirmação para Carla Online" }).waitFor();
+    // Fica no histórico do agendamento
+    await page.getByRole("button", { name: /Carla Online/ }).first().click();
+    await page.getByRole("dialog").getByText("Confirmação enviada pelo WhatsApp").waitFor();
+    await page.getByRole("dialog").getByRole("link", { name: /Reenviar no WhatsApp/ }).waitFor();
+  });
+
   globalThis.__page = p2;
   await step("cliente confirma presença pelo comprovante", async () => {
     await p2.goto(p2.url().replace("?novo=1", ""));
