@@ -39,11 +39,11 @@ ok(glow.includes("rgb"), "card de recurso brilha ao passar o mouse");
 const demo = p.locator('[aria-label="Demonstração do agendamento online"]');
 await demo.scrollIntoViewIfNeeded(); await p.mouse.move(5, 5);
 const cap = () => demo.locator("p[aria-live]").innerText();
-await p.waitForTimeout(1200); const c1 = await cap();
-await p.waitForTimeout(1800); const c2 = await cap();
+await p.waitForTimeout(1500); const c1 = await cap();
+await p.waitForTimeout(2500); const c2 = await cap();
 ok(c1.includes("abre o seu link") && c2.includes("Busca o serviço"), `demo: legendas no ritmo (${c1.replace(/\n/g," ")} → ${c2.replace(/\n/g," ")})`);
 const typedMid = await demo.locator("span.truncate").first().innerText().catch(() => "");
-ok(typedMid.length > 0 && typedMid.length < "Sobrancelha".length, `demo: digitação letra a letra visível ("${typedMid}")`);
+ok(typedMid.length > 0 && typedMid.length < "Sobrancelha".length && await demo.getByText("Categorias").count() > 0, `demo: digitação letra a letra visível ("${typedMid}")`);
 
 // Celular: arrastar o dedo e não travar depois do toque
 const m = await (await b.newContext({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true })).newPage();

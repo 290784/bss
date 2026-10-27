@@ -3,7 +3,7 @@ import { useCallback, useRef, useState, type ReactNode } from "react";
 import { BarChart3, Bell, CalendarCheck2, HeartHandshake, Tag } from "lucide-react";
 import { cn } from "@/lib/cn";
 import { usePrefersReducedMotion, useInView } from "./motion";
-import { StoryBars, useAutoplay, useSwipe } from "./carousel";
+import { StoryBars, useAutoplay, useDragSwipe } from "./carousel";
 
 /**
  * Carrossel do hero: cada card mostra um recurso real do produto em forma de ilustração
@@ -30,10 +30,9 @@ const STEP = 70; // distância entre ícones do dock
 export function HeroWidget() {
   const reduced = usePrefersReducedMotion();
   const ref = useRef<HTMLDivElement>(null);
-  const stageRef = useRef<HTMLDivElement>(null);
   const inView = useInView(ref);
   const auto = useAutoplay({ count: SLIDES.length, durations: DURATIONS, active: !reduced && inView });
-  const wasSwipe = useSwipe(stageRef, auto.next, auto.prev);
+  const swipe = useDragSwipe({ onLeft: auto.next, onRight: auto.prev, onStart: auto.hold });
   const onKey = useCallback((e: React.KeyboardEvent) => {
     if (e.key === "ArrowRight") { e.preventDefault(); auto.next(); }
     if (e.key === "ArrowLeft") { e.preventDefault(); auto.prev(); }
@@ -46,7 +45,7 @@ export function HeroWidget() {
       role="region" aria-roledescription="carrossel" aria-label="Recursos da Gê" tabIndex={0} onKeyDown={onKey}
       onPointerDown={auto.hold}>
       <StoryBars className="relative z-20 mx-auto mb-2 max-w-[420px] px-2" count={SLIDES.length} index={active} durations={DURATIONS}
-        running={auto.running} onGo={auto.go} paused={auto.userPaused || reduced} onTogglePause={auto.togglePause} labels={SLIDES.map((x) => x.label)} />
+        running={auto.running} onGo={auto.go} onScrub={auto.hold} paused={auto.userPaused || reduced} onTogglePause={auto.togglePause} labels={SLIDES.map((x) => x.label)} />
 
       <div className="relative aspect-[66/88] w-full sm:aspect-[66/73]">
         {/* Halo desfocado com a cor do card ativo */}
@@ -56,11 +55,13 @@ export function HeroWidget() {
           <path d="M4 80 V40 a46 38 0 0 1 92 0 V80" stroke="currentColor" strokeWidth="0.4" />
         </svg>
 
-        {/* Palco: clicar avança, arrastar troca */}
-        <div ref={stageRef} className="absolute inset-x-[9%] top-[3%] bottom-[40%] cursor-pointer touch-pan-y sm:top-[6%] sm:bottom-[33%]"
-          onClick={() => { if (!wasSwipe()) auto.next(); }} aria-live="polite">
+        {/* Palco: o card acompanha o dedo/mouse e troca ao soltar; tocar também avança */}
+        <div className="absolute inset-x-[9%] top-[3%] bottom-[40%] cursor-grab touch-pan-y active:cursor-grabbing sm:top-[6%] sm:bottom-[33%]"
+          {...swipe.bind} onClick={() => auto.next()} aria-live="polite">
+          <div className="absolute inset-0" style={swipe.style}>
           <div key={slide.key} className="absolute inset-0 flex items-center justify-center transition-transform duration-300 active:scale-[0.98] motion-safe:[animation:mkt-card-in_.7s_cubic-bezier(.2,.8,.2,1)]">
             {slide.render()}
+          </div>
           </div>
         </div>
 
@@ -75,7 +76,7 @@ export function HeroWidget() {
         {/* Dock em arco: toque seleciona; arrastar gira como uma roleta e encaixa ao soltar */}
         <Dock active={active} onSelect={auto.go} onDrag={auto.hold} />
       </div>
-      <p className="mt-1 text-center text-[11px] text-muted">Toque ou arraste os ícones, ou deslize o card para o lado.</p>
+      <p className="mt-1 text-center text-[11px] text-muted">Arraste os ícones, a barra de etapas ou o próprio card.</p>
     </div>
   );
 }
