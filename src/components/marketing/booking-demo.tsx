@@ -3,35 +3,34 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { ArrowLeft, Bookmark, Clock, ExternalLink, Search, Share2, SlidersHorizontal, X } from "lucide-react";
 import { cn } from "@/lib/cn";
 import { useInView, usePrefersReducedMotion } from "./motion";
-import { StoryBars, useAutoplay, useSwipe } from "./carousel";
+import { StoryBars, useAutoplay, useDragSwipe } from "./carousel";
 
 /**
  * Demonstração do agendamento online em etapas: busca → digitação → sugestões →
  * resultados → serviço com "melhor horário". Ilustração (dados de exemplo, sem avaliações
  * ou números inventados apresentados como reais). Ritmo de leitura, com legenda por etapa,
- * barras clicáveis, pausa, toque para avançar e arrastar para os lados.
+ * barra de etapas arrastável, pausa, toque para avançar e card que acompanha o dedo.
  */
 
 const QUERY = "Sobrancelha";
 type Stage = "empty" | "typing" | "suggest" | "results" | "grid" | "detail";
 const STEPS: { stage: Stage; ms: number; caption: string }[] = [
-  { stage: "empty", ms: 1800, caption: "A cliente abre o seu link" },
-  { stage: "typing", ms: 3000, caption: "Busca o serviço que deseja" },
-  { stage: "suggest", ms: 3400, caption: "Vê sugestões do seu catálogo" },
-  { stage: "results", ms: 3000, caption: "Encontra o seu estúdio" },
-  { stage: "grid", ms: 3200, caption: "Escolhe o serviço" },
-  { stage: "detail", ms: 6500, caption: "E vê o melhor horário livre do dia" },
+  { stage: "empty", ms: 3200, caption: "A cliente abre o seu link" },
+  { stage: "typing", ms: 4600, caption: "Busca o serviço que deseja" },
+  { stage: "suggest", ms: 4200, caption: "Vê sugestões do seu catálogo" },
+  { stage: "results", ms: 3800, caption: "Encontra o seu estúdio" },
+  { stage: "grid", ms: 4200, caption: "Escolhe o serviço" },
+  { stage: "detail", ms: 7000, caption: "E vê o melhor horário livre do dia" },
 ];
 const DURATIONS = STEPS.map((x) => x.ms);
-const TYPE_MS = 2200; // digitação calma, letra a letra
+const TYPE_MS = 2600; // digitação calma, letra a letra
 
 export function BookingDemo() {
   const ref = useRef<HTMLDivElement>(null);
-  const stageRef = useRef<HTMLDivElement>(null);
   const inView = useInView(ref);
   const reduced = usePrefersReducedMotion();
   const auto = useAutoplay({ count: STEPS.length, durations: DURATIONS, active: !reduced && inView });
-  const wasSwipe = useSwipe(stageRef, auto.next, auto.prev);
+  const swipe = useDragSwipe({ onLeft: auto.next, onRight: auto.prev, onStart: auto.hold });
   const step = reduced ? STEPS.length - 1 : auto.index;
   const stage: Stage = STEPS[step]!.stage;
 
@@ -53,17 +52,17 @@ export function BookingDemo() {
   const showSearch = stage === "empty" || stage === "typing" || stage === "suggest";
 
   return (
-    <div ref={ref} className="relative mx-auto w-full max-w-[440px]" {...auto.hoverProps} onPointerDown={auto.hold}
+    <div ref={ref} className="relative mx-auto w-full max-w-[440px] select-none" {...auto.hoverProps} onPointerDown={auto.hold}
       role="region" aria-label="Demonstração do agendamento online" tabIndex={0} onKeyDown={onKey}>
       <StoryBars className="relative z-20 mb-3 px-[6%]" count={STEPS.length} index={step} durations={DURATIONS} running={auto.running}
-        onGo={auto.go} paused={auto.userPaused || reduced} onTogglePause={auto.togglePause} labels={STEPS.map((x) => x.caption)} />
-    <div ref={stageRef} className="relative aspect-[5/6] w-full cursor-pointer touch-pan-y" role="img" aria-label={STEPS[step]!.caption}
-      onClick={() => { if (!wasSwipe()) auto.next(); }}>
+        onGo={auto.go} onScrub={auto.hold} paused={auto.userPaused || reduced} onTogglePause={auto.togglePause} labels={STEPS.map((x) => x.caption)} />
+    <div className="relative aspect-[5/6] w-full cursor-grab touch-pan-y active:cursor-grabbing" role="img" aria-label={STEPS[step]!.caption}
+      {...swipe.bind} onClick={() => auto.next()}>
       {/* Formas de fundo */}
       <span className="absolute top-[6%] -left-[10%] h-[62%] w-[62%] rounded-full bg-mkt-shape" aria-hidden />
       <span className="absolute -right-[8%] bottom-[2%] h-[56%] w-[56%] rounded-full bg-mkt-shape" aria-hidden />
 
-      <div className="absolute inset-x-[6%] inset-y-[4%] overflow-hidden rounded-[28px] bg-[#0c0820] ring-1 ring-white/15 shadow-[0_30px_70px_-25px_rgb(0_0_0/0.9),0_0_50px_-20px_rgb(192_110_247/0.6)]">
+      <div style={swipe.style} className="absolute inset-x-[6%] inset-y-[4%] overflow-hidden rounded-[28px] bg-[#0c0820] ring-1 ring-white/15 shadow-[0_30px_70px_-25px_rgb(0_0_0/0.9),0_0_50px_-20px_rgb(192_110_247/0.6)]">
         {showSearch ? (
           <div className="p-4">
             <div className="flex items-center gap-2">
@@ -78,6 +77,7 @@ export function BookingDemo() {
               </div>
               <span className="h-9 w-14 shrink-0 rounded-full bg-[#1d1535]" />
             </div>
+            {(stage === "empty" || stage === "typing") && <Categories typed={text} />}
             {stage === "suggest" && (
               <ul className="mt-3 divide-y divide-[#241b3c] motion-safe:[animation:mkt-drop_.6s_ease-out]">
                 {["Design de sobrancelhas", "Design com henna"].map((s) => (
@@ -109,7 +109,7 @@ export function BookingDemo() {
                 </span>
                 <div><div className="text-[15px] font-bold text-ink">Seu Studio</div><div className="text-xs text-ink/50">Agenda aberta hoje</div></div>
               </div>
-              <div className={cn("transition-opacity duration-700", stage === "grid" ? "opacity-100" : "opacity-0")}>
+              <div className={cn("transition-opacity duration-700", stage === "grid" ? "opacity-100" : "opacity-45 motion-safe:[animation:mkt-rise_.8s_ease-out_.5s_both]")}>
                 <div className="mb-3 flex gap-1.5">
                   <span className="grid h-8 w-8 place-items-center rounded-full bg-[#1d1535]"><SlidersHorizontal className="h-3.5 w-3.5 text-ink/60" /></span>
                   {[14, 10, 12, 9].map((w, i) => <span key={i} className="h-8 rounded-full bg-[#1d1535]" style={{ width: w * 4 }} />)}
@@ -162,6 +162,29 @@ export function BookingDemo() {
       <p key={step} className="mt-3 text-center text-[15px] font-medium text-violet-100 motion-safe:[animation:mkt-rise_.6s_ease-out_both]" aria-live="polite">
         <span className="mr-1.5 text-[13px] text-muted tabular">{step + 1}/{STEPS.length}</span>{STEPS[step]!.caption}
       </p>
+    </div>
+  );
+}
+
+/** Categorias de exemplo: enquanto a cliente digita, só a que combina continua acesa. */
+const CATEGORIES = ["Sobrancelha", "Cílios", "Unhas", "Cabelo", "Maquiagem"];
+function Categories({ typed }: { typed: string }) {
+  const q = typed.toLowerCase();
+  return (
+    <div className="mt-4 motion-safe:[animation:mkt-rise_.6s_ease-out_both]">
+      <div className="mb-2.5 text-[12px] font-semibold tracking-wide text-ink/50 uppercase">Categorias</div>
+      <ul className="space-y-2">
+        {CATEGORIES.map((c, i) => {
+          const match = !q || c.toLowerCase().startsWith(q);
+          return (
+            <li key={c} className={cn("flex items-center gap-3 rounded-2xl bg-[#150f2a] px-3 py-2.5 transition-all duration-500",
+              !match && "opacity-25 blur-[0.5px]", q && match && "bg-[#24183f] ring-1 ring-violet-300/40")}>
+              <span className="h-8 w-8 rounded-full" style={{ background: `radial-gradient(circle at 35% 35%,#eacffc,${["#c06ef7", "#ab3df5", "#960df2", "#780ac2", "#d59efa"][i]} 60%,#3c0561)` }} />
+              <span className="text-[14px] font-semibold text-ink">{c}</span>
+            </li>
+          );
+        })}
+      </ul>
     </div>
   );
 }
