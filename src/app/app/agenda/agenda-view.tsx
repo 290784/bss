@@ -97,7 +97,7 @@ export function AgendaView(props: Props) {
             <button onClick={() => go({ data: today })} className="h-10 border-x border-line px-3 text-sm font-medium hover:bg-sunken" title="Hoje (T)">Hoje</button>
             <button onClick={() => shift(1)} className="grid h-10 w-10 place-items-center text-ink-soft hover:text-ink" aria-label="Próximo" title="Próximo (→)"><ChevronRight className="h-4 w-4" /></button>
           </div>
-          <h1 className="min-w-0 truncate font-display text-[22px] font-medium first-letter:uppercase sm:text-2xl">{title}</h1>
+          <h1 className="min-w-0 truncate font-tight tracking-[-0.02em] text-[22px] font-extrabold first-letter:uppercase sm:text-2xl">{title}</h1>
           <label className="relative ml-1">
             <span className="sr-only">Ir para data</span>
             <input type="date" value={date} onChange={(e) => e.target.value && go({ data: e.target.value })}
@@ -410,7 +410,7 @@ function MonthGrid({ rangeStart, date, today, timeZone, items, pros, onDay }: Pr
             <button key={d} onClick={() => onDay(d)}
               className={cn("flex min-h-[92px] flex-col gap-1 border-r border-b border-line p-1.5 text-left hover:bg-sunken/60 sm:min-h-[112px] sm:p-2 [&:nth-child(7n)]:border-r-0", !inMonth && "bg-canvas/50 text-muted")}
               aria-label={`${d.split("-").reverse().join("/")}: ${list.length} atendimento(s)`}>
-              <span className={cn("grid h-6 w-6 place-items-center rounded-full text-[13px] font-medium tabular", d === today && "bg-plum-600 text-white")}>{Number(d.slice(8))}</span>
+              <span className={cn("grid h-6 w-6 place-items-center rounded-full text-[13px] font-medium tabular", d === today && "bg-ink-warm text-white")}>{Number(d.slice(8))}</span>
               {list.slice(0, 3).map((i) => {
                 const pro = pros.find((p) => p.id === i.professionalId);
                 return (

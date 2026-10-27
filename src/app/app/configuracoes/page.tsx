@@ -52,9 +52,9 @@ export default async function SettingsPage() {
           <OrganizationForm org={org} readOnly={ctx.access === "read_only"} />
         </div>
         <div className="flex flex-col gap-6">
-          <Card className="bg-plum-900 p-5 text-champagne-100">
+          <Card className="border-transparent bg-ink-warm p-5 text-white">
             <h2 className="text-[15px] font-semibold">Página de agendamento</h2>
-            <p className="mt-1 mb-3 text-xs text-plum-200">{org.online_booking_enabled ? "Ativa — clientes podem solicitar horários." : "Desativada — a página mostra que o agendamento online está indisponível."}</p>
+            <p className="mt-1 mb-3 text-xs text-white/65">{org.online_booking_enabled ? "Ativa — clientes podem solicitar horários." : "Desativada — a página mostra que o agendamento online está indisponível."}</p>
             <CopyLink url={`${appUrl}/b/${ctx.org.slug}`} />
           </Card>
 

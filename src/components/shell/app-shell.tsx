@@ -169,7 +169,7 @@ function Notifications({ items }: { items: ShellProps["notifications"] }) {
         if (!open && unread) { markNotificationsRead(); setList((l) => l.map((n) => ({ ...n, read: true }))); }
       }} className="relative rounded-lg p-2 text-ink-soft hover:bg-sunken" aria-label={`Notificações${unread ? ` (${unread} novas)` : ""}`} aria-expanded={open}>
         <Bell className="h-5 w-5" />
-        {unread > 0 && <span className="absolute top-1 right-1 grid h-4 min-w-4 place-items-center rounded-full bg-plum-600 px-1 text-[10px] font-semibold text-white">{unread}</span>}
+        {unread > 0 && <span className="absolute top-1 right-1 grid h-4 min-w-4 place-items-center rounded-full bg-badge px-1 text-[10px] font-semibold text-white">{unread}</span>}
       </button>
       {open && (
         <div className="absolute right-0 z-40 mt-2 w-[min(92vw,360px)] overflow-hidden rounded-xl border border-line bg-surface shadow-[var(--shadow-pop)]">

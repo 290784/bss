@@ -81,7 +81,7 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
         <Card className="mb-6 overflow-hidden">
           <div className="grid gap-6 p-5 md:grid-cols-[1fr_auto] md:items-center">
             <div>
-              <h2 className="font-display text-xl font-medium">Primeiros passos</h2>
+              <h2 className="font-tight tracking-[-0.02em] text-xl font-extrabold">Primeiros passos</h2>
               <p className="mt-1 text-sm text-muted">Complete para começar a receber agendamentos. {activation.filter((a) => a.done).length} de {activation.length} concluídos.</p>
               <ul className="mt-4 grid gap-2 sm:grid-cols-2">
                 {activation.map((a) => (
@@ -94,9 +94,9 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
                 ))}
               </ul>
             </div>
-            <div className="rounded-xl bg-plum-900 p-4 text-champagne-100 md:w-72">
+            <div className="rounded-2xl bg-ink-warm p-4 text-white md:w-72">
               <div className="flex items-center gap-2 text-sm font-medium"><Link2 className="h-4 w-4" />Sua página de agendamento</div>
-              <p className="mt-1 mb-3 text-xs text-plum-200">Coloque na bio do Instagram e envie no WhatsApp.</p>
+              <p className="mt-1 mb-3 text-xs text-white/65">Coloque na bio do Instagram e envie no WhatsApp.</p>
               <CopyLink url={`${appUrl}/b/${ctx.org.slug}`} />
             </div>
           </div>

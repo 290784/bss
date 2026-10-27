@@ -6,12 +6,12 @@
  * Contraste: texto principal sobre fundo ≥ 12:1; ameixa sobre branco ≥ 8:1; branco sobre ameixa ≥ 8:1.
  */
 @theme {
-  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-dm-sans), ui-sans-serif, system-ui, sans-serif;
   --font-display: var(--font-fraunces), ui-serif, Georgia, serif;
 
-  --color-canvas: #faf7f4;
+  --color-canvas: #faf9f7;
   --color-surface: #ffffff;
-  --color-sunken: #f3eee9;
+  --color-sunken: #f2f1ef;
   --color-line: #e7dfd8;
   --color-line-strong: #d6cbc1;
 
@@ -47,8 +47,8 @@
   --color-success: #2f6b4f;
 
   /* Landing (marketing): base quase monocromática, cor concentrada em halos e destaques */
-  --font-hero: var(--font-dm-sans), var(--font-inter), ui-sans-serif, system-ui, sans-serif;
-  --font-tight: var(--font-inter-tight), var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-hero: var(--font-dm-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-tight: var(--font-inter-tight), var(--font-dm-sans), ui-sans-serif, system-ui, sans-serif;
   --color-ink-warm: #15100b;
   --color-mkt-card: #f2f1ef;
   --color-mkt-shape: #e4e3e0;
@@ -65,7 +65,7 @@
   --color-slot-2: #7be4fe;
   --color-slot-3: #e5dbfd;
 
-  --radius-card: 14px;
+  --radius-card: 18px;
   --shadow-card: 0 1px 2px rgb(31 27 30 / 0.04), 0 1px 1px rgb(31 27 30 / 0.03);
   --shadow-pop: 0 12px 32px -8px rgb(46 19 36 / 0.22), 0 2px 6px rgb(46 19 36 / 0.08);
 }
@@ -79,8 +79,7 @@
     background: var(--color-canvas);
     color: var(--color-ink);
     font-family: var(--font-sans);
-    font-feature-settings: "cv11", "ss01";
-    -webkit-font-smoothing: antialiased;
+        -webkit-font-smoothing: antialiased;
   }
   :focus-visible {
     outline: 2px solid var(--color-plum-500);

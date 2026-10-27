@@ -34,4 +34,13 @@ nenhum logotipo, texto, cor-assinatura ou produto de terceiros foi copiado.
 - **Acessibilidade:** respeita `prefers-reduced-motion` (sem autoplay; demo mostra o estado final),
   pausa fora da tela, com a aba oculta e com o mouse em cima; ícones do dock têm rótulo;
   ilustrações sinalizadas como "dados de exemplo".
-- O painel (`/app`) mantém o design system próprio (Inter + Fraunces, ameixa). A nova linguagem vale só para a landing.
+
+## Extensão ao produto inteiro
+A mesma linguagem vale para painel, login/cadastro, onboarding e página pública:
+- **Tipografia:** DM Sans como fonte base; Inter Tight ExtraBold em títulos (`font-tight`). Fraunces ficou só no logotipo.
+- **Ações e seleções** (botão primário, chips, horário escolhido, dia atual, etapas) em preto quente `#15100b`.
+- **Ameixa** permanece como cor de marca: tile do logotipo, navegação ativa, links e a série dos gráficos (validada para contraste).
+- **Blocos escuros** (link de agendamento, lateral do login) em preto quente com halos coloridos desfocados.
+- **Página pública:** topo claro com halo lavanda e título grotesco; barra de etapas em preto.
+- Superfícies levemente mais neutras (`--color-canvas #faf9f7`, `--color-sunken #f2f1ef`) e cards com raio de 18 px.
+- Selo de notificação no vermelho do documento (`#d61c11`).

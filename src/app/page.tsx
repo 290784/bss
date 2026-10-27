@@ -5,7 +5,6 @@ import { PLANS } from "@/domain/plans";
 import { getSession } from "@/server/auth/session";
 import { HeroWidget } from "@/components/marketing/hero-widget";
 import { BookingDemo } from "@/components/marketing/booking-demo";
-import { dmSans, interTight } from "@/components/marketing/fonts";
 import { cn } from "@/lib/cn";
 
 const pill = (tone: "dark" | "light") =>
@@ -35,7 +34,7 @@ const FAQ = [
 export default async function LandingPage() {
   const session = await getSession();
   return (
-    <div className={cn(dmSans.variable, interTight.variable, "bg-white font-hero text-ink-warm")}>
+    <div className="bg-white font-hero text-ink-warm">
       <header className="sticky top-0 z-30 bg-white/90 backdrop-blur">
         <div className="mx-auto flex h-[72px] max-w-[1240px] items-center justify-between gap-6 px-4 sm:px-6">
           <Logo />
@@ -153,7 +152,7 @@ export default async function LandingPage() {
               ["Acompanhe e fidelize", "Veja quem está sumida, sua ocupação e quanto recebeu no mês."],
             ].map(([t, d], i) => (
               <li key={t}>
-                <span className="font-display text-5xl font-light text-champagne-300">{i + 1}</span>
+                <span className="font-tight tracking-[-0.02em] text-5xl font-extrabold text-champagne-300">{i + 1}</span>
                 <h3 className="mt-3 text-[17px] font-semibold text-white">{t}</h3>
                 <p className="mt-2 text-sm leading-relaxed text-plum-200">{d}</p>
               </li>
