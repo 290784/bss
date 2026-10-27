@@ -175,6 +175,15 @@ export async function changeStatus(
   return { ...cur, status: to };
 }
 
+/** Registra no histórico que a equipe (re)enviou a confirmação pelo WhatsApp. */
+export async function recordConfirmationSent(tx: Tx, actor: Actor, appointmentId: string) {
+  const [a] = await tx<{ id: string; status: AppointmentStatus }[]>`
+    select id, status from app.appointments where organization_id = ${actor.organizationId} and id = ${appointmentId}`;
+  if (!a) throw new DomainError("Agendamento não encontrado.");
+  if (a.status !== "pending" && a.status !== "confirmed") throw new DomainError("Este agendamento não está mais ativo.");
+  await logEvent(tx, actor, a.id, "confirmation_sent", { via: "whatsapp" });
+}
+
 export const addServiceSchema = z.object({ appointmentId: z.uuid(), serviceId: z.uuid() });
 
 /**
@@ -241,6 +250,10 @@ export type AgendaItem = {
   services: string;
   paid_cents: number;
   version: number;
+  service_names: string[];
+  public_token: string;
+  client_confirmed_at: Date | null;
+  confirmation_sent_at: Date | null;
 };
 
 export async function listAgenda(tx: Tx, orgId: string, from: Date, to: Date, professionalId?: string | null): Promise<AgendaItem[]> {
@@ -248,6 +261,9 @@ export async function listAgenda(tx: Tx, orgId: string, from: Date, to: Date, pr
     select a.id, a.professional_id, a.client_id, c.full_name as client_name, c.phone_normalized as client_phone,
       a.starts_at, a.ends_at, a.blocked_until, a.status, a.source, a.allow_overlap, a.price_cents, a.discount_cents, a.version,
       coalesce((select string_agg(s.service_name, ' + ' order by s.position) from app.appointment_services s where s.appointment_id = a.id), '') as services,
+      coalesce((select array_agg(s.service_name order by s.position) from app.appointment_services s where s.appointment_id = a.id), '{}') as service_names,
+      a.public_token, a.client_confirmed_at,
+      (select max(e.created_at) from app.appointment_events e where e.appointment_id = a.id and e.type = 'confirmation_sent') as confirmation_sent_at,
       coalesce((select sum(case when p.kind = 'payment' then p.amount_cents else -p.amount_cents end)
                 from app.payments p where p.appointment_id = a.id), 0)::int as paid_cents
     from app.appointments a join app.clients c on c.id = a.client_id
