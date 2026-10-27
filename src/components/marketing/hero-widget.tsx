@@ -3,14 +3,14 @@ import { useCallback, useRef, useState, type ReactNode } from "react";
 import { BarChart3, Bell, CalendarCheck2, HeartHandshake, Tag } from "lucide-react";
 import { cn } from "@/lib/cn";
 import { usePrefersReducedMotion, useInView } from "./motion";
-import { StoryBars, useAutoplay, useDragSwipe } from "./carousel";
+import { useAutoplay, useDragSwipe } from "./carousel";
 
 /**
  * Carrossel do hero: cada card mostra um recurso real do produto em forma de ilustração
  * (esqueletos no lugar de dados), com uma legenda curta para ler. Avança sozinho em ritmo
- * de leitura (~5 s por card); pausa com o mouse em cima, com o botão de pausa, fora da tela
- * e por 12 s depois de qualquer toque. Troca por clique no card, no dock, nas barras,
- * arrastando o dedo para os lados ou pelas setas do teclado.
+ * de leitura (~5 s por card), em looping; pausa com o mouse em cima, fora da tela e por 12 s
+ * depois de uma interação. Troca por clique no card, no dock, arrastando o card ou o dock
+ * para os lados ou pelas setas do teclado.
  */
 
 type Slide = { key: string; label: string; desc: string; icon: typeof Bell; tile: string; glyph: string; halo: string; render: () => ReactNode };
@@ -42,11 +42,7 @@ export function HeroWidget() {
   const slide = SLIDES[active]!;
   return (
     <div ref={ref} className="relative mx-auto w-full max-w-[560px] select-none" {...auto.hoverProps}
-      role="region" aria-roledescription="carrossel" aria-label="Recursos da Gê" tabIndex={0} onKeyDown={onKey}
-      onPointerDown={auto.hold}>
-      <StoryBars className="relative z-20 mx-auto mb-2 max-w-[420px] px-2" count={SLIDES.length} index={active} durations={DURATIONS}
-        running={auto.running} onGo={auto.go} onScrub={auto.hold} paused={auto.userPaused || reduced} onTogglePause={auto.togglePause} labels={SLIDES.map((x) => x.label)} />
-
+      role="region" aria-roledescription="carrossel" aria-label="Recursos da Gê" tabIndex={0} onKeyDown={onKey}>
       <div className="relative aspect-[66/88] w-full sm:aspect-[66/73]">
         {/* Halo desfocado com a cor do card ativo */}
         <div className="absolute inset-[8%] rounded-full opacity-60 blur-[70px] transition-[background-color] duration-1000" style={{ backgroundColor: slide.halo }} aria-hidden />
@@ -76,7 +72,7 @@ export function HeroWidget() {
         {/* Dock em arco: toque seleciona; arrastar gira como uma roleta e encaixa ao soltar */}
         <Dock active={active} onSelect={auto.go} onDrag={auto.hold} />
       </div>
-      <p className="mt-1 text-center text-[11px] text-muted">Arraste os ícones, a barra de etapas ou o próprio card.</p>
+      <p className="mt-1 text-center text-[11px] text-muted">Passa sozinho. Arraste os ícones ou o card para escolher.</p>
     </div>
   );
 }
