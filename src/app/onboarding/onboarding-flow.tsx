@@ -27,7 +27,7 @@ export function OnboardingFlow({
           <li key={s.n} className="flex flex-1 items-center gap-2">
             <span className={cn(
               "grid h-8 w-8 shrink-0 place-items-center rounded-full text-[13px] font-semibold",
-              step > s.n ? "bg-plum-600 text-white" : step === s.n ? "bg-plum-100 text-plum-700 ring-2 ring-plum-500" : "bg-sunken text-muted",
+              step > s.n ? "bg-ink-warm text-white" : step === s.n ? "bg-plum-100 text-plum-700 ring-2 ring-plum-500" : "bg-sunken text-muted",
             )} aria-current={step === s.n ? "step" : undefined}>
               {step > s.n ? <Check className="h-4 w-4" /> : s.n}
             </span>
@@ -49,7 +49,7 @@ function BusinessStep({ businessTypes, value, onType, onDone }: { businessTypes:
   const fe = state && !state.ok ? state.fieldErrors : undefined;
   return (
     <Card className="p-6 sm:p-8">
-      <h1 className="font-display text-[26px] font-medium">Vamos montar seu espaço</h1>
+      <h1 className="font-tight tracking-[-0.02em] text-[26px] font-extrabold">Vamos montar seu espaço</h1>
       <p className="mt-1 mb-6 text-sm text-muted">Três passos rápidos. Tudo pode ser ajustado depois.</p>
       <ActionForm action={action} className="flex flex-col gap-5">
         <FormMessage state={state} />
@@ -86,7 +86,7 @@ function HoursStep({ onDone }: { onDone: () => void }) {
   });
   return (
     <Card className="p-6 sm:p-8">
-      <h1 className="font-display text-[26px] font-medium">Quando você atende?</h1>
+      <h1 className="font-tight tracking-[-0.02em] text-[26px] font-extrabold">Quando você atende?</h1>
       <p className="mt-1 mb-6 text-sm text-muted">Usamos isso para mostrar apenas horários reais na sua agenda e na página de agendamento.</p>
       {error && <div className="mb-4"><FormMessage state={{ ok: false, message: error }} /></div>}
       <fieldset className="mb-6">
@@ -98,7 +98,7 @@ function HoursStep({ onDone }: { onDone: () => void }) {
               <button key={d} type="button" aria-pressed={on}
                 onClick={() => setDays(on ? days.filter((x) => x !== i) : [...days, i].sort())}
                 className={cn("h-10 min-w-12 rounded-[10px] border px-3 text-sm font-medium transition-colors",
-                  on ? "border-plum-600 bg-plum-600 text-white" : "border-line-strong bg-surface text-ink-soft hover:bg-sunken")}>
+                  on ? "border-ink-warm bg-ink-warm text-white" : "border-line-strong bg-surface text-ink-soft hover:bg-sunken")}>
                 {d}
               </button>
             );
@@ -139,7 +139,7 @@ function ServicesStep({ presets, onBack }: { presets: Preset[]; onBack: () => vo
   });
   return (
     <Card className="p-6 sm:p-8">
-      <h1 className="font-display text-[26px] font-medium">Seus serviços</h1>
+      <h1 className="font-tight tracking-[-0.02em] text-[26px] font-extrabold">Seus serviços</h1>
       <p className="mt-1 mb-6 text-sm text-muted">Sugestões comuns para o seu segmento. Ajuste preço e duração ou desmarque o que não oferece — os valores são só ponto de partida.</p>
       {error && <div className="mb-4"><FormMessage state={{ ok: false, message: error }} /></div>}
       <ul className="divide-y divide-line rounded-xl border border-line">

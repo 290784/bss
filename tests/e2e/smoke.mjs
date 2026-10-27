@@ -37,7 +37,7 @@ try {
 
   await step("landing page carrega com CTA", async () => {
     await page.goto(BASE);
-    await page.getByRole("link", { name: /Começar teste grátis/ }).waitFor();
+    await page.getByRole("link", { name: /Começar grátis/ }).first().waitFor();
     await shot(page, "01-landing");
   });
 

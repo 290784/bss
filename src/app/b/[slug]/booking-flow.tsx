@@ -54,7 +54,7 @@ export function BookingFlow({ slug, timeZone, days, requiresApproval, cancellati
     return (
       <Card className="p-8 text-center">
         <div className="mx-auto grid h-14 w-14 place-items-center rounded-full bg-st-completed-bg text-st-completed"><Check className="h-7 w-7" /></div>
-        <h2 className="mt-4 font-display text-2xl font-medium">{done.status === "pending" ? "Solicitação enviada!" : "Horário reservado!"}</h2>
+        <h2 className="mt-4 font-tight tracking-[-0.02em] text-2xl font-extrabold">{done.status === "pending" ? "Solicitação enviada!" : "Horário reservado!"}</h2>
         <p className="mt-2 text-sm text-ink-soft">
           {service?.name} · <span className="first-letter:uppercase">{date && formatInTz(zonedDateTime(date, "12:00", timeZone), timeZone, { weekday: "long", day: "numeric", month: "long" })}</span> às {time}
           {done.professionalName ? ` com ${done.professionalName}` : ""}.
@@ -71,8 +71,8 @@ export function BookingFlow({ slug, timeZone, days, requiresApproval, cancellati
     <Card className="overflow-hidden">
       <ol className="flex border-b border-line text-[12px] font-medium" aria-label="Etapas">
         {["Serviço", "Profissional", "Horário", "Seus dados"].map((l, i) => (
-          <li key={l} className={cn("flex-1 py-3 text-center", step === i + 1 ? "text-plum-700" : step > i + 1 ? "text-ink-soft" : "text-muted")}>
-            <span className={cn("mx-auto mb-1 block h-1 w-10 rounded-full", step >= i + 1 ? "bg-plum-500" : "bg-line")} aria-hidden />{l}
+          <li key={l} className={cn("flex-1 py-3 text-center", step === i + 1 ? "text-ink-warm" : step > i + 1 ? "text-ink-soft" : "text-muted")}>
+            <span className={cn("mx-auto mb-1 block h-1 w-10 rounded-full", step >= i + 1 ? "bg-ink-warm" : "bg-line")} aria-hidden />{l}
           </li>
         ))}
       </ol>
@@ -131,7 +131,7 @@ export function BookingFlow({ slug, timeZone, days, requiresApproval, cancellati
             <div className="-mx-5 mb-5 flex snap-x gap-2 overflow-x-auto px-5 pb-1 sm:-mx-6 sm:px-6">
               {days.map((d) => (
                 <button key={d} onClick={() => { setDate(d); setTime(null); }} aria-pressed={date === d}
-                  className={cn("flex w-14 shrink-0 snap-start flex-col items-center rounded-xl border py-2.5", date === d ? "border-plum-600 bg-plum-600 text-white" : "border-line hover:border-plum-500")}>
+                  className={cn("flex w-14 shrink-0 snap-start flex-col items-center rounded-xl border py-2.5", date === d ? "border-ink-warm bg-ink-warm text-white" : "border-line hover:border-plum-500")}>
                   <span className={cn("text-[11px] uppercase", date === d ? "text-plum-100" : "text-muted")}>{WD[localWeekday(d)]}</span>
                   <span className="text-lg font-semibold tabular">{Number(d.slice(8))}</span>
                 </button>
@@ -144,7 +144,7 @@ export function BookingFlow({ slug, timeZone, days, requiresApproval, cancellati
               : (
                 <div className="grid grid-cols-4 gap-2 sm:grid-cols-6">
                   {slots.list.map((s) => (
-                    <button key={s.time} onClick={() => { setTime(s.time); setNotice(null); }} className="h-10 rounded-lg border border-line text-sm font-medium tabular hover:border-plum-600 hover:bg-plum-50">{s.time}</button>
+                    <button key={s.time} onClick={() => { setTime(s.time); setNotice(null); }} className="h-10 rounded-lg border border-line text-sm font-medium tabular hover:border-ink-warm hover:bg-sunken">{s.time}</button>
                   ))}
                 </div>
               )}
@@ -187,7 +187,7 @@ function DetailsForm({ slug, serviceId, professionalId, date, time, summary, req
   });
   return (
     <ActionForm action={submit} className="flex flex-col gap-4" noValidate>
-      <div className="flex items-center gap-2 rounded-xl bg-plum-50 px-4 py-3 text-sm text-plum-700"><CalendarCheck className="h-4 w-4 shrink-0" />{summary}</div>
+      <div className="flex items-center gap-2 rounded-xl bg-sunken px-4 py-3 text-sm font-medium text-ink-warm"><CalendarCheck className="h-4 w-4 shrink-0" />{summary}</div>
       {error && <FormMessage state={{ ok: false, message: error }} />}
       <Field label="Seu nome" htmlFor="fullName" error={fe.fullName}><Input id="fullName" name="fullName" autoComplete="name" required /></Field>
       <Field label="WhatsApp" htmlFor="phone" error={fe.phone} hint="Usado para confirmar o horário."><Input id="phone" name="phone" type="tel" inputMode="tel" autoComplete="tel" placeholder="(11) 90000-0000" required /></Field>

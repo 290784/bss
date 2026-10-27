@@ -32,7 +32,7 @@ export default async function ClientProfilePage({ params }: { params: Promise<{ 
       <Link href="/app/clientes" className="mb-4 inline-flex items-center gap-1 text-[13px] text-muted hover:text-ink"><ChevronLeft className="h-4 w-4" />Clientes</Link>
       <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div>
-          <h1 className="font-display text-[28px] leading-tight font-medium">{c.full_name}</h1>
+          <h1 className="font-tight tracking-[-0.02em] text-[28px] leading-tight font-extrabold">{c.full_name}</h1>
           <div className="mt-1.5 flex flex-wrap items-center gap-2 text-sm text-muted">
             {c.phone_normalized && <span className="tabular">{formatPhone(c.phone_normalized)}</span>}
             {c.email && <span>· {c.email}</span>}

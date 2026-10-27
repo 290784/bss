@@ -10,7 +10,7 @@ export default async function SignInPage({ searchParams }: { searchParams: Promi
   const { next } = await searchParams;
   return (
     <>
-      <h1 className="font-display text-3xl font-medium">Bem-vinda de volta</h1>
+      <h1 className="font-tight tracking-[-0.02em] text-3xl font-extrabold">Bem-vinda de volta</h1>
       <p className="mt-1 mb-8 text-sm text-muted">Entre para ver sua agenda de hoje.</p>
       <SignInForm next={next} />
     </>

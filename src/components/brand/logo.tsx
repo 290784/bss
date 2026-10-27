@@ -15,7 +15,7 @@ export function Logo({ href = "/", className }: { href?: string; className?: str
   return (
     <Link href={href} className={cn("inline-flex items-center gap-2.5", className)} aria-label="Beauty OS — início">
       <LogoMark />
-      <span className="font-display text-[19px] font-medium tracking-[-0.01em] text-ink">Beauty OS</span>
+      <span className="font-display text-[19px] font-medium tracking-[-0.01em] whitespace-nowrap text-ink">Beauty OS</span>
     </Link>
   );
 }

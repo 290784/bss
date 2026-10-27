@@ -62,7 +62,7 @@ export function ConfirmDialog({
       footer={
         <>
           <button onClick={onClose} className="h-10 rounded-[10px] px-4 text-sm font-medium text-ink-soft hover:bg-sunken">Voltar</button>
-          <button onClick={onConfirm} className={cn("h-10 rounded-[10px] px-4 text-sm font-medium text-white", danger ? "bg-danger hover:bg-[#8a2f2f]" : "bg-plum-600 hover:bg-plum-700")}>
+          <button onClick={onConfirm} className={cn("h-10 rounded-[10px] px-4 text-sm font-medium text-white", danger ? "bg-danger hover:bg-[#8a2f2f]" : "bg-ink-warm hover:bg-[#2b241d]")}>
             {confirmLabel}
           </button>
         </>

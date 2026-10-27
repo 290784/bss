@@ -6,7 +6,7 @@ type Variant = "primary" | "secondary" | "ghost" | "danger" | "subtle";
 type Size = "sm" | "md" | "lg" | "icon";
 
 const variants: Record<Variant, string> = {
-  primary: "bg-plum-600 text-white hover:bg-plum-700 active:bg-plum-900 shadow-sm",
+  primary: "bg-ink-warm text-white hover:bg-[#2b241d] active:bg-black shadow-sm",
   secondary: "bg-surface text-ink border border-line-strong hover:bg-sunken",
   ghost: "text-ink-soft hover:bg-sunken hover:text-ink",
   subtle: "bg-plum-50 text-plum-700 hover:bg-plum-100",
@@ -14,7 +14,7 @@ const variants: Record<Variant, string> = {
 };
 const sizes: Record<Size, string> = {
   sm: "h-8 px-3 text-[13px] gap-1.5 rounded-lg",
-  md: "h-10 px-4 text-sm gap-2 rounded-[10px]",
+  md: "h-10 px-4 text-sm gap-2 rounded-lg",
   lg: "h-12 px-6 text-[15px] gap-2 rounded-xl",
   icon: "h-10 w-10 rounded-[10px] justify-center",
 };

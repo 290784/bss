@@ -24,7 +24,7 @@ export function PageHeader({ title, description, actions }: { title: string; des
   return (
     <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
       <div className="min-w-0">
-        <h1 className="font-display text-[28px] leading-tight font-medium tracking-[-0.01em] text-ink">{title}</h1>
+        <h1 className="font-tight text-[28px] leading-tight font-extrabold tracking-[-0.01em] text-ink">{title}</h1>
         {description && <p className="mt-1 text-sm text-muted">{description}</p>}
       </div>
       {actions && <div className="flex flex-wrap items-center gap-2">{actions}</div>}

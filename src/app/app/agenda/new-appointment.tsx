@@ -123,7 +123,7 @@ export function NewAppointmentDialog({
               <div className="flex max-h-32 flex-wrap gap-1.5 overflow-y-auto">
                 {slots.times.map((t) => (
                   <button key={t} type="button" onClick={() => setTime(t)}
-                    className={cn("h-8 rounded-lg border px-2.5 text-[13px] tabular", t === time ? "border-plum-600 bg-plum-600 text-white" : "border-line-strong bg-surface hover:border-plum-500")}>
+                    className={cn("h-8 rounded-lg border px-2.5 text-[13px] tabular", t === time ? "border-ink-warm bg-ink-warm text-white" : "border-line-strong bg-surface hover:border-plum-500")}>
                     {t}
                   </button>
                 ))}

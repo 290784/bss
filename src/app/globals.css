@@ -6,12 +6,12 @@
  * Contraste: texto principal sobre fundo ≥ 12:1; ameixa sobre branco ≥ 8:1; branco sobre ameixa ≥ 8:1.
  */
 @theme {
-  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-dm-sans), ui-sans-serif, system-ui, sans-serif;
   --font-display: var(--font-fraunces), ui-serif, Georgia, serif;
 
-  --color-canvas: #faf7f4;
+  --color-canvas: #faf9f7;
   --color-surface: #ffffff;
-  --color-sunken: #f3eee9;
+  --color-sunken: #f2f1ef;
   --color-line: #e7dfd8;
   --color-line-strong: #d6cbc1;
 
@@ -46,7 +46,26 @@
   --color-danger: #a23a3a;
   --color-success: #2f6b4f;
 
-  --radius-card: 14px;
+  /* Landing (marketing): base quase monocromática, cor concentrada em halos e destaques */
+  --font-hero: var(--font-dm-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-tight: var(--font-inter-tight), var(--font-dm-sans), ui-sans-serif, system-ui, sans-serif;
+  --color-ink-warm: #15100b;
+  --color-mkt-card: #f2f1ef;
+  --color-mkt-shape: #e4e3e0;
+  --color-halo-lavender: #e7dafd;
+  --color-halo-orange: #ffdcc7;
+  --color-halo-pink: #ffd6e4;
+  --color-halo-green: #c8f3da;
+  --color-halo-cyan: #cdf1fb;
+  --color-sticker: #fef455;
+  --color-badge: #d61c11;
+  --color-bar-green-from: #1cc96e;
+  --color-bar-green-to: #49f49c;
+  --color-slot-1: #64e3a2;
+  --color-slot-2: #7be4fe;
+  --color-slot-3: #e5dbfd;
+
+  --radius-card: 18px;
   --shadow-card: 0 1px 2px rgb(31 27 30 / 0.04), 0 1px 1px rgb(31 27 30 / 0.03);
   --shadow-pop: 0 12px 32px -8px rgb(46 19 36 / 0.22), 0 2px 6px rgb(46 19 36 / 0.08);
 }
@@ -60,8 +79,7 @@
     background: var(--color-canvas);
     color: var(--color-ink);
     font-family: var(--font-sans);
-    font-feature-settings: "cv11", "ss01";
-    -webkit-font-smoothing: antialiased;
+        -webkit-font-smoothing: antialiased;
   }
   :focus-visible {
     outline: 2px solid var(--color-plum-500);
@@ -88,6 +106,14 @@
 }
 
 @keyframes shimmer { to { background-position: -200% 0; } }
+/* Landing: troca de card por dissolução + escala, subida com fade, crescimento de barras, adesivo */
+@keyframes mkt-card-in { from { opacity: 0; transform: translateY(14px) scale(0.94); filter: blur(4px); } }
+@keyframes mkt-rise { from { opacity: 0; transform: translateY(16px); } }
+@keyframes mkt-bar { from { transform: scaleY(0.06); } }
+@keyframes mkt-sticker { from { opacity: 0; transform: rotate(-16deg) scale(0.4); } }
+@keyframes mkt-drop { from { opacity: 0; transform: translateY(-8px); } }
+@keyframes mkt-chevron { 0%, 100% { opacity: 0.35; transform: translateY(0); } 50% { opacity: 1; transform: translateY(3px); } }
+@keyframes mkt-caret { 50% { opacity: 0; } }
 @keyframes toast-in { from { opacity: 0; transform: translateY(8px) scale(0.98); } }
 @keyframes sheet-in { from { transform: translateX(100%); } }
 @keyframes sheet-up { from { transform: translateY(100%); } }
