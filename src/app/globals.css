@@ -200,6 +200,8 @@
 
 @layer base {
   html {
+    /* Nada pode alargar a página no celular (o Safari reduziria tudo para caber). "clip" não quebra o cabeçalho fixo. */
+    overflow-x: clip;
     -webkit-text-size-adjust: 100%;
     color-scheme: dark;
   }
@@ -220,6 +222,9 @@
     padding-left: env(safe-area-inset-left, 0px);
     padding-right: env(safe-area-inset-right, 0px);
   }
+  /* Grade de uma coluna (celular): os itens podem encolher até a tela; sem isso um card com conteúdo
+     largo empurra a página para além da borda. Especificidade zero: qualquer grid-cols-* vence. */
+  :where(.grid) { grid-template-columns: minmax(0, 1fr); }
   :focus-visible {
     outline: 2px solid var(--color-violet-300);
     outline-offset: 2px;
@@ -324,6 +329,11 @@
 [data-theme="light"] ::selection { background: rgb(171 61 245 / 0.25); }
 [data-theme="light"] dialog::backdrop { background: rgb(29 18 48 / 0.35); }
 
+/* Safari anterior ao 16 não conhece "clip": usa "hidden" para não deixar a página alargar. */
+@supports not (overflow-x: clip) {
+  html, body { overflow-x: hidden; }
+}
+
 /* Toque (iPhone, iPad, Android): campos com 16 px — abaixo disso o Safari dá zoom ao focar
    e a tela fica deslocada/descentralizada depois. */
 @media (pointer: coarse) {
@@ -331,7 +341,8 @@
 }
 
 /* Fundo vivo: fitas de neon em 3D, brilhos suaves e cintilância (decorativo, atrás de tudo). */
-.ambient { position: fixed; inset: 0; z-index: -1; pointer-events: none; overflow: hidden; }
+/* contain: nada desta camada entra no cálculo de largura da página (Safari/iOS). */
+.ambient { position: fixed; inset: 0; z-index: -1; pointer-events: none; overflow: hidden; contain: strict; }
 .ambient svg { position: absolute; inset: 0; width: 100%; height: 100%; }
 .ambient .orb { position: absolute; border-radius: 9999px; filter: blur(60px); opacity: 0.55; animation: float-glow 14s ease-in-out infinite; }
 .ambient .tw { transform-box: fill-box; transform-origin: center; animation: twinkle 4.8s ease-in-out infinite; }
