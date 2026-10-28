@@ -2,7 +2,7 @@ import { Logo } from "@/components/brand/logo";
 
 export function LegalPage({ title, updated, children }: { title: string; updated: string; children: React.ReactNode }) {
   return (
-    <div className="min-h-dvh bg-canvas">
+    <div className="min-h-dvh">
       <header className="mx-auto max-w-3xl px-4 py-6"><Logo /></header>
       <main className="mx-auto max-w-3xl px-4 pb-20">
         <div className="mb-8 rounded-xl border border-highlight-border bg-highlight-subtle px-4 py-3 text-[13px] text-highlight-text">

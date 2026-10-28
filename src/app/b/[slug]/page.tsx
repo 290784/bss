@@ -30,9 +30,9 @@ export default async function PublicBookingPage({ params }: Params) {
   const today = localDateKey(new Date(), biz.timezone);
   const days = Array.from({ length: Math.min(biz.maxAdvanceDays + 1, 30) }, (_, i) => addDaysToKey(today, i));
   return (
-    <div className="min-h-dvh bg-canvas">
-      <header data-theme="dark" className="bg-royal relative overflow-hidden px-4 pt-10 pb-20">
-        <ThemeToggle className="absolute top-3 right-3 z-10" />
+    <div className="min-h-dvh">
+      <header data-theme="dark" className="bg-royal relative overflow-hidden px-4 pt-[calc(2.5rem+env(safe-area-inset-top))] pb-20">
+        <ThemeToggle className="absolute top-[calc(0.75rem+env(safe-area-inset-top))] right-[max(0.75rem,env(safe-area-inset-right))] z-10" />
         <Sparkles />
                 <div className="relative mx-auto max-w-2xl">
           <p className="flex items-center gap-2 text-[14px] font-semibold text-violet-100"><CalendarCheck2 className="h-4 w-4 text-violet-200" strokeWidth={2.4} />Agendamento online</p>

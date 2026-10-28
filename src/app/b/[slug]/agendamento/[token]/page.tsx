@@ -59,9 +59,9 @@ export default async function ReceiptPage({ params, searchParams }: Params) {
   const waText = encodeURIComponent(`Olá! Sou ${r.clientFirstName}, tenho horário de ${services} em ${when} às ${localTime(r.startsAt, tz)}.`);
 
   return (
-    <div className="min-h-dvh bg-canvas">
-      <header data-theme="dark" className="bg-royal relative overflow-hidden px-4 pt-10 pb-20">
-        <ThemeToggle className="absolute top-3 right-3 z-10" />
+    <div className="min-h-dvh">
+      <header data-theme="dark" className="bg-royal relative overflow-hidden px-4 pt-[calc(2.5rem+env(safe-area-inset-top))] pb-20">
+        <ThemeToggle className="absolute top-[calc(0.75rem+env(safe-area-inset-top))] right-[max(0.75rem,env(safe-area-inset-right))] z-10" />
         <Sparkles />
         <div className="relative mx-auto max-w-xl">
           <p className="text-[14px] font-semibold text-violet-100">{r.business.name}</p>

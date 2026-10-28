@@ -48,7 +48,7 @@ export function AppShell({ items, user, org, memberships, notifications, banner,
         </aside>
 
         <div className="flex min-w-0 flex-1 flex-col">
-          <header className="sticky top-0 z-30 flex h-16 items-center gap-3 border-b border-line bg-canvas/85 px-4 backdrop-blur sm:px-6">
+          <header className="sticky top-0 z-30 flex h-[calc(4rem+env(safe-area-inset-top))] items-center gap-3 border-b border-line bg-canvas/75 px-4 pt-[env(safe-area-inset-top)] backdrop-blur-xl sm:px-6">
             <button className="-ml-1 grid h-11 w-11 shrink-0 place-items-center rounded-lg text-ink-soft hover:bg-sunken lg:hidden" onClick={() => setMobileOpen(true)} aria-label="Abrir menu">
               <Menu className="h-5 w-5" />
             </button>
@@ -61,7 +61,7 @@ export function AppShell({ items, user, org, memberships, notifications, banner,
             <ThemeToggle />
             <Notifications key={notifications.map((n) => n.id + n.read).join()} items={notifications} />
           </header>
-          <main className="mx-auto w-full max-w-[1400px] flex-1 px-4 pt-6 pb-28 sm:px-6 lg:pb-12">{children}</main>
+          <main className="mx-auto w-full max-w-[1400px] flex-1 px-4 pt-6 pb-[calc(7rem+env(safe-area-inset-bottom))] sm:px-6 lg:pb-12">{children}</main>
         </div>
       </div>
 
@@ -84,7 +84,7 @@ export function AppShell({ items, user, org, memberships, notifications, banner,
       {mobileOpen && (
         <div className="fixed inset-0 z-50 lg:hidden" role="dialog" aria-modal="true" aria-label="Menu">
           <div className="absolute inset-0 bg-night/70" onClick={() => setMobileOpen(false)} />
-          <div className="absolute inset-y-0 left-0 flex w-[84%] max-w-xs flex-col bg-surface px-3 py-5 shadow-[var(--shadow-pop)]">
+          <div className="absolute inset-y-0 left-0 flex w-[84%] max-w-xs flex-col bg-surface px-3 pt-[calc(1.25rem+env(safe-area-inset-top))] pb-[calc(1.25rem+env(safe-area-inset-bottom))] shadow-[var(--shadow-pop)]">
             <div className="flex items-center justify-between px-2">
               <Logo href="/app" />
               <button onClick={() => setMobileOpen(false)} className="rounded-lg p-2 text-muted hover:bg-sunken" aria-label="Fechar menu"><X className="h-5 w-5" /></button>
