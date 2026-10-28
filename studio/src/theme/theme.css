@@ -1,0 +1,106 @@
+@import "tailwindcss";
+
+/*
+ * Identidade BSS mapeada para o Tailwind (mesmos valores de tokens.ts).
+ * Escuro é o padrão; [data-theme="claro"] aplica o tema claro.
+ * Componentes usam só estas classes (bg-superficie, text-texto, rounded-card...): nada de hex solto.
+ */
+@theme {
+  --font-titulo: "Inter Tight", "DM Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-corpo: "DM Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-assinatura: "Allura", "Brush Script MT", cursive;
+
+  --text-xs: 12px; --text-sm: 13px; --text-base: 15px; --text-md: 17px; --text-lg: 22px; --text-xl: 28px; --text-2xl: 36px;
+
+  --radius-card: 22px;
+  --radius-botao: 12px;
+
+  --color-fundo: #150b28;
+  --color-superficie: #1d1236;
+  --color-superficie-alta: #271843;
+  --color-afundado: #22153f;
+  --color-borda: #35255a;
+  --color-borda-forte: #4c3678;
+  --color-texto: #f8f0ff;
+  --color-texto-suave: #e4d5f6;
+  --color-texto-apoio: #b9a7d9;
+  --color-primaria: #ab3df5;
+  --color-primaria-escura: #780ac2;
+  --color-primaria-texto: #d59efa;
+  --color-primaria-suave: #2c1a52;
+  --color-secundaria: #a21caf;
+  --color-sucesso: #6fdba5;
+  --color-alerta: #f6c26b;
+  --color-erro: #ff8fa3;
+  /* Fixas (sobre o degradê da marca, nos dois temas) */
+  --color-sobre-marca: #ffffff;
+  --color-sobre-marca-suave: #eacffc;
+
+  --shadow-card: 0 0 0 1px rgb(234 207 252 / 0.05), inset 0 1px 0 rgb(255 255 255 / 0.06), 0 14px 34px -20px rgb(8 2 20 / 0.85);
+  --shadow-botao: 0 0 0 1px rgb(234 207 252 / 0.25) inset, 0 8px 24px -6px rgb(150 13 242 / 0.6);
+}
+
+[data-theme="claro"] {
+  --color-fundo: #f8f4fc;
+  --color-superficie: #ffffff;
+  --color-superficie-alta: #ffffff;
+  --color-afundado: #f2ebfa;
+  --color-borda: #e7ddf3;
+  --color-borda-forte: #d3c3e8;
+  --color-texto: #1d1230;
+  --color-texto-suave: #43355c;
+  --color-texto-apoio: #66587e;
+  --color-primaria: #960df2;
+  --color-primaria-escura: #780ac2;
+  --color-primaria-texto: #7410b8;
+  --color-primaria-suave: #f5ecff;
+  --color-secundaria: #a21caf;
+  --color-sucesso: #0f6e42;
+  --color-alerta: #8a5800;
+  --color-erro: #b4233f;
+  --shadow-card: 0 0 0 1px rgb(60 5 97 / 0.06), 0 10px 28px -18px rgb(60 5 97 / 0.35);
+  color-scheme: light;
+}
+
+@layer base {
+  html { color-scheme: dark; -webkit-text-size-adjust: 100%; overflow-x: clip; }
+  body {
+    min-height: 100dvh;
+    overflow-x: clip;
+    font-family: var(--font-corpo);
+    font-size: var(--text-base);
+    color: var(--color-texto);
+    background:
+      radial-gradient(900px 520px at 105% -8%, rgb(236 92 190 / 0.18), transparent 62%),
+      radial-gradient(760px 480px at -12% 20%, rgb(171 61 245 / 0.2), transparent 60%),
+      var(--color-fundo);
+    background-attachment: fixed;
+    -webkit-font-smoothing: antialiased;
+  }
+  [data-theme="claro"] body {
+    background:
+      radial-gradient(900px 520px at 105% -8%, rgb(255 140 210 / 0.2), transparent 62%),
+      radial-gradient(760px 480px at -12% 20%, rgb(213 158 250 / 0.26), transparent 60%),
+      var(--color-fundo);
+  }
+  h1, h2, h3 { font-family: var(--font-titulo); letter-spacing: -0.02em; text-wrap: balance; }
+  :focus-visible { outline: 2px solid var(--color-primaria-texto); outline-offset: 2px; }
+  ::selection { background: rgb(171 61 245 / 0.4); }
+  /* Toque: 16 px evita o zoom do Safari ao focar campos. */
+  @media (pointer: coarse) { input, select, textarea { font-size: 16px; } }
+}
+
+@layer components {
+  /* Degradê da marca: blocos de cor forte (capa, localização). */
+  .bg-marca { background: linear-gradient(150deg, #2a0c4c 0%, #470f78 34%, #7212b4 66%, #a21caf 100%); }
+  /* Botão principal: degradê violeta com brilho. */
+  .bg-botao { background: linear-gradient(135deg, #ab3df5 0%, #960df2 45%, #780ac2 100%); box-shadow: var(--shadow-botao); }
+  .tabular { font-variant-numeric: tabular-nums; }
+}
+
+@keyframes cintilar { 0%, 100% { opacity: 0; transform: scale(0.4) rotate(0deg); } 50% { opacity: 1; transform: scale(1) rotate(20deg); } }
+@keyframes surgir { from { opacity: 0; transform: translateY(10px); } }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+}
