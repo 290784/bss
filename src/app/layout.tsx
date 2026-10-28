@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Allura, DM_Sans, Inter_Tight } from "next/font/google";
 import "./globals.css";
+import { THEME_BOOT_SCRIPT } from "@/components/theme/theme";
 
 // DM Sans (texto), Inter Tight (títulos) e Allura (cursiva do nome "Gê" e detalhes).
 const dmSans = DM_Sans({ subsets: ["latin"], variable: "--font-dm-sans", display: "swap" });
@@ -17,7 +18,8 @@ export const viewport: Viewport = { themeColor: "#05040d", width: "device-width"
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="pt-BR" className={`${dmSans.variable} ${interTight.variable} ${allura.variable}`}>
+    <html lang="pt-BR" className={`${dmSans.variable} ${interTight.variable} ${allura.variable}`} suppressHydrationWarning>
+      <head><script dangerouslySetInnerHTML={{ __html: THEME_BOOT_SCRIPT }} /></head>
       <body className="min-h-dvh">{children}</body>
     </html>
   );

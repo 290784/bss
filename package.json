@@ -16,7 +16,7 @@
     "test:unit": "vitest run tests/unit",
     "test:integration": "vitest run tests/integration",
     "test:e2e": "node tests/e2e/smoke.mjs",
-    "test:e2e:interacoes": "node tests/e2e/interactions.mjs && node tests/e2e/dock.mjs && node tests/e2e/arrastar.mjs",
+    "test:e2e:interacoes": "node tests/e2e/interactions.mjs && node tests/e2e/dock.mjs && node tests/e2e/arrastar.mjs && node tests/e2e/tema.mjs",
     "db:migrate": "tsx scripts/migrate.ts",
     "db:seed-demo": "tsx --conditions=react-server scripts/seed-demo.ts",
     "check": "npm run typecheck && npm run lint && npm run test && npm run build",

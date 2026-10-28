@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { requireUser, getAppContext } from "@/server/context";
 import { Logo } from "@/components/brand/logo";
+import { ThemeToggle } from "@/components/theme/theme-toggle";
 import { BUSINESS_TYPES, presetsFor } from "@/server/modules/catalog";
 import { withSystem } from "@/server/db";
 import { OnboardingFlow } from "./onboarding-flow";
@@ -23,7 +24,7 @@ export default async function OnboardingPage() {
     <div className="min-h-dvh bg-canvas">
       <header className="mx-auto flex max-w-3xl items-center justify-between px-4 py-6">
         <Logo href="/" />
-        <span className="text-[13px] text-muted">Olá, {user.fullName.split(" ")[0]}</span>
+        <span className="flex items-center gap-2 text-[13px] text-muted">Olá, {user.fullName.split(" ")[0]}<ThemeToggle /></span>
       </header>
       <main className="mx-auto max-w-3xl px-4 pb-16">
         <OnboardingFlow

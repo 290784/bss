@@ -6,7 +6,7 @@ import { Button } from "./button";
 
 const control =
   "rounded-[10px] border border-line-strong bg-surface px-3 text-[15px] text-ink placeholder:text-muted/70 " +
-  "transition-colors hover:border-[#5a4a80] focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent-muted " +
+  "transition-colors hover:border-field-hover focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent-muted " +
   "disabled:bg-sunken disabled:text-muted aria-[invalid=true]:border-danger";
 
 export function Input({ className, ...props }: ComponentProps<"input">) {
@@ -93,7 +93,7 @@ export function SubmitButton({ children, pendingLabel, pending: pendingProp, ...
 export function FormMessage({ state }: { state: { ok: boolean; message?: string } | null }) {
   if (!state || state.ok || !state.message) return null;
   return (
-    <div role="alert" className="rounded-[10px] border border-[#5a2a3a] bg-st-noshow-bg px-3 py-2.5 text-sm text-danger">
+    <div role="alert" className="rounded-[10px] border border-danger-border bg-st-noshow-bg px-3 py-2.5 text-sm text-danger">
       {state.message}
     </div>
   );

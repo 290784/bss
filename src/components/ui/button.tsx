@@ -10,7 +10,7 @@ const variants: Record<Variant, string> = {
   secondary: "bg-surface text-ink border border-line-strong hover:bg-sunken",
   ghost: "text-ink-soft hover:bg-sunken hover:text-ink",
   subtle: "bg-accent-subtle text-accent-text hover:bg-accent-muted",
-  danger: "bg-surface text-danger border border-[#5a2a3a] hover:bg-st-noshow-bg",
+  danger: "bg-surface text-danger border border-danger-border hover:bg-st-noshow-bg",
 };
 const sizes: Record<Size, string> = {
   sm: "h-8 px-3 text-[13px] gap-1.5 rounded-lg",

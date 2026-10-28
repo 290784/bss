@@ -1,10 +1,11 @@
 import { Logo } from "@/components/brand/logo";
 import { Sparkles } from "@/components/brand/sparkles";
+import { ThemeToggle } from "@/components/theme/theme-toggle";
 
 export default function AuthLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="grid min-h-dvh lg:grid-cols-[1fr_minmax(0,560px)]">
-      <aside className="bg-royal relative hidden overflow-hidden p-12 text-white lg:flex lg:flex-col lg:justify-between">
+      <aside data-theme="dark" className="bg-royal relative hidden overflow-hidden p-12 text-white lg:flex lg:flex-col lg:justify-between">
         <Sparkles />
         <div className="pointer-events-none absolute -top-32 -right-24 h-[420px] w-[420px] rounded-full bg-violet-400/30 blur-[100px]" aria-hidden />
         <div className="pointer-events-none absolute -bottom-40 -left-24 h-[380px] w-[380px] rounded-full bg-royal/40 blur-[100px]" aria-hidden />
@@ -18,7 +19,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
         <p className="relative text-xs text-white/50">Teste grátis por 14 dias. Sem cartão de crédito.</p>
       </aside>
       <main className="flex flex-col px-4 py-8 sm:px-10">
-        <div className="lg:hidden"><Logo /></div>
+        <div className="flex items-center justify-between"><div className="lg:invisible"><Logo /></div><ThemeToggle /></div>
         <div className="mx-auto flex w-full max-w-sm flex-1 flex-col justify-center py-10">{children}</div>
       </main>
     </div>

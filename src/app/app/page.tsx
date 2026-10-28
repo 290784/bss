@@ -95,7 +95,7 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
                 ))}
               </ul>
             </div>
-            <div className="bg-royal ring-glass relative overflow-hidden rounded-[22px] p-4 text-white md:w-72">
+            <div data-theme="dark" className="bg-royal ring-glass relative overflow-hidden rounded-[22px] p-4 text-white md:w-72">
               <Sparkles points={[[82, 14, 8, 0.2], [92, 62, 6, 1.6], [60, 82, 5, 2.4]]} />
               <div className="flex items-center gap-2 text-sm font-medium"><Link2 className="h-4 w-4" />Sua página de agendamento</div>
               <p className="mt-1 mb-3 text-xs text-white/65">Coloque na bio do Instagram e envie no WhatsApp.</p>
@@ -134,7 +134,7 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
               <ul className="flex flex-col divide-y divide-line">
                 {activeToday.slice(0, 8).map((a) => (
                   <li key={a.id}>
-                    <Link href={`/app/agenda?data=${todayKey}&agendamento=${a.id}`} className="-mx-2 flex items-center gap-3 rounded-xl px-2 py-2.5 transition hover:bg-white/[0.04] active:scale-[0.99]">
+                    <Link href={`/app/agenda?data=${todayKey}&agendamento=${a.id}`} className="-mx-2 flex items-center gap-3 rounded-xl px-2 py-2.5 transition hover:bg-hover-tint active:scale-[0.99]">
                       <span className="w-11 text-sm font-semibold tabular">{localTime(a.starts_at, tz)}</span>
                       <span className={cn("h-8 w-1 rounded-full", STATUS_STYLE[a.status].dot)} aria-hidden />
                       <span className="min-w-0 flex-1">
@@ -180,7 +180,7 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
               <ul className="divide-y divide-line">
                 {d.reactivate.map((c) => (
                   <li key={c.id}>
-                    <Link href={`/app/clientes/${c.id}`} className="-mx-2 flex items-center justify-between rounded-xl px-2 py-2.5 text-sm transition hover:bg-white/[0.04] active:scale-[0.99]">
+                    <Link href={`/app/clientes/${c.id}`} className="-mx-2 flex items-center justify-between rounded-xl px-2 py-2.5 text-sm transition hover:bg-hover-tint active:scale-[0.99]">
                       <span className="font-medium">{c.full_name}</span>
                       <span className="text-xs text-muted">{c.visits} visita(s) · última em {formatInTz(c.last_visit, tz, { day: "2-digit", month: "2-digit", year: "numeric" })}</span>
                     </Link>
@@ -225,7 +225,7 @@ function Kpi({ label, value, change, sub, metric, invert, highlight }: { label: 
   const good = change !== undefined && change !== null && (invert ? change < 0 : change > 0);
   const bad = change !== undefined && change !== null && (invert ? change > 0 : change < 0);
   return (
-    <Card className={cn("relative overflow-hidden p-4", highlight && "bg-royal ring-glass border-transparent shadow-[0_20px_50px_-24px_rgb(147_3_197/0.9)]")}>
+    <Card data-theme={highlight ? "dark" : undefined} className={cn("relative overflow-hidden p-4", highlight && "bg-royal ring-glass border-transparent shadow-[0_20px_50px_-24px_rgb(147_3_197/0.9)]")}>
       {highlight && <Sparkles points={[[86, 18, 9, 0.3], [70, 70, 6, 1.7], [94, 78, 5, 2.6]]} />}
       <div className={cn("relative flex items-center gap-1 text-[13px]", highlight ? "text-violet-100" : "text-muted")}>{label}<InfoTip text={METRIC_DEFINITIONS[metric]} /></div>
       <div className="mt-1.5 text-[22px] leading-tight font-semibold tracking-[-0.01em] tabular sm:text-2xl">{value}</div>
