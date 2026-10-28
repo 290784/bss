@@ -71,16 +71,18 @@
     font-size: var(--text-base);
     color: var(--color-texto);
     background:
-      radial-gradient(900px 520px at 105% -8%, rgb(236 92 190 / 0.18), transparent 62%),
-      radial-gradient(760px 480px at -12% 20%, rgb(171 61 245 / 0.2), transparent 60%),
+      radial-gradient(1100px 620px at 105% -8%, rgb(236 92 190 / 0.2), transparent 62%),
+      radial-gradient(900px 560px at -12% 18%, rgb(171 61 245 / 0.22), transparent 60%),
+      radial-gradient(1000px 600px at 50% 115%, rgb(192 110 247 / 0.18), transparent 60%),
       var(--color-fundo);
     background-attachment: fixed;
     -webkit-font-smoothing: antialiased;
   }
   [data-theme="claro"] body {
     background:
-      radial-gradient(900px 520px at 105% -8%, rgb(255 140 210 / 0.2), transparent 62%),
-      radial-gradient(760px 480px at -12% 20%, rgb(213 158 250 / 0.26), transparent 60%),
+      radial-gradient(1100px 620px at 105% -8%, rgb(255 140 210 / 0.22), transparent 62%),
+      radial-gradient(900px 560px at -12% 18%, rgb(213 158 250 / 0.26), transparent 60%),
+      radial-gradient(1000px 600px at 50% 115%, rgb(234 207 252 / 0.4), transparent 60%),
       var(--color-fundo);
   }
   h1, h2, h3 { font-family: var(--font-titulo); letter-spacing: -0.02em; text-wrap: balance; }
@@ -96,11 +98,53 @@
   /* Botão principal: degradê violeta com brilho. */
   .bg-botao { background: linear-gradient(135deg, #ab3df5 0%, #960df2 45%, #780ac2 100%); box-shadow: var(--shadow-botao); }
   .tabular { font-variant-numeric: tabular-nums; }
+
+  /* Cartões clicáveis (como no app): sobem e brilham com o mouse; afundam ao tocar. */
+  .lift { -webkit-tap-highlight-color: transparent; transition: transform .28s cubic-bezier(.2,.8,.2,1), box-shadow .28s ease, border-color .28s ease; }
+  @media (hover: hover) {
+    .lift:hover { transform: translateY(-3px); border-color: rgb(213 158 250 / 0.45); box-shadow: 0 0 0 1px rgb(213 158 250 / 0.3) inset, 0 18px 40px -18px rgb(150 13 242 / 0.75); }
+    [data-theme="claro"] .lift:hover { box-shadow: 0 0 0 1px rgb(150 13 242 / 0.25) inset, 0 18px 40px -20px rgb(120 10 194 / 0.45); }
+  }
+  .lift:active { transform: translateY(0) scale(0.975); transition-duration: .12s; }
+  /* Cartões informativos: só realçam, sem pular. */
+  .glow-hover { transition: box-shadow .35s ease, border-color .35s ease; }
+  @media (hover: hover) {
+    .glow-hover:hover { box-shadow: 0 0 0 1px rgb(213 158 250 / 0.28) inset, 0 20px 50px -24px rgb(150 13 242 / 0.7); }
+    [data-theme="claro"] .glow-hover:hover { box-shadow: 0 0 0 1px rgb(150 13 242 / 0.2) inset, 0 18px 44px -24px rgb(120 10 194 / 0.4); }
+  }
+  /* Texto cintilante (brilho que percorre o texto). */
+  .text-shimmer {
+    background: linear-gradient(100deg, #d59efa 0%, #ffffff 22%, #eacffc 40%, #c06ef7 60%, #ffffff 78%, #d59efa 100%);
+    background-size: 220% 100%; -webkit-background-clip: text; background-clip: text; color: transparent;
+    animation: brilho-texto 6s linear infinite;
+  }
+  [data-theme="claro"] .text-shimmer { background-image: linear-gradient(100deg, #780ac2 0%, #ab3df5 25%, #5a0891 50%, #ab3df5 75%, #780ac2 100%); }
+}
+
+/*
+ * Fundo vivo (igual ao app): fitas de neon com volume, orbes difusos e estrelinhas.
+ * contain: strict + orbes dentro da tela — no iPhone, qualquer coisa além da borda (mesmo numa
+ * camada fixa) faz o Safari reduzir a página inteira.
+ */
+.ambient { position: fixed; inset: 0; z-index: -1; pointer-events: none; overflow: hidden; contain: strict;
+  --rib-a: #ab3df5; --rib-b: #ec5cbe; --rib-c: #eacffc; --rib-glow: 0.5; --rib-core: 0.75; --spark: #f3e2ff; }
+.ambient svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+.ambient .orb { position: absolute; border-radius: 9999px; filter: blur(60px); opacity: 0.55; animation: flutuar 14s ease-in-out infinite; }
+.ambient .tw { transform-box: fill-box; transform-origin: center; animation: cintilar 4.8s ease-in-out infinite; }
+[data-theme="claro"] .ambient { --rib-a: #c06ef7; --rib-b: #f08fd0; --rib-c: #ffffff; --rib-glow: 0.35; --rib-core: 0.6; --spark: #b45ff0; }
+[data-theme="claro"] .ambient .orb { opacity: 0.45; }
+@media (max-width: 640px) {
+  .ambient { --rib-glow: 0.32; --rib-core: 0.42; }
+  [data-theme="claro"] .ambient { --rib-glow: 0.22; --rib-core: 0.35; }
 }
 
 @keyframes cintilar { 0%, 100% { opacity: 0; transform: scale(0.4) rotate(0deg); } 50% { opacity: 1; transform: scale(1) rotate(20deg); } }
 @keyframes surgir { from { opacity: 0; transform: translateY(10px); } }
+@keyframes flutuar { 0%, 100% { transform: translate3d(0, 0, 0); } 50% { transform: translate3d(0, -10px, 0); } }
+@keyframes brilho-texto { to { background-position: -220% 0; } }
 
 @media (prefers-reduced-motion: reduce) {
+  .ambient .tw { animation: none; opacity: 0.7; }
+  .lift:hover, .lift:active { transform: none; }
   *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
 }
