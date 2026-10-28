@@ -92,7 +92,7 @@ export function NewAppointmentDialog({
               {available.map((s) => {
                 const on = serviceIds.includes(s.id);
                 return (
-                  <label key={s.id} className={cn("flex cursor-pointer items-center gap-3 px-3 py-2.5 transition hover:bg-white/[0.04] active:bg-white/[0.07]", on && "bg-accent-subtle/60")}>
+                  <label key={s.id} className={cn("flex cursor-pointer items-center gap-3 px-3 py-2.5 transition hover:bg-hover-tint active:bg-sunken", on && "bg-accent-subtle/60")}>
                     <input type="checkbox" checked={on} className="h-[18px] w-[18px] accent-accent-strong"
                       onChange={() => setServiceIds(on ? serviceIds.filter((x) => x !== s.id) : [...serviceIds, s.id])} />
                     <span className="flex-1 text-sm">{s.name}</span>

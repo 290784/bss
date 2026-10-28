@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { BellRing, CalendarPlus, CheckCircle2, Clock, Hourglass, MapPin, MessageCircle, Phone, ShieldCheck, Sparkle, User, XCircle } from "lucide-react";
 import { withSystem } from "@/server/db";
 import { Sparkles } from "@/components/brand/sparkles";
+import { ThemeToggle } from "@/components/theme/theme-toggle";
 import { Card } from "@/components/ui/primitives";
 import { buttonClass } from "@/components/ui/button";
 import { formatMoney } from "@/lib/money";
@@ -20,7 +21,7 @@ export const metadata: Metadata = { title: "Seu agendamento", robots: { index: f
 type Status = { title: string; text: string; icon: typeof CheckCircle2; tone: string };
 const STATUS: Record<Receipt["status"], Status> = {
   confirmed: { title: "Horário reservado", text: "Seu horário está reservado.", icon: CheckCircle2, tone: "text-st-completed bg-st-completed-bg" },
-  pending: { title: "Solicitação recebida", text: "O estabelecimento vai revisar e confirmar seu horário.", icon: Hourglass, tone: "text-violet-100 bg-white/10" },
+  pending: { title: "Solicitação recebida", text: "O estabelecimento vai revisar e confirmar seu horário.", icon: Hourglass, tone: "text-accent-text bg-accent-subtle" },
   completed: { title: "Atendimento concluído", text: "Obrigada pela visita!", icon: CheckCircle2, tone: "text-st-completed bg-st-completed-bg" },
   cancelled: { title: "Agendamento cancelado", text: "Este horário foi cancelado.", icon: XCircle, tone: "text-danger bg-st-noshow-bg" },
   no_show: { title: "Horário encerrado", text: "Fale com o estabelecimento para remarcar.", icon: XCircle, tone: "text-danger bg-st-noshow-bg" },
@@ -43,7 +44,7 @@ export default async function ReceiptPage({ params, searchParams }: Params) {
   const st: Status = askPresence
     ? { title: "Confirme sua presença",
         text: pending ? "Seu pedido está com o estabelecimento. Toque no botão abaixo para avisar que você vem." : "Toque no botão abaixo para avisar que você vem. Assim já te esperamos!",
-        icon: BellRing, tone: "text-violet-100 bg-white/10" }
+        icon: BellRing, tone: "text-accent-text bg-accent-subtle" }
     : upcoming && r.clientConfirmedAt
       ? { title: "Presença confirmada",
           text: pending ? "Obrigada por confirmar! O estabelecimento ainda vai aprovar o horário." : "Obrigada por confirmar. Te esperamos!",
@@ -59,7 +60,8 @@ export default async function ReceiptPage({ params, searchParams }: Params) {
 
   return (
     <div className="min-h-dvh bg-canvas">
-      <header className="bg-royal relative overflow-hidden px-4 pt-10 pb-20">
+      <header data-theme="dark" className="bg-royal relative overflow-hidden px-4 pt-10 pb-20">
+        <ThemeToggle className="absolute top-3 right-3 z-10" />
         <Sparkles />
         <div className="relative mx-auto max-w-xl">
           <p className="text-[14px] font-semibold text-violet-100">{r.business.name}</p>
@@ -136,7 +138,7 @@ export default async function ReceiptPage({ params, searchParams }: Params) {
         )}
 
         <Card className="flex gap-3 p-5 text-[13px] text-ink-soft">
-          <ShieldCheck className="mt-0.5 h-5 w-5 shrink-0 text-violet-200" />
+          <ShieldCheck className="mt-0.5 h-5 w-5 shrink-0 text-accent-text" />
           <div className="space-y-1">
             <p>Precisa remarcar ou cancelar? Avise com pelo menos <strong className="text-ink">{r.business.cancellationNoticeHours} h</strong> de antecedência, falando com o estabelecimento.</p>
             {r.business.policyText && <p className="whitespace-pre-line">{r.business.policyText}</p>}
@@ -145,7 +147,7 @@ export default async function ReceiptPage({ params, searchParams }: Params) {
 
         <p className="mt-4 flex items-center justify-center gap-1.5 text-center text-xs text-muted">
           <Sparkle className="h-3 w-3" />
-          <Link href={`/b/${slug}`} className="underline">Agendar outro horário</Link> · Agendamento por <Link href="/" className="font-script text-[20px] text-violet-100">Gê</Link>
+          <Link href={`/b/${slug}`} className="underline">Agendar outro horário</Link> · Agendamento por <Link href="/" className="font-script text-[20px] text-accent-text">Gê</Link>
         </p>
       </main>
     </div>
@@ -155,7 +157,7 @@ export default async function ReceiptPage({ params, searchParams }: Params) {
 function Row({ icon: Icon, label, children }: { icon: typeof Clock; label: string; children: React.ReactNode }) {
   return (
     <div className="flex gap-3">
-      <Icon className="mt-0.5 h-5 w-5 shrink-0 text-violet-200" />
+      <Icon className="mt-0.5 h-5 w-5 shrink-0 text-accent-text" />
       <div><dt className="text-xs text-muted">{label}</dt><dd className="mt-0.5 font-medium text-ink">{children}</dd></div>
     </div>
   );

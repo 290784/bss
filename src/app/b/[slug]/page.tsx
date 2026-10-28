@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { AtSign, CalendarCheck2, MapPin } from "lucide-react";
 import { withSystem } from "@/server/db";
 import { Sparkles } from "@/components/brand/sparkles";
+import { ThemeToggle } from "@/components/theme/theme-toggle";
 import { getPublicBusiness } from "@/server/modules/public-booking";
 import { addDaysToKey, localDateKey } from "@/lib/time";
 import { BookingFlow } from "./booking-flow";
@@ -29,7 +30,8 @@ export default async function PublicBookingPage({ params }: Params) {
   const days = Array.from({ length: Math.min(biz.maxAdvanceDays + 1, 30) }, (_, i) => addDaysToKey(today, i));
   return (
     <div className="min-h-dvh bg-canvas">
-      <header className="bg-royal relative overflow-hidden px-4 pt-10 pb-20">
+      <header data-theme="dark" className="bg-royal relative overflow-hidden px-4 pt-10 pb-20">
+        <ThemeToggle className="absolute top-3 right-3 z-10" />
         <Sparkles />
                 <div className="relative mx-auto max-w-2xl">
           <p className="flex items-center gap-2 text-[14px] font-semibold text-violet-100"><CalendarCheck2 className="h-4 w-4 text-violet-200" strokeWidth={2.4} />Agendamento online</p>
@@ -52,7 +54,7 @@ export default async function PublicBookingPage({ params }: Params) {
           professionals={biz.professionals.map((p) => ({ id: p.id, name: p.display_name, specialty: p.specialty }))}
         />
         <p className="mt-8 text-center text-xs text-muted">
-          Agendamento por <Link href="/" className="font-script text-[20px] text-violet-100">Gê</Link> · <Link href="/privacidade" className="underline">Privacidade</Link>
+          Agendamento por <Link href="/" className="font-script text-[20px] text-accent-text">Gê</Link> · <Link href="/privacidade" className="underline">Privacidade</Link>
         </p>
       </main>
     </div>

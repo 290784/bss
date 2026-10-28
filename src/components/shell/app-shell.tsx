@@ -4,6 +4,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useRef, useState, useTransition } from "react";
 import { Bell, CalendarDays, ChevronsUpDown, Home, LogOut, Menu, Scissors, Search, Settings, Users, UsersRound, X, ExternalLink } from "lucide-react";
 import { Logo } from "@/components/brand/logo";
+import { ThemeToggle } from "@/components/theme/theme-toggle";
 import { Avatar } from "@/components/ui/primitives";
 import { cn } from "@/lib/cn";
 import type { NavItem } from "./nav-items";
@@ -57,6 +58,7 @@ export function AppShell({ items, user, org, memberships, notifications, banner,
               <input name="q" placeholder="Buscar cliente por nome, telefone ou e-mail" aria-label="Buscar clientes"
                 className="h-10 w-full rounded-[10px] border border-line bg-surface pr-3 pl-9 text-sm placeholder:text-muted focus:border-accent focus:ring-2 focus:ring-accent-muted focus:outline-none" />
             </form>
+            <ThemeToggle />
             <Notifications key={notifications.map((n) => n.id + n.read).join()} items={notifications} />
           </header>
           <main className="mx-auto w-full max-w-[1400px] flex-1 px-4 pt-6 pb-28 sm:px-6 lg:pb-12">{children}</main>

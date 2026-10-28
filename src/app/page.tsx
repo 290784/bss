@@ -38,7 +38,7 @@ const FAQ = [
 export default async function LandingPage() {
   const session = await getSession();
   return (
-    <div className="relative overflow-x-clip font-hero text-ink">
+    <div data-theme="dark" className="bg-app relative min-h-dvh overflow-x-clip font-hero text-ink">
       <header className="sticky top-0 z-30 border-b border-white/5 bg-canvas/70 backdrop-blur-xl">
         <div className="mx-auto flex h-[72px] max-w-[1240px] items-center justify-between gap-6 px-4 sm:px-6">
           <Logo />
