@@ -84,7 +84,7 @@ export default defineConfig({
     VitePWA({
       registerType: "autoUpdate",
       injectRegister: false,
-      includeAssets: ["brand/icone.svg", "brand/apple-touch-icon.png", "img/*.svg"],
+      includeAssets: ["brand/icone.svg", "brand/apple-touch-icon.png"],
       manifest: {
         name: studio.marca.nome,
         short_name: studio.marca.nome.replace(/^Studio /, ""),
@@ -108,7 +108,7 @@ export default defineConfig({
       },
       workbox: {
         navigateFallback: "/index.html",
-        globPatterns: ["**/*.{js,css,html,svg,png,woff2}"],
+        globPatterns: ["**/*.{js,css,html,svg,png,jpg,woff2}"],
         // O gerador de PDF é grande e só é usado sob demanda: fica fora do pré-cache.
         globIgnores: ["**/gerar-*.js", "**/og.png", "**/*.woff"],
         runtimeCaching: [{ urlPattern: /\/assets\/gerar-.*\.js$/, handler: "CacheFirst", options: { cacheName: "pdf" } }],

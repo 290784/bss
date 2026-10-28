@@ -13,11 +13,11 @@ export const studio: Studio = {
     nome: "Studio Manoella Lopes",
     subtitulo: "Nail Designer | Especialista em Unhas",
     cidade: "Olaria – RJ",
-    // TODO: enviar o arquivo de logo (SVG) para public/brand/ e preencher aqui.
+    // Logo completo (nome desenhado) ainda não veio em arquivo: o nome segue na fonte de assinatura.
     logo: undefined,
     monograma: "ML",
-    // TODO: foto real da profissional.
-    foto: { src: "/img/placeholder-profissional.svg", alt: "Foto da profissional Manoella Lopes (provisória)", placeholder: true },
+    simbolo: { src: "/brand/monograma.png", alt: "Monograma ML do Studio Manoella Lopes" },
+    foto: { src: "/img/manoella-lopes.jpg", alt: "Manoella Lopes, nail designer" },
     // TODO: confirmar o texto e o link de créditos do rodapé.
     creditos: { texto: "Feito com BSS" },
   },
@@ -64,8 +64,7 @@ export const studio: Studio = {
     textoApoio: "Selecione abaixo qual serviço deseja realizar o agendamento",
     textoProfissional: "Selecione o profissional desejado para o agendamento",
     profissionais: [
-      // TODO: foto real da profissional para o avatar.
-      { id: PROFISSIONAL, nome: "Manoella Lopes" },
+      { id: PROFISSIONAL, nome: "Manoella Lopes", foto: { src: "/img/manoella-lopes.jpg", alt: "Manoella Lopes" } },
     ],
     servicos: [
       { id: "aplicacao", nome: "Aplicação", duracaoMin: 120, precoCentavos: 14000, profissionais: [PROFISSIONAL] },
@@ -103,11 +102,12 @@ export const studio: Studio = {
     secoes: [
       {
         id: "capa", estilo: "capa", titulo: "Manual de Agendamento", subtitulo: "Studio Manoella Lopes",
-        imagem: { src: "/img/placeholder-profissional.svg", alt: "Foto da profissional (provisória)", placeholder: true },
+        imagem: { src: "/img/manoella-lopes-capa.jpg", alt: "Manoella Lopes, nail designer do studio" },
         blocos: [{ tipo: "logo" }],
       },
       {
         id: "boas-vindas", titulo: "Boas-vindas",
+        imagem: { src: "/img/boas-vindas.jpg", alt: "Mãos aplicando óleo de cutícula com conta-gotas" },
         blocos: [
           { tipo: "paragrafo", texto: "Olá, eu sou a Manoella Lopes, Nail Designer Especialista, e preparei este manual de agendamento com muito carinho para facilitar a sua experiência comigo." },
           { tipo: "paragrafo", texto: "Aqui você vai encontrar todas as informações necessárias para agendar seu horário de forma prática, além de algumas orientações importantes para que o nosso atendimento seja ainda mais especial." },
@@ -126,10 +126,9 @@ export const studio: Studio = {
             "Pode incluir outros serviços como decoração (adicional)",
             "Manutenção até 30 dias",
           ] },
-          // TODO: 2 fotos reais do alongamento.
           { tipo: "fotos", fotos: [
-            { src: "/img/placeholder-unhas-1.svg", alt: "Alongamento de unhas — foto 1 (provisória)", placeholder: true },
-            { src: "/img/placeholder-unhas-2.svg", alt: "Alongamento de unhas — foto 2 (provisória)", placeholder: true },
+            { src: "/img/alongamento-1.jpg", alt: "Alongamento amendoado nude com flores brancas" },
+            { src: "/img/alongamento-2.jpg", alt: "Alongamento amendoado com francesinha branca" },
           ] },
         ],
       },
@@ -143,10 +142,9 @@ export const studio: Studio = {
             "Pode incluir decoração (adicional)",
             "Manutenção de 20 à 30 dias",
           ] },
-          // TODO: 2 fotos reais do banho de gel.
           { tipo: "fotos", fotos: [
-            { src: "/img/placeholder-unhas-3.svg", alt: "Banho de gel — foto 1 (provisória)", placeholder: true },
-            { src: "/img/placeholder-unhas-4.svg", alt: "Banho de gel — foto 2 (provisória)", placeholder: true },
+            { src: "/img/banho-de-gel-1.jpg", alt: "Banho de gel com francesinha cintilante" },
+            { src: "/img/banho-de-gel-2.jpg", alt: "Banho de gel vermelho" },
           ] },
         ],
       },
@@ -170,7 +168,7 @@ export const studio: Studio = {
           { tipo: "destaque", texto: "Para preservar a saúde da unha natural e evitar quebras/descolamentos do alongamento, é extremamente importante não passar do prazo de manutenção." },
         ],
       },
-      { id: "localizacao", titulo: "Localização", blocos: [{ tipo: "localizacao" }] },
+      { id: "localizacao", titulo: "Localização", blocos: [{ tipo: "localizacao", mapa: { src: "/img/mapa.jpg", alt: "Mapa da região da Rua Carlina, em Olaria" } }] },
     ],
   },
   guia: {

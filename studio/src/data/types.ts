@@ -42,7 +42,8 @@ export type Bloco =
   | { tipo: "fotos"; fotos: Imagem[] }
   | { tipo: "assinatura"; despedida: string; nome: string }
   | { tipo: "valores" }
-  | { tipo: "localizacao" }
+  /** mapa: recorte do mapa no círculo (opcional; sem ele, mapa ilustrado). */
+  | { tipo: "localizacao"; mapa?: Imagem }
   | { tipo: "logo" };
 
 export type SecaoDocumento = {
@@ -70,6 +71,8 @@ export type Studio = {
     /** Sem arquivo de logo, o nome é exibido na fonte de assinatura do BSS. */
     logo?: Imagem;
     monograma: string;
+    /** Símbolo do logo (PNG branco com transparência) no lugar das letras do monograma. */
+    simbolo?: Imagem;
     foto: Imagem;
     creditos: { texto: string; url?: string };
   };

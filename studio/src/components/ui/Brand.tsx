@@ -3,13 +3,15 @@ import { cn } from "@/lib/cn";
 
 /** Logo: arquivo do studio, se houver; senão monograma + nome na fonte de assinatura do BSS. */
 export function Logo({ tamanho = "md", claro, className }: { tamanho?: "sm" | "md" | "lg"; claro?: boolean; className?: string }) {
-  const { logo, nome, monograma } = studio.marca;
+  const { logo, nome, monograma, simbolo } = studio.marca;
   if (logo) return <img src={logo.src} alt={logo.alt} className={cn(tamanho === "lg" ? "h-24" : tamanho === "md" ? "h-12" : "h-9", "w-auto", className)} />;
   const box = tamanho === "lg" ? "h-16 w-16 text-[22px] sm:h-20 sm:w-20 sm:text-[28px]" : tamanho === "md" ? "h-12 w-12 text-[18px]" : "h-9 w-9 text-[13px]";
   return (
     <span className={cn("inline-flex items-center gap-3", className)}>
       <span aria-hidden className={cn("bg-marca grid shrink-0 place-items-center rounded-2xl font-titulo font-extrabold tracking-tight leading-none text-sobre-marca shadow-card ring-1 ring-sobre-marca/20", box)}>
-        {monograma}
+        {simbolo
+          ? <span className="h-[72%] w-[72%] bg-current" style={{ mask: `url(${simbolo.src}) center / contain no-repeat`, WebkitMask: `url(${simbolo.src}) center / contain no-repeat` }} />
+          : monograma}
       </span>
       <span className={cn("font-assinatura leading-none whitespace-nowrap", tamanho === "lg" ? "text-[36px] sm:text-[44px]" : tamanho === "md" ? "text-[30px]" : "text-[24px]", claro ? "text-sobre-marca" : "text-primaria-texto")}>{nome.replace(/^Studio /, "")}</span>
       <span className="sr-only">{nome}</span>
