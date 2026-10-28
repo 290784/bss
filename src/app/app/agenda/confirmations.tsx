@@ -1,7 +1,8 @@
 "use client";
-import { createContext, useContext, useTransition } from "react";
+import { createContext, useContext, useState, useTransition } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { CheckCheck, MessageCircle, Send } from "lucide-react";
+import { ArrowRight, CheckCheck, MessageCircle, Send, SkipForward } from "lucide-react";
 import { Dialog } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/primitives";
 import { useToast } from "@/components/ui/toast";
@@ -62,14 +63,42 @@ export function BlockSendButton({ item }: { item: AgendaItemDTO }) {
 }
 
 /** Lista do período com envio/reenvio em um toque. */
-export function ConfirmationsDialog({ open, onClose, items, title }: { open: boolean; onClose: () => void; items: AgendaItemDTO[]; title: string }) {
+export function ConfirmationsDialog({ open, onClose, items, title, tomorrowHref }: { open: boolean; onClose: () => void; items: AgendaItemDTO[]; title: string; tomorrowHref?: string }) {
   const ctx = useContext(ConfirmationContext);
   const { record } = useRecordSent();
+  // Envio em sequência: uma cliente por toque (o WhatsApp abre uma conversa por vez).
+  const [seq, setSeq] = useState<{ ids: string[]; at: number } | null>(null);
   const list = items.filter((i) => canSendConfirmation(i, ctx.now)).sort((a, b) => a.startsAt.localeCompare(b.startsAt));
   const noPhone = items.filter((i) => (i.status === "pending" || i.status === "confirmed") && new Date(i.startsAt).getTime() > ctx.now && !i.clientPhone).length;
   const tz = ctx.timeZone;
+  const toSend = list.filter((i) => !i.confirmationSentAt && !i.clientConfirmedAt);
+  const current = seq ? list.find((i) => i.id === seq.ids[seq.at]) : undefined;
   return (
-    <Dialog open={open} onClose={onClose} side="right" title="Confirmações" description={title}>
+    <Dialog open={open} onClose={() => { setSeq(null); onClose(); }} side="right" title="Confirmações" description={title}>
+      {ctx.canManage && current && seq && (
+        <div className="mb-4 rounded-2xl border border-accent-border bg-accent-subtle p-4" data-testid="sequence">
+          <p className="text-[12px] font-semibold tracking-wide text-accent-text uppercase">Em sequência · {seq.at + 1} de {seq.ids.length}</p>
+          <p className="mt-1 text-base font-semibold">{current.clientName}</p>
+          <p className="text-[13px] text-ink-soft">{localTime(new Date(current.startsAt), tz)} · {current.services}</p>
+          <div className="mt-3 flex gap-2">
+            <a href={waLink(current, ctx)} target="_blank" rel="noreferrer"
+              onClick={() => { record(current.id); setSeq((q) => q && (q.at + 1 < q.ids.length ? { ...q, at: q.at + 1 } : null)); }}
+              className="inline-flex h-11 flex-1 items-center justify-center gap-2 rounded-xl btn-glow px-4 text-sm font-semibold text-white">
+              <Send className="h-4 w-4" />Enviar para {current.clientName.split(" ")[0]}
+            </a>
+            <button type="button" onClick={() => setSeq((q) => q && (q.at + 1 < q.ids.length ? { ...q, at: q.at + 1 } : null))}
+              className="inline-flex h-11 items-center gap-1.5 rounded-xl border border-line-strong px-3 text-sm font-medium hover:bg-sunken">
+              <SkipForward className="h-4 w-4" />Pular
+            </button>
+          </div>
+        </div>
+      )}
+      {ctx.canManage && !seq && toSend.length > 1 && (
+        <button type="button" onClick={() => setSeq({ ids: toSend.map((i) => i.id), at: 0 })}
+          className="mb-4 flex min-h-11 w-full items-center justify-center gap-2 rounded-xl btn-glow px-4 text-sm font-semibold text-white">
+          <Send className="h-4 w-4" />Enviar as {toSend.length} pendentes em sequência
+        </button>
+      )}
       {list.length === 0 ? (
         <p className="text-sm text-muted">Nenhum agendamento futuro com WhatsApp neste período.</p>
       ) : (
@@ -105,6 +134,11 @@ export function ConfirmationsDialog({ open, onClose, items, title }: { open: boo
         </ul>
       )}
       {noPhone > 0 && <p className="mt-3 text-xs text-muted">{noPhone} agendamento(s) sem WhatsApp cadastrado não aparecem aqui.</p>}
+      {tomorrowHref && (
+        <Link href={tomorrowHref} onClick={onClose} className="mt-4 flex min-h-11 items-center justify-between rounded-xl border border-line px-4 text-sm font-medium hover:bg-sunken">
+          Confirmações de amanhã<ArrowRight className="h-4 w-4" />
+        </Link>
+      )}
       <p className="mt-3 text-xs text-muted">Abre o seu WhatsApp com a mensagem e o link do comprovante prontos. Cada envio fica no histórico do agendamento.</p>
     </Dialog>
   );

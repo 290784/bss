@@ -85,7 +85,7 @@ export function Skeleton({ className }: { className?: string }) {
 export function InfoTip({ text, label = "Como é calculado" }: { text: string; label?: string }) {
   return (
     <span className="group relative inline-flex align-middle">
-      <button type="button" className="rounded-full p-0.5 text-muted hover:text-ink focus:text-ink" aria-label={`${label}: ${text}`}>
+      <button type="button" className="relative rounded-full p-0.5 text-muted after:absolute after:-inset-3 after:content-[''] hover:text-ink focus:text-ink" aria-label={`${label}: ${text}`}>
         <Info className="h-3.5 w-3.5" />
       </button>
       <span role="tooltip" className="pointer-events-none absolute bottom-full left-1/2 z-30 mb-2 hidden w-64 max-w-[70vw] -translate-x-1/2 rounded-lg bg-raised px-3 py-2 text-xs leading-relaxed font-normal text-ink ring-1 ring-line-strong shadow-[var(--shadow-pop)] group-focus-within:block group-hover:block">

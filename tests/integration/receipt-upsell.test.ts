@@ -2,7 +2,9 @@ import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import type { Sql } from "@/server/db";
 import { withSystem } from "@/server/db";
 import { asTenant, createOrg, freshDatabase, futureDate } from "../support/db";
-import { addServiceToAppointment, changeStatus, createAppointment, listAgenda, recordConfirmationSent } from "@/server/modules/appointments";
+import { addServiceToAppointment, changeStatus, createAppointment, listAgenda, recordConfirmationSent, undoLastStatusChange } from "@/server/modules/appointments";
+import { firstAvailableSlots } from "@/server/modules/public-booking";
+import { addMember } from "../support/db";
 import { bookOnline, getPublicBusiness } from "@/server/modules/public-booking";
 import { confirmAttendance, getReceipt, receiptIcs } from "@/server/modules/receipt";
 import { suggestRelatedServices } from "@/server/modules/upsell";
@@ -179,5 +181,64 @@ describe("agendamento online → comprovante, aviso à equipe e sugestões", () 
     expect(mine?.variables.servicos).toBe("Manicure + Esmaltação em gel");
     expect(mine?.variables.mensagem).toMatch(/^Oi, Carla! 😊 Tudo bem\? Passando pra confirmar seu horário de manicure e esmaltação em gel, na .+-feira \(\d\d\/\d\d\), às 10h, com /);
     expect(mine?.variables.mensagem).toContain(`🔗 Ver meu agendamento:\n${mine?.variables.link}`);
+  });
+});
+
+describe("onda 1: desfazer e primeiro horário livre", () => {
+  it("desfazer cancelamento devolve o horário e os lembretes; só quem fez, logo em seguida", async () => {
+    const date = futureDate(25);
+    const appt = await asTenant(sql, A.ownerId, A.orgId, (tx) => createAppointment(tx, actor(), {
+      professionalId: A.professionalId, clientId: A.clientId, serviceIds: [svc.manicure!], date, time: "09:00", squeezeIn: false, status: "confirmed",
+    }));
+    await asTenant(sql, A.ownerId, A.orgId, (tx) => changeStatus(tx, actor(), appt.id, "cancelled", "engano"));
+    const manager = await addMember(sql, A.orgId, "manager");
+    await expect(asTenant(sql, manager, A.orgId, (tx) => undoLastStatusChange(tx, { userId: manager, organizationId: A.orgId }, appt.id)))
+      .rejects.toThrow(/Não há uma mudança recente/);
+    await asTenant(sql, A.ownerId, A.orgId, (tx) => undoLastStatusChange(tx, actor(), appt.id));
+    const [a] = await sql`select status, cancelled_at, cancel_reason from app.appointments where id = ${appt.id}`;
+    expect(a).toMatchObject({ status: "confirmed", cancelled_at: null, cancel_reason: null });
+    const jobs = await sql`select template, status from app.message_jobs where appointment_id = ${appt.id} order by template`;
+    expect(jobs.find((j) => j.template === "appointment_reminder")?.status).toBe("pending");
+    expect(jobs.find((j) => j.template === "appointment_cancelled")?.status ?? "cancelled").toBe("cancelled");
+    // Desfazer de novo não repete (a última mudança agora é o próprio desfazer, que volta ao cancelado).
+    const ev = await sql`select type from app.appointment_events where appointment_id = ${appt.id} order by created_at`;
+    expect(ev.map((e) => e.type)).toEqual(["created", "status_changed", "status_reverted"]);
+  });
+
+  it("desfazer recusa quando o horário já foi ocupado", async () => {
+    const date = futureDate(26);
+    const appt = await asTenant(sql, A.ownerId, A.orgId, (tx) => createAppointment(tx, actor(), {
+      professionalId: A.professionalId, clientId: A.clientId, serviceIds: [svc.manicure!], date, time: "10:00", squeezeIn: false, status: "confirmed",
+    }));
+    await asTenant(sql, A.ownerId, A.orgId, (tx) => changeStatus(tx, actor(), appt.id, "cancelled"));
+    await asTenant(sql, A.ownerId, A.orgId, (tx) => createAppointment(tx, actor(), {
+      professionalId: A.professionalId, clientId: A.clientId, serviceIds: [svc.manicure!], date, time: "10:00", squeezeIn: false, status: "confirmed",
+    }));
+    await expect(asTenant(sql, A.ownerId, A.orgId, (tx) => undoLastStatusChange(tx, actor(), appt.id))).rejects.toThrow(/já foi ocupado/);
+  });
+
+  it("desfazer só vale por 2 minutos", async () => {
+    const appt = await asTenant(sql, A.ownerId, A.orgId, (tx) => createAppointment(tx, actor(), {
+      professionalId: A.professionalId, clientId: A.clientId, serviceIds: [svc.manicure!], date: futureDate(27), time: "11:00", squeezeIn: false, status: "confirmed",
+    }));
+    await asTenant(sql, A.ownerId, A.orgId, (tx) => changeStatus(tx, actor(), appt.id, "no_show"));
+    await sql`update app.appointment_events set created_at = now() - interval '3 minutes' where appointment_id = ${appt.id} and type = 'status_changed'`;
+    await expect(asTenant(sql, A.ownerId, A.orgId, (tx) => undoLastStatusChange(tx, actor(), appt.id))).rejects.toThrow(/Não há uma mudança recente/);
+  });
+
+  it("primeiro horário livre respeita agenda ocupada, limpeza e antecedência", async () => {
+    const date = futureDate(30);
+    // Dia todo ocupado das 08:00 às 12:00 com bloqueio; manicure (60 + 15 de limpeza) só cabe depois.
+    const now = new Date(`${futureDate(29)}T23:00:00-03:00`);
+    await sql`insert into app.time_off (organization_id, professional_id, starts_at, ends_at, reason)
+              values (${A.orgId}, ${A.professionalId}, ${`${date}T08:00:00-03:00`}, ${`${date}T12:00:00-03:00`}, 'Curso')`;
+    const biz = (await withSystem((tx) => getPublicBusiness(tx, A.slug), sql))!;
+    const first = await withSystem((tx) => firstAvailableSlots(tx, biz, now), sql);
+    expect(first[svc.manicure!]).toEqual({ date, time: "12:00" });
+    // Com 26 h de antecedência mínima, o primeiro dia possível passa a ser o seguinte.
+    await sql`update app.organizations set min_advance_minutes = ${26 * 60} where id = ${A.orgId}`;
+    const later = await withSystem((tx) => firstAvailableSlots(tx, biz, now), sql);
+    await sql`update app.organizations set min_advance_minutes = 0 where id = ${A.orgId}`;
+    expect(later[svc.manicure!]!.date > date).toBe(true);
   });
 });

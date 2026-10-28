@@ -2,9 +2,10 @@ import { z } from "zod";
 import type { Tx } from "@/server/db";
 import { DomainError } from "@/server/errors";
 import { normalizePhone } from "@/lib/text";
-import { isDateKey, localTime } from "@/lib/time";
+import { addDaysToKey, isDateKey, localDateKey, localTime, zonedDateTime } from "@/lib/time";
+import { availableSlots } from "@/domain/availability";
 import { createAppointment } from "@/server/modules/appointments";
-import { loadPolicy, loadServices, slotsForProfessional, totals } from "@/server/modules/scheduling";
+import { loadBusy, loadPolicy, loadServices, loadWorkingHours, slotsForProfessional, totals } from "@/server/modules/scheduling";
 import { notifyStaff } from "@/server/modules/notifications";
 import { suggestRelatedServices, upsellLine } from "@/server/modules/upsell";
 import { trackEvent } from "@/server/modules/audit";
@@ -73,6 +74,47 @@ export async function publicSlots(tx: Tx, biz: PublicBusiness, serviceId: string
     }
   }
   return [...byTime.entries()].sort(([a], [b]) => a.localeCompare(b)).map(([time, professionalIds]) => ({ time, professionalIds }));
+}
+
+/**
+ * Primeiro horário livre de cada serviço (qualquer profissional que o realize), nas próximas
+ * duas semanas. Carrega expediente e agenda de cada profissional uma vez e calcula em memória,
+ * com as mesmas regras da escolha de horário (antecedência, intervalo, limpeza, bloqueios).
+ */
+export async function firstAvailableSlots(tx: Tx, biz: PublicBusiness, now = new Date()): Promise<Record<string, { date: string; time: string }>> {
+  if (biz.services.length === 0) return {};
+  const policy = await loadPolicy(tx, biz.id);
+  const tz = policy.timezone;
+  const days = Math.min(policy.maxAdvanceDays, 13);
+  const today = localDateKey(now, tz);
+  const from = zonedDateTime(today, "00:00", tz);
+  const to = new Date(zonedDateTime(addDaysToKey(today, days + 1), "00:00", tz).getTime() + 12 * 3_600_000);
+  const buffers = new Map((await tx<{ id: string; buffer_after_minutes: number }[]>`
+    select id, buffer_after_minutes from app.services where organization_id = ${biz.id} and id in ${tx(biz.services.map((s) => s.id))}`)
+    .map((r) => [r.id, r.buffer_after_minutes]));
+  const agenda = new Map<string, { hours: Awaited<ReturnType<typeof loadWorkingHours>>; busy: Awaited<ReturnType<typeof loadBusy>> }>();
+  for (const p of biz.professionals)
+    agenda.set(p.id, { hours: await loadWorkingHours(tx, biz.id, p.id), busy: await loadBusy(tx, biz.id, p.id, from, to) });
+
+  const result: Record<string, { date: string; time: string }> = {};
+  for (const s of biz.services) {
+    for (let d = 0; d <= days; d++) {
+      const date = addDaysToKey(today, d);
+      let best: Date | null = null;
+      for (const pid of s.professional_ids) {
+        const a = agenda.get(pid);
+        if (!a) continue;
+        const [first] = availableSlots({
+          date, timeZone: tz, workingHours: a.hours, busy: a.busy, serviceMinutes: s.duration_minutes,
+          bufferAfterMinutes: buffers.get(s.id) ?? 0, slotIntervalMinutes: policy.slotIntervalMinutes, now,
+          minAdvanceMinutes: policy.minAdvanceMinutes, maxAdvanceDays: policy.maxAdvanceDays,
+        });
+        if (first && (!best || first < best)) best = first;
+      }
+      if (best) { result[s.id] = { date, time: localTime(best, tz) }; break; }
+    }
+  }
+  return result;
 }
 
 export const onlineBookingSchema = z.object({

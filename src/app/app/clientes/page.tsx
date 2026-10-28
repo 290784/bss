@@ -46,7 +46,7 @@ export default async function ClientsPage({ searchParams }: { searchParams: Prom
         <nav className="-mx-4 flex gap-1.5 overflow-x-auto px-4 md:mx-0 md:px-0" aria-label="Segmentos">
           {(Object.entries(SEGMENTS) as [Segment, string][]).filter(([k]) => finance || k !== "high_value").map(([k, label]) => (
             <Link key={k} href={`/app/clientes?${new URLSearchParams({ ...(sp.q ? { q: sp.q } : {}), segmento: k })}`} aria-current={k === segment ? "page" : undefined}
-              className={cn("h-8 shrink-0 rounded-full border px-3 text-[13px] leading-[30px] font-medium", k === segment ? "border-violet-300 btn-glow text-white" : "border-line bg-surface text-ink-soft hover:border-line-strong")}>
+              className={cn("h-10 shrink-0 rounded-full border px-3 text-[13px] leading-[38px] sm:h-8 sm:leading-[30px] font-medium", k === segment ? "border-violet-300 btn-glow text-white" : "border-line bg-surface text-ink-soft hover:border-line-strong")}>
               {label}
             </Link>
           ))}

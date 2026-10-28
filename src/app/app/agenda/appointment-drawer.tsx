@@ -13,7 +13,7 @@ import { formatPhone } from "@/lib/text";
 import { confirmationMessage } from "@/lib/messages";
 import { canReschedule, nextStatuses, STATUS_LABEL, type AppointmentStatus } from "@/domain/appointment-status";
 import type { AgendaProfessional } from "./agenda-view";
-import { addServiceAction, changeStatusAction, confirmationSentAction, getAppointmentAction, recordPaymentAction, refundAction, rescheduleAction, type AppointmentDetailDTO } from "./actions";
+import { addServiceAction, changeStatusAction, confirmationSentAction, undoStatusAction, getAppointmentAction, recordPaymentAction, refundAction, rescheduleAction, type AppointmentDetailDTO } from "./actions";
 
 const METHOD_LABEL: Record<string, string> = { pix: "PIX", cash: "Dinheiro", credit_card: "Crédito", debit_card: "Débito", bank_transfer: "Transferência", other: "Outro" };
 const MSG_STATUS: Record<string, { label: string; variant: "neutral" | "success" | "warning" | "danger" }> = {
@@ -37,11 +37,18 @@ export function AppointmentDrawer({ id, timeZone, professionals, readOnly, onClo
   const load = useCallback(() => getAppointmentAction(id).then(setData), [id]);
   useEffect(() => { load(); }, [load]);
 
-  const run = (fn: () => Promise<{ ok: boolean; message?: string } | null>) => start(async () => {
+  const run = (fn: () => Promise<{ ok: boolean; message?: string } | null>, undoable?: string) => start(async () => {
     setError(null);
     const r = await fn();
-    if (r?.ok) { toast(r.message ?? "Atualizado."); setMode("view"); await load(); onChanged(); }
-    else if (r) setError(r.message ?? "Erro.");
+    if (r?.ok) {
+      toast(undoable ?? r.message ?? "Atualizado.", "success", undoable ? { action: { label: "Desfazer", onClick: () => undo() } } : undefined);
+      setMode("view"); await load(); onChanged();
+    } else if (r) setError(r.message ?? "Erro.");
+  });
+  const undo = () => start(async () => {
+    const r = await undoStatusAction(id);
+    toast(r?.message ?? (r?.ok ? "Desfeito." : "Não foi possível desfazer."), r?.ok ? "success" : "error");
+    await load(); onChanged();
   });
 
   if (data === null)
@@ -60,7 +67,7 @@ export function AppointmentDrawer({ id, timeZone, professionals, readOnly, onClo
           <div className="flex w-full flex-wrap gap-2">
             {nextStatuses(data.status).filter((s) => s !== "cancelled").map((s) => (
               <Button key={s} variant={s === "completed" || s === "confirmed" ? "primary" : "secondary"} size="sm" disabled={pending}
-                onClick={() => run(() => changeStatusAction({ appointmentId: data.id, status: s }))}>
+                onClick={() => run(() => changeStatusAction({ appointmentId: data.id, status: s }), s === "no_show" ? "Falta registrada." : undefined)}>
                 {ACTION_LABEL[s]}
               </Button>
             ))}
@@ -135,7 +142,7 @@ export function AppointmentDrawer({ id, timeZone, professionals, readOnly, onClo
                         <span className="flex-1" />
                         {data.clientPhone && (
                           <a href={`https://wa.me/${data.clientPhone}?text=${encodeURIComponent(offerText(data, sg, timeZone))}`} target="_blank" rel="noreferrer"
-                            className="inline-flex h-8 items-center gap-1.5 rounded-lg border border-line-strong px-3 text-[13px] font-medium hover:bg-sunken">
+                            className="inline-flex h-10 sm:h-8 items-center gap-1.5 rounded-lg border border-line-strong px-3 text-[13px] font-medium hover:bg-sunken">
                             <MessageCircle className="h-3.5 w-3.5" />Oferecer
                           </a>
                         )}
@@ -212,7 +219,7 @@ export function AppointmentDrawer({ id, timeZone, professionals, readOnly, onClo
       </Dialog>
       <ConfirmDialog open={confirmCancel} onClose={() => setConfirmCancel(false)} danger title="Cancelar agendamento?" confirmLabel="Cancelar agendamento"
         description="O horário será liberado e os lembretes pendentes serão cancelados. Pagamentos já registrados continuam no histórico."
-        onConfirm={() => { setConfirmCancel(false); if (data) run(() => changeStatusAction({ appointmentId: data.id, status: "cancelled", reason: cancelReason || undefined })); }}>
+        onConfirm={() => { setConfirmCancel(false); if (data) run(() => changeStatusAction({ appointmentId: data.id, status: "cancelled", reason: cancelReason || undefined }), "Agendamento cancelado. O horário foi liberado."); }}>
         <Field label="Motivo" htmlFor="reason" optional className="mt-4">
           <Input id="reason" value={cancelReason} onChange={(e) => setCancelReason(e.target.value)} maxLength={300} />
         </Field>
@@ -247,15 +254,15 @@ function ClientConfirmation({ data, timeZone, onCopied, onSent }: { data: Appoin
       <div className="flex flex-wrap gap-2">
         {data.clientPhone && (
           <a href={`https://wa.me/${data.clientPhone}?text=${encodeURIComponent(confirmationText(data, timeZone))}`} target="_blank" rel="noreferrer"
-            onClick={onSent} className="inline-flex h-8 items-center gap-1.5 rounded-lg btn-glow px-3 text-[13px] font-medium text-white">
+            onClick={onSent} className="inline-flex h-10 sm:h-8 items-center gap-1.5 rounded-lg btn-glow px-3 text-[13px] font-medium text-white">
             <MessageCircle className="h-3.5 w-3.5" />{lastSent ? "Reenviar no WhatsApp" : "Enviar no WhatsApp"}
           </a>
         )}
         <button type="button" onClick={() => navigator.clipboard?.writeText(data.receiptUrl).then(onCopied)}
-          className="inline-flex h-8 items-center gap-1.5 rounded-lg border border-line-strong px-3 text-[13px] font-medium hover:bg-sunken">
+          className="inline-flex h-10 sm:h-8 items-center gap-1.5 rounded-lg border border-line-strong px-3 text-[13px] font-medium hover:bg-sunken">
           <Copy className="h-3.5 w-3.5" />Copiar link
         </button>
-        <a href={data.receiptUrl} target="_blank" rel="noreferrer" className="inline-flex h-8 items-center gap-1.5 rounded-lg px-3 text-[13px] font-medium text-accent-text hover:bg-sunken">
+        <a href={data.receiptUrl} target="_blank" rel="noreferrer" className="inline-flex h-10 sm:h-8 items-center gap-1.5 rounded-lg px-3 text-[13px] font-medium text-accent-text hover:bg-sunken">
           <ExternalLink className="h-3.5 w-3.5" />Ver comprovante
         </a>
       </div>
@@ -277,6 +284,7 @@ function describeEvent(e: { type: string; data: Record<string, unknown> }, tz: s
     case "payment_refunded": return `Estorno de ${formatMoney(Number(d.amountCents))}: ${d.reason}`;
     case "client_confirmed": return "A cliente confirmou presença pelo comprovante";
     case "confirmation_sent": return "Confirmação enviada pelo WhatsApp";
+    case "status_reverted": return `Desfeito: ${STATUS_LABEL[d.from as AppointmentStatus]} → ${STATUS_LABEL[d.to as AppointmentStatus]}`;
     case "service_added": return `Serviço adicionado: ${d.name} (+${formatMoney(Number(d.priceCents))})`;
     default: return e.type;
   }

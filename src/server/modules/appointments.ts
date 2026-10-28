@@ -175,6 +175,46 @@ export async function changeStatus(
   return { ...cur, status: to };
 }
 
+const UNDO_WINDOW_SECONDS = 120;
+
+/**
+ * Desfaz a última mudança de status feita pela mesma pessoa há menos de 2 minutos
+ * (ex.: cancelou ou marcou falta por engano). Volta o horário para a agenda — se ele já foi
+ * ocupado por outro agendamento, a restrição do banco impede — e reativa os lembretes futuros.
+ */
+export async function undoLastStatusChange(tx: Tx, actor: Actor, appointmentId: string) {
+  const orgId = actor.organizationId;
+  const [cur] = await tx<{ id: string; status: AppointmentStatus }[]>`
+    select id, status from app.appointments where organization_id = ${orgId} and id = ${appointmentId} for update`;
+  if (!cur) throw new DomainError("Agendamento não encontrado.");
+  const [ev] = await tx<{ data: { from: AppointmentStatus; to: AppointmentStatus }; actor_user_id: string | null; age: number }[]>`
+    select data, actor_user_id, extract(epoch from now() - created_at)::int as age from app.appointment_events
+    where appointment_id = ${cur.id} and type in ('status_changed', 'status_reverted')
+    order by created_at desc, id desc limit 1`;
+  if (!ev || ev.data.to !== cur.status || ev.actor_user_id !== actor.userId || ev.age > UNDO_WINDOW_SECONDS)
+    throw new DomainError("Não há uma mudança recente para desfazer.");
+  const back = ev.data.from;
+  try {
+    await tx`update app.appointments set status = ${back}, updated_at = now(), version = version + 1,
+               cancelled_at = null, cancel_reason = null where id = ${cur.id}`;
+  } catch (err) {
+    if (pgErrorCode(err) === PG_EXCLUSION_VIOLATION)
+      throw new DomainError("Não dá para desfazer: o horário já foi ocupado por outro agendamento.", "conflict");
+    throw err;
+  }
+  if (cur.status === "cancelled" || cur.status === "no_show") {
+    // Aviso de cancelamento ainda não enviado deixa de valer; lembretes futuros voltam.
+    await tx`update app.message_jobs set status = 'cancelled', updated_at = now()
+             where organization_id = ${orgId} and appointment_id = ${cur.id} and status = 'pending' and template = 'appointment_cancelled'`;
+    await tx`update app.message_jobs set status = 'pending', updated_at = now()
+             where organization_id = ${orgId} and appointment_id = ${cur.id} and status = 'cancelled'
+               and template = 'appointment_reminder' and scheduled_for > now()`;
+  }
+  await logEvent(tx, actor, cur.id, "status_reverted", { from: cur.status, to: back });
+  if (cur.status === "cancelled") await audit(tx, actor, "appointment.cancel_undone", "appointment", cur.id, {});
+  return { status: back };
+}
+
 /** Registra no histórico que a equipe (re)enviou a confirmação pelo WhatsApp. */
 export async function recordConfirmationSent(tx: Tx, actor: Actor, appointmentId: string) {
   const [a] = await tx<{ id: string; status: AppointmentStatus }[]>`
@@ -254,6 +294,7 @@ export type AgendaItem = {
   public_token: string;
   client_confirmed_at: Date | null;
   confirmation_sent_at: Date | null;
+  professional_name: string;
 };
 
 export async function listAgenda(tx: Tx, orgId: string, from: Date, to: Date, professionalId?: string | null): Promise<AgendaItem[]> {
@@ -263,6 +304,7 @@ export async function listAgenda(tx: Tx, orgId: string, from: Date, to: Date, pr
       coalesce((select string_agg(s.service_name, ' + ' order by s.position) from app.appointment_services s where s.appointment_id = a.id), '') as services,
       coalesce((select array_agg(s.service_name order by s.position) from app.appointment_services s where s.appointment_id = a.id), '{}') as service_names,
       a.public_token, a.client_confirmed_at,
+      (select p.display_name from app.professionals p where p.id = a.professional_id) as professional_name,
       (select max(e.created_at) from app.appointment_events e where e.appointment_id = a.id and e.type = 'confirmation_sent') as confirmation_sent_at,
       coalesce((select sum(case when p.kind = 'payment' then p.amount_cents else -p.amount_cents end)
                 from app.payments p where p.appointment_id = a.id), 0)::int as paid_cents

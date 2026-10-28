@@ -13,7 +13,7 @@ const variants: Record<Variant, string> = {
   danger: "bg-surface text-danger border border-danger-border hover:bg-st-noshow-bg",
 };
 const sizes: Record<Size, string> = {
-  sm: "h-8 px-3 text-[13px] gap-1.5 rounded-lg",
+  sm: "h-10 sm:h-8 px-3 text-[13px] gap-1.5 rounded-lg", // 40 px no celular (toque), 32 px no computador
   md: "h-10 px-4 text-sm gap-2 rounded-lg",
   lg: "h-12 px-6 text-[15px] gap-2 rounded-xl",
   icon: "h-10 w-10 rounded-[10px] justify-center",

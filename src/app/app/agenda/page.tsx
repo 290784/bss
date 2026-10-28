@@ -58,6 +58,7 @@ export default async function AgendaPage({ searchParams }: { searchParams: Promi
       timeZone={tz}
       initialProfessionalId={sp.profissional ?? null}
       openAppointmentId={sp.agendamento ?? null}
+      openConfirmations={sp.confirmacoes === "1"}
       readOnly={ctx.access === "read_only"}
       canManage={ctx.access !== "read_only" && can(ctx.role, "agenda.manage")}
       canSeeAll={seeAll}
