@@ -38,6 +38,7 @@ describe("contraste AA", () => {
   }
   it("texto sobre o degradê da marca e sobre o botão ≥ 4,5", () => {
     for (const c of [...bss.degrade.slice(1), ...bss.botao.slice(1)]) expect(contraste(bss.sobreMarca, c)).toBeGreaterThanOrEqual(4.5);
-    for (const c of bss.degrade.slice(0, 3)) expect(contraste(bss.sobreMarcaSuave, c)).toBeGreaterThanOrEqual(4.5);
+    // O 1º tom do degradê é só o brilho do canto (sem texto em cima).
+    for (const c of bss.degrade.slice(1, 3)) expect(contraste(bss.sobreMarcaSuave, c)).toBeGreaterThanOrEqual(4.5);
   });
 });

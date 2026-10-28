@@ -20,13 +20,13 @@ export function Logo({ tamanho = "md", claro, className }: { tamanho?: "sm" | "m
 }
 
 /** Brilhos cintilantes do BSS (decorativos). */
-export function Sparkles({ className }: { className?: string }) {
+export function Sparkles({ className, tom = "text-sobre-marca-suave" }: { className?: string; tom?: string }) {
   // Nas bordas, longe do texto.
   const pontos: [number, number, number, number][] = [[4, 10, 10, 0], [90, 8, 7, 1.2], [95, 46, 9, 2.4], [80, 88, 6, 3.1], [52, 6, 6, 0.6]];
   return (
-    <span aria-hidden className={cn("pointer-events-none absolute inset-0", className)}>
+    <span aria-hidden className={cn("pointer-events-none absolute inset-0", tom, className)}>
       {pontos.map(([x, y, s, d], i) => (
-        <svg key={i} viewBox="0 0 10 10" width={s} height={s} className="absolute text-sobre-marca-suave" style={{ left: `${x}%`, top: `${y}%`, animation: `cintilar 4.6s ease-in-out ${d}s infinite` }}>
+        <svg key={i} viewBox="0 0 10 10" width={s} height={s} className="absolute" style={{ left: `${x}%`, top: `${y}%`, animation: `cintilar 4.6s ease-in-out ${d}s infinite` }}>
           <path d="M5 0 C5.6 4.4 5.6 4.4 10 5 C5.6 5.6 5.6 5.6 5 10 C4.4 5.6 4.4 5.6 0 5 C4.4 4.4 4.4 4.4 5 0 Z" fill="currentColor" />
         </svg>
       ))}

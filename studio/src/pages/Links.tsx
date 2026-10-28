@@ -18,8 +18,8 @@ export default function Links() {
       <div className="flex justify-end pt-3"><ThemeToggle /></div>
       <section className="flex flex-col items-center gap-3 pt-2 text-center" aria-labelledby="nome-studio">
         <span className="relative">
-          <span aria-hidden className="absolute -inset-1.5 rounded-full bg-[conic-gradient(from_200deg,var(--color-primaria),var(--color-secundaria),var(--color-sobre-marca-suave),var(--color-primaria))] opacity-90 blur-[1px]" />
-          <span aria-hidden className="absolute -inset-4 rounded-full bg-primaria/30 blur-2xl" />
+          <span aria-hidden className="absolute -inset-1.5 rounded-full bg-[conic-gradient(from_200deg,var(--color-primaria),var(--color-secundaria),var(--color-primaria-escura),var(--color-primaria))] opacity-90 blur-[1px]" />
+          <span aria-hidden className="absolute -inset-4 rounded-full bg-primaria/15 blur-2xl" />
           <Foto {...marca.foto} selo={false} className="relative h-28 w-28 rounded-full ring-4 ring-fundo" />
           <Sparkles className="-inset-6" />
         </span>
@@ -35,9 +35,9 @@ export default function Links() {
         </ul>
         <div className="mt-1 flex gap-3">
           <a href={linkWhatsApp(studio)} target="_blank" rel="noreferrer" aria-label={`WhatsApp ${contato.whatsapp.exibicao}`}
-            className="lift grid h-12 w-12 place-items-center rounded-full border border-borda bg-superficie text-texto shadow-card"><Icon name="whatsapp" className="h-6 w-6" /></a>
+            className="lift icone-social grid h-12 w-12 place-items-center rounded-full border shadow-card"><Icon name="whatsapp" className="h-6 w-6" /></a>
           <a href={perfil.instagram.url} target="_blank" rel="noreferrer" aria-label={`Instagram ${perfil.instagram.usuario}`}
-            className="lift grid h-12 w-12 place-items-center rounded-full border border-borda bg-superficie text-texto shadow-card"><Icon name="instagram" className="h-6 w-6" /></a>
+            className="lift icone-social grid h-12 w-12 place-items-center rounded-full border shadow-card"><Icon name="instagram" className="h-6 w-6" /></a>
         </div>
       </section>
 
@@ -48,13 +48,13 @@ export default function Links() {
               {l.tipo === "pdf" && l.paginas ? (
                 <PdfViewerCard titulo={l.titulo} paginas={l.paginas} rota={l.rota} capaTitulo={capa[l.rota] ?? l.titulo} />
               ) : (
-                <Link to={l.rota} className="lift bg-botao group flex min-h-20 items-center gap-4 rounded-card p-4 text-sobre-marca">
-                  <span className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-sobre-marca/15"><Icon name="calendario" className="h-6 w-6" /></span>
+                <Link to={l.rota} className="lift moldura group flex min-h-20 items-center gap-4 rounded-card border bg-superficie p-4 text-texto shadow-card">
+                  <span className="bg-botao grid h-12 w-12 shrink-0 place-items-center rounded-2xl text-sobre-marca"><Icon name="calendario" className="h-6 w-6" /></span>
                   <span className="min-w-0 flex-1">
                     <span className="block text-md font-bold">{l.titulo}</span>
-                    {l.descricao && <span className="mt-0.5 block text-sm text-sobre-marca-suave">{l.descricao}</span>}
+                    {l.descricao && <span className="mt-0.5 block text-sm text-texto-apoio">{l.descricao}</span>}
                   </span>
-                  <Icon name="seta" className="h-5 w-5 shrink-0 transition group-hover:translate-x-0.5" />
+                  <Icon name="seta" className="h-5 w-5 shrink-0 text-primaria-texto transition group-hover:translate-x-0.5" />
                 </Link>
               )}
             </li>
