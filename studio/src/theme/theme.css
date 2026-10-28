@@ -6,59 +6,59 @@
  * Componentes usam só estas classes (bg-superficie, text-texto, rounded-card...): nada de hex solto.
  */
 @theme {
-  --font-titulo: "Inter Tight", "DM Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-titulo: "Cormorant Garamond", "Cormorant", Georgia, "Times New Roman", serif;
   --font-corpo: "DM Sans", ui-sans-serif, system-ui, sans-serif;
   --font-assinatura: "Allura", "Brush Script MT", cursive;
 
   --text-xs: 12px; --text-sm: 13px; --text-base: 15px; --text-md: 17px; --text-lg: 22px; --text-xl: 28px; --text-2xl: 36px;
 
-  --radius-card: 22px;
-  --radius-botao: 12px;
+  --radius-card: 24px;
+  --radius-botao: 999px;
 
-  --color-fundo: #16131b;
-  --color-superficie: #1d1a23;
-  --color-superficie-alta: #25212d;
-  --color-afundado: #1a1720;
-  --color-borda: #2d2836;
-  --color-borda-forte: #3f384c;
-  --color-texto: #f6f3f9;
-  --color-texto-suave: #ddd6e6;
-  --color-texto-apoio: #aca3ba;
-  --color-primaria: #a993d6;
-  --color-primaria-escura: #7861aa;
-  --color-primaria-texto: #c8b6e6;
-  --color-primaria-suave: #29233a;
-  --color-secundaria: #c39ac0;
+  --color-fundo: #1a1418;
+  --color-superficie: #221b21;
+  --color-superficie-alta: #2b222a;
+  --color-afundado: #1e181d;
+  --color-borda: #352a33;
+  --color-borda-forte: #4c3d4a;
+  --color-texto: #fbf5f8;
+  --color-texto-suave: #e8dce3;
+  --color-texto-apoio: #b9a6b2;
+  --color-primaria: #d898bb;
+  --color-primaria-escura: #a05a83;
+  --color-primaria-texto: #ebbcd4;
+  --color-primaria-suave: #35252f;
+  --color-secundaria: #c7a3dc;
   --color-sucesso: #82d1aa;
-  --color-alerta: #e8c27f;
-  --color-erro: #f0a3b0;
+  --color-alerta: #ecc483;
+  --color-erro: #f4a3b4;
   /* Fixas (sobre o degradê da marca, nos dois temas) */
   --color-sobre-marca: #ffffff;
-  --color-sobre-marca-suave: #ece4f7;
+  --color-sobre-marca-suave: #f7e4ee;
 
-  --shadow-card: 0 0 0 1px rgb(236 228 247 / 0.04), 0 12px 30px -22px rgb(6 4 10 / 0.7);
-  --shadow-botao: 0 0 0 1px rgb(255 255 255 / 0.12) inset, 0 6px 18px -8px rgb(102 80 150 / 0.45);
+  --shadow-card: 0 0 0 1px rgb(247 228 238 / 0.05), 0 12px 30px -22px rgb(10 4 8 / 0.7);
+  --shadow-botao: 0 0 0 1px rgb(255 255 255 / 0.12) inset, 0 8px 22px -10px rgb(160 90 131 / 0.55);
 }
 
 [data-theme="claro"] {
-  --color-fundo: #fbfafc;
+  --color-fundo: #fdf8fa;
   --color-superficie: #ffffff;
   --color-superficie-alta: #ffffff;
-  --color-afundado: #f5f2f8;
-  --color-borda: #ece7f1;
-  --color-borda-forte: #ddd5e6;
-  --color-texto: #1f1a26;
-  --color-texto-suave: #4a4256;
-  --color-texto-apoio: #6b6378;
-  --color-primaria: #8d76bf;
-  --color-primaria-escura: #7861aa;
-  --color-primaria-texto: #6a4f9c;
-  --color-primaria-suave: #f3eefa;
-  --color-secundaria: #a8789f;
+  --color-afundado: #f9eff4;
+  --color-borda: #f2e4eb;
+  --color-borda-forte: #e6d0dc;
+  --color-texto: #2a1c24;
+  --color-texto-suave: #57434f;
+  --color-texto-apoio: #75616d;
+  --color-primaria: #c4829f;
+  --color-primaria-escura: #a05a83;
+  --color-primaria-texto: #93507a;
+  --color-primaria-suave: #fbedf4;
+  --color-secundaria: #9b7bb8;
   --color-sucesso: #1f6b48;
   --color-alerta: #8a5800;
   --color-erro: #b4233f;
-  --shadow-card: 0 0 0 1px rgb(58 49 80 / 0.05), 0 8px 24px -18px rgb(58 49 80 / 0.22);
+  --shadow-card: 0 0 0 1px rgb(106 63 98 / 0.05), 0 10px 26px -18px rgb(160 90 131 / 0.28);
   color-scheme: light;
 }
 
@@ -71,66 +71,67 @@
     font-size: var(--text-base);
     color: var(--color-texto);
     background:
-      radial-gradient(1100px 620px at 105% -8%, rgb(195 154 192 / 0.07), transparent 62%),
-      radial-gradient(900px 560px at -12% 18%, rgb(169 147 214 / 0.08), transparent 60%),
+      radial-gradient(1100px 620px at 105% -8%, rgb(216 152 187 / 0.12), transparent 62%),
+      radial-gradient(900px 560px at -12% 18%, rgb(199 163 220 / 0.09), transparent 60%),
       var(--color-fundo);
     background-attachment: fixed;
     -webkit-font-smoothing: antialiased;
   }
   [data-theme="claro"] body {
     background:
-      radial-gradient(1100px 620px at 105% -8%, rgb(236 220 234 / 0.45), transparent 62%),
-      radial-gradient(900px 560px at -12% 18%, rgb(232 224 245 / 0.55), transparent 60%),
+      radial-gradient(1100px 620px at 105% -8%, rgb(250 214 232 / 0.6), transparent 62%),
+      radial-gradient(900px 560px at -12% 18%, rgb(236 222 248 / 0.55), transparent 60%),
       var(--color-fundo);
   }
-  h1, h2, h3 { font-family: var(--font-titulo); letter-spacing: -0.02em; text-wrap: balance; }
+  /* Serifada elegante (como os títulos do Manual original); font-size-adjust compensa o olho pequeno. */
+  h1, h2, h3 { font-family: var(--font-titulo); font-weight: 700; letter-spacing: 0; line-height: 1.12; font-size-adjust: 0.5; font-variant-numeric: lining-nums; text-wrap: balance; }
   :focus-visible { outline: 2px solid var(--color-primaria-texto); outline-offset: 2px; }
-  ::selection { background: rgb(169 147 214 / 0.35); }
+  ::selection { background: rgb(216 152 187 / 0.35); }
   /* Toque: 16 px evita o zoom do Safari ao focar campos. */
   @media (pointer: coarse) { input, select, textarea { font-size: 16px; } }
 }
 
 @layer components {
   /* Degradê da marca: blocos de cor forte (capa, localização). */
-  .bg-marca { background: linear-gradient(150deg, #3a3150 0%, #4d4269 34%, #615584 66%, #73659a 100%); }
-  /* Botão principal: lavanda, degradê sutil. */
-  .bg-botao { background: linear-gradient(135deg, #8d76bf 0%, #7861aa 55%, #665096 100%); box-shadow: var(--shadow-botao); }
+  .bg-marca { background: linear-gradient(150deg, #4a2c45 0%, #6a3f62 34%, #87527c 66%, #9a5f8d 100%); }
+  /* Botão principal: rosé, degradê sutil. */
+  .bg-botao { background: linear-gradient(135deg, #c4829f 0%, #a05a83 55%, #8a4b72 100%); box-shadow: var(--shadow-botao); }
   .tabular { font-variant-numeric: tabular-nums; }
 
   /* Cartões clicáveis (como no app): sobem e brilham com o mouse; afundam ao tocar. */
   .lift { -webkit-tap-highlight-color: transparent; transition: transform .28s cubic-bezier(.2,.8,.2,1), box-shadow .28s ease, border-color .28s ease; }
   @media (hover: hover) {
-    .lift:hover { transform: translateY(-2px); border-color: rgb(200 182 230 / 0.35); box-shadow: 0 14px 32px -20px rgb(6 4 10 / 0.8); }
-    [data-theme="claro"] .lift:hover { border-color: rgb(141 118 191 / 0.35); box-shadow: 0 14px 30px -20px rgb(58 49 80 / 0.3); }
+    .lift:hover { transform: translateY(-2px); border-color: rgb(235 188 212 / 0.4); box-shadow: 0 14px 32px -20px rgb(6 4 10 / 0.8); }
+    [data-theme="claro"] .lift:hover { border-color: rgb(196 130 159 / 0.4); box-shadow: 0 14px 30px -20px rgb(160 90 131 / 0.35); }
   }
   .lift:active { transform: translateY(0) scale(0.975); transition-duration: .12s; }
   /* Cartões informativos: só realçam, sem pular. */
   .glow-hover { transition: box-shadow .35s ease, border-color .35s ease; }
   @media (hover: hover) {
-    .glow-hover:hover { box-shadow: 0 0 0 1px rgb(200 182 230 / 0.2) inset, 0 16px 36px -24px rgb(6 4 10 / 0.7); }
-    [data-theme="claro"] .glow-hover:hover { box-shadow: 0 0 0 1px rgb(141 118 191 / 0.18) inset, 0 14px 30px -22px rgb(58 49 80 / 0.25); }
+    .glow-hover:hover { box-shadow: 0 0 0 1px rgb(235 188 212 / 0.22) inset, 0 16px 36px -24px rgb(6 4 10 / 0.7); }
+    [data-theme="claro"] .glow-hover:hover { box-shadow: 0 0 0 1px rgb(196 130 159 / 0.2) inset, 0 14px 30px -22px rgb(160 90 131 / 0.3); }
   }
   /* Texto cintilante (brilho que percorre o texto). */
   .text-shimmer {
-    background: linear-gradient(100deg, #c8b6e6 0%, #ffffff 25%, #ece4f7 50%, #ffffff 75%, #c8b6e6 100%);
+    background: linear-gradient(100deg, #ebbcd4 0%, #ffffff 25%, #f7e4ee 50%, #ffffff 75%, #ebbcd4 100%);
     background-size: 220% 100%; -webkit-background-clip: text; background-clip: text; color: transparent;
     animation: brilho-texto 9s linear infinite;
   }
-  [data-theme="claro"] .text-shimmer { background-image: linear-gradient(100deg, #5a4485 0%, #7861aa 25%, #4d3a73 50%, #7861aa 75%, #5a4485 100%); }
+  [data-theme="claro"] .text-shimmer { background-image: linear-gradient(100deg, #7d3f66 0%, #a05a83 25%, #6a3f62 50%, #a05a83 75%, #7d3f66 100%); }
 }
 
 /*
- * Fundo vivo (igual ao app), em versão suave: fitas finas, orbes bem difusos e poucas estrelinhas.
+ * Fundo vivo (igual ao app), em versão suave e rosé: fitas finas, orbes bem difusos e poucas estrelinhas.
  * contain: strict + orbes dentro da tela — no iPhone, qualquer coisa além da borda (mesmo numa
  * camada fixa) faz o Safari reduzir a página inteira.
  */
 .ambient { position: fixed; inset: 0; z-index: -1; pointer-events: none; overflow: hidden; contain: strict;
-  --rib-a: #a993d6; --rib-b: #c39ac0; --rib-c: #ece4f7; --rib-glow: 0.12; --rib-core: 0.22; --spark: #ece4f7; }
+  --rib-a: #c7a3dc; --rib-b: #d898bb; --rib-c: #f7e4ee; --rib-glow: 0.16; --rib-core: 0.28; --spark: #f7e4ee; }
 .ambient svg { position: absolute; inset: 0; width: 100%; height: 100%; }
-.ambient .orb { position: absolute; border-radius: 9999px; filter: blur(70px); opacity: 0.16; animation: flutuar 14s ease-in-out infinite; }
+.ambient .orb { position: absolute; border-radius: 9999px; filter: blur(70px); opacity: 0.2; animation: flutuar 14s ease-in-out infinite; }
 .ambient .tw { transform-box: fill-box; transform-origin: center; animation: cintilar 4.8s ease-in-out infinite; }
-[data-theme="claro"] .ambient { --rib-a: #c8b6e6; --rib-b: #e2c6dc; --rib-c: #ffffff; --rib-glow: 0.18; --rib-core: 0.3; --spark: #b8a5dc; }
-[data-theme="claro"] .ambient .orb { opacity: 0.22; }
+[data-theme="claro"] .ambient { --rib-a: #dcc4ec; --rib-b: #f0bcd6; --rib-c: #ffffff; --rib-glow: 0.24; --rib-core: 0.36; --spark: #d898bb; }
+[data-theme="claro"] .ambient .orb { opacity: 0.32; }
 @media (max-width: 640px) {
   .ambient { --rib-glow: 0.08; --rib-core: 0.16; }
   /* No celular o texto ocupa a tela toda: sem estrelinhas soltas por cima dele. */

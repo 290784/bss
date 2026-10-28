@@ -7,13 +7,13 @@ import { formatarPreco } from "@/utils/format";
  * Base dos PDFs (Manual e Guia) com a identidade BSS: capa e encerramento no degradê da marca,
  * páginas de conteúdo na paleta clara do BSS (melhor para ler e imprimir). Uma seção = uma página.
  */
-export type FontesPdf = { corpo400: string; corpo600: string; titulo800: string; assinatura: string };
+export type FontesPdf = { corpo400: string; corpo600: string; titulo700: string; assinatura: string };
 
 let registradas = false;
 export function registrarFontes(f: FontesPdf) {
   if (registradas) return;
   Font.register({ family: bss.fontes.corpo, fonts: [{ src: f.corpo400, fontWeight: 400 }, { src: f.corpo600, fontWeight: 600 }] });
-  Font.register({ family: bss.fontes.titulo, fonts: [{ src: f.titulo800, fontWeight: 800 }] });
+  Font.register({ family: bss.fontes.titulo, fonts: [{ src: f.titulo700, fontWeight: 700 }] });
   Font.register({ family: bss.fontes.assinatura, src: f.assinatura });
   Font.registerHyphenationCallback((w) => [w]); // sem hifenização automática (pt-BR)
   registradas = true;
@@ -36,7 +36,7 @@ const s = StyleSheet.create({
   pagina: { backgroundColor: c.fundo, color: c.texto, fontFamily: bss.fontes.corpo, fontSize: 10, lineHeight: 1.45, padding: M, paddingBottom: M + 14 },
   rodape: { position: "absolute", left: M, right: M, bottom: 18, flexDirection: "row", justifyContent: "space-between", fontSize: 8, color: c.textoApoio },
   marcador: { fontSize: 8.5, color: c.primariaTexto, fontWeight: 600, letterSpacing: 0.6, textTransform: "uppercase" },
-  titulo: { fontFamily: bss.fontes.titulo, fontWeight: 800, fontSize: 22, lineHeight: 1.2, color: c.texto, marginTop: 4, letterSpacing: -0.4 },
+  titulo: { fontFamily: bss.fontes.titulo, fontWeight: 700, fontSize: 25, lineHeight: 1.05, color: c.texto, marginTop: 2 },
   subtitulo: { fontSize: 12.5, lineHeight: 1.3, fontWeight: 600, color: c.primariaTexto, marginTop: 4 },
   cartao: { backgroundColor: c.superficie, borderRadius: 14, borderWidth: 1, borderColor: c.borda, padding: 14, marginTop: 12 },
   paragrafo: { color: c.textoSuave, marginBottom: 8 },
@@ -79,7 +79,7 @@ function Logo({ studio, claro, grande }: { studio: Studio; claro?: boolean; gran
         <Degrade w={tam} h={tam} />
         {studio.marca.simbolo
           ? <Image src={resolver(studio.marca.simbolo.src)} style={{ width: tam * 0.72, height: tam * 0.72 }} />
-          : <Text style={{ fontFamily: bss.fontes.titulo, fontWeight: 800, fontSize: tam * 0.36, color: branco, letterSpacing: -0.5 }}>{studio.marca.monograma}</Text>}
+          : <Text style={{ fontFamily: bss.fontes.titulo, fontWeight: 700, fontSize: tam * 0.42, color: branco }}>{studio.marca.monograma}</Text>}
       </View>
       <Text style={{ fontFamily: bss.fontes.assinatura, fontSize: grande ? 34 : 26, color: claro ? branco : c.primariaTexto }}>{studio.marca.nome.replace(/^Studio /, "")}</Text>
     </View>
@@ -141,7 +141,7 @@ function Blocos({ blocos, studio, sobreMarca }: { blocos: Bloco[]; studio: Studi
             <View key={i}>
               {b.itens.map((t) => (
                 <View key={t.titulo} style={{ backgroundColor: c.afundado, borderRadius: 10, padding: 11, marginBottom: 8 }} wrap={false}>
-                  <Text style={{ fontFamily: bss.fontes.titulo, fontWeight: 800, fontSize: 11.5, color: c.primariaTexto, letterSpacing: 0.4 }}>{t.titulo}</Text>
+                  <Text style={{ fontFamily: bss.fontes.titulo, fontWeight: 700, fontSize: 13.5, color: c.primariaTexto, letterSpacing: 0.4 }}>{t.titulo}</Text>
                   <Text style={{ color: c.textoSuave, marginTop: 3 }}>{t.texto}</Text>
                 </View>
               ))}
@@ -230,7 +230,7 @@ function PaginaSecao({ secao, n, total, studio, doc }: { secao: SecaoDocumento; 
           <Brilhos w={A5[0]} h={A5[1]} />
         </View>
         <View style={{ flexGrow: 1, justifyContent: "center", padding: M }}>
-          <Text style={[s.titulo, { color: branco, fontSize: secao.estilo === "capa" ? 30 : 24, lineHeight: 1.15 }]}>{secao.titulo}</Text>
+          <Text style={[s.titulo, { color: branco, fontSize: secao.estilo === "capa" ? 36 : 30, lineHeight: 1.08 }]}>{secao.titulo}</Text>
           {secao.subtitulo && <Text style={[s.subtitulo, { color: lilas, fontSize: 14 }]}>{secao.subtitulo}</Text>}
           {secao.imagem && <View style={{ marginTop: 18 }}><FotoPdf {...secao.imagem} w={A5[0] - 2 * M} h={220} /></View>}
           <Blocos blocos={secao.blocos} studio={studio} sobreMarca />
@@ -243,7 +243,7 @@ function PaginaSecao({ secao, n, total, studio, doc }: { secao: SecaoDocumento; 
       <Text style={s.marcador}>{n} de {total}</Text>
       <Text style={s.titulo}>{secao.titulo}</Text>
       {secao.subtitulo && <Text style={s.subtitulo}>{secao.subtitulo}</Text>}
-      {secao.imagem && <View style={{ marginTop: 12 }}><FotoPdf {...secao.imagem} w={A5[0] - 2 * M} h={150} /></View>}
+      {secao.imagem && <View style={{ marginTop: 12 }}><FotoPdf {...secao.imagem} w={A5[0] - 2 * M} h={135} /></View>}
       <View style={s.cartao}><Blocos blocos={secao.blocos} studio={studio} /></View>
       {rodape}
     </Page>
