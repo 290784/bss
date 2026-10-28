@@ -21,7 +21,7 @@ async function png(html, w, h, file) {
   writeFileSync(file, await p.screenshot({ type: "png", omitBackground: false }));
   console.log("✔", file);
 }
-const icone = (s, pad = 0) => `<div style="width:${s}px;height:${s}px;display:grid;place-items:center;background:#1a1418">
+const icone = (s, pad = 0) => `<div style="width:${s}px;height:${s}px;display:grid;place-items:center;background:#f6efe2">
   <div style="width:${s - pad * 2}px;height:${s - pad * 2}px">${svg.replace("<svg ", `<svg width="${s - pad * 2}" height="${s - pad * 2}" `)}</div></div>`;
 await png(icone(192), 192, 192, "public/brand/icon-192.png");
 await png(icone(512), 512, 512, "public/brand/icon-512.png");
@@ -33,10 +33,10 @@ await png(`<style>
   @font-face{font-family:C;src:url(${fonte("dm-sans", "dm-sans-latin-500-normal.woff")})}
 </style>
 <div style="width:1200px;height:630px;display:flex;align-items:center;gap:56px;padding:0 90px;box-sizing:border-box;color:#fff;
-  background:linear-gradient(150deg,#4a2c45 0%,#6a3f62 34%,#87527c 66%,#9a5f8d 100%)">
+  background:linear-gradient(150deg,#c6a05b 0%,#946c2e 34%,#8a6426 66%,#7d5822 100%)">
   <div style="width:220px;height:220px;flex:none">${svg.replace("<svg ", '<svg width="220" height="220" ')}</div>
   <div><div style="font:700 80px/1.05 T">${nome}</div>
-  <div style="font:500 32px/1.3 C;color:#f7e4ee;margin-top:18px">${subtitulo}</div>
-  <div style="font:500 28px/1.3 C;color:#f7e4ee;margin-top:8px">${cidade}</div></div>
+  <div style="font:500 32px/1.3 C;color:#fffbf4;margin-top:18px">${subtitulo}</div>
+  <div style="font:500 28px/1.3 C;color:#fffbf4;margin-top:8px">${cidade}</div></div>
 </div>`, 1200, 630, "public/brand/og.png");
 await b.close();

@@ -23,18 +23,18 @@ export function DocumentoView({ doc, tipo }: { doc: Documento; tipo: "manual" | 
           return (
             <li key={s.id} id={s.id}>
               <Card as="section" aria-labelledby={`t-${s.id}`}
-                className={cn("relative overflow-hidden p-5 sm:p-6", marca && "bg-marca border-transparent text-sobre-marca")}>
-                {marca && <Sparkles />}
+                className={cn("relative overflow-hidden p-5 sm:p-6", marca && "moldura")}>
+                {marca && <Sparkles tom="text-primaria/70" />}
                 <div className="relative flex items-center justify-between gap-3">
-                  <span className={cn("text-sm font-semibold tabular", marca ? "text-sobre-marca-suave" : "text-texto-apoio")}>{i + 1} de {total}</span>
+                  <span className={cn("text-sm font-semibold tabular", "text-texto-apoio")}>{i + 1} de {total}</span>
                 </div>
                 <div className="relative mt-2 flex flex-col gap-4">
                   <div>
-                    <h2 id={`t-${s.id}`} className={cn("font-extrabold", s.estilo === "capa" ? "text-xl sm:text-2xl" : "text-lg sm:text-xl", marca ? "text-sobre-marca" : "text-texto")}>{s.titulo}</h2>
-                    {s.subtitulo && <p className={cn("mt-1 text-md font-semibold", marca ? "text-sobre-marca-suave" : "text-primaria-texto")}>{s.subtitulo}</p>}
+                    <h2 id={`t-${s.id}`} className={cn("font-extrabold", s.estilo === "capa" ? "text-xl sm:text-2xl" : "text-lg sm:text-xl", "text-texto")}>{s.titulo}</h2>
+                    {s.subtitulo && <p className={cn("mt-1 text-md font-semibold", "text-primaria-texto")}>{s.subtitulo}</p>}
                   </div>
-                  {s.imagem && <Foto {...s.imagem} className="aspect-[4/3] rounded-2xl ring-1 ring-sobre-marca/20" />}
-                  <Blocos blocos={s.blocos} sobreMarca={marca} />
+                  {s.imagem && <Foto {...s.imagem} className="aspect-[4/3] rounded-2xl ring-1 ring-borda" />}
+                  <Blocos blocos={s.blocos} />
                 </div>
               </Card>
             </li>

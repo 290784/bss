@@ -25,9 +25,9 @@ export function Ambient() {
     <div className="ambient" aria-hidden>
       {/* Orbes sempre dentro da tela: no iPhone, algo além da borda (mesmo numa camada fixa) faz o
           Safari reduzir a página inteira e ela fica descentralizada. O desfoque já espalha a cor. */}
-      <span className="orb" style={{ width: "min(520px, 70vw)", height: "min(520px, 70vw)", top: 0, right: 0, background: "radial-gradient(circle, rgb(236 150 196 / 0.55), transparent 70%)" }} />
-      <span className="orb" style={{ width: "min(460px, 62vw)", height: "min(460px, 62vw)", top: "30%", left: 0, background: "radial-gradient(circle, rgb(199 163 220 / 0.5), transparent 70%)", animationDelay: "-5s" }} />
-      <span className="orb" style={{ width: "min(560px, 75vw)", height: "min(560px, 75vw)", bottom: 0, left: "25%", background: "radial-gradient(circle, rgb(247 200 224 / 0.45), transparent 70%)", animationDelay: "-9s" }} />
+      <span className="orb" style={{ width: "min(520px, 70vw)", height: "min(520px, 70vw)", top: 0, right: 0, background: "radial-gradient(circle, rgb(232 200 140 / 0.55), transparent 70%)" }} />
+      <span className="orb" style={{ width: "min(460px, 62vw)", height: "min(460px, 62vw)", top: "30%", left: 0, background: "radial-gradient(circle, rgb(255 244 220 / 0.7), transparent 70%)", animationDelay: "-5s" }} />
+      <span className="orb" style={{ width: "min(560px, 75vw)", height: "min(560px, 75vw)", bottom: 0, left: "25%", background: "radial-gradient(circle, rgb(224 190 130 / 0.4), transparent 70%)", animationDelay: "-9s" }} />
       <svg viewBox="0 0 1440 900" preserveAspectRatio="xMidYMid slice">
         <defs>
           <linearGradient id="amb-rib" x1="0" y1="0" x2="1" y2="0">
@@ -44,7 +44,7 @@ export function Ambient() {
             {/* halo (neon), núcleo colorido e reflexo fino deslocado: dá a sensação de tubo em 3D */}
             <path d={d} stroke="url(#amb-rib)" strokeWidth={i === 2 ? 16 : 26} filter="url(#amb-glow)" style={{ opacity: "var(--rib-glow)" }} />
             <path d={d} stroke="url(#amb-rib)" strokeWidth={i === 2 ? 2 : 3} style={{ opacity: "var(--rib-core)" }} />
-            <path d={d} stroke={bss.sobreMarca} strokeWidth={0.9} transform="translate(0 -1.5)" style={{ opacity: 0.15 }} />
+            <path d={d} stroke={bss.sobreMarca} strokeWidth={0.9} transform="translate(0 -1.5)" style={{ opacity: 0.6 }} />
           </g>
         ))}
         {SPARKS.filter((_, i) => i % 2 === 0).map(([x, y, r, delay], i) => (

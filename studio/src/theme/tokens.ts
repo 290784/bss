@@ -13,28 +13,28 @@ export type Palette = {
 };
 
 export const bss = {
-  /** Padrão do BSS: escuro (ameixa rosé, suave). */
+  /** Padrão: champanhe (dourado do Manual original). Mantém a chave "escuro" por compatibilidade. */
   escuro: {
-    fundo: "#1a1418", superficie: "#221b21", superficieAlta: "#2b222a", afundado: "#1e181d",
-    borda: "#352a33", bordaForte: "#4c3d4a",
-    texto: "#fbf5f8", textoSuave: "#e8dce3", textoApoio: "#b9a6b2",
-    primaria: "#d898bb", primariaEscura: "#a05a83", primariaTexto: "#ebbcd4", primariaSuave: "#35252f",
-    secundaria: "#c7a3dc", sucesso: "#82d1aa", alerta: "#ecc483", erro: "#f4a3b4",
+    fundo: "#f6efe2", superficie: "#fdf8ef", superficieAlta: "#fffbf3", afundado: "#f1e7d5",
+    borda: "#e8d6b3", bordaForte: "#d6bb87",
+    texto: "#2e261e", textoSuave: "#55493d", textoApoio: "#6e6152",
+    primaria: "#b08743", primariaEscura: "#8a6426", primariaTexto: "#83601f", primariaSuave: "#f3e8d2",
+    secundaria: "#d4b483", sucesso: "#2a6440", alerta: "#8a5800", erro: "#ad1f3a",
   } satisfies Palette,
-  /** Opção do BSS: claro (contraste AA ou melhor sobre branco). */
+  /** Opção: marfim, mais claro (contraste AA ou melhor sobre branco). */
   claro: {
-    fundo: "#fdf8fa", superficie: "#ffffff", superficieAlta: "#ffffff", afundado: "#f9eff4",
-    borda: "#f2e4eb", bordaForte: "#e6d0dc",
-    texto: "#2a1c24", textoSuave: "#57434f", textoApoio: "#75616d",
-    primaria: "#c4829f", primariaEscura: "#a05a83", primariaTexto: "#93507a", primariaSuave: "#fbedf4",
-    secundaria: "#9b7bb8", sucesso: "#1f6b48", alerta: "#8a5800", erro: "#b4233f",
+    fundo: "#fbf8f2", superficie: "#ffffff", superficieAlta: "#ffffff", afundado: "#f6f0e4",
+    borda: "#efe5d3", bordaForte: "#e0cca5",
+    texto: "#2e261e", textoSuave: "#5a4e42", textoApoio: "#75685a",
+    primaria: "#b08743", primariaEscura: "#8a6426", primariaTexto: "#8a6426", primariaSuave: "#f7eedc",
+    secundaria: "#d4b483", sucesso: "#2f6b45", alerta: "#8a5800", erro: "#b4233f",
   } satisfies Palette,
-  /** Degradê da marca (blocos de cor forte: capa, localização, botão principal). */
-  degrade: ["#4a2c45", "#6a3f62", "#87527c", "#9a5f8d"] as const,
-  botao: ["#c4829f", "#a05a83", "#8a4b72"] as const,
+  /** Degradê dourado da marca (blocos de cor: agenda, localização, botão). O 1º tom é só o brilho do canto. */
+  degrade: ["#c6a05b", "#946c2e", "#8a6426", "#7d5822"] as const,
+  botao: ["#c6a05b", "#946c2e", "#835c22"] as const,
   /** Texto e traços sobre o degradê da marca (iguais nos dois temas). */
   sobreMarca: "#ffffff",
-  sobreMarcaSuave: "#f7e4ee",
+  sobreMarcaSuave: "#fffbf4",
   fontes: { titulo: "Cormorant Garamond", corpo: "DM Sans", assinatura: "Allura" },
   /** Escala tipográfica em px. */
   escala: { xs: 12, sm: 13, base: 15, md: 17, lg: 22, xl: 28, "2xl": 36 },
