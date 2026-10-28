@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { ArrowLeft, CalendarCheck, Check, Clock, Sparkles } from "lucide-react";
+import { ArrowLeft, ArrowRight, CalendarCheck, Check, Clock, Sparkles } from "lucide-react";
 import { Card } from "@/components/ui/primitives";
 import { Button } from "@/components/ui/button";
 import { ActionForm, Checkbox, Field, FormMessage, Input, Textarea } from "@/components/ui/form";
@@ -12,11 +12,24 @@ import { bookAction, publicSlotsAction } from "./actions";
 
 type Service = { id: string; name: string; description: string | null; priceCents: number; minutes: number; category: string | null; professionalIds: string[] };
 type Professional = { id: string; name: string; specialty: string | null };
+
+/** Dados da cliente guardados só neste aparelho, se ela pedir ("Lembrar meus dados"). */
+const SAVED_KEY = "ge-cliente";
+type Saved = { fullName: string; phone: string; email: string };
+function readSaved(): Saved | null {
+  try {
+    const v = JSON.parse(localStorage.getItem(SAVED_KEY) ?? "null");
+    return v && typeof v.fullName === "string" && typeof v.phone === "string" ? { fullName: v.fullName, phone: v.phone, email: typeof v.email === "string" ? v.email : "" } : null;
+  } catch { return null; }
+}
+function writeSaved(v: Saved | null) {
+  try { if (v) localStorage.setItem(SAVED_KEY, JSON.stringify(v)); else localStorage.removeItem(SAVED_KEY); } catch { /* sem armazenamento: segue sem lembrar */ }
+}
 const WD = ["dom", "seg", "ter", "qua", "qui", "sex", "sáb"];
 
-export function BookingFlow({ slug, timeZone, days, requiresApproval, cancellationNoticeHours, policyText, services, professionals }: {
+export function BookingFlow({ slug, timeZone, days, requiresApproval, cancellationNoticeHours, policyText, services, professionals, firstSlots = {} }: {
   slug: string; timeZone: string; days: string[]; requiresApproval: boolean; cancellationNoticeHours: number; policyText: string | null;
-  services: Service[]; professionals: Professional[];
+  services: Service[]; professionals: Professional[]; firstSlots?: Record<string, { date: string; time: string }>;
 }) {
   const [service, setService] = useState<Service | null>(null);
   const [pro, setPro] = useState<string | null | undefined>(undefined); // null = sem preferência
@@ -39,6 +52,17 @@ export function BookingFlow({ slug, timeZone, days, requiresApproval, cancellati
     publicSlotsAction(slug, sid, pid, d).then((r) => { if (!cancel) setSlotResult({ key: slotKey, list: r.slots, message: r.ok ? undefined : r.message }); });
     return () => { cancel = true; };
   }, [slug, slotKey]);
+
+  // Atalho: o primeiro horário livre do serviço leva direto para "Seus dados".
+  const quickBook = (s: Service, slot: { date: string; time: string }) => {
+    const pros = professionals.filter((p) => s.professionalIds.includes(p.id));
+    setService(s);
+    setPro(pros.length === 1 ? pros[0]!.id : null);
+    setDate(slot.date);
+    setTime(slot.time);
+  };
+  const dayLabel = (d: string) => d === days[0] ? "hoje" : d === days[1] ? "amanhã"
+    : `${WD[localWeekday(d)]}, ${d.slice(8)}/${d.slice(5, 7)}`;
 
   const chooseService = (s: Service) => {
     const pros = professionals.filter((p) => s.professionalIds.includes(p.id));
@@ -83,19 +107,28 @@ export function BookingFlow({ slug, timeZone, days, requiresApproval, cancellati
           <>
             <h2 className="mb-3 text-lg font-semibold">Escolha o serviço</h2>
             <ul className="flex flex-col gap-2">
-              {services.map((s) => (
-                <li key={s.id}>
-                  <button onClick={() => chooseService(s)}
-                    className="lift flex w-full items-start justify-between gap-4 rounded-2xl border border-line bg-surface p-4 text-left">
-                    <span>
-                      <span className="block font-medium">{s.name}</span>
-                      {s.description && <span className="mt-0.5 block text-[13px] text-muted">{s.description}</span>}
-                      <span className="mt-1 inline-flex items-center gap-1 text-xs text-muted"><Clock className="h-3 w-3" />{s.minutes} min</span>
-                    </span>
-                    <span className="shrink-0 font-semibold tabular">{formatMoney(s.priceCents)}</span>
-                  </button>
-                </li>
-              ))}
+              {services.map((s) => {
+                const first = firstSlots[s.id];
+                return (
+                  <li key={s.id} className="lift overflow-hidden rounded-2xl border border-line bg-surface">
+                    <button onClick={() => chooseService(s)} className="flex w-full items-start justify-between gap-4 p-4 text-left">
+                      <span>
+                        <span className="block font-medium">{s.name}</span>
+                        {s.description && <span className="mt-0.5 block text-[13px] text-muted">{s.description}</span>}
+                        <span className="mt-1 inline-flex items-center gap-1 text-xs text-muted"><Clock className="h-3 w-3" />{s.minutes} min</span>
+                      </span>
+                      <span className="shrink-0 font-semibold tabular">{formatMoney(s.priceCents)}</span>
+                    </button>
+                    {first && (
+                      <button onClick={() => quickBook(s, first)} data-testid="first-slot"
+                        className="flex min-h-11 w-full items-center justify-between gap-3 border-t border-line bg-accent-subtle/60 px-4 py-2 text-left text-[13px] transition hover:bg-accent-subtle">
+                        <span className="text-ink-soft">Próximo horário livre: <strong className="font-semibold text-ink">{dayLabel(first.date)} às {first.time}</strong></span>
+                        <span className="inline-flex shrink-0 items-center gap-1 font-semibold text-accent-text">Agendar<ArrowRight className="h-3.5 w-3.5" /></span>
+                      </button>
+                    )}
+                  </li>
+                );
+              })}
             </ul>
           </>
         )}
@@ -162,6 +195,9 @@ function DetailsForm({ slug, serviceId, professionalId, date, time, summary, req
   onConflict: () => void; onDone: () => void;
 }) {
   const router = useRouter();
+  // O formulário só aparece depois de escolher o horário (nunca no HTML do servidor), então ler o aparelho aqui é seguro.
+  const [saved, setSaved] = useState<Saved | null>(() => readSaved());
+  const [formKey, setFormKey] = useState(0);
   const [error, setError] = useState<string | null>(null);
   const [fe, setFe] = useState<Record<string, string[] | undefined>>({});
   const [pending, start] = useTransition();
@@ -172,7 +208,12 @@ function DetailsForm({ slug, serviceId, professionalId, date, time, summary, req
       fullName: form.get("fullName"), phone: form.get("phone"), email: form.get("email") ?? "", notes: form.get("notes") || undefined,
       acceptPolicy: form.get("acceptPolicy") === "on", marketingConsent: form.get("marketingConsent") === "on", website: form.get("website"),
     });
-    if (r.ok) { onDone(); router.replace(`/b/${slug}/agendamento/${r.token}?novo=1`); }
+    if (r.ok) {
+      writeSaved(form.get("remember") === "on"
+        ? { fullName: String(form.get("fullName") ?? ""), phone: String(form.get("phone") ?? ""), email: String(form.get("email") ?? "") }
+        : null);
+      onDone(); router.replace(`/b/${slug}/agendamento/${r.token}?novo=1`);
+    }
     else {
       const fieldErrors = ("fieldErrors" in r && r.fieldErrors) || {};
       setError(Object.keys(fieldErrors).length ? "Revise os campos destacados." : r.message);
@@ -181,12 +222,18 @@ function DetailsForm({ slug, serviceId, professionalId, date, time, summary, req
     }
   });
   return (
-    <ActionForm action={submit} className="flex flex-col gap-4" noValidate>
+    <ActionForm key={formKey} action={submit} className="flex flex-col gap-4" noValidate>
       <div className="flex items-center gap-2 rounded-xl bg-sunken px-4 py-3 text-sm font-medium text-ink"><CalendarCheck className="h-4 w-4 shrink-0" />{summary}</div>
       {error && <FormMessage state={{ ok: false, message: error }} />}
-      <Field label="Seu nome" htmlFor="fullName" error={fe.fullName}><Input id="fullName" name="fullName" autoComplete="name" required /></Field>
-      <Field label="WhatsApp" htmlFor="phone" error={fe.phone} hint="Usado para confirmar o horário."><Input id="phone" name="phone" type="tel" inputMode="tel" autoComplete="tel" placeholder="(11) 90000-0000" required /></Field>
-      <Field label="E-mail" htmlFor="email" error={fe.email} optional><Input id="email" name="email" type="email" autoComplete="email" /></Field>
+      {saved && (
+        <p className="-mb-1 flex flex-wrap items-center justify-between gap-2 text-[13px] text-ink-soft" data-testid="saved-client">
+          <span>Olá de novo, <strong className="text-ink">{saved.fullName.split(" ")[0]}</strong>! Seus dados já estão preenchidos.</span>
+          <button type="button" className="min-h-10 font-medium text-accent-text underline" onClick={() => { writeSaved(null); setSaved(null); setFormKey((k) => k + 1); }}>Não sou eu</button>
+        </p>
+      )}
+      <Field label="Seu nome" htmlFor="fullName" error={fe.fullName}><Input id="fullName" name="fullName" autoComplete="name" defaultValue={saved?.fullName} required /></Field>
+      <Field label="WhatsApp" htmlFor="phone" error={fe.phone} hint="Usado para confirmar o horário."><Input id="phone" name="phone" type="tel" inputMode="tel" autoComplete="tel" placeholder="(11) 90000-0000" defaultValue={saved?.phone} required /></Field>
+      <Field label="E-mail" htmlFor="email" error={fe.email} optional><Input id="email" name="email" type="email" autoComplete="email" defaultValue={saved?.email} /></Field>
       <Field label="Observação" htmlFor="notes" optional><Textarea id="notes" name="notes" maxLength={500} placeholder="Algo que o estabelecimento precise saber?" /></Field>
       {/* honeypot */}
       <div aria-hidden className="absolute -left-[9999px] h-0 overflow-hidden"><label>Site<input name="website" tabIndex={-1} autoComplete="off" /></label></div>
@@ -202,6 +249,7 @@ function DetailsForm({ slug, serviceId, professionalId, date, time, summary, req
       <Checkbox name="acceptPolicy" label="Li e concordo com a política de agendamento" />
       {fe.acceptPolicy && <p role="alert" className="-mt-2 text-[13px] text-danger">{fe.acceptPolicy[0]}</p>}
       <Checkbox name="marketingConsent" label="Quero receber novidades e promoções deste estabelecimento" description="Opcional. Você pode cancelar quando quiser." />
+      <Checkbox name="remember" defaultChecked={!!saved} label="Lembrar meus dados neste celular" description="Seus dados ficam só neste aparelho, para agendar mais rápido da próxima vez." />
       <Button type="submit" size="lg" disabled={pending}>{pending ? "Enviando…" : requiresApproval ? "Solicitar agendamento" : "Confirmar agendamento"}</Button>
     </ActionForm>
   );

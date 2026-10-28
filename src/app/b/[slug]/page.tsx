@@ -5,7 +5,7 @@ import { AtSign, CalendarCheck2, MapPin } from "lucide-react";
 import { withSystem } from "@/server/db";
 import { Sparkles } from "@/components/brand/sparkles";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
-import { getPublicBusiness } from "@/server/modules/public-booking";
+import { firstAvailableSlots, getPublicBusiness } from "@/server/modules/public-booking";
 import { addDaysToKey, localDateKey } from "@/lib/time";
 import { BookingFlow } from "./booking-flow";
 
@@ -26,6 +26,7 @@ export default async function PublicBookingPage({ params }: Params) {
   const { slug } = await params;
   const biz = await load(slug);
   if (!biz) notFound();
+  const firstSlots = await withSystem((tx) => firstAvailableSlots(tx, biz));
   const today = localDateKey(new Date(), biz.timezone);
   const days = Array.from({ length: Math.min(biz.maxAdvanceDays + 1, 30) }, (_, i) => addDaysToKey(today, i));
   return (
@@ -50,6 +51,7 @@ export default async function PublicBookingPage({ params }: Params) {
           requiresApproval={biz.requiresApproval}
           cancellationNoticeHours={biz.cancellationNoticeHours}
           policyText={biz.bookingPolicyText}
+          firstSlots={firstSlots}
           services={biz.services.map((s) => ({ id: s.id, name: s.name, description: s.description, priceCents: s.price_cents, minutes: s.duration_minutes, category: s.category, professionalIds: s.professional_ids }))}
           professionals={biz.professionals.map((p) => ({ id: p.id, name: p.display_name, specialty: p.specialty }))}
         />

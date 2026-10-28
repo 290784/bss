@@ -24,7 +24,7 @@ export type TimeOffDTO = { id: string; professionalId: string | null; startsAt: 
 
 type Props = {
   view: AgendaViewMode; date: string; today: string; rangeStart: string; rangeEnd: string; timeZone: string;
-  initialProfessionalId: string | null; openAppointmentId: string | null; readOnly: boolean; canManage: boolean; canSeeAll: boolean; canCreateClients: boolean;
+  initialProfessionalId: string | null; openAppointmentId: string | null; openConfirmations?: boolean; readOnly: boolean; canManage: boolean; canSeeAll: boolean; canCreateClients: boolean;
   professionals: AgendaProfessional[]; services: AgendaService[]; items: AgendaItemDTO[]; timeOff: TimeOffDTO[];
 };
 
@@ -38,7 +38,7 @@ export function AgendaView(props: Props) {
   const [showCancelled, setShowCancelled] = useState(false);
   const [draft, setDraft] = useState<NewDraft | null>(null);
   const [openId, setOpenId] = useState<string | null>(props.openAppointmentId);
-  const [showConfirmations, setShowConfirmations] = useState(false);
+  const [showConfirmations, setShowConfirmations] = useState(!!props.openConfirmations);
 
   const go = (params: Partial<{ data: string; visao: AgendaViewMode }>) => {
     const sp = new URLSearchParams({ data: params.data ?? date, visao: params.visao ?? view });
@@ -116,7 +116,7 @@ export function AgendaView(props: Props) {
           <div role="tablist" aria-label="Visualização" className="flex rounded-[10px] bg-sunken p-1">
             {(["dia", "semana", "mes"] as const).map((v) => (
               <button key={v} role="tab" aria-selected={view === v} onClick={() => go({ visao: v })}
-                className={cn("h-8 rounded-lg px-3 text-[13px] font-medium capitalize", view === v ? "bg-surface text-ink shadow-sm" : "text-muted hover:text-ink")}>
+                className={cn("h-10 sm:h-8 rounded-lg px-3 text-[13px] font-medium capitalize", view === v ? "bg-surface text-ink shadow-sm" : "text-muted hover:text-ink")}>
                 {v === "mes" ? "Mês" : v}
               </button>
             ))}
@@ -179,7 +179,8 @@ export function AgendaView(props: Props) {
           onClose={() => { setOpenId(null); if (props.openAppointmentId) router.replace(`/app/agenda?data=${date}&visao=${view}`); }}
           onChanged={() => router.refresh()} />
       )}
-      <ConfirmationsDialog open={showConfirmations} onClose={() => setShowConfirmations(false)} items={visibleItems} title={title} />
+      <ConfirmationsDialog open={showConfirmations} onClose={() => setShowConfirmations(false)} items={visibleItems} title={title}
+        tomorrowHref={view === "dia" && date === today ? `/app/agenda?data=${addDaysToKey(today, 1)}&visao=dia&confirmacoes=1` : undefined} />
     </div>
     </ConfirmationContext.Provider>
   );

@@ -23,8 +23,10 @@ variáveis estiverem marcadas também para Preview.
 | `NEXT_PUBLIC_CONTACT_EMAIL` | opcional — e-mail real de contato |
 
 ## Plano Hobby (gratuito)
-- Cron só **uma vez por dia** (`0 12 * * *`). Sem provedor de mensagens conectado isso não muda nada;
-  quando o WhatsApp/e-mail for ligado, use o plano Pro (cron a cada 5 min) ou um agendador externo.
+- Cron da Vercel só **uma vez por dia** (`0 12 * * *`). Para despachar a cada 5 min, o repositório tem o
+  workflow `.github/workflows/mensagens.yml` (GitHub Actions, gratuito). Configure em GitHub → Settings →
+  Secrets and variables → Actions o secret `CRON_SECRET` com **o mesmo valor** da Vercel (e, se o domínio
+  mudar, a variável `APP_URL`). O GitHub pode atrasar execuções agendadas em alguns minutos em horários de pico.
 - Uso comercial requer o plano Pro, segundo os termos da Vercel.
 
 ## Depois do primeiro deploy

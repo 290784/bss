@@ -15,6 +15,8 @@ import { cn } from "@/lib/cn";
 import { STATUS_LABEL } from "@/domain/appointment-status";
 import { DashboardChart } from "./dashboard-chart";
 import { CopyLink } from "./copy-link";
+import { NextClientCard } from "./next-client";
+import { receiptUrl } from "@/server/modules/receipt";
 import { Sparkles } from "@/components/brand/sparkles";
 
 export const metadata: Metadata = { title: "Início" };
@@ -53,6 +55,10 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
   const activationDone = activation.every((a) => a.done);
   const appUrl = process.env.APP_URL ?? "http://localhost:3000";
   const activeToday = todayItems.filter((i) => i.status !== "cancelled");
+  // Próxima cliente: o primeiro atendimento de hoje que ainda não terminou.
+  const now = new Date().getTime();
+  const upcoming = activeToday.filter((i) => (i.status === "pending" || i.status === "confirmed") && i.ends_at.getTime() > now);
+  const next = upcoming[0];
 
   const series = d.series.map((s) => ({
     label: s.day.slice(8),
@@ -69,7 +75,7 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
           <nav aria-label="Período" className="flex max-w-full overflow-x-auto rounded-[10px] bg-sunken p-1">
             {PERIODS.map((p) => (
               <Link key={p} href={`/app?periodo=${p}`} aria-current={p === period ? "page" : undefined}
-                className={cn("h-8 shrink-0 rounded-lg px-3 text-[13px] leading-8 font-medium whitespace-nowrap", p === period ? "bg-surface text-ink shadow-sm" : "text-muted hover:text-ink")}>
+                className={cn("h-10 shrink-0 rounded-lg px-3 text-[13px] leading-10 sm:h-8 sm:leading-8 font-medium whitespace-nowrap", p === period ? "bg-surface text-ink shadow-sm" : "text-muted hover:text-ink")}>
                 {PERIOD_LABEL[p]}
               </Link>
             ))}
@@ -103,6 +109,16 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
             </div>
           </div>
         </Card>
+      )}
+
+      {next && (
+        <NextClientCard timeZone={tz} now={now} later={upcoming.length - 1} canManage={ctx.access !== "read_only" && can(ctx.role, "agenda.manage")}
+          next={{
+            id: next.id, date: todayKey, clientName: next.client_name, clientPhone: next.client_phone, services: next.service_names,
+            professionalName: next.professional_name, startsAt: next.starts_at.toISOString(), endsAt: next.ends_at.toISOString(),
+            status: next.status as "pending" | "confirmed", clientConfirmedAt: next.client_confirmed_at?.toISOString() ?? null,
+            confirmationSentAt: next.confirmation_sent_at?.toISOString() ?? null, receiptUrl: receiptUrl(ctx.org.slug, next.public_token),
+          }} />
       )}
 
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">

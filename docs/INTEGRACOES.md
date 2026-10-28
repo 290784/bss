@@ -7,8 +7,8 @@ Nenhuma integração externa está ativa. Abaixo, o contrato já preparado e o q
   (`send({ idempotencyKey, channel, template, to, variables }) → { providerMessageId }`).
 - Registrar o provedor em `configuredProviders()` lendo credenciais de variáveis de ambiente do servidor.
 - Despacho: `GET /api/cron/mensagens` com `Authorization: Bearer $CRON_SECRET`
-  (o `vercel.json` agenda a cada 5 min; no plano Hobby da Vercel crons são diários —
-  use Pro ou um agendador externo).
+  (a cada 5 min pelo workflow `.github/workflows/mensagens.yml`; o cron do `vercel.json` é diário no plano Hobby e
+  fica como reserva).
 - **WhatsApp:** usar a WhatsApp Business Platform (Cloud API da Meta ou BSP oficial).
   Requer conta Meta Business verificada, número dedicado e **templates aprovados** para mensagens
   iniciadas pela empresa (lembretes). Há cobrança por conversa/mensagem conforme a tabela vigente da Meta —

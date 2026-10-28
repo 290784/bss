@@ -8,7 +8,7 @@ import { APPOINTMENT_STATUSES } from "@/domain/appointment-status";
 import { suggestRelatedServices } from "@/server/modules/upsell";
 import { receiptUrl } from "@/server/modules/receipt";
 import {
-  addServiceSchema, addServiceToAppointment, recordConfirmationSent, changeStatus, createAppointment, createAppointmentSchema, getAppointmentDetail, rescheduleAppointment, rescheduleSchema,
+  addServiceSchema, addServiceToAppointment, recordConfirmationSent, undoLastStatusChange, changeStatus, createAppointment, createAppointmentSchema, getAppointmentDetail, rescheduleAppointment, rescheduleSchema,
 } from "@/server/modules/appointments";
 import { recordPayment, recordPaymentSchema, refundPayment, refundSchema } from "@/server/modules/payments";
 import { clientSchema, createClient, findPossibleDuplicates } from "@/server/modules/clients";
@@ -101,6 +101,18 @@ export async function addServiceAction(input: unknown): Promise<ActionState> {
     const r = await tenant(ctx, (tx) => addServiceToAppointment(tx, actorOf(ctx), data));
     revalidatePath("/app", "layout");
     return { ok: true, message: `${r.name} adicionado ao atendimento.` };
+  } catch (err) {
+    return fail(err);
+  }
+}
+
+export async function undoStatusAction(appointmentId: string): Promise<ActionState> {
+  try {
+    const ctx = await actionContext("agenda.manage");
+    const id = z.uuid().parse(appointmentId);
+    await tenant(ctx, (tx) => undoLastStatusChange(tx, actorOf(ctx), id));
+    revalidatePath("/app", "layout");
+    return { ok: true, message: "Desfeito. O horário voltou para a agenda." };
   } catch (err) {
     return fail(err);
   }

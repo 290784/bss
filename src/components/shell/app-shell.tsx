@@ -49,7 +49,7 @@ export function AppShell({ items, user, org, memberships, notifications, banner,
 
         <div className="flex min-w-0 flex-1 flex-col">
           <header className="sticky top-0 z-30 flex h-16 items-center gap-3 border-b border-line bg-canvas/85 px-4 backdrop-blur sm:px-6">
-            <button className="-ml-1 rounded-lg p-2 text-ink-soft hover:bg-sunken lg:hidden" onClick={() => setMobileOpen(true)} aria-label="Abrir menu">
+            <button className="-ml-1 grid h-11 w-11 shrink-0 place-items-center rounded-lg text-ink-soft hover:bg-sunken lg:hidden" onClick={() => setMobileOpen(true)} aria-label="Abrir menu">
               <Menu className="h-5 w-5" />
             </button>
             <div className="lg:hidden"><Logo href="/app" className="[&_span]:hidden sm:[&_span]:inline" /></div>
@@ -169,7 +169,7 @@ function Notifications({ items }: { items: ShellProps["notifications"] }) {
       <button onClick={() => {
         setOpen(!open);
         if (!open && unread) { markNotificationsRead(); setList((l) => l.map((n) => ({ ...n, read: true }))); }
-      }} className="relative rounded-lg p-2 text-ink-soft hover:bg-sunken" aria-label={`Notificações${unread ? ` (${unread} novas)` : ""}`} aria-expanded={open}>
+      }} className="relative grid h-11 w-11 shrink-0 place-items-center rounded-lg text-ink-soft hover:bg-sunken lg:h-9 lg:w-9" aria-label={`Notificações${unread ? ` (${unread} novas)` : ""}`} aria-expanded={open}>
         <Bell className="h-5 w-5" />
         {unread > 0 && <span className="absolute top-1 right-1 grid h-4 min-w-4 place-items-center rounded-full bg-badge px-1 text-[10px] font-semibold text-white">{unread}</span>}
       </button>
