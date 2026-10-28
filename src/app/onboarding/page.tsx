@@ -21,7 +21,7 @@ export default async function OnboardingPage() {
   }
   const presets = Object.fromEntries(BUSINESS_TYPES.map((b) => [b.id, presetsFor(b.id)]));
   return (
-    <div className="min-h-dvh bg-canvas">
+    <div className="min-h-dvh">
       <header className="mx-auto flex max-w-3xl items-center justify-between px-4 py-6">
         <Logo href="/" />
         <span className="flex items-center gap-2 text-[13px] text-muted">Olá, {user.fullName.split(" ")[0]}<ThemeToggle /></span>

@@ -17,7 +17,7 @@ export function setTheme(t: Theme) {
   if (t === "light") document.documentElement.dataset.theme = "light";
   else delete document.documentElement.dataset.theme;
   try { localStorage.setItem(THEME_KEY, t); } catch { /* modo privado: vale só nesta visita */ }
-  document.querySelector('meta[name="theme-color"]')?.setAttribute("content", t === "light" ? "#f8f4fc" : "#05040d");
+  document.querySelector('meta[name="theme-color"]')?.setAttribute("content", t === "light" ? "#f8f4fc" : "#150b28");
 }
 
 /** Botão de sol/lua para alternar entre tema claro e escuro. */

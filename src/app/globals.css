@@ -30,29 +30,29 @@
   --color-violet-800: #3c0561;
 
   /* Superfícies */
-  --color-canvas: #05040d;
-  --color-surface: #0f0b1f;
-  --color-raised: #19122f;
-  --color-sunken: #160f2a;
-  --color-line: #261d3d;
-  --color-line-strong: #3a2c5a;
+  --color-canvas: #150b28;
+  --color-surface: #1d1236;
+  --color-raised: #271843;
+  --color-sunken: #22153f;
+  --color-line: #35255a;
+  --color-line-strong: #4c3678;
 
   /* Texto */
   --color-ink: #f8f0ff;
-  --color-ink-soft: #dccbf1;
-  --color-muted: #a995c6;
+  --color-ink-soft: #e4d5f6;
+  --color-muted: #b9a7d9;
 
   /* Destaque (violeta) — nomes semânticos */
-  --color-accent-subtle: #1c1035;
-  --color-accent-muted: #2a1650;
-  --color-accent-border: #5a2a8f;
+  --color-accent-subtle: #2c1a52;
+  --color-accent-muted: #3b226b;
+  --color-accent-border: #6c3aa8;
   --color-accent: #ab3df5;
   --color-accent-strong: #960df2;
   --color-accent-text: #d59efa;
   --color-accent-deep: #3c0561;
 
   /* Realce (avisos suaves, conta demo, horários vagos) */
-  --color-highlight-subtle: #241038;
+  --color-highlight-subtle: #2f1849;
   --color-highlight-border: #6b2fa3;
   --color-highlight-text: #eacffc;
 
@@ -85,15 +85,15 @@
   --color-bar-green-to: #eacffc;
   --color-slot-1: #c06ef7;
   --color-slot-2: #d59efa;
-  --color-slot-3: #3a2c5a;
+  --color-slot-3: #4c3678;
 
   --color-danger-border: #5a2a3a;
   --color-field-hover: #5a4a80;
-  --color-skeleton-hi: #241a40;
+  --color-skeleton-hi: #36265c;
   --color-hover-tint: rgb(255 255 255 / 0.04);
 
   --radius-card: 22px;
-  --shadow-card: 0 0 0 1px rgb(234 207 252 / 0.04), 0 12px 32px -18px rgb(0 0 0 / 0.8);
+  --shadow-card: 0 0 0 1px rgb(234 207 252 / 0.05), inset 0 1px 0 rgb(255 255 255 / 0.06), 0 14px 34px -20px rgb(8 2 20 / 0.85);
   --shadow-pop: 0 24px 60px -20px rgb(0 0 0 / 0.85), 0 0 0 1px rgb(234 207 252 / 0.08), 0 0 40px -10px rgb(150 13 242 / 0.35);
 }
 
@@ -147,22 +147,22 @@
   color-scheme: light;
 }
 [data-theme="dark"] {
-  --color-canvas: #05040d;
-  --color-surface: #0f0b1f;
-  --color-raised: #19122f;
-  --color-sunken: #160f2a;
-  --color-line: #261d3d;
-  --color-line-strong: #3a2c5a;
+  --color-canvas: #150b28;
+  --color-surface: #1d1236;
+  --color-raised: #271843;
+  --color-sunken: #22153f;
+  --color-line: #35255a;
+  --color-line-strong: #4c3678;
   --color-ink: #f8f0ff;
-  --color-ink-soft: #dccbf1;
-  --color-muted: #a995c6;
-  --color-accent-subtle: #1c1035;
-  --color-accent-muted: #2a1650;
-  --color-accent-border: #5a2a8f;
+  --color-ink-soft: #e4d5f6;
+  --color-muted: #b9a7d9;
+  --color-accent-subtle: #2c1a52;
+  --color-accent-muted: #3b226b;
+  --color-accent-border: #6c3aa8;
   --color-accent: #ab3df5;
   --color-accent-strong: #960df2;
   --color-accent-text: #d59efa;
-  --color-highlight-subtle: #241038;
+  --color-highlight-subtle: #2f1849;
   --color-highlight-border: #6b2fa3;
   --color-highlight-text: #eacffc;
   --color-st-pending: #f6c26b;
@@ -179,17 +179,22 @@
   --color-success: #6fdba5;
   --color-mkt-card: #120c25;
   --color-mkt-shape: #1d1338;
-  --color-slot-3: #3a2c5a;
+  --color-slot-3: #4c3678;
   --color-danger-border: #5a2a3a;
   --color-field-hover: #5a4a80;
-  --color-skeleton-hi: #241a40;
+  --color-skeleton-hi: #36265c;
   --color-hover-tint: rgb(255 255 255 / 0.04);
-  --shadow-card: 0 0 0 1px rgb(234 207 252 / 0.04), 0 12px 32px -18px rgb(0 0 0 / 0.8);
+  --shadow-card: 0 0 0 1px rgb(234 207 252 / 0.05), inset 0 1px 0 rgb(255 255 255 / 0.06), 0 14px 34px -20px rgb(8 2 20 / 0.85);
   --shadow-pop: 0 24px 60px -20px rgb(0 0 0 / 0.85), 0 0 0 1px rgb(234 207 252 / 0.08), 0 0 40px -10px rgb(150 13 242 / 0.35);
   color-scheme: dark;
 }
 /* Cor do texto acompanha o trecho (a cor herdada viria resolvida do tema de fora). */
 [data-theme="light"], [data-theme="dark"] { color: var(--color-ink); }
+/* Landing: fica no fundo original, quase preto, para o qual foi desenhada. */
+[data-landing] {
+  --color-canvas: #05040d; --color-surface: #0f0b1f; --color-raised: #19122f; --color-sunken: #160f2a;
+  --color-line: #261d3d; --color-line-strong: #3a2c5a;
+}
 /* Variante "light:" — vale dentro do tema claro, exceto em trechos forçados escuros. */
 @custom-variant light (&:where([data-theme="light"] *):not(:where([data-theme="dark"] *)));
 
@@ -200,13 +205,20 @@
   }
   body, .bg-app {
     background:
-      radial-gradient(1200px 600px at 100% -10%, rgb(147 3 197 / 0.22), transparent 60%),
-      radial-gradient(900px 500px at -10% 110%, rgb(90 8 145 / 0.25), transparent 60%),
+      radial-gradient(1100px 620px at 105% -8%, rgb(236 92 190 / 0.2), transparent 62%),
+      radial-gradient(900px 560px at -12% 18%, rgb(171 61 245 / 0.22), transparent 60%),
+      radial-gradient(1000px 600px at 50% 115%, rgb(192 110 247 / 0.18), transparent 60%),
       var(--color-canvas);
     background-attachment: fixed;
     color: var(--color-ink);
     font-family: var(--font-sans);
         -webkit-font-smoothing: antialiased;
+  }
+  body {
+    overflow-x: clip;
+    /* iPhone/Android na horizontal: conteúdo fora do notch e das bordas arredondadas */
+    padding-left: env(safe-area-inset-left, 0px);
+    padding-right: env(safe-area-inset-right, 0px);
   }
   :focus-visible {
     outline: 2px solid var(--color-violet-300);
@@ -226,12 +238,16 @@
   .tabular { font-variant-numeric: tabular-nums; }
 
   /* Gê: degradê "Royal Violet" (noite → violeta real) */
+  /* Ameixa → violeta real → magenta: mais suave e feminino que o quase-preto original. */
   .bg-royal {
-    background: linear-gradient(150deg, var(--color-night) 0%, #1a0533 38%, var(--color-violet-700) 72%, var(--color-royal) 100%);
+    background: linear-gradient(150deg, #2a0c4c 0%, #470f78 34%, #7212b4 66%, #a21caf 100%);
   }
   .bg-royal-rev {
-    background: linear-gradient(330deg, var(--color-night) 0%, #1a0533 38%, var(--color-violet-700) 72%, var(--color-royal) 100%);
+    background: linear-gradient(330deg, #2a0c4c 0%, #470f78 34%, #7212b4 66%, #a21caf 100%);
   }
+  /* A landing mantém o degradê original, desenhado para o fundo quase preto. */
+  [data-landing] .bg-royal { background: linear-gradient(150deg, var(--color-night) 0%, #1a0533 38%, var(--color-violet-700) 72%, var(--color-royal) 100%); }
+  [data-landing] .bg-royal-rev { background: linear-gradient(330deg, var(--color-night) 0%, #1a0533 38%, var(--color-violet-700) 72%, var(--color-royal) 100%); }
   /* Botão principal: degradê violeta com brilho */
   .btn-glow {
     background: linear-gradient(135deg, var(--color-violet-400) 0%, var(--color-violet-500) 45%, var(--color-violet-600) 100%);
@@ -299,13 +315,34 @@
 }
 [data-theme="light"] body {
   background:
-    radial-gradient(1200px 600px at 100% -10%, rgb(192 110 247 / 0.16), transparent 60%),
-    radial-gradient(900px 500px at -10% 110%, rgb(213 158 250 / 0.18), transparent 60%),
+    radial-gradient(1100px 620px at 105% -8%, rgb(255 140 210 / 0.22), transparent 62%),
+    radial-gradient(900px 560px at -12% 18%, rgb(213 158 250 / 0.26), transparent 60%),
+    radial-gradient(1000px 600px at 50% 115%, rgb(234 207 252 / 0.4), transparent 60%),
     var(--color-canvas);
   background-attachment: fixed;
 }
 [data-theme="light"] ::selection { background: rgb(171 61 245 / 0.25); }
 [data-theme="light"] dialog::backdrop { background: rgb(29 18 48 / 0.35); }
+
+/* Toque (iPhone, iPad, Android): campos com 16 px — abaixo disso o Safari dá zoom ao focar
+   e a tela fica deslocada/descentralizada depois. */
+@media (pointer: coarse) {
+  input:not([type="checkbox"]):not([type="radio"]):not([type="range"]), select, textarea { font-size: 16px !important; }
+}
+
+/* Fundo vivo: fitas de neon em 3D, brilhos suaves e cintilância (decorativo, atrás de tudo). */
+.ambient { position: fixed; inset: 0; z-index: -1; pointer-events: none; overflow: hidden; }
+.ambient svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+.ambient .orb { position: absolute; border-radius: 9999px; filter: blur(60px); opacity: 0.55; animation: float-glow 14s ease-in-out infinite; }
+.ambient .tw { transform-box: fill-box; transform-origin: center; animation: twinkle 4.8s ease-in-out infinite; }
+.ambient { --rib-a: #ab3df5; --rib-b: #ec5cbe; --rib-c: #eacffc; --rib-glow: 0.5; --rib-core: 0.75; --spark: #f3e2ff; }
+[data-theme="light"] .ambient { --rib-a: #c06ef7; --rib-b: #f08fd0; --rib-c: #ffffff; --rib-glow: 0.35; --rib-core: 0.6; --spark: #b45ff0; }
+[data-theme="light"] .ambient .orb { opacity: 0.45; }
+/* Celular: o conteúdo ocupa a tela toda, então as fitas ficam mais discretas atrás do texto. */
+@media (max-width: 640px) {
+  .ambient { --rib-glow: 0.32; --rib-core: 0.42; }
+  [data-theme="light"] .ambient { --rib-glow: 0.22; --rib-core: 0.35; }
+}
 
 @keyframes shimmer { to { background-position: -200% 0; } }
 @keyframes toast-time { from { transform: scaleX(1); } to { transform: scaleX(0); } }
@@ -326,6 +363,7 @@
 @keyframes sheet-up { from { transform: translateY(100%); } }
 
 @media (prefers-reduced-motion: reduce) {
+  .ambient .tw { animation: none; opacity: 0.7; }
   *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
   .lift:hover, .lift:active { transform: none; }
 }
