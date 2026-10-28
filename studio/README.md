@@ -32,8 +32,8 @@ npm run icons        # regera ícones do app e imagem de compartilhamento (preci
 - **Horários**: `faixas` com `dia` (0 = domingo … 6 = sábado), `abre` e `fecha` em `"HH:MM"`, no fuso `horarios.fuso`. O selo Aberto/Fechado usa sempre o fuso do studio, não o do aparelho.
 - **Mensagem do WhatsApp**: `agendamento.mensagemWhatsApp`, com `{servico}`, `{duracao}`, `{valor}` e `{profissional}`.
 - **Manual e Guia**: cada seção é uma página do PDF. Blocos disponíveis: `paragrafo`, `lista`, `topicos`, `destaque` (com `acao: "whatsapp"`), `dicas`, `fotos`, `assinatura`, `valores`, `localizacao`, `logo`. Se uma seção ficar longa demais para uma página, o teste `src/pdf/pdf.test.tsx` avisa (ele confere 7 e 4 páginas).
-- **Fotos**: coloque os arquivos em `public/img/` e troque o `src`; tire o `placeholder: true`. Fotos em JPG/PNG entram no PDF; as provisórias aparecem como quadro "Foto provisória".
-- **Logo**: sem arquivo, o site usa o monograma + o nome na fonte de assinatura do BSS. Com arquivo SVG em `public/brand/`, preencha `marca.logo`.
+- **Fotos**: ficam em `public/img/` (extraídas do Manual original: capa, boas-vindas, 2 de alongamento, 2 de banho de gel e o mapa). Para trocar, substitua o arquivo ou o `src`. Use JPG/PNG (entram no PDF); uma foto com `placeholder: true` aparece marcada como "Foto provisória". As fotos de um bloco `fotos` ganham o recorte em "folha" do Manual original, alternando os cantos.
+- **Logo**: o símbolo ML do logo original está em `public/brand/monograma.png` (branco com transparência, em `marca.simbolo`) e aparece no quadro do monograma, no site, nos PDFs e no ícone do app (`npm run icons` regenera os ícones a partir de `public/brand/icone.svg`). O nome segue na fonte de assinatura; com o logo completo em arquivo, preencha `marca.logo`.
 - **SEO**: `seo` define título e descrição de cada rota (vão para o HTML estático e para o preview do link).
 
 Depois de editar: `npm test` confere se o conteúdo continua coerente, e `npm run icons` atualiza a imagem de compartilhamento.

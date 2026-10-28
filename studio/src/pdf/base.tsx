@@ -24,6 +24,12 @@ const branco = bss.sobreMarca;
 const lilas = bss.sobreMarcaSuave;
 
 const A5: [number, number] = [419.53, 595.28];
+
+/** Imagens de public/: no navegador viram URL absoluta; nos testes, caminho no disco. */
+let resolver = (src: string) => src;
+export function definirOrigemImagens(fn: (src: string) => string) { resolver = fn; }
+
+type Cantos = { tl?: number; tr?: number; br?: number; bl?: number };
 const M = 34;
 
 const s = StyleSheet.create({
@@ -71,14 +77,16 @@ function Logo({ studio, claro, grande }: { studio: Studio; claro?: boolean; gran
     <View style={{ flexDirection: "row", alignItems: "center", gap: 10 }}>
       <View style={{ width: tam, height: tam, borderRadius: 12, overflow: "hidden", alignItems: "center", justifyContent: "center", borderWidth: 1, borderColor: lilas }}>
         <Degrade w={tam} h={tam} />
-        <Text style={{ fontFamily: bss.fontes.titulo, fontWeight: 800, fontSize: tam * 0.36, color: branco, letterSpacing: -0.5 }}>{studio.marca.monograma}</Text>
+        {studio.marca.simbolo
+          ? <Image src={resolver(studio.marca.simbolo.src)} style={{ width: tam * 0.72, height: tam * 0.72 }} />
+          : <Text style={{ fontFamily: bss.fontes.titulo, fontWeight: 800, fontSize: tam * 0.36, color: branco, letterSpacing: -0.5 }}>{studio.marca.monograma}</Text>}
       </View>
       <Text style={{ fontFamily: bss.fontes.assinatura, fontSize: grande ? 34 : 26, color: claro ? branco : c.primariaTexto }}>{studio.marca.nome.replace(/^Studio /, "")}</Text>
     </View>
   );
 }
 
-function FotoPdf({ src, placeholder, w, h }: { src: string; placeholder?: boolean; w: number; h: number }) {
+function FotoPdf({ src, placeholder, w, h, cantos }: { src: string; placeholder?: boolean; w: number; h: number; cantos?: Cantos }) {
   // SVG/placeholder não entram no PDF como imagem: vira um quadro marcado "Foto provisória".
   if (placeholder || src.endsWith(".svg"))
     return (
@@ -87,11 +95,24 @@ function FotoPdf({ src, placeholder, w, h }: { src: string; placeholder?: boolea
         <Text style={{ fontSize: 8, color: branco, opacity: 0.85 }}>Foto provisória</Text>
       </View>
     );
-  return <Image src={src} style={{ width: w, height: h, borderRadius: 12, objectFit: "cover" }} />;
+  const r = cantos
+    ? { borderTopLeftRadius: cantos.tl ?? 6, borderTopRightRadius: cantos.tr ?? 6, borderBottomRightRadius: cantos.br ?? 6, borderBottomLeftRadius: cantos.bl ?? 6 }
+    : { borderRadius: 12 };
+  return (
+    <View style={{ width: w, height: h, overflow: "hidden", ...r }}>
+      <Image src={resolver(src)} style={{ width: w, height: h, objectFit: "cover" }} />
+    </View>
+  );
 }
 
-function Mapa({ w }: { w: number }) {
+function Mapa({ w, src }: { w: number; src?: string }) {
   const r = w / 2;
+  if (src)
+    return (
+      <View style={{ width: w, height: w, borderRadius: r, borderWidth: 3, borderColor: lilas, overflow: "hidden" }}>
+        <Image src={resolver(src)} style={{ width: w - 6, height: w - 6, objectFit: "cover" }} />
+      </View>
+    );
   return (
     <Svg width={w} height={w}>
       <Circle cx={r} cy={r} r={r - 3} fill={branco} fillOpacity={0.13} stroke={branco} strokeOpacity={0.4} strokeWidth={3} />
@@ -140,7 +161,10 @@ function Blocos({ blocos, studio, sobreMarca }: { blocos: Bloco[]; studio: Studi
           );
           case "fotos": return (
             <View key={i} style={{ flexDirection: "row", gap: 10, marginTop: 6 }}>
-              {b.fotos.map((f) => <FotoPdf key={f.src} {...f} w={(A5[0] - 2 * M - 32 - 10) / 2} h={150} />)}
+              {b.fotos.map((f, n) => {
+                const w = (A5[0] - 2 * M - 32 - 10) / 2, raio = w * 0.3;
+                return <FotoPdf key={f.src} {...f} w={w} h={w * 6 / 7} cantos={n % 2 ? { tr: raio, bl: raio } : { tl: raio, br: raio }} />;
+              })}
             </View>
           );
           case "assinatura": return (
@@ -175,7 +199,7 @@ function Blocos({ blocos, studio, sobreMarca }: { blocos: Bloco[]; studio: Studi
             return (
               <View key={i} style={{ borderRadius: 14, overflow: "hidden", padding: 20, alignItems: "center", marginTop: 4 }}>
                 <Degrade w={w} h={330} raio={14} />
-                <Mapa w={150} />
+                <Mapa w={150} src={b.mapa?.src} />
                 <Text style={{ color: branco, fontWeight: 600, fontSize: 13, marginTop: 14, textAlign: "center" }}>
                   {`${e.linha.replace(", N ", " ")}${e.complemento ? `, ${e.complemento}` : ""} – ${e.bairro} – ${e.uf}`}
                 </Text>
@@ -219,6 +243,7 @@ function PaginaSecao({ secao, n, total, studio, doc }: { secao: SecaoDocumento; 
       <Text style={s.marcador}>{n} de {total}</Text>
       <Text style={s.titulo}>{secao.titulo}</Text>
       {secao.subtitulo && <Text style={s.subtitulo}>{secao.subtitulo}</Text>}
+      {secao.imagem && <View style={{ marginTop: 12 }}><FotoPdf {...secao.imagem} w={A5[0] - 2 * M} h={150} /></View>}
       <View style={s.cartao}><Blocos blocos={secao.blocos} studio={studio} /></View>
       {rodape}
     </Page>

@@ -2,6 +2,7 @@ import { studio } from "@/data/studio";
 import type { Bloco } from "@/data/types";
 import { linkWhatsApp } from "@/services/booking";
 import { Foto, Logo } from "@/components/ui/Brand";
+import { cn } from "@/lib/cn";
 import { ButtonA } from "@/components/ui/Button";
 import { Icon } from "@/components/ui/Icon";
 import { MapCard } from "@/components/ui/MapCard";
@@ -65,7 +66,8 @@ function BlocoView({ b, sobreMarca }: { b: Bloco; sobreMarca?: boolean }) {
     case "fotos":
       return (
         <div className="grid grid-cols-2 gap-3">
-          {b.fotos.map((f) => <Foto key={f.src} {...f} className="aspect-[4/5] rounded-2xl" />)}
+          {/* Recorte em "folha" como no Manual original: cantos opostos bem arredondados, alternando. */}
+          {b.fotos.map((f, n) => <Foto key={f.src} {...f} className={cn("aspect-[7/6] rounded-lg ring-1 ring-borda", n % 2 ? "rounded-tr-[32%_37%] rounded-bl-[32%_37%]" : "rounded-tl-[32%_37%] rounded-br-[32%_37%]")} />)}
         </div>
       );
     case "assinatura":
@@ -79,7 +81,7 @@ function BlocoView({ b, sobreMarca }: { b: Bloco; sobreMarca?: boolean }) {
     case "localizacao": {
       const e = contato.endereco;
       return <MapCard endereco={`${e.linha.replace(", N ", " ")} – ${e.bairro} – ${e.uf}`} complemento={e.complemento} referencia={e.referencia}
-        consulta={`${e.linha}, ${e.bairro}, ${e.cidade} - ${e.uf}`} />;
+        consulta={`${e.linha}, ${e.bairro}, ${e.cidade} - ${e.uf}`} mapa={b.mapa} />;
     }
     case "logo":
       return <Logo tamanho="lg" claro={sobreMarca} className="mt-2" />;

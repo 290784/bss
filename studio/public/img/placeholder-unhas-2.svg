@@ -1,5 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 500" width="400" height="500" role="img" aria-label="Foto provisória">
-<defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#7212b4"/><stop offset="1" stop-color="#ec5cbe"/></linearGradient></defs>
-<rect width="400" height="500" fill="url(#g)"/>
-<g fill="#f8f0ff" opacity=".22"><rect x="22%" y="22%" width="12%" height="34%" rx="40"/><rect x="38%" y="16%" width="12%" height="40%" rx="40"/><rect x="54%" y="18%" width="12%" height="38%" rx="40"/><rect x="70%" y="26%" width="10%" height="30%" rx="40"/></g>
-</svg>
