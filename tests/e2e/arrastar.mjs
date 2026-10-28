@@ -12,7 +12,7 @@ const b = await chromium.launch();
 const ok = (c, m) => { console.log(c ? "✔" : "✘", m); if (!c) process.exitCode = 1; };
 const m = await (await b.newContext({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true })).newPage();
 const errs = []; m.on("pageerror", (e) => errs.push(e.message));
-await m.goto(BASE + "/"); await m.waitForTimeout(800);
+await m.goto(BASE + "/"); await m.locator('[aria-roledescription="carrossel"]').evaluate((el) => el.scrollIntoView({ block: "center" })); await m.waitForTimeout(800);
 const cdp = await m.context().newCDPSession(m);
 const touch = async (pts, wait = 16) => {
   await cdp.send("Input.dispatchTouchEvent", { type: "touchStart", touchPoints: [{ x: pts[0][0], y: pts[0][1] }] });

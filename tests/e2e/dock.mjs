@@ -57,7 +57,7 @@ ok((await m.evaluate(() => scrollY)) > sy0, "arrasto vertical rola a página nor
 
 // 6) mouse no computador também arrasta
 const d = await (await b.newContext({ viewport: { width: 1440, height: 900 }, reducedMotion: "reduce" })).newPage();
-await d.goto(BASE + "/"); await d.waitForTimeout(800);
+await d.goto(BASE + "/"); await d.locator('[aria-roledescription="carrossel"]').evaluate((el) => el.scrollIntoView({ block: "center" })); await d.waitForTimeout(800);
 const db = await d.locator('[role=group][aria-label^="Escolher recurso"]').boundingBox();
 await d.mouse.move(db.x + db.width / 2, db.y + db.height / 2); await d.mouse.down();
 await d.mouse.move(db.x + db.width / 2 - 75, db.y + db.height / 2, { steps: 15 }); await d.mouse.up(); await d.waitForTimeout(900);

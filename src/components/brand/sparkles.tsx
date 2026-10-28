@@ -24,9 +24,9 @@ export function Sparkles({ className, points = DEFAULT, color = "text-violet-100
 }
 
 /** Brilho único, para pontuar títulos e botões. */
-export function Sparkle({ className, size = 14 }: { className?: string; size?: number }) {
+export function Sparkle({ className, size = 14, color = "text-violet-100 light:text-violet-400 drop-shadow-[0_0_6px_rgb(234_207_252/0.9)]" }: { className?: string; size?: number; color?: string }) {
   return (
-    <svg viewBox="0 0 10 10" width={size} height={size} className={cn("inline-block text-violet-100 light:text-violet-400 drop-shadow-[0_0_6px_rgb(234_207_252/0.9)]", className)} aria-hidden>
+    <svg viewBox="0 0 10 10" width={size} height={size} className={cn("inline-block", color, className)} aria-hidden>
       <path d="M5 0 C5.4 3.6 6.4 4.6 10 5 C6.4 5.4 5.4 6.4 5 10 C4.6 6.4 3.6 5.4 0 5 C3.6 4.6 4.6 3.6 5 0Z" fill="currentColor" />
     </svg>
   );

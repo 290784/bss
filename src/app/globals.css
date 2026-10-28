@@ -28,6 +28,12 @@
   --color-violet-600: #780ac2;
   --color-violet-700: #5a0891;
   --color-violet-800: #3c0561;
+  /* Dourado (detalhes da landing): 600 sobre branco 5,3:1 · 700 sobre gold-50 7:1 */
+  --color-gold-50: #fbf3e2;
+  --color-gold-300: #e3c88f;
+  --color-gold-400: #c6a05b;
+  --color-gold-600: #8a6426;
+  --color-gold-700: #6f4f1c;
 
   /* Superfícies */
   --color-canvas: #150b28;
@@ -190,10 +196,12 @@
 }
 /* Cor do texto acompanha o trecho (a cor herdada viria resolvida do tema de fora). */
 [data-theme="light"], [data-theme="dark"] { color: var(--color-ink); }
-/* Landing: fica no fundo original, quase preto, para o qual foi desenhada. */
+/* Landing: creme quente com violeta e dourado (os blocos de cor forte usam data-theme="dark").
+   Contraste (sobre --color-surface): ink 14,8:1 · ink-soft 9,1:1 · muted 5,6:1. */
 [data-landing] {
-  --color-canvas: #05040d; --color-surface: #0f0b1f; --color-raised: #19122f; --color-sunken: #160f2a;
-  --color-line: #261d3d; --color-line-strong: #3a2c5a;
+  --color-canvas: #fbf5ec; --color-surface: #fffdf9; --color-raised: #ffffff; --color-sunken: #f6eee2;
+  --color-line: #efe2cd; --color-line-strong: #e2cfae;
+  --color-ink: #2b2233; --color-ink-soft: #4d4356; --color-muted: #6e6377;
 }
 /* Variante "light:" — vale dentro do tema claro, exceto em trechos forçados escuros. */
 @custom-variant light (&:where([data-theme="light"] *):not(:where([data-theme="dark"] *)));
@@ -250,15 +258,33 @@
   .bg-royal-rev {
     background: linear-gradient(330deg, #2a0c4c 0%, #470f78 34%, #7212b4 66%, #a21caf 100%);
   }
-  /* A landing mantém o degradê original, desenhado para o fundo quase preto. */
-  [data-landing] .bg-royal { background: linear-gradient(150deg, var(--color-night) 0%, #1a0533 38%, var(--color-violet-700) 72%, var(--color-royal) 100%); }
-  [data-landing] .bg-royal-rev { background: linear-gradient(330deg, var(--color-night) 0%, #1a0533 38%, var(--color-violet-700) 72%, var(--color-royal) 100%); }
+  /* Landing creme: fundo com brilho violeta no alto e dourado embaixo. */
+  [data-landing].bg-app {
+    background:
+      radial-gradient(900px 520px at 100% -6%, rgb(213 158 250 / 0.28), transparent 62%),
+      radial-gradient(800px 480px at -10% 40%, rgb(240 222 184 / 0.45), transparent 60%),
+      var(--color-canvas);
+  }
+  /* Texto dourado em degradê ("Conheça a") e o "Gê" cursivo em violeta. */
+  .text-gold {
+    background: linear-gradient(180deg, #c9a35e 0%, #a98243 55%, #8a6426 100%);
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+  .text-ge {
+    background: linear-gradient(120deg, #c06ef7 0%, #960df2 45%, #5a0891 100%);
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
   /* Botão principal: degradê violeta com brilho */
   .btn-glow {
     background: linear-gradient(135deg, var(--color-violet-400) 0%, var(--color-violet-500) 45%, var(--color-violet-600) 100%);
     box-shadow: 0 0 0 1px rgb(234 207 252 / 0.25) inset, 0 8px 24px -6px rgb(150 13 242 / 0.6), 0 0 32px -8px rgb(192 110 247 / 0.55);
   }
   .btn-glow:hover { filter: brightness(1.08) saturate(1.05); }
+  /* Landing creme: violeta mais fechado (ameixa), com brilho suave. */
+  [data-landing] .btn-glow:not(:where([data-theme="dark"] *)) {
+    background: linear-gradient(135deg, #8b3fc6 0%, #6c1fa8 50%, #4f1283 100%);
+    box-shadow: 0 0 0 1px rgb(255 255 255 / 0.18) inset, 0 10px 26px -10px rgb(79 18 131 / 0.6);
+  }
   /*
    * Interação de cards clicáveis: sobe e brilha ao passar o mouse (só em dispositivos com mouse,
    * para não "grudar" no toque), afunda ao clicar/tocar, anel visível no foco por teclado.
