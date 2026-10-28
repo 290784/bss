@@ -34,11 +34,16 @@ export default async function ReceiptPage({ params, searchParams }: Params) {
   const tz = r.business.timezone;
   const upcoming = r.startsAt > new Date() && (r.status === "confirmed" || r.status === "pending");
   // A presença só é confirmada quando a cliente toca no botão — nunca ao abrir o link.
-  const askPresence = upcoming && r.status === "confirmed" && !r.clientConfirmedAt;
+  const askPresence = upcoming && !r.clientConfirmedAt;
+  const pending = r.status === "pending";
   const st: Status = askPresence
-    ? { title: "Confirme sua presença", text: "Toque no botão abaixo para avisar que você vem. Assim já te esperamos!", icon: BellRing, tone: "text-violet-100 bg-white/10" }
-    : r.status === "confirmed" && r.clientConfirmedAt
-      ? { title: "Presença confirmada", text: "Obrigada por confirmar. Te esperamos!", icon: CheckCircle2, tone: "text-st-completed bg-st-completed-bg" }
+    ? { title: "Confirme sua presença",
+        text: pending ? "Seu pedido está com o estabelecimento. Toque no botão abaixo para avisar que você vem." : "Toque no botão abaixo para avisar que você vem. Assim já te esperamos!",
+        icon: BellRing, tone: "text-violet-100 bg-white/10" }
+    : upcoming && r.clientConfirmedAt
+      ? { title: "Presença confirmada",
+          text: pending ? "Obrigada por confirmar! O estabelecimento ainda vai aprovar o horário." : "Obrigada por confirmar. Te esperamos!",
+          icon: CheckCircle2, tone: "text-st-completed bg-st-completed-bg" }
       : STATUS[r.status];
   const minutes = r.services.reduce((a, s) => a + s.minutes, 0);
   const total = r.priceCents - r.discountCents;
@@ -114,7 +119,7 @@ export default async function ReceiptPage({ params, searchParams }: Params) {
 
         {upcoming && (
           <Card className="flex flex-col gap-3 p-5">
-            {r.status === "confirmed" && r.clientConfirmedAt && (
+            {r.clientConfirmedAt && (
               <p className="flex items-center justify-center gap-2 rounded-xl bg-st-completed-bg px-4 py-3 text-sm font-semibold text-st-completed" data-testid="attendance-confirmed">
                 <CheckCircle2 className="h-5 w-5" />Presença confirmada. Te esperamos!
               </p>
