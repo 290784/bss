@@ -63,6 +63,12 @@ function seoEstatico(): Plugin {
         mkdirSync(`${saida}${r.caminho}`, { recursive: true });
         writeFileSync(`${saida}${r.caminho}/index.html`, html);
       }
+      // 404.html: a Vercel serve este arquivo (com status 404) para endereços que não existem;
+      // o app abre e mostra a página "Página não encontrada" do studio.
+      writeFileSync(`${saida}/404.html`, base
+        .replace(/<title>[^<]*<\/title>/, `<title>Página não encontrada · ${esc(studio.marca.nome)}</title>`)
+        .replace(/\s*<link rel="canonical"[^>]*>/, "")
+        .replace("<head>", '<head>\n    <meta name="robots" content="noindex" />'));
       writeFileSync(`${saida}/robots.txt`, `User-agent: *\nAllow: /\n${SITE ? `Sitemap: ${SITE}/sitemap.xml\n` : ""}`);
       if (SITE)
         writeFileSync(`${saida}/sitemap.xml`, `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${ROTAS.map((r) => `  <url><loc>${SITE}${r.caminho}</loc></url>`).join("\n")}\n</urlset>\n`);
