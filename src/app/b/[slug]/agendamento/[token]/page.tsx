@@ -34,11 +34,20 @@ export default async function ReceiptPage({ params, searchParams }: Params) {
   const tz = r.business.timezone;
   const upcoming = r.startsAt > new Date() && (r.status === "confirmed" || r.status === "pending");
   // A presença só é confirmada quando a cliente toca no botão — nunca ao abrir o link.
-  const askPresence = upcoming && r.status === "confirmed" && !r.clientConfirmedAt;
+  const askPresence = upcoming && !r.clientConfirmedAt;
+  const pending = r.status === "pending";
+  const blockedReason = upcoming ? undefined
+    : r.status === "cancelled" ? "Este agendamento foi cancelado."
+    : r.status === "completed" ? "Este atendimento já foi concluído."
+    : "Este horário já passou.";
   const st: Status = askPresence
-    ? { title: "Confirme sua presença", text: "Toque no botão abaixo para avisar que você vem. Assim já te esperamos!", icon: BellRing, tone: "text-violet-100 bg-white/10" }
-    : r.status === "confirmed" && r.clientConfirmedAt
-      ? { title: "Presença confirmada", text: "Obrigada por confirmar. Te esperamos!", icon: CheckCircle2, tone: "text-st-completed bg-st-completed-bg" }
+    ? { title: "Confirme sua presença",
+        text: pending ? "Seu pedido está com o estabelecimento. Toque no botão abaixo para avisar que você vem." : "Toque no botão abaixo para avisar que você vem. Assim já te esperamos!",
+        icon: BellRing, tone: "text-violet-100 bg-white/10" }
+    : upcoming && r.clientConfirmedAt
+      ? { title: "Presença confirmada",
+          text: pending ? "Obrigada por confirmar! O estabelecimento ainda vai aprovar o horário." : "Obrigada por confirmar. Te esperamos!",
+          icon: CheckCircle2, tone: "text-st-completed bg-st-completed-bg" }
       : STATUS[r.status];
   const minutes = r.services.reduce((a, s) => a + s.minutes, 0);
   const total = r.priceCents - r.discountCents;
@@ -70,15 +79,14 @@ export default async function ReceiptPage({ params, searchParams }: Params) {
               <p className="text-[13px] text-muted">{st.text}</p>
             </div>
           </div>
-          {askPresence && (
-            <div className="border-b border-line px-5 py-4">
-              <ConfirmAttendanceButton slug={slug} token={token} />
-              {bizPhone && (
+          {/* Botão de confirmar presença sempre visível (ativo, já confirmado ou desativado com o motivo). */}
+          <div className="border-b border-line px-5 py-4">
+            <ConfirmAttendanceButton slug={slug} token={token} done={!!r.clientConfirmedAt && upcoming} blockedReason={blockedReason} />
+            {upcoming && !r.clientConfirmedAt && bizPhone && (
                 <a href={`https://wa.me/${bizPhone}?text=${waReschedule}`} target="_blank" rel="noreferrer"
                   className="mt-3 block text-center text-[13px] font-medium text-accent-text hover:underline">Não vou conseguir ir — falar com o estabelecimento</a>
-              )}
-            </div>
-          )}
+            )}
+          </div>
 
           <dl className="grid gap-4 px-5 py-5 text-[15px]">
             <Row icon={Clock} label="Quando">
@@ -114,11 +122,6 @@ export default async function ReceiptPage({ params, searchParams }: Params) {
 
         {upcoming && (
           <Card className="flex flex-col gap-3 p-5">
-            {r.status === "confirmed" && r.clientConfirmedAt && (
-              <p className="flex items-center justify-center gap-2 rounded-xl bg-st-completed-bg px-4 py-3 text-sm font-semibold text-st-completed" data-testid="attendance-confirmed">
-                <CheckCircle2 className="h-5 w-5" />Presença confirmada. Te esperamos!
-              </p>
-            )}
             <div className="grid gap-2 sm:grid-cols-2">
               <a href={`/b/${slug}/agendamento/${token}/calendario`} className={buttonClass("secondary", "lg", "w-full")}>
                 <CalendarPlus className="h-5 w-5" />Salvar na agenda

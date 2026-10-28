@@ -1,14 +1,31 @@
 "use client";
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { CheckCheck } from "lucide-react";
+import { CheckCheck, CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { confirmAttendanceAction } from "./actions";
 
-export function ConfirmAttendanceButton({ slug, token }: { slug: string; token: string }) {
+/**
+ * Botão de confirmar presença — sempre visível no comprovante.
+ * done: já confirmado (fica verde, sem ação). blockedReason: horário passado/cancelado (desativado, com o motivo).
+ */
+export function ConfirmAttendanceButton({ slug, token, done = false, blockedReason }: { slug: string; token: string; done?: boolean; blockedReason?: string }) {
   const router = useRouter();
   const [msg, setMsg] = useState<{ ok: boolean; text: string } | null>(null);
   const [pending, start] = useTransition();
+  if (done)
+    return (
+      <div className="flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-st-completed-bg text-[15px] font-semibold text-st-completed" data-testid="attendance-confirmed" role="status">
+        <CheckCircle2 className="h-5 w-5" />Presença confirmada
+      </div>
+    );
+  if (blockedReason)
+    return (
+      <div>
+        <Button size="lg" className="w-full" disabled aria-describedby="confirm-blocked"><CheckCheck className="h-5 w-5" />Confirmar presença</Button>
+        <p id="confirm-blocked" className="mt-2 text-center text-[13px] text-muted">{blockedReason}</p>
+      </div>
+    );
   return (
     <div>
       <Button size="lg" className="w-full" disabled={pending}

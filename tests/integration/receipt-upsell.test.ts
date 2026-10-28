@@ -133,6 +133,29 @@ describe("agendamento online → comprovante, aviso à equipe e sugestões", () 
     expect(r.services.map((s) => s.name)).toEqual(["Manicure", "Esmaltação em gel"]); // comprovante já mostra o novo total
   });
 
+  it("pedido aguardando aprovação também pode confirmar presença; cancelado não", async () => {
+    await sql`update app.organizations set online_requires_approval = true where id = ${A.orgId}`;
+    const biz = (await withSystem((tx) => getPublicBusiness(tx, A.slug), sql))!;
+    const res = await withSystem((tx) => bookOnline(tx, biz, {
+      serviceId: svc.manicure!, professionalId: null, date: futureDate(21), time: "14:00",
+      fullName: "Pedro Alves", phone: "(21) 98211-0308", email: "", acceptPolicy: true, marketingConsent: false,
+    }), sql);
+    await sql`update app.organizations set online_requires_approval = false where id = ${A.orgId}`;
+    expect(res.status).toBe("pending");
+    // Abrir o comprovante não confirma nada
+    await withSystem((tx) => getReceipt(tx, A.slug, res.token), sql);
+    expect((await sql`select client_confirmed_at from app.appointments where id = ${res.appointmentId}`)[0]!.client_confirmed_at).toBeNull();
+    await withSystem((tx) => confirmAttendance(tx, A.slug, res.token), sql);
+    const [a] = await sql`select status, client_confirmed_at from app.appointments where id = ${res.appointmentId}`;
+    expect(a!.status).toBe("pending"); // a aprovação continua com o estabelecimento
+    expect(a!.client_confirmed_at).toBeInstanceOf(Date);
+    const [n] = await sql`select title from app.notifications where type = 'client_confirmed' and user_id = ${A.ownerId} order by created_at desc limit 1`;
+    expect(n!.title).toBe("Pedro confirmou presença");
+    await asTenant(sql, A.ownerId, A.orgId, (tx) => changeStatus(tx, actor(), res.appointmentId, "cancelled"));
+    await sql`update app.appointments set client_confirmed_at = null where id = ${res.appointmentId}`;
+    await expect(withSystem((tx) => confirmAttendance(tx, A.slug, res.token), sql)).rejects.toThrow(/não pode mais/);
+  });
+
   it("reenvio da confirmação fica registrado e aparece na agenda", async () => {
     const day = new Date(Date.parse(`${date}T00:00:00-03:00`));
     const range = [day, new Date(day.getTime() + 86_400_000)] as const;

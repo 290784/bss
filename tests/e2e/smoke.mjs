@@ -159,7 +159,10 @@ try {
     await p2.getByRole("button", { name: /Solicitar agendamento/ }).click();
     // Comprovante completo abre num link próprio
     await p2.waitForURL(/\/agendamento\/[a-f0-9]{64}\?novo=1$/);
-    await p2.getByTestId("receipt-status").filter({ hasText: "Solicitação recebida" }).waitFor();
+    // Pedido aguardando aprovação: o botão de confirmar presença já aparece
+    await p2.getByTestId("receipt-status").filter({ hasText: "Confirme sua presença" }).waitFor();
+    await p2.getByText("Seu pedido está com o estabelecimento.").waitFor();
+    await p2.getByRole("button", { name: "Confirmar presença" }).waitFor();
     for (const t of ["Pronto, Carla!", "Manicure", "Total", "Salvar na agenda"]) await p2.getByText(t).first().waitFor();
     await noHorizontalScroll(p2, "comprovante");
     await shot(p2, "07-publico-comprovante");
