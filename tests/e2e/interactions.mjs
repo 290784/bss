@@ -13,7 +13,7 @@ const sel = (p) => p.locator('[role=group][aria-label^="Escolher recurso"] butto
 // Desktop
 const p = await (await b.newContext({ viewport: { width: 1440, height: 900 } })).newPage();
 const errs = []; p.on("pageerror", (e) => errs.push(e.message));
-await p.goto(BASE + "/"); await p.mouse.move(5, 5);
+await p.goto(BASE + "/"); await p.locator('[aria-roledescription="carrossel"]').evaluate((el) => el.scrollIntoView({ block: "center" })); await p.mouse.move(5, 5);
 await p.waitForTimeout(3500); ok(await sel(p) === "Lembretes", "hero: card ainda visível aos 3,5 s (tempo de leitura)");
 await p.waitForTimeout(2300); ok(await sel(p) === "Agendamento online", "hero: avança sozinho por volta de 5,2 s");
 await p.locator('[aria-roledescription="carrossel"] [aria-live]').first().click();
@@ -46,7 +46,7 @@ ok(typedMid.length > 0 && typedMid.length < "Sobrancelha".length && await demo.g
 
 // Celular: arrastar o dedo e não travar depois do toque
 const m = await (await b.newContext({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true })).newPage();
-await m.goto(BASE + "/"); await m.waitForTimeout(800);
+await m.goto(BASE + "/"); await m.locator('[aria-roledescription="carrossel"]').evaluate((el) => el.scrollIntoView({ block: "center" })); await m.waitForTimeout(800);
 const stage = m.locator('[aria-roledescription="carrossel"] [aria-live]').first();
 const box = await stage.boundingBox();
 const cdp = await m.context().newCDPSession(m);

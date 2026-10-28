@@ -34,9 +34,10 @@ ok(lum(await h1.evaluate((e) => getComputedStyle(e).color)) > 0.8, "cabeçalho d
 ok(lum(await p.locator("main").evaluate((e) => getComputedStyle(e.querySelector("div")).backgroundColor)) > 0.9, "cards da página pública claros");
 ok(await p.getByRole("button", { name: "Usar tema escuro" }).count() === 1, "página pública tem o botão de tema");
 
-// Landing fica sempre escura
+// Landing creme (independe do tema do app), com os blocos violeta escuros
 await p.goto(BASE + "/");
-ok(lum(await p.locator('[data-theme="dark"]').first().evaluate((e) => getComputedStyle(e).backgroundColor)) < 0.1, "landing continua escura");
+ok(lum(await p.locator("[data-landing]").evaluate((e) => getComputedStyle(e).backgroundColor)) > 0.85, "landing creme");
+ok(lum(await p.getByRole("heading", { level: 1 }).evaluate((e) => getComputedStyle(e).color)) < 0.2, "título escuro sobre o creme");
 
 // Volta para o escuro
 await p.goto(BASE + "/entrar");
