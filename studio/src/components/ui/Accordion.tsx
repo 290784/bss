@@ -8,7 +8,7 @@ export function AccordionItem({ aberto, onToggle, titulo, resumo, children }: {
 }) {
   const id = useId();
   return (
-    <div className={cn("rounded-card border bg-superficie shadow-card transition-colors", aberto ? "border-primaria/60" : "border-borda")}>
+    <div className={cn("glow-hover rounded-card border bg-superficie shadow-card transition-colors", aberto ? "border-primaria/60" : "border-borda")}>
       <h3>
         <button type="button" aria-expanded={aberto} aria-controls={`${id}-painel`} id={`${id}-botao`} onClick={onToggle}
           className="flex min-h-14 w-full items-center gap-3 px-4 py-3 text-left">
