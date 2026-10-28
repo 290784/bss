@@ -15,7 +15,7 @@ import { BRAND } from "@/lib/brand";
 
 const pill = (tone: "dark" | "light") =>
   cn("inline-flex h-10 items-center rounded-full px-4 whitespace-nowrap sm:px-5 text-[15px] font-medium transition",
-    tone === "dark" ? "btn-glow text-white" : "border border-line-strong bg-surface/80 text-ink hover:bg-surface");
+    tone === "dark" ? "btn-glow text-white" : "neon-lilas border border-line-strong bg-surface/80 text-ink hover:bg-surface");
 const NAV = [["#agendamento-online", "Agendamento online"], ["#recursos", "Recursos"], ["#como-funciona", "Como funciona"], ["#planos", "Planos"], ["#perguntas", "Dúvidas"]] as const;
 const sectionTitle = "font-tight text-[36px] leading-[1.12] font-extrabold tracking-[-0.025em] text-ink sm:text-[44px]";
 
@@ -46,7 +46,7 @@ export default async function LandingPage() {
   const session = await getSession();
   return (
     <div data-theme="light" data-landing className="bg-app relative min-h-dvh overflow-x-clip font-hero text-ink">
-      <header className="sticky top-0 z-30 border-b border-line/70 bg-canvas/75 backdrop-blur-xl">
+      <header className="neon-linha-b sticky top-0 z-30 border-b border-line/70 bg-canvas/75 backdrop-blur-xl">
         <div className="mx-auto flex h-[72px] max-w-[1240px] items-center justify-between gap-6 px-4 sm:px-6">
           <Logo variant="script" />
           <nav className="hidden flex-1 items-center gap-7 text-[15px] font-medium text-ink-soft lg:flex" aria-label="Seções">
@@ -102,7 +102,7 @@ export default async function LandingPage() {
         </div>
       </section>
 
-      <section className="border-y border-line bg-surface/60 py-6">
+      <section className="neon-linha-y border-y border-line bg-surface/60 py-6">
         <ul className="mx-auto flex max-w-6xl flex-wrap justify-center gap-x-6 gap-y-2 px-4 text-[13px] text-ink-soft">
           {SEGMENTS.map((s) => <li key={s} className="inline-flex items-center gap-1.5"><Sparkle size={8} color="text-gold-400" />{s}</li>)}
         </ul>
@@ -217,10 +217,10 @@ export default async function LandingPage() {
         </div>
       </section>
 
-      <section id="perguntas" className="border-t border-line py-24">
+      <section id="perguntas" className="neon-linha-t border-t border-line py-24">
         <div className="mx-auto grid max-w-6xl gap-12 px-4 lg:grid-cols-[1fr_1.4fr]">
           <h2 className={sectionTitle}>Perguntas frequentes</h2>
-          <div className="divide-y divide-line">
+          <div className="neon-divide divide-y divide-line">
             {FAQ.map((f) => (
               <details key={f.q} className="group py-5">
                 <summary className="flex cursor-pointer list-none items-center justify-between gap-4 text-[16px] font-medium">
@@ -244,7 +244,7 @@ export default async function LandingPage() {
         </div>
       </section>
 
-      <footer className="border-t border-line">
+      <footer className="neon-linha-t border-t border-line">
         <div className="mx-auto flex max-w-6xl flex-col gap-4 px-4 py-10 text-sm text-muted sm:flex-row sm:items-center sm:justify-between">
           <Logo variant="script" />
           <nav className="flex flex-wrap gap-5">

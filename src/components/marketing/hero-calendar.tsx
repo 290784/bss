@@ -30,7 +30,7 @@ export function HeroCalendar() {
   return (
     <div ref={ref} className="relative mx-auto w-full max-w-[460px]">
       <div role="img" aria-label="Ilustração: a cliente escolhe o dia 12 às 14:30 e o horário fica confirmado."
-        className="relative rounded-[28px] border border-line bg-surface/90 p-5 shadow-[0_30px_70px_-34px_rgb(90_40_120/0.45)] backdrop-blur sm:p-6">
+        className="neon-lilas relative rounded-[28px] border border-line bg-surface/90 p-5 backdrop-blur sm:p-6">
         <div aria-hidden>
           <p className="flex items-center gap-2.5 text-[16px] font-medium text-ink"><CalendarDays className="h-5 w-5 text-gold-600" strokeWidth={1.8} />Selecione o dia e horário</p>
           <div className="mt-5 grid grid-cols-7 gap-1.5 text-center text-[12px] font-medium text-muted sm:gap-2">
@@ -76,7 +76,7 @@ const FEATS = [
 /** Quatro destaques com ícones em círculo de traço dourado, separados por filetes. */
 export function HeroFeatures() {
   return (
-    <ul className="mx-auto mt-8 grid w-full max-w-[460px] grid-cols-4 divide-x divide-line" aria-label="Destaques">
+    <ul className="mx-auto mt-8 grid w-full max-w-[460px] grid-cols-4 divide-x divide-line neon-divide" aria-label="Destaques">
       {FEATS.map((f) => (
         <li key={f.label} className="flex flex-col items-center gap-2 px-1 text-center">
           <span className="grid h-12 w-12 place-items-center rounded-full border border-gold-300 bg-surface text-gold-600 shadow-[0_8px_20px_-12px_rgb(138_100_38/0.5)]">
