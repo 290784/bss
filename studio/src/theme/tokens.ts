@@ -13,32 +13,32 @@ export type Palette = {
 };
 
 export const bss = {
-  /** Padrão do BSS: escuro (ameixa). */
+  /** Padrão do BSS: escuro (ameixa rosé, suave). */
   escuro: {
-    fundo: "#150b28", superficie: "#1d1236", superficieAlta: "#271843", afundado: "#22153f",
-    borda: "#35255a", bordaForte: "#4c3678",
-    texto: "#f8f0ff", textoSuave: "#e4d5f6", textoApoio: "#b9a7d9",
-    primaria: "#ab3df5", primariaEscura: "#780ac2", primariaTexto: "#d59efa", primariaSuave: "#2c1a52",
-    secundaria: "#a21caf", sucesso: "#6fdba5", alerta: "#f6c26b", erro: "#ff8fa3",
+    fundo: "#1a1418", superficie: "#221b21", superficieAlta: "#2b222a", afundado: "#1e181d",
+    borda: "#352a33", bordaForte: "#4c3d4a",
+    texto: "#fbf5f8", textoSuave: "#e8dce3", textoApoio: "#b9a6b2",
+    primaria: "#d898bb", primariaEscura: "#a05a83", primariaTexto: "#ebbcd4", primariaSuave: "#35252f",
+    secundaria: "#c7a3dc", sucesso: "#82d1aa", alerta: "#ecc483", erro: "#f4a3b4",
   } satisfies Palette,
   /** Opção do BSS: claro (contraste AA ou melhor sobre branco). */
   claro: {
-    fundo: "#f8f4fc", superficie: "#ffffff", superficieAlta: "#ffffff", afundado: "#f2ebfa",
-    borda: "#e7ddf3", bordaForte: "#d3c3e8",
-    texto: "#1d1230", textoSuave: "#43355c", textoApoio: "#66587e",
-    primaria: "#960df2", primariaEscura: "#780ac2", primariaTexto: "#7410b8", primariaSuave: "#f5ecff",
-    secundaria: "#a21caf", sucesso: "#0f6e42", alerta: "#8a5800", erro: "#b4233f",
+    fundo: "#fdf8fa", superficie: "#ffffff", superficieAlta: "#ffffff", afundado: "#f9eff4",
+    borda: "#f2e4eb", bordaForte: "#e6d0dc",
+    texto: "#2a1c24", textoSuave: "#57434f", textoApoio: "#75616d",
+    primaria: "#c4829f", primariaEscura: "#a05a83", primariaTexto: "#93507a", primariaSuave: "#fbedf4",
+    secundaria: "#9b7bb8", sucesso: "#1f6b48", alerta: "#8a5800", erro: "#b4233f",
   } satisfies Palette,
   /** Degradê da marca (blocos de cor forte: capa, localização, botão principal). */
-  degrade: ["#2a0c4c", "#470f78", "#7212b4", "#a21caf"] as const,
-  botao: ["#ab3df5", "#960df2", "#780ac2"] as const,
+  degrade: ["#4a2c45", "#6a3f62", "#87527c", "#9a5f8d"] as const,
+  botao: ["#c4829f", "#a05a83", "#8a4b72"] as const,
   /** Texto e traços sobre o degradê da marca (iguais nos dois temas). */
   sobreMarca: "#ffffff",
-  sobreMarcaSuave: "#eacffc",
-  fontes: { titulo: "Inter Tight", corpo: "DM Sans", assinatura: "Allura" },
+  sobreMarcaSuave: "#f7e4ee",
+  fontes: { titulo: "Cormorant Garamond", corpo: "DM Sans", assinatura: "Allura" },
   /** Escala tipográfica em px. */
   escala: { xs: 12, sm: 13, base: 15, md: 17, lg: 22, xl: 28, "2xl": 36 },
-  raio: { card: 22, botao: 12, pilula: 999 },
+  raio: { card: 24, botao: 999, pilula: 999 },
 } as const;
 
 export type Tema = "escuro" | "claro";

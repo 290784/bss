@@ -45,7 +45,7 @@ A fonte de verdade é o app BSS (tema "Gê / Royal Violet", `../src/app/globals.
 1. `src/theme/tokens.ts`: paleta escura (padrão) e clara, degradê da marca, fontes, escala e raios. É usado pelos PDFs.
 2. `src/theme/theme.css`: os mesmos valores como variáveis do Tailwind (`bg-superficie`, `text-texto-suave`, `rounded-card`…).
 
-Regras: componentes só usam essas classes (o lint recusa cor hex fora de `src/theme`); contraste AA conferido em teste para os dois temas. Fontes: DM Sans (texto), Inter Tight (títulos) e Allura (assinatura), servidas localmente pelo `@fontsource`.
+Regras: componentes só usam essas classes (o lint recusa cor hex fora de `src/theme`); contraste AA conferido em teste para os dois temas. Fontes: DM Sans (texto), Cormorant Garamond (títulos) e Allura (assinatura), servidas localmente pelo `@fontsource`.
 
 ## Publicar na Vercel
 

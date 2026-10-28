@@ -8,7 +8,7 @@ export function PdfViewerCard({ titulo, paginas, rota, capaTitulo }: { titulo: s
       {/* Miniatura: capa do documento no degradê da marca */}
       <span aria-hidden className="bg-marca relative flex h-20 w-16 shrink-0 flex-col justify-end overflow-hidden rounded-xl p-1.5 shadow-card">
         <span className="absolute top-1.5 right-1.5 text-[10px] font-bold text-sobre-marca-suave">PDF</span>
-        <span className="font-titulo text-[8.5px] leading-[1.15] font-extrabold break-words text-sobre-marca [hyphens:auto]" lang="pt-BR">{capaTitulo}</span>
+        <span className="font-corpo text-[8.5px] leading-[1.15] font-semibold break-words text-sobre-marca [hyphens:auto]" lang="pt-BR">{capaTitulo}</span>
       </span>
       <span className="min-w-0 flex-1">
         <span className="block text-md font-semibold text-texto">{titulo}</span>

@@ -14,7 +14,7 @@ export function AccordionItem({ aberto, onToggle, titulo, resumo, children }: {
           className="flex min-h-14 w-full items-center gap-3 px-4 py-3 text-left">
           <span className="min-w-0 flex-1">
             <span className="block text-md font-semibold text-texto">{titulo}</span>
-            {resumo && <span className="mt-0.5 block text-sm text-texto-apoio">{resumo}</span>}
+            {resumo && <span className="mt-0.5 block font-corpo text-sm tabular text-texto-apoio">{resumo}</span>}
           </span>
           <Icon name="baixo" className={cn("h-5 w-5 shrink-0 text-primaria-texto transition-transform", aberto && "rotate-180")} />
         </button>

@@ -4,7 +4,7 @@ import { createBrowserRouter, RouterProvider } from "react-router";
 import "@fontsource/dm-sans/latin-400.css";
 import "@fontsource/dm-sans/latin-500.css";
 import "@fontsource/dm-sans/latin-600.css";
-import "@fontsource/inter-tight/latin-800.css";
+import "@fontsource/cormorant-garamond/latin-700.css";
 import "@fontsource/allura/latin-400.css";
 import "./theme/theme.css";
 import { Layout } from "./components/layout/Layout";

@@ -13,7 +13,7 @@ const req = createRequire(import.meta.url);
 registrarFontes({
   corpo400: req.resolve("@fontsource/dm-sans/files/dm-sans-latin-400-normal.woff"),
   corpo600: req.resolve("@fontsource/dm-sans/files/dm-sans-latin-600-normal.woff"),
-  titulo800: req.resolve("@fontsource/inter-tight/files/inter-tight-latin-800-normal.woff"),
+  titulo700: req.resolve("@fontsource/cormorant-garamond/files/cormorant-garamond-latin-700-normal.woff"),
   assinatura: req.resolve("@fontsource/allura/files/allura-latin-400-normal.woff"),
 });
 
