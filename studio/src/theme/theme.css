@@ -15,50 +15,50 @@
   --radius-card: 22px;
   --radius-botao: 12px;
 
-  --color-fundo: #150b28;
-  --color-superficie: #1d1236;
-  --color-superficie-alta: #271843;
-  --color-afundado: #22153f;
-  --color-borda: #35255a;
-  --color-borda-forte: #4c3678;
-  --color-texto: #f8f0ff;
-  --color-texto-suave: #e4d5f6;
-  --color-texto-apoio: #b9a7d9;
-  --color-primaria: #ab3df5;
-  --color-primaria-escura: #780ac2;
-  --color-primaria-texto: #d59efa;
-  --color-primaria-suave: #2c1a52;
-  --color-secundaria: #a21caf;
-  --color-sucesso: #6fdba5;
-  --color-alerta: #f6c26b;
-  --color-erro: #ff8fa3;
+  --color-fundo: #16131b;
+  --color-superficie: #1d1a23;
+  --color-superficie-alta: #25212d;
+  --color-afundado: #1a1720;
+  --color-borda: #2d2836;
+  --color-borda-forte: #3f384c;
+  --color-texto: #f6f3f9;
+  --color-texto-suave: #ddd6e6;
+  --color-texto-apoio: #aca3ba;
+  --color-primaria: #a993d6;
+  --color-primaria-escura: #7861aa;
+  --color-primaria-texto: #c8b6e6;
+  --color-primaria-suave: #29233a;
+  --color-secundaria: #c39ac0;
+  --color-sucesso: #82d1aa;
+  --color-alerta: #e8c27f;
+  --color-erro: #f0a3b0;
   /* Fixas (sobre o degradê da marca, nos dois temas) */
   --color-sobre-marca: #ffffff;
-  --color-sobre-marca-suave: #eacffc;
+  --color-sobre-marca-suave: #ece4f7;
 
-  --shadow-card: 0 0 0 1px rgb(234 207 252 / 0.05), inset 0 1px 0 rgb(255 255 255 / 0.06), 0 14px 34px -20px rgb(8 2 20 / 0.85);
-  --shadow-botao: 0 0 0 1px rgb(234 207 252 / 0.25) inset, 0 8px 24px -6px rgb(150 13 242 / 0.6);
+  --shadow-card: 0 0 0 1px rgb(236 228 247 / 0.04), 0 12px 30px -22px rgb(6 4 10 / 0.7);
+  --shadow-botao: 0 0 0 1px rgb(255 255 255 / 0.12) inset, 0 6px 18px -8px rgb(102 80 150 / 0.45);
 }
 
 [data-theme="claro"] {
-  --color-fundo: #f8f4fc;
+  --color-fundo: #fbfafc;
   --color-superficie: #ffffff;
   --color-superficie-alta: #ffffff;
-  --color-afundado: #f2ebfa;
-  --color-borda: #e7ddf3;
-  --color-borda-forte: #d3c3e8;
-  --color-texto: #1d1230;
-  --color-texto-suave: #43355c;
-  --color-texto-apoio: #66587e;
-  --color-primaria: #960df2;
-  --color-primaria-escura: #780ac2;
-  --color-primaria-texto: #7410b8;
-  --color-primaria-suave: #f5ecff;
-  --color-secundaria: #a21caf;
-  --color-sucesso: #0f6e42;
+  --color-afundado: #f5f2f8;
+  --color-borda: #ece7f1;
+  --color-borda-forte: #ddd5e6;
+  --color-texto: #1f1a26;
+  --color-texto-suave: #4a4256;
+  --color-texto-apoio: #6b6378;
+  --color-primaria: #8d76bf;
+  --color-primaria-escura: #7861aa;
+  --color-primaria-texto: #6a4f9c;
+  --color-primaria-suave: #f3eefa;
+  --color-secundaria: #a8789f;
+  --color-sucesso: #1f6b48;
   --color-alerta: #8a5800;
   --color-erro: #b4233f;
-  --shadow-card: 0 0 0 1px rgb(60 5 97 / 0.06), 0 10px 28px -18px rgb(60 5 97 / 0.35);
+  --shadow-card: 0 0 0 1px rgb(58 49 80 / 0.05), 0 8px 24px -18px rgb(58 49 80 / 0.22);
   color-scheme: light;
 }
 
@@ -71,71 +71,71 @@
     font-size: var(--text-base);
     color: var(--color-texto);
     background:
-      radial-gradient(1100px 620px at 105% -8%, rgb(236 92 190 / 0.2), transparent 62%),
-      radial-gradient(900px 560px at -12% 18%, rgb(171 61 245 / 0.22), transparent 60%),
-      radial-gradient(1000px 600px at 50% 115%, rgb(192 110 247 / 0.18), transparent 60%),
+      radial-gradient(1100px 620px at 105% -8%, rgb(195 154 192 / 0.07), transparent 62%),
+      radial-gradient(900px 560px at -12% 18%, rgb(169 147 214 / 0.08), transparent 60%),
       var(--color-fundo);
     background-attachment: fixed;
     -webkit-font-smoothing: antialiased;
   }
   [data-theme="claro"] body {
     background:
-      radial-gradient(1100px 620px at 105% -8%, rgb(255 140 210 / 0.22), transparent 62%),
-      radial-gradient(900px 560px at -12% 18%, rgb(213 158 250 / 0.26), transparent 60%),
-      radial-gradient(1000px 600px at 50% 115%, rgb(234 207 252 / 0.4), transparent 60%),
+      radial-gradient(1100px 620px at 105% -8%, rgb(236 220 234 / 0.45), transparent 62%),
+      radial-gradient(900px 560px at -12% 18%, rgb(232 224 245 / 0.55), transparent 60%),
       var(--color-fundo);
   }
   h1, h2, h3 { font-family: var(--font-titulo); letter-spacing: -0.02em; text-wrap: balance; }
   :focus-visible { outline: 2px solid var(--color-primaria-texto); outline-offset: 2px; }
-  ::selection { background: rgb(171 61 245 / 0.4); }
+  ::selection { background: rgb(169 147 214 / 0.35); }
   /* Toque: 16 px evita o zoom do Safari ao focar campos. */
   @media (pointer: coarse) { input, select, textarea { font-size: 16px; } }
 }
 
 @layer components {
   /* Degradê da marca: blocos de cor forte (capa, localização). */
-  .bg-marca { background: linear-gradient(150deg, #2a0c4c 0%, #470f78 34%, #7212b4 66%, #a21caf 100%); }
-  /* Botão principal: degradê violeta com brilho. */
-  .bg-botao { background: linear-gradient(135deg, #ab3df5 0%, #960df2 45%, #780ac2 100%); box-shadow: var(--shadow-botao); }
+  .bg-marca { background: linear-gradient(150deg, #3a3150 0%, #4d4269 34%, #615584 66%, #73659a 100%); }
+  /* Botão principal: lavanda, degradê sutil. */
+  .bg-botao { background: linear-gradient(135deg, #8d76bf 0%, #7861aa 55%, #665096 100%); box-shadow: var(--shadow-botao); }
   .tabular { font-variant-numeric: tabular-nums; }
 
   /* Cartões clicáveis (como no app): sobem e brilham com o mouse; afundam ao tocar. */
   .lift { -webkit-tap-highlight-color: transparent; transition: transform .28s cubic-bezier(.2,.8,.2,1), box-shadow .28s ease, border-color .28s ease; }
   @media (hover: hover) {
-    .lift:hover { transform: translateY(-3px); border-color: rgb(213 158 250 / 0.45); box-shadow: 0 0 0 1px rgb(213 158 250 / 0.3) inset, 0 18px 40px -18px rgb(150 13 242 / 0.75); }
-    [data-theme="claro"] .lift:hover { box-shadow: 0 0 0 1px rgb(150 13 242 / 0.25) inset, 0 18px 40px -20px rgb(120 10 194 / 0.45); }
+    .lift:hover { transform: translateY(-2px); border-color: rgb(200 182 230 / 0.35); box-shadow: 0 14px 32px -20px rgb(6 4 10 / 0.8); }
+    [data-theme="claro"] .lift:hover { border-color: rgb(141 118 191 / 0.35); box-shadow: 0 14px 30px -20px rgb(58 49 80 / 0.3); }
   }
   .lift:active { transform: translateY(0) scale(0.975); transition-duration: .12s; }
   /* Cartões informativos: só realçam, sem pular. */
   .glow-hover { transition: box-shadow .35s ease, border-color .35s ease; }
   @media (hover: hover) {
-    .glow-hover:hover { box-shadow: 0 0 0 1px rgb(213 158 250 / 0.28) inset, 0 20px 50px -24px rgb(150 13 242 / 0.7); }
-    [data-theme="claro"] .glow-hover:hover { box-shadow: 0 0 0 1px rgb(150 13 242 / 0.2) inset, 0 18px 44px -24px rgb(120 10 194 / 0.4); }
+    .glow-hover:hover { box-shadow: 0 0 0 1px rgb(200 182 230 / 0.2) inset, 0 16px 36px -24px rgb(6 4 10 / 0.7); }
+    [data-theme="claro"] .glow-hover:hover { box-shadow: 0 0 0 1px rgb(141 118 191 / 0.18) inset, 0 14px 30px -22px rgb(58 49 80 / 0.25); }
   }
   /* Texto cintilante (brilho que percorre o texto). */
   .text-shimmer {
-    background: linear-gradient(100deg, #d59efa 0%, #ffffff 22%, #eacffc 40%, #c06ef7 60%, #ffffff 78%, #d59efa 100%);
+    background: linear-gradient(100deg, #c8b6e6 0%, #ffffff 25%, #ece4f7 50%, #ffffff 75%, #c8b6e6 100%);
     background-size: 220% 100%; -webkit-background-clip: text; background-clip: text; color: transparent;
-    animation: brilho-texto 6s linear infinite;
+    animation: brilho-texto 9s linear infinite;
   }
-  [data-theme="claro"] .text-shimmer { background-image: linear-gradient(100deg, #780ac2 0%, #ab3df5 25%, #5a0891 50%, #ab3df5 75%, #780ac2 100%); }
+  [data-theme="claro"] .text-shimmer { background-image: linear-gradient(100deg, #5a4485 0%, #7861aa 25%, #4d3a73 50%, #7861aa 75%, #5a4485 100%); }
 }
 
 /*
- * Fundo vivo (igual ao app): fitas de neon com volume, orbes difusos e estrelinhas.
+ * Fundo vivo (igual ao app), em versão suave: fitas finas, orbes bem difusos e poucas estrelinhas.
  * contain: strict + orbes dentro da tela — no iPhone, qualquer coisa além da borda (mesmo numa
  * camada fixa) faz o Safari reduzir a página inteira.
  */
 .ambient { position: fixed; inset: 0; z-index: -1; pointer-events: none; overflow: hidden; contain: strict;
-  --rib-a: #ab3df5; --rib-b: #ec5cbe; --rib-c: #eacffc; --rib-glow: 0.5; --rib-core: 0.75; --spark: #f3e2ff; }
+  --rib-a: #a993d6; --rib-b: #c39ac0; --rib-c: #ece4f7; --rib-glow: 0.12; --rib-core: 0.22; --spark: #ece4f7; }
 .ambient svg { position: absolute; inset: 0; width: 100%; height: 100%; }
-.ambient .orb { position: absolute; border-radius: 9999px; filter: blur(60px); opacity: 0.55; animation: flutuar 14s ease-in-out infinite; }
+.ambient .orb { position: absolute; border-radius: 9999px; filter: blur(70px); opacity: 0.16; animation: flutuar 14s ease-in-out infinite; }
 .ambient .tw { transform-box: fill-box; transform-origin: center; animation: cintilar 4.8s ease-in-out infinite; }
-[data-theme="claro"] .ambient { --rib-a: #c06ef7; --rib-b: #f08fd0; --rib-c: #ffffff; --rib-glow: 0.35; --rib-core: 0.6; --spark: #b45ff0; }
-[data-theme="claro"] .ambient .orb { opacity: 0.45; }
+[data-theme="claro"] .ambient { --rib-a: #c8b6e6; --rib-b: #e2c6dc; --rib-c: #ffffff; --rib-glow: 0.18; --rib-core: 0.3; --spark: #b8a5dc; }
+[data-theme="claro"] .ambient .orb { opacity: 0.22; }
 @media (max-width: 640px) {
-  .ambient { --rib-glow: 0.32; --rib-core: 0.42; }
-  [data-theme="claro"] .ambient { --rib-glow: 0.22; --rib-core: 0.35; }
+  .ambient { --rib-glow: 0.08; --rib-core: 0.16; }
+  /* No celular o texto ocupa a tela toda: sem estrelinhas soltas por cima dele. */
+  .ambient .tw { display: none; }
+  [data-theme="claro"] .ambient { --rib-glow: 0.12; --rib-core: 0.22; }
 }
 
 @keyframes cintilar { 0%, 100% { opacity: 0; transform: scale(0.4) rotate(0deg); } 50% { opacity: 1; transform: scale(1) rotate(20deg); } }
