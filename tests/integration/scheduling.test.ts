@@ -2,12 +2,13 @@ import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import type { Sql } from "@/server/db";
 import { withSystem } from "@/server/db";
 import { asTenant, createOrg, freshDatabase, futureDate } from "../support/db";
-import { changeStatus, createAppointment, rescheduleAppointment } from "@/server/modules/appointments";
+import { addServiceToAppointment, changeStatus, createAppointment, rescheduleAppointment } from "@/server/modules/appointments";
+import { addDaysToKey, localDateKey } from "@/lib/time";
 import { appointmentBalance, recordPayment, refundPayment } from "@/server/modules/payments";
 import { dispatchDueMessages, type MessageProvider, type OutgoingMessage } from "@/server/modules/messaging";
 import { addTimeOff } from "@/server/modules/team";
 import { bookOnline, getPublicBusiness, publicSlots } from "@/server/modules/public-booking";
-import { loadDashboard } from "@/server/modules/dashboard";
+import { loadDashboard, loadInsights } from "@/server/modules/dashboard";
 import { DomainError } from "@/server/errors";
 
 let sql: Sql;
@@ -197,5 +198,33 @@ describe("agendamento online", () => {
     await sql`update app.organizations set online_booking_enabled = false where id = ${A.orgId}`;
     expect(await withSystem((tx) => getPublicBusiness(tx, A.slug), sql)).toBeNull();
     await sql`update app.organizations set online_booking_enabled = true where id = ${A.orgId}`;
+  });
+});
+
+describe("painel: detalhamento por serviço", () => {
+  it("separa por serviço e categoria, conta vendas adicionais e a origem", async () => {
+    const B = await createOrg(sql, "Studio Detalhe");
+    const act = { userId: B.ownerId, organizationId: B.orgId };
+    const [ped] = await sql<{ id: string }[]>`
+      insert into app.services (organization_id, name, price_cents, duration_minutes) values (${B.orgId}, 'Pedicure', 4000, 45) returning id`;
+    await sql`insert into app.professional_services (organization_id, professional_id, service_id) values (${B.orgId}, ${B.professionalId}, ${ped!.id})`;
+    const ontem = addDaysToKey(localDateKey(new Date(), "America/Sao_Paulo"), -1);
+    const novo = (time: string) => asTenant(sql, B.ownerId, B.orgId, (tx) =>
+      createAppointment(tx, act, { professionalId: B.professionalId, clientId: B.clientId, serviceIds: [B.serviceId], date: ontem, time, squeezeIn: true, status: "confirmed" }));
+    const a1 = await novo("09:00");
+    await asTenant(sql, B.ownerId, B.orgId, (tx) => addServiceToAppointment(tx, act, { appointmentId: a1.id, serviceId: ped!.id }));
+    const a2 = await novo("13:00");
+    const a3 = await novo("16:00");
+    for (const a of [a1, a2]) await asTenant(sql, B.ownerId, B.orgId, (tx) => changeStatus(tx, act, a.id, "completed"));
+    await asTenant(sql, B.ownerId, B.orgId, (tx) => changeStatus(tx, act, a3.id, "cancelled"));
+    await sql`update app.appointments set source = 'online' where id = ${a2.id}`;
+
+    const ins = await asTenant(sql, B.ownerId, B.orgId, (tx) => loadInsights(tx, B.orgId, "America/Sao_Paulo", "30d"));
+    expect(ins.byService.map((s) => [s.name, s.count, s.value])).toEqual([["Manicure", 2, 10000], ["Pedicure", 1, 4000]]);
+    expect(ins.byCategory).toEqual([expect.objectContaining({ name: "Sem categoria", count: 3, value: 14000 })]);
+    expect(ins.upsell).toMatchObject({ completed: 2, withExtra: 1, extraValue: 4000, rate: 0.5 });
+    expect(ins.origin).toMatchObject({ online: 1, staff: 1 }); // o cancelado não conta
+    expect(ins.months).toHaveLength(6);
+    expect(ins.months.at(-1)!.current).toBe(true);
   });
 });
