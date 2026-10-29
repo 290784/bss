@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import { CheckCheck } from "lucide-react";
 import { cn } from "@/lib/cn";
 import { usePrefersReducedMotion, useInView } from "./motion";
+import { GeEscrito } from "@/components/brand/ge-escrito";
 
 /**
  * Conversa de exemplo no cartão "Lembretes" (tela do celular da cliente): o lembrete chega,
@@ -65,7 +66,7 @@ export function ChatDemo() {
 
   return (
     <div ref={ref} className="neon-lilas relative overflow-hidden rounded-[22px] border border-line bg-surface"
-      role="img" aria-label={`Exemplo de conversa: a cliente confirma o horário, a profissional agradece e oferece um lash lifting, a cliente aceita e a Gê avisa: aumento de ${brl(VALORES.adicional)}, total de ${brl(VALORES.servico + VALORES.adicional)}.`}>
+      role="img" aria-label={`Exemplo de conversa: a cliente confirma o horário, a profissional agradece e oferece um lash lifting, a cliente aceita e a Gê avisa: seu cliente adicionou um novo serviço ao agendamento, valor adicional de ${brl(VALORES.adicional)}, total do atendimento ${brl(VALORES.servico + VALORES.adicional)}.`}>
       <div aria-hidden className="flex items-center gap-2.5 border-b border-line px-4 py-2.5">
         <span className="grid h-8 w-8 place-items-center rounded-full bg-[linear-gradient(135deg,#8b3fc6,#4f1283)] font-script text-[22px] leading-none text-gold-300">J</span>
         <span className="min-w-0 flex-1">
@@ -79,15 +80,22 @@ export function ChatDemo() {
         ))}
         {quem && <Digitando de={quem} />}
       </div>
-      {/* Notificação do app Gê para a profissional, descendo do topo como no celular */}
-      <div aria-hidden className={cn("absolute inset-x-2 top-2 z-10 flex items-start gap-3 rounded-2xl border border-line bg-surface/95 p-3 shadow-[0_18px_40px_-18px_rgb(79_18_131/0.55),0_0_0_1px_rgb(213_158_250/0.35),0_0_18px_-4px_rgb(192_110_247/0.45)] backdrop-blur transition-all duration-500 ease-out",
-        notificou && !saindo ? "translate-y-0 opacity-100" : "-translate-y-[130%] opacity-0")}>
-        <span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-[linear-gradient(135deg,#8b3fc6,#4f1283)] font-script text-[22px] leading-none text-white">Gê</span>
-        <span className="min-w-0 flex-1">
-          <span className="flex items-center justify-between text-[11px] text-muted"><span className="font-semibold tracking-wide uppercase">Gê</span>agora</span>
-          <span className="mt-0.5 block text-[14px] leading-snug font-semibold text-ink">Ana confirmou o lash lifting! 🎉</span>
-          <span className="mt-0.5 block text-[13px] leading-snug text-ink-soft">
-            Aumento de <b className="text-gold-700">+{brl(VALORES.adicional)}</b> · total do atendimento <b className="text-ink">{brl(VALORES.servico + VALORES.adicional)}</b>
+      {/* Notificação do app Gê para a profissional, no tamanho de uma notificação do iPhone:
+          ícone pequeno, nome + "Agora mesmo" numa linha e no máximo duas linhas de texto
+          (corta com "…"), com o upsell e os valores em destaque. Desce com um leve quique. */}
+      <div aria-hidden className={cn("absolute inset-x-1.5 top-1.5 z-10 flex items-center gap-2.5 rounded-[18px] bg-[rgb(246_245_248/0.88)] px-2.5 py-2 shadow-[0_10px_26px_-12px_rgb(40_20_60/0.45),0_0_0_0.5px_rgb(0_0_0/0.06)] backdrop-blur-xl backdrop-saturate-150 transition-all duration-[650ms] ease-[cubic-bezier(.2,1.25,.4,1)]",
+        notificou && !saindo ? "translate-y-0 scale-100 opacity-100" : "-translate-y-[140%] scale-95 opacity-0")}>
+        <span className="grid h-[34px] w-[34px] shrink-0 place-items-center overflow-hidden rounded-[9px] bg-[linear-gradient(135deg,#8b3fc6,#6c1fa8_50%,#4f1283)] text-[20px] leading-none text-white">
+          {/* Remonta ao aparecer, para o "Gê" se escrever junto com a notificação */}
+          <GeEscrito key={notificou ? "on" : "off"} />
+        </span>
+        <span className="min-w-0 flex-1 text-[#1c1c1e]">
+          <span className="flex items-baseline justify-between gap-2 leading-tight">
+            <span className="truncate text-[13px] font-semibold">Gê</span>
+            <span className="shrink-0 text-[11px] text-[#8a8a8e]">Agora mesmo</span>
+          </span>
+          <span className="line-clamp-2 text-[12.5px] leading-[1.3]">
+            Ana adicionou <b className="font-semibold">Lash lifting</b>! <b className="font-semibold whitespace-nowrap text-[#2f7d4f]">+{brl(VALORES.adicional)}</b> · 💰 total <b className="font-semibold whitespace-nowrap">{brl(VALORES.servico + VALORES.adicional)}</b>
           </span>
         </span>
       </div>
