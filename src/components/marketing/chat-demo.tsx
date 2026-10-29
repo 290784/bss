@@ -31,6 +31,8 @@ const FIM = 6000; // segura a conversa completa antes de recomeçar
 /** Mensagem em que a cliente aceita a oferta: a notificação da Gê desce logo depois dela. */
 const ACEITE = 4;
 const VALORES = { servico: 70, adicional: 90 }; // exemplo: sobrancelha + lash lifting
+/** Horário de cada mensagem, como aparece no WhatsApp. */
+const HORAS = ["09:12", "09:14", "09:14", "09:15", "09:17", "09:17"];
 const brl = (v: number) => `R$ ${v.toLocaleString("pt-BR")}`;
 
 export function ChatDemo() {
@@ -65,18 +67,19 @@ export function ChatDemo() {
   const notificou = n > ACEITE;
 
   return (
-    <div ref={ref} className="neon-lilas relative overflow-hidden rounded-[22px] border border-line bg-surface"
+    <div ref={ref} className="neon-lilas relative overflow-hidden rounded-[22px] border border-line bg-[#efeae2]"
       role="img" aria-label={`Exemplo de conversa: a cliente confirma o horário, a profissional agradece e oferece um lash lifting, a cliente aceita e a Gê avisa: seu cliente adicionou um novo serviço ao agendamento, valor adicional de ${brl(VALORES.adicional)}, total do atendimento ${brl(VALORES.servico + VALORES.adicional)}.`}>
-      <div aria-hidden className="flex items-center gap-2.5 border-b border-line px-4 py-2.5">
-        <span className="grid h-8 w-8 place-items-center rounded-full bg-[linear-gradient(135deg,#8b3fc6,#4f1283)] font-script text-[22px] leading-none text-gold-300">J</span>
+      {/* Conversa nas cores padrão do WhatsApp; as cores da Gê ficam só na notificação do app. */}
+      <div aria-hidden className="flex items-center gap-2.5 bg-[#008069] px-4 py-2.5 text-white">
+        <span className="grid h-8 w-8 place-items-center rounded-full bg-[#dfe5e7] text-[15px] font-semibold text-[#54656f]">J</span>
         <span className="min-w-0 flex-1">
-          <span className="block text-[14px] font-semibold text-ink">Ju · Lash &amp; Sobrancelha</span>
-          <span className="block text-[12px] text-success">{quem === "pro" ? "digitando…" : "online"}</span>
+          <span className="block text-[14px] font-semibold">Ju · Lash &amp; Sobrancelha</span>
+          <span className="block text-[12px] text-white/80">{quem === "pro" ? "digitando…" : "online"}</span>
         </span>
       </div>
       <div aria-hidden className={cn("flex h-[300px] flex-col justify-end gap-2 overflow-hidden px-3 py-3 transition-opacity duration-400 [mask-image:linear-gradient(to_bottom,transparent,black_18%)] sm:h-[320px]", saindo ? "opacity-0" : "opacity-100")}>
         {CONVERSA.slice(0, n).map((m, i) => (
-          <Bolha key={i} m={m} ultima={i === n - 1 && !reduced} />
+          <Bolha key={i} m={m} hora={HORAS[i]!} ultima={i === n - 1 && !reduced} />
         ))}
         {quem && <Digitando de={quem} />}
       </div>
@@ -103,24 +106,25 @@ export function ChatDemo() {
   );
 }
 
-function Bolha({ m, ultima }: { m: Msg; ultima: boolean }) {
+function Bolha({ m, hora, ultima }: { m: Msg; hora: string; ultima: boolean }) {
   const pro = m.de === "pro";
   return (
-    <span className={cn("max-w-[85%] shrink-0 px-3.5 py-2 text-[14px] leading-snug", pro
-      ? "self-start rounded-2xl rounded-bl-md bg-sunken text-ink ring-1 ring-line"
-      : "btn-glow self-end rounded-2xl rounded-br-md text-white",
+    <span className={cn("relative max-w-[85%] shrink-0 rounded-lg px-2.5 pt-1.5 pb-1 text-[14px] leading-snug text-[#111b21] shadow-[0_1px_0.5px_rgb(11_20_26/0.13)]",
+      pro ? "self-start rounded-tl-none bg-white" : "self-end rounded-tr-none bg-[#d9fdd3]",
       ultima && "motion-safe:[animation:mkt-rise_.35s_ease-out]")}>
       {m.texto}
-      {!pro && <CheckCheck className="ml-1.5 inline h-3.5 w-3.5 align-[-2px] text-violet-100" />}
+      <span className="float-right ml-2 translate-y-1.5 text-[11px] leading-none text-[#667781]">
+        {hora}{!pro && <CheckCheck className="ml-0.5 inline h-3.5 w-3.5 align-[-3px] text-[#53bdeb]" />}
+      </span>
     </span>
   );
 }
 
 function Digitando({ de }: { de: "pro" | "cliente" }) {
   return (
-    <span className={cn("inline-flex shrink-0 gap-1 rounded-2xl px-3.5 py-3", de === "pro" ? "self-start rounded-bl-md bg-sunken ring-1 ring-line" : "btn-glow self-end rounded-br-md")}>
+    <span className={cn("inline-flex shrink-0 gap-1 rounded-lg px-3 py-2.5 shadow-[0_1px_0.5px_rgb(11_20_26/0.13)]", de === "pro" ? "self-start rounded-tl-none bg-white" : "self-end rounded-tr-none bg-[#d9fdd3]")}>
       {[0, 1, 2].map((i) => (
-        <span key={i} className={cn("h-1.5 w-1.5 rounded-full motion-safe:[animation:chat-dot_1s_ease-in-out_infinite]", de === "pro" ? "bg-muted" : "bg-white/80")} style={{ animationDelay: `${i * 0.15}s` }} />
+        <span key={i} className="h-1.5 w-1.5 rounded-full bg-[#8696a0] motion-safe:[animation:chat-dot_1s_ease-in-out_infinite]" style={{ animationDelay: `${i * 0.15}s` }} />
       ))}
     </span>
   );
