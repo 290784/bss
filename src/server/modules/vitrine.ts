@@ -110,6 +110,27 @@ const monthStart = (key: string, delta: number) => {
 
 export type ResultadoVitrine = { status: "criada" | "ja_existe"; email: string; linhas: string[] };
 
+export async function vitrineExiste(sql: Sql) {
+  const [u] = await sql`select 1 from app.users where lower(email) = ${EMAIL}`;
+  return !!u;
+}
+
+/** Troca a senha da conta vitrine e resume o que existe nela (para conferir se a criação terminou). */
+export async function novaSenhaVitrine(sql: Sql, password: string) {
+  const [u] = await sql<{ id: string }[]>`
+    update app.users set password_hash = ${await hashPassword(password)} where lower(email) = ${EMAIL} returning id`;
+  if (!u) return null;
+  const [r] = await sql<{ organizacoes: number; profissionais: number; clientes: number; atendimentos: number; recebido_30d: number }[]>`
+    select count(distinct o.id)::int as organizacoes,
+      (select count(*) from app.professionals p where p.organization_id = any(array_agg(o.id)))::int as profissionais,
+      (select count(*) from app.clients c where c.organization_id = any(array_agg(o.id)))::int as clientes,
+      (select count(*) from app.appointments a where a.organization_id = any(array_agg(o.id)))::int as atendimentos,
+      (select coalesce(sum(case when kind = 'payment' then amount_cents else -amount_cents end), 0) from app.payments p
+        where p.organization_id = any(array_agg(o.id)) and p.paid_at > now() - interval '30 days')::int as recebido_30d
+    from app.organizations o where o.created_by = ${u.id} and o.is_demo`;
+  return { status: "senha_trocada" as const, email: EMAIL, ...r! };
+}
+
 /** Cria (ou, com reset, recria) a conta vitrine. Determinístico para a mesma data. */
 export async function criarContaVitrine(sql: Sql, opts: { password: string; reset?: boolean }): Promise<ResultadoVitrine> {
   rnd = prng(20261029);
