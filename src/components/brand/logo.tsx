@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { cn } from "@/lib/cn";
+import { GeEscrito } from "./ge-escrito";
 
 /**
  * Monograma: placa ameixa arredondada com o "G" cursivo em dourado. Animado: um brilho dourado
@@ -23,13 +24,13 @@ export function Logo({ href = "/", className, variant = "tile" }: { href?: strin
     return (
       <Link href={href} className={cn("logo group inline-flex items-center gap-2.5", className)} aria-label="Gê — início">
         <LogoMark className="h-11 w-11 rounded-[14px] [--mark:44px]" />
-        <span className="translate-y-[3px] font-script text-[40px] leading-none whitespace-nowrap text-violet-700">Gê</span>
+        <span className="text-[40px] leading-none text-violet-700"><GeEscrito /></span>
       </Link>
     );
   return (
     <Link href={href} className={cn("logo group inline-flex items-center gap-2", className)} aria-label="Gê — início">
       <LogoMark />
-      <span className="translate-y-[2px] font-script text-[34px] leading-none whitespace-nowrap text-violet-100 light:text-violet-700">Gê</span>
+      <span className="text-[34px] leading-none text-violet-100 light:text-violet-700"><GeEscrito /></span>
     </Link>
   );
 }
