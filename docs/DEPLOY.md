@@ -31,7 +31,10 @@ variáveis estiverem marcadas também para Preview.
 
 ## Depois do primeiro deploy
 1. Abra a URL, crie sua conta e faça o onboarding.
-2. Não rode `db:seed-demo` em produção (é bloqueado por padrão).
+2. Não rode `db:seed-demo` em produção (é bloqueado por padrão). Para apresentar a Gê com a conta vitrine
+   no ambiente publicado, rode uma vez, de forma consciente:
+   `ALLOW_DEMO_SEED=1 NODE_ENV=production DATABASE_URL="..." VITRINE_PASSWORD="..." npm run db:seed-vitrine`
+   (a organização fica marcada como demonstração e isolada das contas reais).
 3. Ative backups no provedor do banco antes de cadastrar clientes reais.
 
 ## Solução de problemas do banco

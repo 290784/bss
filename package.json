@@ -19,6 +19,7 @@
     "test:e2e:interacoes": "node tests/e2e/interactions.mjs && node tests/e2e/dock.mjs && node tests/e2e/arrastar.mjs && node tests/e2e/tema.mjs && node tests/e2e/onda1.mjs && node tests/e2e/enquadramento.mjs",
     "db:migrate": "tsx scripts/migrate.ts",
     "db:seed-demo": "tsx --conditions=react-server scripts/seed-demo.ts",
+    "db:seed-vitrine": "tsx --conditions=react-server scripts/seed-vitrine.ts",
     "check": "npm run typecheck && npm run lint && npm run test && npm run build",
     "db:check": "tsx scripts/db-check.ts"
   },

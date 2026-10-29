@@ -5,6 +5,8 @@ import { effectiveAccess, effectivePlan } from "@/domain/plans";
 import { percentChange } from "@/domain/metrics";
 import { parseMoneyToCents, formatMoney } from "@/lib/money";
 import { normalizePhone, slugify } from "@/lib/text";
+import { resolvePeriod } from "@/server/modules/dashboard";
+import { zonedDateTime } from "@/lib/time";
 
 describe("status do agendamento", () => {
   it("cancelado é final", () => {
@@ -71,5 +73,38 @@ describe("utilitários", () => {
     expect(percentChange(10, 0)).toBeNull();
     expect(percentChange(0, 0)).toBe(0);
     expect(percentChange(150, 100)).toBe(50);
+  });
+});
+
+describe("comparação de períodos do painel", () => {
+  const tz = "America/Sao_Paulo";
+  const now = new Date("2026-10-29T15:00:00-03:00");
+  it("este mês compara os dias fechados (até ontem) com o mesmo trecho do mês passado", () => {
+    const p = resolvePeriod("month", tz, now);
+    expect(p.fromKey).toBe("2026-10-01");
+    expect(p.cmpTo.toISOString()).toBe(zonedDateTime("2026-10-29", "00:00", tz).toISOString());
+    expect(p.prevFrom.toISOString()).toBe(zonedDateTime("2026-09-01", "00:00", tz).toISOString());
+    expect(p.prevTo.toISOString()).toBe(zonedDateTime("2026-09-29", "00:00", tz).toISOString());
+    expect(p.prevDays).toHaveLength(28);
+  });
+  it("mês anterior mais curto: a comparação para no fim dele", () => {
+    const p = resolvePeriod("month", tz, new Date("2026-03-31T12:00:00-03:00")); // 30 dias fechados; fevereiro tem 28
+    expect(p.prevTo.toISOString()).toBe(zonedDateTime("2026-03-01", "00:00", tz).toISOString());
+    expect(p.prevDays).toHaveLength(28);
+  });
+  it("esta semana compara de segunda até ontem com o mesmo trecho da semana passada", () => {
+    const p = resolvePeriod("week", tz, now); // quinta-feira
+    expect(p.fromKey).toBe("2026-10-26");
+    expect(p.prevDays).toEqual(["2026-10-19", "2026-10-20", "2026-10-21"]);
+  });
+  it("no primeiro dia do mês ainda não há trecho para comparar", () => {
+    const p = resolvePeriod("month", tz, new Date("2026-11-01T10:00:00-03:00"));
+    expect(p.cmpTo.getTime()).toBe(p.from.getTime());
+    expect(p.prevDays).toHaveLength(0);
+  });
+  it("últimos 30 dias seguem comparando com os 30 anteriores", () => {
+    const p = resolvePeriod("30d", tz, now);
+    expect(p.prevDays).toHaveLength(30);
+    expect(p.cmpTo.getTime()).toBe(p.to.getTime());
   });
 });

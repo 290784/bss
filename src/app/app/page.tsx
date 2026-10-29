@@ -5,7 +5,7 @@ import { ArrowDownRight, ArrowUpRight, CalendarPlus, Check, Clock, Link2, UserPl
 import { requireAppContext, tenant } from "@/server/context";
 import { can } from "@/domain/permissions";
 import { METRIC_DEFINITIONS, type MetricKey } from "@/domain/metrics";
-import { freeGapsToday, loadDashboard, PERIOD_LABEL, type PeriodId } from "@/server/modules/dashboard";
+import { COMPARACAO, freeGapsToday, loadDashboard, PERIOD_LABEL, type PeriodId } from "@/server/modules/dashboard";
 import { listAgenda } from "@/server/modules/appointments";
 import { Card, CardHeader, EmptyState, InfoTip, PageHeader, StatusBadge, STATUS_STYLE } from "@/components/ui/primitives";
 import { ButtonLink } from "@/components/ui/button";
@@ -136,7 +136,7 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
 
       <div className="mt-6 grid gap-6 xl:grid-cols-[minmax(0,1fr)_380px]">
         <Card>
-          <CardHeader title="Evolução diária" description={`${PERIOD_LABEL[period]} · comparação com o período anterior nos indicadores acima`} />
+          <CardHeader title="Evolução diária" description={`${PERIOD_LABEL[period]} · ${COMPARACAO[period]} nos indicadores acima`} />
           <div className="px-5 pt-4 pb-5">
             <DashboardChart data={series} includeRevenue={finance} />
           </div>
