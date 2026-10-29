@@ -234,3 +234,96 @@ export async function freeGapsToday(tx: Tx, orgId: string, timeZone: string, now
   }
   return gaps;
 }
+
+// ---------------------------------------------------------------------------
+// Detalhamento: por serviço, por categoria, origem, vendas adicionais e últimos meses
+
+export type ServiceRowInsight = { name: string; category: string | null; count: number; value: number; avg: number; change: number | null };
+
+/**
+ * Detalhes do período para o painel. Considera só atendimentos concluídos (o que de fato foi feito),
+ * pelo valor de cada serviço no atendimento; a variação usa a mesma janela de comparação dos indicadores.
+ */
+export async function loadInsights(tx: Tx, orgId: string, timeZone: string, periodId: PeriodId, now = new Date()) {
+  const p = resolvePeriod(periodId, timeZone, now);
+  const cmpTo = p.cmpTo.getTime() < p.to.getTime() ? p.cmpTo : p.to;
+
+  const services = await tx<{ name: string; category: string | null; count: number; value: number; cmp_value: number; prev_value: number }[]>`
+    select coalesce(s.name, x.service_name) as name, c.name as category,
+      count(*) filter (where a.starts_at >= ${p.from} and a.starts_at < ${p.to})::int as count,
+      coalesce(sum(x.price_cents) filter (where a.starts_at >= ${p.from} and a.starts_at < ${p.to}), 0)::int as value,
+      coalesce(sum(x.price_cents) filter (where a.starts_at >= ${p.from} and a.starts_at < ${cmpTo}), 0)::int as cmp_value,
+      coalesce(sum(x.price_cents) filter (where a.starts_at >= ${p.prevFrom} and a.starts_at < ${p.prevTo}), 0)::int as prev_value
+    from app.appointment_services x
+    join app.appointments a on a.id = x.appointment_id
+    left join app.services s on s.id = x.service_id
+    left join app.service_categories c on c.id = s.category_id
+    where x.organization_id = ${orgId} and a.status = 'completed'
+      and ((a.starts_at >= ${p.from} and a.starts_at < ${p.to}) or (a.starts_at >= ${p.prevFrom} and a.starts_at < ${p.prevTo}))
+    group by 1, 2`;
+  const byService: ServiceRowInsight[] = services
+    .filter((s) => s.count > 0)
+    .map((s) => ({ name: s.name, category: s.category, count: s.count, value: s.value, avg: Math.round(s.value / s.count), change: percentChange(s.cmp_value, s.prev_value) }))
+    .sort((a, b) => b.value - a.value || b.count - a.count);
+
+  const catMap = new Map<string, { name: string; count: number; value: number; cmp: number; prev: number }>();
+  for (const s of services) {
+    const k = s.category ?? "Sem categoria";
+    const c = catMap.get(k) ?? { name: k, count: 0, value: 0, cmp: 0, prev: 0 };
+    c.count += s.count; c.value += s.value; c.cmp += s.cmp_value; c.prev += s.prev_value;
+    catMap.set(k, c);
+  }
+  const byCategory = [...catMap.values()].filter((c) => c.count > 0)
+    .map((c) => ({ name: c.name, count: c.count, value: c.value, change: percentChange(c.cmp, c.prev) }))
+    .sort((a, b) => b.value - a.value);
+
+  const [origin] = await tx<{ online: number; staff: number; online_value: number; staff_value: number }[]>`
+    select count(*) filter (where source = 'online')::int as online, count(*) filter (where source <> 'online')::int as staff,
+      coalesce(sum(price_cents - discount_cents) filter (where source = 'online' and status = 'completed'), 0)::int as online_value,
+      coalesce(sum(price_cents - discount_cents) filter (where source <> 'online' and status = 'completed'), 0)::int as staff_value
+    from app.appointments where organization_id = ${orgId} and status <> 'cancelled' and starts_at >= ${p.from} and starts_at < ${p.to}`;
+
+  // Venda adicional: atendimento concluído com mais de um serviço; o adicional é o que veio depois do primeiro.
+  const [upsell] = await tx<{ completed: number; with_extra: number; extra_value: number; prev_completed: number; prev_with_extra: number }[]>`
+    with per as (
+      select a.id, a.starts_at, count(x.*) as n, coalesce(sum(x.price_cents) filter (where x.position > 0), 0) as extra
+      from app.appointments a join app.appointment_services x on x.appointment_id = a.id
+      where a.organization_id = ${orgId} and a.status = 'completed'
+        and ((a.starts_at >= ${p.from} and a.starts_at < ${p.to}) or (a.starts_at >= ${p.prevFrom} and a.starts_at < ${p.prevTo}))
+      group by a.id)
+    select count(*) filter (where starts_at >= ${p.from})::int as completed,
+      count(*) filter (where starts_at >= ${p.from} and n > 1)::int as with_extra,
+      coalesce(sum(extra) filter (where starts_at >= ${p.from}), 0)::int as extra_value,
+      count(*) filter (where starts_at < ${p.from})::int as prev_completed,
+      count(*) filter (where starts_at < ${p.from} and n > 1)::int as prev_with_extra
+    from per`;
+
+  // Últimos 6 meses do calendário (o atual até hoje): recebido e atendimentos concluídos.
+  const todayKey = localDateKey(now, timeZone);
+  const monthKeys = Array.from({ length: 7 }, (_, i) => {
+    const [y, m] = todayKey.split("-").map(Number);
+    return new Date(Date.UTC(y!, m! - 1 - 5 + i, 1)).toISOString().slice(0, 10);
+  });
+  const bounds = monthKeys.map((k) => zonedDateTime(k, "00:00", timeZone));
+  const months = await Promise.all(bounds.slice(0, 6).map(async (from, i) => {
+    const to = bounds[i + 1]!;
+    const [r] = await tx<{ revenue: number; completed: number }[]>`
+      select
+        (select coalesce(sum(case when kind = 'payment' then amount_cents else -amount_cents end), 0) from app.payments
+          where organization_id = ${orgId} and paid_at >= ${from} and paid_at < ${to})::int as revenue,
+        (select count(*) from app.appointments where organization_id = ${orgId} and status = 'completed' and starts_at >= ${from} and starts_at < ${to})::int as completed`;
+    return { key: monthKeys[i]!, current: i === 5, ...r! };
+  }));
+
+  return {
+    byService, byCategory,
+    origin: origin!,
+    upsell: {
+      completed: upsell!.completed, withExtra: upsell!.with_extra, extraValue: upsell!.extra_value,
+      rate: ratio(upsell!.with_extra, upsell!.completed), prevRate: ratio(upsell!.prev_with_extra, upsell!.prev_completed),
+    },
+    months,
+  };
+}
+
+export type InsightsData = Awaited<ReturnType<typeof loadInsights>>;

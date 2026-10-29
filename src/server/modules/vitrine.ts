@@ -9,7 +9,7 @@
  *  - venda adicional no atendimento (serviço extra) sobe de ~3% para ~15% dos atendimentos;
  *  - as horas vagas passam a ser preenchidas (a ocupação sobe alguns pontos).
  *
- * Linha do tempo relativa a hoje: 3 meses atrás = "antes da Gê" (histórico importado da planilha),
+ * Linha do tempo relativa a hoje: 5 a 3 meses atrás = "antes da Gê" (histórico importado da planilha),
  * depois 1º, 2º e 3º mês com a Gê (o 3º é o mês atual, com a agenda das próximas 2 semanas).
  * Determinístico (semente fixa): rodar de novo gera os mesmos números para a mesma data.
  *
@@ -75,6 +75,7 @@ const DIAS_UTEIS = [2, 3, 4, 5, 6]; // o salão abre de terça a sábado; a Dani
 const PESO_DIA: Record<number, number> = { 2: 0.85, 3: 0.95, 4: 1, 5: 1.15, 6: 1.3 };
 const PESO_MEDIO = DIAS_UTEIS.reduce((t, d) => t + PESO_DIA[d]!, 0) / DIAS_UTEIS.length;
 const DIAS_POR_MES = 21.7; // terça a sábado: ~5 dias × 4,34 semanas
+const MESES_ANTES = 3; // meses de histórico "antes da Gê"
 
 const NOMES = ["Ana", "Beatriz", "Camila", "Daniela", "Eduarda", "Fernanda", "Gabriela", "Helena", "Isabela", "Juliana", "Larissa", "Letícia",
   "Mariana", "Natália", "Patrícia", "Rafaela", "Sabrina", "Tatiane", "Vanessa", "Yasmin", "Aline", "Bruna", "Carolina", "Débora", "Elaine",
@@ -151,7 +152,7 @@ export async function criarContaVitrine(sql: Sql, opts: { password: string; rese
     { name: "Salão Lumi", businessType: "salon", attends: true, ownerDisplayName: EQUIPE[0]!.nome, timezone: TZ, phone: "(11) 90000-0000" },
     { isDemo: true }), sql);
   await sql`update app.organizations set onboarding_completed_at = now(), min_advance_minutes = 60 where id = ${org.organizationId}`;
-  await sql`update app.subscriptions set plan = 'studio' where organization_id = ${org.organizationId}`;
+  await sql`update app.subscriptions set plan = 'studio', status = 'active', trial_ends_at = null where organization_id = ${org.organizationId}`;
   await sql`update app.professionals set specialty = 'Cabelo', color = ${EQUIPE[0]!.cor} where id = ${org.professionalId!}`;
   const proIds = [org.professionalId!];
   for (const e of EQUIPE.slice(1)) {
@@ -165,9 +166,11 @@ export async function criarContaVitrine(sql: Sql, opts: { password: string; rese
 
   const actor = { userId: user!.id, organizationId: org.organizationId };
   const today = localDateKey(new Date(), TZ);
-  const inicio = monthStart(today, -3);
+  // 3 meses "antes da Gê" (para o gráfico dos últimos 6 meses mostrar o patamar antigo) + 3 meses com a Gê.
+  const inicio = monthStart(today, -(MESES_ANTES + 2));
+  const NOMES_MES = [...Array.from({ length: MESES_ANTES }, (_, i) => `Antes da Gê (${i + 1}/${MESES_ANTES})`), ...MESES.slice(1).map((m) => m.nome)];
   const fimFuturo = addDaysToKey(today, 14);
-  const stats = MESES.map(() => ({ atend: 0, concluidos: 0, faltas: 0, cancel: 0, produzido: 0, online: 0, adicionais: 0, minutos: 0 }));
+  const stats = NOMES_MES.map(() => ({ atend: 0, concluidos: 0, faltas: 0, cancel: 0, produzido: 0, online: 0, adicionais: 0, minutos: 0 }));
   const onlineIds: string[] = [];
 
   await withTenant(actor, async (tx: Tx) => {
@@ -228,8 +231,8 @@ export async function criarContaVitrine(sql: Sql, opts: { password: string; rese
     const fracExtra = Object.fromEntries(Object.entries(SERVICOS).map(([a, xs]) =>
       [a, xs.filter((x) => x.extra).reduce((t, x) => t + x.peso, 0) / xs.reduce((t, x) => t + x.peso, 0)])) as Record<keyof typeof SERVICOS, number>;
     // Valor que cada mês já "garantiu" (concluído no passado; agendado no futuro, descontadas as perdas esperadas).
-    const garantido = MESES.map(() => 0);
-    const alvo = MESES.map(() => 0); // soma das metas diárias de cada mês até o dia corrente
+    const garantido = NOMES_MES.map(() => 0);
+    const alvo = NOMES_MES.map(() => 0); // soma das metas diárias de cada mês do calendário até o dia corrente
     // Faltas, cancelamentos e origem online distribuídos de forma regular (sem sorte): cada mês
     // fecha na taxa planejada, em vez de oscilar com o sorteio.
     const acumulado = { falta: 0, cancel: 0, online: 0 };
@@ -239,8 +242,9 @@ export async function criarContaVitrine(sql: Sql, opts: { password: string; rese
       const wd = localWeekday(d);
       if (!DIAS_UTEIS.includes(wd)) continue;
       const idx = (Number(d.slice(0, 4)) - Number(inicio.slice(0, 4))) * 12 + Number(d.slice(5, 7)) - Number(inicio.slice(5, 7));
-      const mi = Math.min(3, idx);
-      const proximoMes = idx > 3; // agenda das próximas semanas que já cai no mês seguinte
+      const ci = Math.min(NOMES_MES.length - 1, idx); // mês do calendário
+      const mi = Math.max(0, ci - (MESES_ANTES - 1)); // cenário: 0 = antes da Gê, 1–3 = meses com a Gê
+      const proximoMes = idx >= NOMES_MES.length; // agenda das próximas semanas que já cai no mês seguinte
       const mes = MESES[mi]!;
       const passado = d < today;
       const perda = 1 - mes.falta - mes.cancel;
@@ -250,8 +254,8 @@ export async function criarContaVitrine(sql: Sql, opts: { password: string; rese
       // o que já foi garantido de volta ao ritmo planejado, e a meta compensa faltas e cancelamentos.
       const diasMes = []; for (let x = monthStart(d, 0); x < monthStart(d, 1); x = addDaysToKey(x, 1)) if (DIAS_UTEIS.includes(localWeekday(x))) diasMes.push(x);
       const alvoDia = (mes.produzido / DIAS_POR_MES) * (PESO_DIA[wd]! / PESO_MEDIO);
-      if (!proximoMes) alvo[mi]! += alvoDia;
-      const correcao = proximoMes ? 0 : Math.max(-alvoDia * 0.15, Math.min(alvoDia * 0.15, alvo[mi]! - alvoDia - garantido[mi]!));
+      if (!proximoMes) alvo[ci]! += alvoDia;
+      const correcao = proximoMes ? 0 : Math.max(-alvoDia * 0.15, Math.min(alvoDia * 0.15, alvo[ci]! - alvoDia - garantido[ci]!));
       const meta = Math.max(0, alvoDia + correcao) / perda * (0.96 + rnd() * 0.08);
       // Novas clientes do mês entram espalhadas pelos dias.
       const novasHoje = rnd() < mes.novas / diasMes.length ? 1 + (rnd() < 0.15 ? 1 : 0) : 0;
@@ -288,16 +292,16 @@ export async function criarContaVitrine(sql: Sql, opts: { password: string; rese
         const online = mi > 0 && sorteio("online", mes.online);
         if (online) onlineIds.push(appt.id);
         if (proximoMes) continue;
-        const st = stats[mi]!;
+        const st = stats[ci]!;
         st.atend++; if (comExtra) st.adicionais++; if (online) st.online++;
-        if (!passado) { st.produzido += valorAtend; st.minutos += minutos; garantido[mi]! += valorAtend * perda; continue; }
+        if (!passado) { st.produzido += valorAtend; st.minutos += minutos; garantido[ci]! += valorAtend * perda; continue; }
 
         const desfecho = sorteio("falta", mes.falta) ? "no_show" : sorteio("cancel", mes.cancel) ? "cancelled" : "completed";
         await changeStatus(tx, actor, appt.id, desfecho);
         if (desfecho === "no_show") { st.faltas++; st.minutos += minutos; }
         if (desfecho === "cancelled") st.cancel++;
         if (desfecho === "completed") {
-          st.concluidos++; st.produzido += valorAtend; st.minutos += minutos; garantido[mi]! += valorAtend;
+          st.concluidos++; st.produzido += valorAtend; st.minutos += minutos; garantido[ci]! += valorAtend;
           // Tudo recebido, exceto alguns atendimentos dos últimos dias (a receber).
           if (!(d >= addDaysToKey(today, -7) && rnd() < 0.05)) await recordPayment(tx, actor, { appointmentId: appt.id, amountCents: valorAtend,
             method: pick(["pix", "credit_card", "debit_card", "cash"] as const, (m) => ({ pix: 55, credit_card: 28, debit_card: 12, cash: 5 })[m]), isDeposit: false });
@@ -325,11 +329,11 @@ export async function criarContaVitrine(sql: Sql, opts: { password: string; rese
     return diasPro * minutosDia;
   };
   linhas.push("\nSalão Lumi — resumo por mês (valores em R$):");
-  for (const [i, m] of MESES.entries()) {
+  for (const [i, nome] of NOMES_MES.entries()) {
     const s = stats[i]!;
     let dias = 0;
     for (let x = monthStart(inicio, i); x < monthStart(inicio, i + 1); x = addDaysToKey(x, 1)) if (DIAS_UTEIS.includes(localWeekday(x))) dias++;
-    linhas.push(`  ${m.nome.padEnd(17)} atendimentos ${String(s.atend).padStart(3)} · faturamento ${(s.produzido / 100).toFixed(0).padStart(6)}`
+    linhas.push(`  ${nome.padEnd(21)} atendimentos ${String(s.atend).padStart(3)} · faturamento ${(s.produzido / 100).toFixed(0).padStart(6)}`
       + ` (${dias} dias; num mês típico ${((s.produzido / dias) * DIAS_POR_MES / 100).toFixed(0)})`
       + ` · faltas ${((s.faltas / Math.max(1, s.concluidos + s.faltas)) * 100).toFixed(1)}% · online ${((s.online / Math.max(1, s.atend)) * 100).toFixed(0)}%`
       + ` · com adicional ${((s.adicionais / Math.max(1, s.atend)) * 100).toFixed(0)}%`

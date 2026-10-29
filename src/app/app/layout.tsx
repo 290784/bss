@@ -6,6 +6,7 @@ import { NAV_ITEMS } from "@/components/shell/nav-items";
 import { can, ROLE_LABEL } from "@/domain/permissions";
 import { listNotifications } from "@/server/modules/notifications";
 import { DemoBanner } from "@/components/ui/primitives";
+import { EMAIL_VITRINE } from "@/server/modules/vitrine";
 import { ToastProvider } from "@/components/ui/toast";
 import Link from "next/link";
 
@@ -16,7 +17,8 @@ export default async function AppLayout({ children }: { children: React.ReactNod
   const trialDays = trialDaysLeft(ctx.subscription);
 
   let banner: React.ReactNode = null;
-  if (ctx.org.isDemo) banner = <DemoBanner />;
+  // A conta vitrine serve para apresentar a Gê como se fosse um salão real: sem o aviso de demonstração.
+  if (ctx.org.isDemo) banner = ctx.user.email.toLowerCase() === EMAIL_VITRINE ? null : <DemoBanner />;
   else if (ctx.access === "read_only")
     banner = <div className="bg-st-noshow-bg px-4 py-2 text-center text-[13px] text-st-noshow">Assinatura inativa: seus dados estão preservados e disponíveis para consulta e exportação, mas novas alterações estão bloqueadas.</div>;
   else if (ctx.access === "grace")

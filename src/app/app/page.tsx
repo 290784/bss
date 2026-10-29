@@ -5,7 +5,7 @@ import { ArrowDownRight, ArrowUpRight, CalendarPlus, Check, Clock, Link2, UserPl
 import { requireAppContext, tenant } from "@/server/context";
 import { can } from "@/domain/permissions";
 import { METRIC_DEFINITIONS, type MetricKey } from "@/domain/metrics";
-import { COMPARACAO, freeGapsToday, loadDashboard, PERIOD_LABEL, type PeriodId } from "@/server/modules/dashboard";
+import { COMPARACAO, freeGapsToday, loadDashboard, loadInsights, PERIOD_LABEL, type PeriodId } from "@/server/modules/dashboard";
 import { listAgenda } from "@/server/modules/appointments";
 import { Card, CardHeader, EmptyState, InfoTip, PageHeader, StatusBadge, STATUS_STYLE } from "@/components/ui/primitives";
 import { ButtonLink } from "@/components/ui/button";
@@ -14,6 +14,7 @@ import { addDaysToKey, formatInTz, localDateKey, localTime, zonedDateTime } from
 import { cn } from "@/lib/cn";
 import { STATUS_LABEL } from "@/domain/appointment-status";
 import { DashboardChart } from "./dashboard-chart";
+import { DashboardInsights } from "./dashboard-insights";
 import { CopyLink } from "./copy-link";
 import { NextClientCard } from "./next-client";
 import { receiptUrl } from "@/server/modules/receipt";
@@ -32,9 +33,10 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
   const finance = can(ctx.role, "finance.view");
   const todayKey = localDateKey(new Date(), tz);
 
-  const { d, todayItems, gaps, setup } = await tenant(ctx, async (tx) => {
-    const [d, todayItems, gaps, [setup]] = await Promise.all([
+  const { d, insights, todayItems, gaps, setup } = await tenant(ctx, async (tx) => {
+    const [d, insights, todayItems, gaps, [setup]] = await Promise.all([
       loadDashboard(tx, ctx.org.id, tz, period, { includeFinance: finance }),
+      loadInsights(tx, ctx.org.id, tz, period),
       listAgenda(tx, ctx.org.id, zonedDateTime(todayKey, "00:00", tz), zonedDateTime(addDaysToKey(todayKey, 1), "00:00", tz)),
       freeGapsToday(tx, ctx.org.id, tz),
       tx<{ services: number; clients: number; appointments: number; hours: number }[]>`
@@ -43,7 +45,7 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
                (select count(*) from app.appointments where organization_id = ${ctx.org.id})::int as appointments,
                (select count(*) from app.working_hours where organization_id = ${ctx.org.id})::int as hours`,
     ]);
-    return { d, todayItems, gaps, setup: setup! };
+    return { d, insights, todayItems, gaps, setup: setup! };
   });
 
   const activation = [
@@ -178,6 +180,8 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
           </div>
         </Card>
       </div>
+
+      <DashboardInsights data={insights} periodLabel={PERIOD_LABEL[period]} compareLabel={COMPARACAO[period].replace(/^comparação com /, "")} finance={finance} />
 
       <div className="mt-6 grid gap-6 lg:grid-cols-2">
         <Card>

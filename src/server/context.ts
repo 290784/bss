@@ -53,7 +53,10 @@ export const getAppContext = cache(async (): Promise<AppContext | null> => {
     (tx) => tx<{ plan: PlanId; status: SubscriptionState["status"]; trial_ends_at: Date | null; grace_until: Date | null }[]>`
       select plan, status, trial_ends_at, grace_until from app.subscriptions where organization_id = ${current.organization_id}`,
   );
-  const subscription: SubscriptionState = sub[0]
+  // Contas de demonstração (internas, para apresentar a Gê) nunca expiram nem entram em somente leitura.
+  const subscription: SubscriptionState = current.is_demo
+    ? { plan: sub[0]?.plan ?? "studio", status: "active", trialEndsAt: null, graceUntil: null }
+    : sub[0]
     ? { plan: sub[0].plan, status: sub[0].status, trialEndsAt: sub[0].trial_ends_at, graceUntil: sub[0].grace_until }
     : { plan: "solo", status: "canceled", trialEndsAt: null, graceUntil: null };
   const now = new Date();
