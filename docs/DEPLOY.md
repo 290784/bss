@@ -35,6 +35,10 @@ variáveis estiverem marcadas também para Preview.
    no ambiente publicado, rode uma vez, de forma consciente:
    `ALLOW_DEMO_SEED=1 NODE_ENV=production DATABASE_URL="..." VITRINE_PASSWORD="..." npm run db:seed-vitrine`
    (a organização fica marcada como demonstração e isolada das contas reais).
+   Sem acesso à credencial do banco (as variáveis do Neon na Vercel são sensíveis), use a rota interna:
+   defina `VITRINE_SEED_TOKEN` (32+ caracteres) em Production, publique e abra uma vez
+   `https://SEU-DOMINIO/api/interno/vitrine?chave=<VITRINE_SEED_TOKEN>` — a resposta traz o login e
+   uma senha nova. Depois troque ou apague `VITRINE_SEED_TOKEN` (sem ela, a rota responde 404).
 3. Ative backups no provedor do banco antes de cadastrar clientes reais.
 
 ## Solução de problemas do banco
