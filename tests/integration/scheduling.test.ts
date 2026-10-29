@@ -8,7 +8,7 @@ import { appointmentBalance, recordPayment, refundPayment } from "@/server/modul
 import { dispatchDueMessages, type MessageProvider, type OutgoingMessage } from "@/server/modules/messaging";
 import { addTimeOff } from "@/server/modules/team";
 import { bookOnline, getPublicBusiness, publicSlots } from "@/server/modules/public-booking";
-import { loadDashboard, loadInsights } from "@/server/modules/dashboard";
+import { loadDashboard, loadForecast, loadInsights, loadTrends } from "@/server/modules/dashboard";
 import { DomainError } from "@/server/errors";
 
 let sql: Sql;
@@ -226,5 +226,30 @@ describe("painel: detalhamento por serviço", () => {
     expect(ins.origin).toMatchObject({ online: 1, staff: 1 }); // o cancelado não conta
     expect(ins.months).toHaveLength(6);
     expect(ins.months.at(-1)!.current).toBe(true);
+  });
+});
+
+describe("painel: tendências, pontos de atenção e projeção", () => {
+  it("avisa serviço em queda e só projeta com dias suficientes", async () => {
+    const C = await createOrg(sql, "Studio Tendencia");
+    const act = { userId: C.ownerId, organizationId: C.orgId };
+    const hoje = localDateKey(new Date(), "America/Sao_Paulo");
+    const feito = async (diasAtras: number, time: string) => {
+      const a = await asTenant(sql, C.ownerId, C.orgId, (tx) => createAppointment(tx, act,
+        { professionalId: C.professionalId, clientId: C.clientId, serviceIds: [C.serviceId], date: addDaysToKey(hoje, -diasAtras), time, squeezeIn: true, status: "confirmed" }));
+      await asTenant(sql, C.ownerId, C.orgId, (tx) => changeStatus(tx, act, a.id, "completed"));
+    };
+    for (let i = 0; i < 8; i++) await feito(100 + i, "10:00"); // 90 dias anteriores: 8 manicures
+    for (let i = 0; i < 2; i++) await feito(10 + i, "10:00"); // últimos 90 dias: 2
+
+    const t = await asTenant(sql, C.ownerId, C.orgId, (tx) => loadTrends(tx, C.orgId, "America/Sao_Paulo"));
+    const m = t.trends.find((x) => x.name === "Manicure")!;
+    expect([m.last90Count, m.prev90Count, Math.round(m.growth!)]).toEqual([2, 8, -75]);
+    expect(t.alerts[0]).toMatchObject({ kind: "queda", title: "Manicure caiu 75%" });
+    expect(m.monthly).toHaveLength(6);
+
+    // Projeção: no 1º e 2º dia do mês ainda não há base; depois, ritmo × dias de atendimento.
+    const cedo = await asTenant(sql, C.ownerId, C.orgId, (tx) => loadForecast(tx, C.orgId, "America/Sao_Paulo", new Date(`${hoje.slice(0, 8)}02T12:00:00-03:00`)));
+    expect(cedo.ready).toBe(false);
   });
 });

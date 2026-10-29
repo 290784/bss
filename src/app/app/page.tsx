@@ -5,7 +5,7 @@ import { ArrowDownRight, ArrowUpRight, CalendarPlus, Check, Clock, Link2, UserPl
 import { requireAppContext, tenant } from "@/server/context";
 import { can } from "@/domain/permissions";
 import { METRIC_DEFINITIONS, type MetricKey } from "@/domain/metrics";
-import { COMPARACAO, freeGapsToday, loadDashboard, loadInsights, PERIOD_LABEL, type PeriodId } from "@/server/modules/dashboard";
+import { COMPARACAO, freeGapsToday, loadDashboard, loadForecast, loadInsights, loadTrends, PERIOD_LABEL, type PeriodId } from "@/server/modules/dashboard";
 import { listAgenda } from "@/server/modules/appointments";
 import { Card, CardHeader, EmptyState, InfoTip, PageHeader, StatusBadge, STATUS_STYLE } from "@/components/ui/primitives";
 import { ButtonLink } from "@/components/ui/button";
@@ -15,6 +15,7 @@ import { cn } from "@/lib/cn";
 import { STATUS_LABEL } from "@/domain/appointment-status";
 import { DashboardChart } from "./dashboard-chart";
 import { DashboardInsights } from "./dashboard-insights";
+import { ForecastAndAlerts, ServiceGrowth } from "./dashboard-trends";
 import { CopyLink } from "./copy-link";
 import { NextClientCard } from "./next-client";
 import { receiptUrl } from "@/server/modules/receipt";
@@ -33,10 +34,12 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
   const finance = can(ctx.role, "finance.view");
   const todayKey = localDateKey(new Date(), tz);
 
-  const { d, insights, todayItems, gaps, setup } = await tenant(ctx, async (tx) => {
-    const [d, insights, todayItems, gaps, [setup]] = await Promise.all([
+  const { d, insights, trends, forecast, todayItems, gaps, setup } = await tenant(ctx, async (tx) => {
+    const [d, insights, trends, forecast, todayItems, gaps, [setup]] = await Promise.all([
       loadDashboard(tx, ctx.org.id, tz, period, { includeFinance: finance }),
       loadInsights(tx, ctx.org.id, tz, period),
+      loadTrends(tx, ctx.org.id, tz),
+      finance ? loadForecast(tx, ctx.org.id, tz) : Promise.resolve(null),
       listAgenda(tx, ctx.org.id, zonedDateTime(todayKey, "00:00", tz), zonedDateTime(addDaysToKey(todayKey, 1), "00:00", tz)),
       freeGapsToday(tx, ctx.org.id, tz),
       tx<{ services: number; clients: number; appointments: number; hours: number }[]>`
@@ -45,7 +48,7 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
                (select count(*) from app.appointments where organization_id = ${ctx.org.id})::int as appointments,
                (select count(*) from app.working_hours where organization_id = ${ctx.org.id})::int as hours`,
     ]);
-    return { d, insights, todayItems, gaps, setup: setup! };
+    return { d, insights, trends, forecast, todayItems, gaps, setup: setup! };
   });
 
   const activation = [
@@ -136,6 +139,8 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
         {d.receivable && <Kpi label="A receber" metric="receivable" value={formatMoney(d.receivable.total)} sub={`${d.receivable.count} atendimento(s) concluído(s) em aberto`} />}
       </div>
 
+      {setup.appointments > 0 && <ForecastAndAlerts forecast={forecast} alerts={trends.alerts} finance={finance} />}
+
       <div className="mt-6 grid gap-6 xl:grid-cols-[minmax(0,1fr)_380px]">
         <Card>
           <CardHeader title="Evolução diária" description={`${PERIOD_LABEL[period]} · ${COMPARACAO[period]} nos indicadores acima`} />
@@ -182,6 +187,7 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
       </div>
 
       <DashboardInsights data={insights} periodLabel={PERIOD_LABEL[period]} compareLabel={COMPARACAO[period].replace(/^comparação com /, "")} finance={finance} />
+      {setup.appointments > 0 && <ServiceGrowth data={trends} finance={finance} />}
 
       <div className="mt-6 grid gap-6 lg:grid-cols-2">
         <Card>
