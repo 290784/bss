@@ -10,6 +10,7 @@ import { HeroCalendar, HeroFeatures } from "@/components/marketing/hero-calendar
 import { HeroDecor } from "@/components/marketing/hero-decor";
 import { GlowCard } from "@/components/marketing/glow-card";
 import { BookingDemo } from "@/components/marketing/booking-demo";
+import { ChatDemo } from "@/components/marketing/chat-demo";
 import { cn } from "@/lib/cn";
 import { BRAND } from "@/lib/brand";
 
@@ -128,10 +129,7 @@ export default async function LandingPage() {
               <h3 className="mt-3 font-tight text-[28px] leading-[1.2] font-extrabold tracking-[-0.02em] text-ink">Menos faltas, sem mandar mensagem uma a uma.</h3>
               <p className="mt-3 text-[16px] leading-[1.6] text-ink-soft">Confirmação e lembrete 24h antes, cancelados automaticamente quando a cliente remarca. Integração com o WhatsApp oficial em preparação.</p>
             </div>
-            <div className="flex flex-col gap-2" aria-hidden>
-              <span className="self-start rounded-2xl rounded-bl-md bg-sunken px-4 py-2.5 text-[14px] text-ink ring-1 ring-line">Oi, Ana! Lembrete: amanhã às 14:30, Design de sobrancelhas</span>
-              <span className="self-end btn-glow rounded-2xl rounded-br-md px-4 py-2.5 text-[14px] text-white">Confirmado!</span>
-            </div>
+            <ChatDemo />
           </GlowCard>
           <GlowCard className="glass flex flex-col justify-between gap-8 rounded-[28px] p-8 sm:p-10">
             <div>
