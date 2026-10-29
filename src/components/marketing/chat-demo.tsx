@@ -1,12 +1,13 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
-import { CheckCheck, Sparkles } from "lucide-react";
+import { CheckCheck } from "lucide-react";
 import { cn } from "@/lib/cn";
 import { usePrefersReducedMotion, useInView } from "./motion";
 
 /**
  * Conversa de exemplo no cartão "Lembretes" (tela do celular da cliente): o lembrete chega,
- * a cliente confirma, a profissional agradece e oferece outro serviço, e a cliente aceita.
+ * a cliente confirma, a profissional agradece e oferece outro serviço, e a cliente aceita — nessa
+ * hora desce a notificação do app Gê para a profissional, com o aumento e o total do atendimento.
  * Roda como um vídeo em looping, com "digitando…" antes de cada mensagem; só anima com o cartão
  * na tela. Com "reduzir movimento", mostra a conversa inteira parada.
  */
@@ -21,10 +22,15 @@ const CONVERSA: Msg[] = [
   { de: "pro", texto: "Fechou! Já deixei reservadinho pra você 💅" },
 ];
 
-// Tempo do "digitando…" proporcional ao tamanho da mensagem; pausa de leitura depois de cada uma.
-const digitar = (m: Msg) => Math.min(1700, 600 + m.texto.length * 12);
-const LEITURA = 1100;
-const FIM = 3600; // segura a conversa completa antes de recomeçar
+// Ritmo de leitura calmo: "digitando…" proporcional ao tamanho da mensagem e, depois de cada uma,
+// tempo para ler (~25 caracteres por segundo, mínimo de 1,6 s).
+const digitar = (m: Msg) => Math.min(2600, 1000 + m.texto.length * 16);
+const ler = (m: Msg) => Math.max(1600, m.texto.length * 40);
+const FIM = 6000; // segura a conversa completa antes de recomeçar
+/** Mensagem em que a cliente aceita a oferta: a notificação da Gê desce logo depois dela. */
+const ACEITE = 4;
+const VALORES = { servico: 70, adicional: 90 }; // exemplo: sobrancelha + lash lifting
+const brl = (v: number) => `R$ ${v.toLocaleString("pt-BR")}`;
 
 export function ChatDemo() {
   const reduced = usePrefersReducedMotion();
@@ -42,7 +48,7 @@ export function ChatDemo() {
       t = setTimeout(() => setSaindo(true), FIM);
       return () => clearTimeout(t);
     }
-    if (!digitando) t = setTimeout(() => setDigitando(true), passo === 0 ? 500 : LEITURA);
+    if (!digitando) t = setTimeout(() => setDigitando(true), passo === 0 ? 700 : ler(CONVERSA[passo - 1]!));
     else t = setTimeout(() => { setDigitando(false); setPasso((p) => p + 1); }, digitar(CONVERSA[passo]!));
     return () => clearTimeout(t);
   }, [passo, digitando, reduced, inView]);
@@ -55,11 +61,11 @@ export function ChatDemo() {
 
   const n = reduced ? CONVERSA.length : passo;
   const quem = !reduced && digitando ? CONVERSA[passo]?.de : undefined;
-  const fechou = n >= CONVERSA.length - 1;
+  const notificou = n > ACEITE;
 
   return (
-    <div ref={ref} className="neon-lilas overflow-hidden rounded-[22px] border border-line bg-surface"
-      role="img" aria-label="Exemplo de conversa: a cliente confirma o horário, a profissional agradece e oferece um lash lifting, e a cliente aceita.">
+    <div ref={ref} className="neon-lilas relative overflow-hidden rounded-[22px] border border-line bg-surface"
+      role="img" aria-label={`Exemplo de conversa: a cliente confirma o horário, a profissional agradece e oferece um lash lifting, a cliente aceita e a Gê avisa: aumento de ${brl(VALORES.adicional)}, total de ${brl(VALORES.servico + VALORES.adicional)}.`}>
       <div aria-hidden className="flex items-center gap-2.5 border-b border-line px-4 py-2.5">
         <span className="grid h-8 w-8 place-items-center rounded-full bg-[linear-gradient(135deg,#8b3fc6,#4f1283)] font-script text-[22px] leading-none text-gold-300">J</span>
         <span className="min-w-0 flex-1">
@@ -72,9 +78,17 @@ export function ChatDemo() {
           <Bolha key={i} m={m} ultima={i === n - 1 && !reduced} />
         ))}
         {quem && <Digitando de={quem} />}
-        <span className={cn("inline-flex shrink-0 items-center gap-1.5 self-center rounded-full border border-gold-300 bg-gold-50 px-3 py-1 text-[12px] font-semibold text-gold-700 transition-all duration-500",
-          fechou ? "scale-100 opacity-100" : "pointer-events-none h-0 scale-75 overflow-hidden py-0 opacity-0")}>
-          <Sparkles className="h-3.5 w-3.5" />Lash lifting adicionado · ticket +R$ 90
+      </div>
+      {/* Notificação do app Gê para a profissional, descendo do topo como no celular */}
+      <div aria-hidden className={cn("absolute inset-x-2 top-2 z-10 flex items-start gap-3 rounded-2xl border border-line bg-surface/95 p-3 shadow-[0_18px_40px_-18px_rgb(79_18_131/0.55),0_0_0_1px_rgb(213_158_250/0.35),0_0_18px_-4px_rgb(192_110_247/0.45)] backdrop-blur transition-all duration-500 ease-out",
+        notificou && !saindo ? "translate-y-0 opacity-100" : "-translate-y-[130%] opacity-0")}>
+        <span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-[linear-gradient(135deg,#8b3fc6,#4f1283)] font-script text-[22px] leading-none text-white">Gê</span>
+        <span className="min-w-0 flex-1">
+          <span className="flex items-center justify-between text-[11px] text-muted"><span className="font-semibold tracking-wide uppercase">Gê</span>agora</span>
+          <span className="mt-0.5 block text-[14px] leading-snug font-semibold text-ink">Ana confirmou o lash lifting! 🎉</span>
+          <span className="mt-0.5 block text-[13px] leading-snug text-ink-soft">
+            Aumento de <b className="text-gold-700">+{brl(VALORES.adicional)}</b> · total do atendimento <b className="text-ink">{brl(VALORES.servico + VALORES.adicional)}</b>
+          </span>
         </span>
       </div>
     </div>
