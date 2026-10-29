@@ -52,7 +52,7 @@ export function AppShell({ items, user, org, memberships, notifications, banner,
             <button className="-ml-1 grid h-11 w-11 shrink-0 place-items-center rounded-lg text-ink-soft hover:bg-sunken lg:hidden" onClick={() => setMobileOpen(true)} aria-label="Abrir menu">
               <Menu className="h-5 w-5" />
             </button>
-            <div className="lg:hidden"><Logo href="/app" className="[&_span]:hidden sm:[&_span]:inline" /></div>
+            <div className="lg:hidden"><Logo href="/app" /></div>
             <form action="/app/clientes" className="relative ml-auto w-full max-w-md lg:ml-0" role="search">
               <Search className="pointer-events-none absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-muted" />
               <input name="q" placeholder="Buscar cliente por nome, telefone ou e-mail" aria-label="Buscar clientes"
