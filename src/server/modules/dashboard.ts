@@ -327,3 +327,179 @@ export async function loadInsights(tx: Tx, orgId: string, timeZone: string, peri
 }
 
 export type InsightsData = Awaited<ReturnType<typeof loadInsights>>;
+
+// ---------------------------------------------------------------------------
+// Tendências por serviço, pontos de atenção e projeção de faturamento
+
+const DAY = 86_400_000;
+
+export type ServiceTrend = {
+  name: string; category: string | null;
+  last90: number; prev90: number; last90Count: number; prev90Count: number;
+  growth: number | null; monthly: number[]; lastSeen: Date;
+};
+export type Alert = { kind: "queda" | "parado" | "faltas" | "categoria"; title: string; detail: string; tip: string };
+
+/** Primeiro dia de cada um dos últimos `n` meses (o atual por último) e o do mês seguinte. */
+function monthKeysBack(todayKey: string, n: number) {
+  const [y, m] = todayKey.split("-").map(Number);
+  return Array.from({ length: n + 1 }, (_, i) => new Date(Date.UTC(y!, m! - 1 - (n - 1) + i, 1)).toISOString().slice(0, 10));
+}
+
+/** Dias do intervalo [fromKey, toKey) em que alguma profissional ativa tem expediente. */
+async function workingDays(tx: Tx, orgId: string, fromKey: string, toKey: string) {
+  const rows = await tx<{ weekday: number }[]>`
+    select distinct w.weekday from app.working_hours w join app.professionals p on p.id = w.professional_id
+    where w.organization_id = ${orgId} and p.is_active`;
+  const open = new Set(rows.map((r) => r.weekday));
+  let n = 0;
+  for (let d = fromKey; d < toKey; d = addDaysToKey(d, 1)) if (open.has(localWeekday(d))) n++;
+  return n;
+}
+
+/**
+ * Crescimento de cada serviço (últimos 90 dias fechados contra os 90 anteriores, por valor concluído),
+ * a série mensal dos últimos 6 meses para o mini-gráfico, e pontos de atenção:
+ * serviço em queda, serviço parado, faltas altas por serviço e categoria em queda.
+ */
+export async function loadTrends(tx: Tx, orgId: string, timeZone: string, now = new Date()) {
+  const todayKey = localDateKey(now, timeZone);
+  const end = zonedDateTime(todayKey, "00:00", timeZone);
+  const mid = new Date(end.getTime() - 90 * DAY);
+  const start = new Date(end.getTime() - 180 * DAY);
+  const keys = monthKeysBack(todayKey, 6);
+  const bounds = keys.map((k) => zonedDateTime(k, "00:00", timeZone));
+  const since = new Date(Math.min(start.getTime(), bounds[0]!.getTime()));
+
+  const rows = await tx<{ name: string; category: string | null; starts_at: Date; price: number }[]>`
+    select coalesce(s.name, x.service_name) as name, c.name as category, a.starts_at, x.price_cents as price
+    from app.appointment_services x
+    join app.appointments a on a.id = x.appointment_id
+    left join app.services s on s.id = x.service_id
+    left join app.service_categories c on c.id = s.category_id
+    where x.organization_id = ${orgId} and a.status = 'completed' and a.starts_at >= ${since} and a.starts_at < ${bounds[6]!}`;
+
+  const map = new Map<string, ServiceTrend>();
+  for (const r of rows) {
+    const k = `${r.category ?? ""}|${r.name}`;
+    const t = map.get(k) ?? { name: r.name, category: r.category, last90: 0, prev90: 0, last90Count: 0, prev90Count: 0, growth: null, monthly: [0, 0, 0, 0, 0, 0], lastSeen: r.starts_at };
+    const ts = r.starts_at.getTime();
+    if (ts >= mid.getTime() && ts < end.getTime()) { t.last90 += r.price; t.last90Count++; }
+    else if (ts >= start.getTime() && ts < mid.getTime()) { t.prev90 += r.price; t.prev90Count++; }
+    const mi = bounds.findIndex((b, i) => i < 6 && ts >= b.getTime() && ts < bounds[i + 1]!.getTime());
+    if (mi >= 0) t.monthly[mi]! += r.price;
+    if (r.starts_at > t.lastSeen) t.lastSeen = r.starts_at;
+    map.set(k, t);
+  }
+  const trends = [...map.values()].map((t) => ({ ...t, growth: percentChange(t.last90, t.prev90) }))
+    .sort((a, b) => b.last90 - a.last90);
+
+  // Faltas por serviço nos últimos 90 dias (concluídos + faltas).
+  const noShow = await tx<{ name: string; done: number; missed: number }[]>`
+    select coalesce(s.name, x.service_name) as name,
+      count(*) filter (where a.status = 'completed')::int as done, count(*) filter (where a.status = 'no_show')::int as missed
+    from app.appointment_services x join app.appointments a on a.id = x.appointment_id
+    left join app.services s on s.id = x.service_id
+    where x.organization_id = ${orgId} and a.status in ('completed', 'no_show') and a.starts_at >= ${mid} and a.starts_at < ${end}
+    group by 1`;
+  const [overall] = await tx<{ done: number; missed: number }[]>`
+    select count(*) filter (where status = 'completed')::int as done, count(*) filter (where status = 'no_show')::int as missed
+    from app.appointments where organization_id = ${orgId} and status in ('completed', 'no_show') and starts_at >= ${mid} and starts_at < ${end}`;
+
+  const alerts: Alert[] = [];
+  const pctTxt = (v: number) => `${Math.abs(Math.round(v))}%`;
+  // Serviço em queda: perdeu 15% ou mais e tinha volume para a comparação valer.
+  for (const t of trends.filter((t) => t.growth !== null && t.growth <= -15 && t.prev90Count >= 6).sort((a, b) => (a.growth ?? 0) - (b.growth ?? 0)).slice(0, 3))
+    alerts.push({
+      kind: "queda", title: `${t.name} caiu ${pctTxt(t.growth!)}`,
+      detail: `${t.last90Count} atendimento(s) nos últimos 90 dias, contra ${t.prev90Count} nos 90 anteriores.`,
+      tip: "Ofereça como serviço adicional no agendamento ou faça uma condição especial nos horários vagos.",
+    });
+  // Serviço parado: tinha procura e não aparece há 45 dias ou mais.
+  for (const t of trends.filter((t) => now.getTime() - t.lastSeen.getTime() > 45 * DAY && t.prev90Count + t.last90Count >= 3).slice(0, 2))
+    alerts.push({
+      kind: "parado", title: `${t.name} sem atendimentos há ${Math.floor((now.getTime() - t.lastSeen.getTime()) / DAY)} dias`,
+      detail: "O serviço tinha procura e parou de aparecer na agenda.",
+      tip: "Confira se ele está visível no agendamento online e avise as clientes que costumavam fazer.",
+    });
+  // Faltas acima da média do salão.
+  const avgMiss = overall && overall.done + overall.missed > 0 ? overall.missed / (overall.done + overall.missed) : 0;
+  for (const n of noShow.filter((n) => n.done + n.missed >= 10 && n.missed / (n.done + n.missed) >= Math.max(0.12, avgMiss * 2)).slice(0, 2))
+    alerts.push({
+      kind: "faltas", title: `Faltas altas em ${n.name}`,
+      detail: `${Math.round((n.missed / (n.done + n.missed)) * 100)}% de faltas nos últimos 90 dias (média do salão: ${Math.round(avgMiss * 100)}%).`,
+      tip: "Peça sinal no agendamento desse serviço e confirme na véspera.",
+    });
+  // Categoria em queda.
+  const cats = new Map<string, { last: number; prev: number; prevCount: number }>();
+  for (const t of trends) {
+    const c = cats.get(t.category ?? "Sem categoria") ?? { last: 0, prev: 0, prevCount: 0 };
+    c.last += t.last90; c.prev += t.prev90; c.prevCount += t.prev90Count;
+    cats.set(t.category ?? "Sem categoria", c);
+  }
+  for (const [name, c] of cats) {
+    const g = percentChange(c.last, c.prev);
+    if (g !== null && g <= -10 && c.prevCount >= 10)
+      alerts.push({ kind: "categoria", title: `${name} caiu ${pctTxt(g)}`, detail: "Queda no faturamento da categoria nos últimos 90 dias.", tip: "Vale rever preço, divulgação e horários dessa área." });
+  }
+
+  return { trends, alerts: alerts.slice(0, 4), monthKeys: keys.slice(0, 6) };
+}
+
+export type TrendsData = Awaited<ReturnType<typeof loadTrends>>;
+
+/**
+ * Projeção de faturamento (recebido): o mês atual fecha no ritmo dos dias já fechados
+ * (recebido ÷ dias de atendimento que já passaram × dias de atendimento do mês); os próximos 3 meses
+ * seguem a tendência média mês a mês dos últimos 3 meses completos (limitada a ±10% ao mês),
+ * proporcional aos dias de atendimento de cada mês. É uma estimativa, não uma garantia.
+ */
+export async function loadForecast(tx: Tx, orgId: string, timeZone: string, now = new Date()) {
+  const todayKey = localDateKey(now, timeZone);
+  const keys = monthKeysBack(todayKey, 5); // 4 meses completos + o atual, e o início do próximo
+  const bounds = keys.map((k) => zonedDateTime(k, "00:00", timeZone));
+  const today = zonedDateTime(todayKey, "00:00", timeZone);
+  const revenue = async (from: Date, to: Date) => (await tx<{ v: number }[]>`
+    select coalesce(sum(case when kind = 'payment' then amount_cents else -amount_cents end), 0)::int as v
+    from app.payments where organization_id = ${orgId} and paid_at >= ${from} and paid_at < ${to}`)[0]!.v;
+
+  const full = await Promise.all([0, 1, 2, 3].map(async (i) => ({
+    key: keys[i]!, value: await revenue(bounds[i]!, bounds[i + 1]!), days: await workingDays(tx, orgId, keys[i]!, keys[i + 1]!),
+  })));
+  const curKey = keys[4]!, nextKey = keys[5]!;
+  const soFar = await revenue(bounds[4]!, today);
+  const elapsedDays = await workingDays(tx, orgId, curKey, todayKey);
+  const monthDays = await workingDays(tx, orgId, curKey, nextKey);
+  const [ag] = await tx<{ v: number }[]>`
+    select coalesce(sum(price_cents - discount_cents), 0)::int as v from app.appointments
+    where organization_id = ${orgId} and status in ('pending', 'confirmed') and starts_at >= ${today} and starts_at < ${bounds[5]!}`;
+
+  if (elapsedDays < 3 || monthDays === 0) return { ready: false as const, soFar, scheduledRest: ag!.v };
+  const dailyRate = soFar / elapsedDays;
+  const thisMonth = Math.round(dailyRate * monthDays);
+
+  // Tendência: média das variações do ritmo diário entre os meses completos com dados.
+  const rates = full.filter((m) => m.days > 0 && m.value > 0).map((m) => m.value / m.days);
+  const steps: number[] = [];
+  for (let i = 1; i < rates.length; i++) steps.push(rates[i]! / rates[i - 1]! - 1);
+  const recent = steps.slice(-3);
+  const growth = recent.length ? Math.max(-0.1, Math.min(0.1, recent.reduce((a, b) => a + b, 0) / recent.length)) : 0;
+
+  const next = [];
+  let rate = dailyRate;
+  for (let k = 1; k <= 3; k++) {
+    const [y, m] = curKey.split("-").map(Number);
+    const from = new Date(Date.UTC(y!, m! - 1 + k, 1)).toISOString().slice(0, 10);
+    const to = new Date(Date.UTC(y!, m! + k, 1)).toISOString().slice(0, 10);
+    rate *= 1 + growth;
+    const days = await workingDays(tx, orgId, from, to);
+    next.push({ key: from, days, value: Math.round(rate * days) });
+  }
+  const lastFull = full.at(-1)!;
+  return {
+    ready: true as const, soFar, scheduledRest: ag!.v, elapsedDays, monthDays, thisMonth,
+    vsLastMonth: percentChange(thisMonth, lastFull.value), lastMonth: lastFull, growth, next,
+  };
+}
+
+export type ForecastData = Awaited<ReturnType<typeof loadForecast>>;

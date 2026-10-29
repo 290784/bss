@@ -38,28 +38,29 @@ const MESES = [
   { nome: "3º mês com a Gê", produzido: 17_600_00, falta: 0.05, cancel: 0.04, online: 0.35, adicional: 0.15, novas: 25 },
 ];
 
-type Svc = { name: string; category: string; price: number; minutes: number; buffer: number; returnDays?: number; peso: number; extra?: string };
+/** tendencia: variação do peso a cada mês com a Gê (ex.: −0,15 = 15% menos procurado por mês). */
+type Svc = { name: string; category: string; price: number; minutes: number; buffer: number; returnDays?: number; peso: number; extra?: string; tendencia?: number };
 const SERVICOS: Record<"cabelo" | "unhas" | "olhar", Svc[]> = {
   cabelo: [
     { name: "Corte feminino", category: "Cabelo", price: 9000, minutes: 60, buffer: 10, returnDays: 60, peso: 5, extra: "Hidratação" },
     { name: "Escova", category: "Cabelo", price: 6000, minutes: 45, buffer: 10, peso: 6, extra: "Hidratação" },
     { name: "Hidratação", category: "Cabelo", price: 8000, minutes: 45, buffer: 10, returnDays: 30, peso: 3 },
     { name: "Coloração", category: "Cabelo", price: 18000, minutes: 120, buffer: 15, returnDays: 45, peso: 2, extra: "Hidratação" },
-    { name: "Mechas", category: "Cabelo", price: 32000, minutes: 180, buffer: 15, returnDays: 90, peso: 0.6 },
-    { name: "Progressiva", category: "Cabelo", price: 25000, minutes: 150, buffer: 15, returnDays: 90, peso: 0.6 },
+    { name: "Mechas", category: "Cabelo", price: 32000, minutes: 180, buffer: 15, returnDays: 90, peso: 0.6, tendencia: 0.1 },
+    { name: "Progressiva", category: "Cabelo", price: 25000, minutes: 150, buffer: 15, returnDays: 90, peso: 0.6, tendencia: -0.3 },
   ],
   unhas: [
-    { name: "Manicure", category: "Unhas", price: 3500, minutes: 45, buffer: 10, returnDays: 10, peso: 6, extra: "Pedicure" },
+    { name: "Manicure", category: "Unhas", price: 3500, minutes: 45, buffer: 10, returnDays: 10, peso: 6, extra: "Pedicure", tendencia: -0.15 },
     { name: "Pedicure", category: "Unhas", price: 4000, minutes: 50, buffer: 10, returnDays: 15, peso: 3 },
-    { name: "Esmaltação em gel", category: "Unhas", price: 6000, minutes: 60, buffer: 10, returnDays: 21, peso: 3, extra: "Pedicure" },
+    { name: "Esmaltação em gel", category: "Unhas", price: 6000, minutes: 60, buffer: 10, returnDays: 21, peso: 3, extra: "Pedicure", tendencia: 0.2 },
     { name: "Alongamento em gel", category: "Unhas", price: 15000, minutes: 120, buffer: 15, returnDays: 21, peso: 1.2 },
     { name: "Manutenção do alongamento", category: "Unhas", price: 9000, minutes: 90, buffer: 15, returnDays: 21, peso: 2.5 },
   ],
   olhar: [
     { name: "Design de sobrancelhas", category: "Sobrancelhas", price: 5000, minutes: 30, buffer: 10, returnDays: 20, peso: 6, extra: "Lash lifting" },
     { name: "Design com henna", category: "Sobrancelhas", price: 7000, minutes: 45, buffer: 10, returnDays: 20, peso: 3, extra: "Lash lifting" },
-    { name: "Lash lifting", category: "Cílios", price: 12000, minutes: 60, buffer: 10, returnDays: 45, peso: 1.5 },
-    { name: "Extensão fio a fio", category: "Cílios", price: 16000, minutes: 120, buffer: 15, returnDays: 20, peso: 1 },
+    { name: "Lash lifting", category: "Cílios", price: 12000, minutes: 60, buffer: 10, returnDays: 45, peso: 1.5, tendencia: 0.15 },
+    { name: "Extensão fio a fio", category: "Cílios", price: 16000, minutes: 120, buffer: 15, returnDays: 20, peso: 1, tendencia: -0.3 },
     { name: "Manutenção de cílios", category: "Cílios", price: 9000, minutes: 75, buffer: 15, returnDays: 20, peso: 2 },
   ],
 };
@@ -202,12 +203,20 @@ export async function criarContaVitrine(sql: Sql, opts: { password: string; rese
     for (let i = 0; i < 165; i++) base.push(await novaCliente("import"));
     // Mistura de serviços estável: cada área tira de um "baralho" montado pelos pesos, então o ticket
     // médio quase não oscila e o crescimento aparece em mais atendimentos (e mais ocupação).
-    const baralho = Object.fromEntries(Object.entries(SERVICOS).map(([a, xs]) => {
-      const cartas = xs.flatMap((x) => Array.from({ length: Math.round(x.peso * 5) }, () => x));
-      for (let k = cartas.length - 1; k > 0; k--) { const j = Math.floor(rnd() * (k + 1)); [cartas[k], cartas[j]] = [cartas[j]!, cartas[k]!]; }
-      return [a, { cartas, i: 0 }];
-    })) as Record<keyof typeof SERVICOS, { cartas: Svc[]; i: number }>;
-    const proximo = (a: keyof typeof SERVICOS) => { const b = baralho[a]; const x = b.cartas[b.i % b.cartas.length]!; b.i++; return x; };
+    // Um baralho por mês do cenário: com a Gê, alguns serviços ganham e outros perdem procura
+    // (ex.: manicure simples → esmaltação em gel; extensão de cílios → lash lifting), como na vida real.
+    const baralhos = new Map<string, { cartas: Svc[]; i: number }>();
+    const proximo = (a: keyof typeof SERVICOS, mi = 0) => {
+      const chave = `${a}-${mi}`;
+      let b = baralhos.get(chave);
+      if (!b) {
+        const cartas = SERVICOS[a].flatMap((x) => Array.from({ length: Math.max(1, Math.round(x.peso * (1 + (x.tendencia ?? 0)) ** mi * 5)) }, () => x));
+        for (let k = cartas.length - 1; k > 0; k--) { const j = Math.floor(rnd() * (k + 1)); [cartas[k], cartas[j]] = [cartas[j]!, cartas[k]!]; }
+        b = { cartas, i: 0 };
+        baralhos.set(chave, b);
+      }
+      const x = b.cartas[b.i % b.cartas.length]!; b.i++; return x;
+    };
     // Histórico da planilha: cada cliente da base já tinha vindo pelo menos uma vez nos 6 meses antes,
     // senão a primeira visita registrada a contaria como "cliente nova" no painel.
     for (const c of base) {
@@ -267,7 +276,7 @@ export async function criarContaVitrine(sql: Sql, opts: { password: string; rese
       while (valor < meta && tentativas++ < 80) {
         const pi = proIds.indexOf(pick(proIds.filter((_, k) => EQUIPE[k]!.dias.includes(wd)), (id) => EQUIPE[proIds.indexOf(id)]!.peso));
         const area = EQUIPE[pi]!.area;
-        const svc = proximo(area);
+        const svc = proximo(area, mi);
         const extra = svc.extra && rnd() < mes.adicional / fracExtra[area] ? SERVICOS[area].find((x) => x.name === svc.extra) : undefined;
         const preco = svc.price + (extra ? extra.price : 0);
         // Não estoura a meta do dia: perto dela, encerra; longe dela, tenta um serviço que caiba.
