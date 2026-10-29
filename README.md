@@ -43,11 +43,19 @@ npm install
 cp .env.example .env.local            # ajuste DATABASE_URL
 npm run db:migrate                    # aplica db/migrations/*.sql
 DEMO_PASSWORD=uma-senha npm run db:seed-demo   # opcional: conta de demonstração isolada
+VITRINE_PASSWORD=uma-senha npm run db:seed-vitrine   # opcional: salão vitrine com ~4 meses de números realistas
 npm run dev                           # http://localhost:3000
 ```
 
 A conta de demonstração (`demo@beautyos.dev`, e-mail de teste local) é uma organização marcada como `is_demo`;
 a interface exibe um aviso permanente e os dados ficam isolados pelo mesmo RLS das contas reais.
+
+A conta vitrine (`vitrine@beautyos.dev`, "Salão Lumi") serve para apresentações: 3 profissionais e ~4 meses
+de agenda contando a história "faturava ~R$ 14 mil por mês e, em 3 meses com a Gê, chegou a ~R$ 17,6 mil"
+(por mês típico de 21,7 dias de atendimento). O crescimento vem de premissas explícitas no topo de
+`scripts/seed-vitrine.ts`: faltas de ~14% para ~5%, agendamento online de 0% para ~35%, serviço adicional
+de ~3% para ~15%. É relativa à data em que roda (o 3º mês é o mês atual); `RESET=1` recria do zero.
+Também é `is_demo`, e os telefones das clientes são fictícios em sequência ((11) 90000-0001…).
 O seed é bloqueado em produção, a menos que `ALLOW_DEMO_SEED=1`.
 
 ## Verificações
@@ -71,7 +79,7 @@ O teste ponta a ponta cria uma conta nova a cada execução; o limite de cadastr
 
 ```
 db/migrations/           SQL versionado (schema, RLS, papéis)
-scripts/                 migrate.ts, seed-demo.ts
+scripts/                 migrate.ts, seed-demo.ts, seed-vitrine.ts
 src/domain/              regras puras: disponibilidade, status, permissões, planos, métricas
 src/server/              acesso a dados e casos de uso (rodam no servidor)
   db.ts                  withTenant (RLS) / withSystem

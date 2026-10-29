@@ -4,10 +4,24 @@ import { percentChange, ratio } from "@/domain/metrics";
 
 export type PeriodId = "today" | "week" | "month" | "30d";
 export const PERIOD_LABEL: Record<PeriodId, string> = { today: "Hoje", week: "Esta semana", month: "Este mês", "30d": "Últimos 30 dias" };
+/** Com o que cada período é comparado (texto exibido no painel). */
+export const COMPARACAO: Record<PeriodId, string> = {
+  today: "comparação com ontem", week: "comparação com o mesmo trecho da semana passada (até ontem)",
+  month: "comparação com o mesmo período do mês passado (até ontem)", "30d": "comparação com os 30 dias anteriores",
+};
 
-export type Period = { id: PeriodId; fromKey: string; toKey: string; from: Date; to: Date; prevFrom: Date; prevTo: Date; days: string[] };
+export type Period = {
+  id: PeriodId; fromKey: string; toKey: string; from: Date; to: Date; prevFrom: Date; prevTo: Date; days: string[];
+  /** Janela usada nas comparações: "este mês"/"esta semana" comparam só os dias já fechados (até ontem), com o mesmo trecho do período anterior. */
+  cmpTo: Date; prevDays: string[];
+};
 
-/** Intervalos sempre no fuso do negócio, fim exclusivo. O período anterior tem o mesmo tamanho. */
+/**
+ * Intervalos sempre no fuso do negócio, fim exclusivo. Hoje e últimos 30 dias comparam com o período
+ * anterior de mesmo tamanho. Este mês e esta semana comparam os dias já fechados (até ontem) com o
+ * mesmo trecho do mês/semana anterior — senão o dia 29 de um mês seria comparado com o mês anterior
+ * inteiro (e o dia de hoje, ainda em andamento, com um dia completo) e pareceria queda.
+ */
 export function resolvePeriod(id: PeriodId, timeZone: string, now = new Date()): Period {
   const today = localDateKey(now, timeZone);
   let fromKey = today;
@@ -25,10 +39,25 @@ export function resolvePeriod(id: PeriodId, timeZone: string, now = new Date()):
   }
   const from = zonedDateTime(fromKey, "00:00", timeZone);
   const to = zonedDateTime(toKey, "00:00", timeZone);
-  const len = to.getTime() - from.getTime();
   const days: string[] = [];
   for (let d = fromKey; d < toKey; d = addDaysToKey(d, 1)) days.push(d);
-  return { id, fromKey, toKey, from, to, prevFrom: new Date(from.getTime() - len), prevTo: from, days };
+  const span = (a: string, b: string) => { const r: string[] = []; for (let d = a; d < b; d = addDaysToKey(d, 1)) r.push(d); return r; };
+
+  if (id === "month" || id === "week") {
+    const cmpToKey = today < toKey ? today : toKey; // dias já fechados
+    const elapsed = span(fromKey, cmpToKey).length;
+    const prevFromKey = id === "week" ? addDaysToKey(fromKey, -7)
+      : (() => { const [y, m] = fromKey.split("-").map(Number); return new Date(Date.UTC(y!, m! - 2, 1)).toISOString().slice(0, 10); })();
+    // Mês anterior mais curto (ex.: 30 de março → fevereiro): a comparação para no fim dele.
+    const prevToKey = addDaysToKey(prevFromKey, elapsed) < fromKey ? addDaysToKey(prevFromKey, elapsed) : fromKey;
+    return { id, fromKey, toKey, from, to, days,
+      cmpTo: zonedDateTime(cmpToKey, "00:00", timeZone), prevFrom: zonedDateTime(prevFromKey, "00:00", timeZone),
+      prevTo: zonedDateTime(prevToKey, "00:00", timeZone), prevDays: span(prevFromKey, prevToKey) };
+  }
+  const len = to.getTime() - from.getTime();
+  const prevFrom = new Date(from.getTime() - len);
+  return { id, fromKey, toKey, from, to, prevFrom, prevTo: from, days, cmpTo: to,
+    prevDays: span(localDateKey(prevFrom, timeZone), fromKey) };
 }
 
 async function periodNumbers(tx: Tx, orgId: string, from: Date, to: Date, includeFinance: boolean) {
@@ -93,12 +122,16 @@ async function capacityMinutes(tx: Tx, orgId: string, timeZone: string, from: Da
 
 export async function loadDashboard(tx: Tx, orgId: string, timeZone: string, periodId: PeriodId, opts: { includeFinance: boolean }, now = new Date()) {
   const p = resolvePeriod(periodId, timeZone, now);
-  const [cur, prev, capacity, prevCapacity] = await Promise.all([
+  const partial = p.cmpTo.getTime() < p.to.getTime();
+  const [cur, prev, capacity, prevCapacity, curCmp] = await Promise.all([
     periodNumbers(tx, orgId, p.from, p.to, opts.includeFinance),
     periodNumbers(tx, orgId, p.prevFrom, p.prevTo, opts.includeFinance),
     capacityMinutes(tx, orgId, timeZone, p.from, p.to, p.days),
-    capacityMinutes(tx, orgId, timeZone, p.prevFrom, p.prevTo, p.days.map((_, i) => addDaysToKey(localDateKey(p.prevFrom, timeZone), i))),
+    capacityMinutes(tx, orgId, timeZone, p.prevFrom, p.prevTo, p.prevDays),
+    partial ? periodNumbers(tx, orgId, p.from, p.cmpTo, opts.includeFinance) : null,
   ]);
+  // Valores exibidos: o período inteiro. Variação: o trecho comparável (até hoje) contra o anterior.
+  const cmp = curCmp ?? cur;
 
   const receivable = opts.includeFinance
     ? (await tx<{ total: number; count: number }[]>`
@@ -138,7 +171,7 @@ export async function loadDashboard(tx: Tx, orgId: string, timeZone: string, per
     having max(a.starts_at) < now() - interval '60 days'
     order by count(*) desc, max(a.starts_at) desc limit 5`;
 
-  const delta = (k: keyof typeof cur) => ({ value: cur[k], previous: prev[k], change: percentChange(cur[k], prev[k]) });
+  const delta = (k: keyof typeof cur) => ({ value: cur[k], previous: prev[k], change: percentChange(cmp[k], prev[k]) });
   const noShowRate = ratio(cur.no_show, cur.completed + cur.no_show);
   const prevNoShowRate = ratio(prev.no_show, prev.completed + prev.no_show);
   const occupancy = ratio(cur.booked_minutes, capacity);
