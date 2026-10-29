@@ -423,6 +423,7 @@
 @keyframes mkt-drop { from { opacity: 0; transform: translateY(-8px); } }
 @keyframes mkt-chevron { 0%, 100% { opacity: 0.35; transform: translateY(0); } 50% { opacity: 1; transform: translateY(3px); } }
 @keyframes mkt-caret { 50% { opacity: 0; } }
+@keyframes chat-dot { 0%, 60%, 100% { transform: translateY(0); opacity: 0.5; } 30% { transform: translateY(-3px); opacity: 1; } }
 @keyframes toast-in { from { opacity: 0; transform: translateY(8px) scale(0.98); } }
 @keyframes sheet-in { from { transform: translateX(100%); } }
 @keyframes sheet-up { from { transform: translateY(100%); } }
