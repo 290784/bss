@@ -12,7 +12,7 @@ const postgres = require("postgres");
 const BASE = process.env.BASE_URL ?? "http://localhost:3000";
 const sql = postgres(process.env.DATABASE_URL, { max: 1, onnotice: () => {} });
 const [{ public_token: TOKEN } = {}] = await sql`select a.public_token from app.appointments a join app.organizations o on o.id = a.organization_id
-  where o.is_demo and a.status in ('confirmed', 'pending') order by a.starts_at desc limit 1`;
+  where o.is_demo and o.created_by = (select id from app.users where email = 'demo@beautyos.dev') and a.status in ('confirmed', 'pending') order by a.starts_at desc limit 1`;
 await sql.end();
 const b = await chromium.launch();
 let fail = 0;

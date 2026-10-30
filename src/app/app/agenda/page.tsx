@@ -29,7 +29,7 @@ export default async function AgendaPage({ searchParams }: { searchParams: Promi
   const tz = ctx.org.timezone;
   const today = localDateKey(new Date(), tz);
   const date = sp.data && isDateKey(sp.data) ? sp.data : today;
-  const view: AgendaViewMode = sp.visao === "semana" || sp.visao === "mes" ? sp.visao : "dia";
+  const view: AgendaViewMode = sp.visao === "semana" || sp.visao === "mes" || sp.visao === "lista" ? sp.visao : "dia";
   const seeAll = can(ctx.role, "agenda.view_all");
   const { start, end } = rangeFor(view, date);
   const from = zonedDateTime(start, "00:00", tz);
@@ -51,6 +51,7 @@ export default async function AgendaPage({ searchParams }: { searchParams: Promi
     <AgendaView
       key={`${view}-${date}`}
       view={view}
+      explicitView={!!sp.visao}
       date={date}
       today={today}
       rangeStart={start}
