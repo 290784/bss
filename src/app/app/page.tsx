@@ -17,6 +17,7 @@ import { DashboardChart } from "./dashboard-chart";
 import { PeriodTabs } from "./period-tabs";
 import { DashboardInsights } from "./dashboard-insights";
 import { DicasCard } from "./dicas-card";
+import { AvisosTicker } from "./avisos-ticker";
 import { loadDicas } from "@/server/modules/dicas";
 import { ForecastAndAlerts, ServiceGrowth } from "./dashboard-trends";
 import { CopyLink } from "./copy-link";
@@ -112,6 +113,13 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
             </div>
           </div>
         </Card>
+      )}
+
+      {setup.appointments > 0 && (
+        <AvisosTicker items={[
+          ...trends.alerts.map((a, i) => ({ id: `alerta-${i}`, text: a.title, kind: "atencao" as const, href: "#fica-de-olho" })),
+          ...dicas.map((d) => ({ id: d.id, text: d.title, kind: d.kind, href: d.action?.href ?? "#dicas" })),
+        ]} />
       )}
 
       {next && (
