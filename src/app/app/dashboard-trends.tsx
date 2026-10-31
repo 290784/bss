@@ -50,7 +50,7 @@ export function ForecastAndAlerts({ forecast, alerts, finance }: { forecast: For
                 <div className="flex flex-wrap items-end justify-between gap-x-4 gap-y-1">
                   <div>
                     <div className="text-[13px] text-muted">Este mês deve fechar em torno de</div>
-                    <div className="text-[28px] leading-tight font-semibold tracking-[-0.01em] tabular">~{mil(forecast.thisMonth)}</div>
+                    <div className="text-[28px] leading-tight font-semibold tracking-[-0.01em] tabular">{mil(forecast.thisMonth)}</div>
                   </div>
                   {forecast.vsLastMonth !== null && (
                     <span className={cn("mb-1 inline-flex items-center gap-0.5 text-sm font-medium", forecast.vsLastMonth >= 0 ? "text-st-completed" : "text-st-noshow")}>
@@ -70,7 +70,7 @@ export function ForecastAndAlerts({ forecast, alerts, finance }: { forecast: For
                   {forecast.next.map((n) => (
                     <div key={n.key} className="rounded-xl bg-sunken px-2.5 py-2.5 sm:px-3">
                       <div className="text-xs text-muted first-letter:uppercase">{mes(n.key, true)}</div>
-                      <div className="mt-0.5 text-sm font-semibold whitespace-nowrap tabular sm:text-base">~{mil(n.value)}</div>
+                      <div className="mt-0.5 text-sm font-semibold whitespace-nowrap tabular sm:text-base">{mil(n.value)}</div>
                       <div className="text-[11px] text-muted">{n.days} dias<span className="hidden sm:inline"> de atendimento</span></div>
                     </div>
                   ))}
@@ -84,7 +84,7 @@ export function ForecastAndAlerts({ forecast, alerts, finance }: { forecast: For
         </Card>
       )}
 
-      <Card>
+      <Card id="fica-de-olho" className="scroll-mt-24">
         <CardHeader title="Fica de olho" description="O que pode render mais (últimos 90 dias)" />
         <div className="px-5 pt-3 pb-5">
           {alerts.length === 0 ? (

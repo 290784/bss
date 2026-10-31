@@ -438,3 +438,13 @@ html[data-atualizando] main [aria-label="Período"] { opacity: 1; pointer-events
   *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
   .lift:hover, .lift:active { transform: none; }
 }
+
+/* Faixa de avisos do painel: duas cópias lado a lado deslizando meia largura = volta contínua. */
+@keyframes ticker-slide { to { transform: translateX(calc(-50% - 5px)); } }
+.ticker { mask-image: linear-gradient(90deg, transparent, #000 4%, #000 96%, transparent); }
+.ticker-track { animation: ticker-slide 40s linear infinite; }
+@media (prefers-reduced-motion: reduce) {
+  .ticker { overflow-x: auto; mask-image: none; }
+  .ticker-track { animation: none; }
+  .ticker-track > li[aria-hidden] { display: none; }
+}
