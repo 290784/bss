@@ -17,7 +17,7 @@ export const createAppointmentSchema = z.object({
   clientId: z.uuid("Escolha a cliente."),
   date: z.string().refine(isDateKey, "Data inválida."),
   time: z.string().regex(/^\d{2}:\d{2}$/, "Horário inválido."),
-  serviceIds: z.array(z.uuid()).min(1, "Escolha pelo menos um serviço.").max(8),
+  serviceIds: z.array(z.uuid()).min(1, "Escolhe pelo menos um serviço. ✨").max(8),
   squeezeIn: z.boolean().default(false),
   status: z.enum(["pending", "confirmed"]).default("confirmed"),
   internalNotes: z.string().max(2000).optional(),
@@ -26,7 +26,7 @@ export type CreateAppointmentInput = z.infer<typeof createAppointmentSchema>;
 
 function translateConflict(err: unknown): never {
   if (pgErrorCode(err) === PG_EXCLUSION_VIOLATION)
-    throw new DomainError("Este horário acabou de ser ocupado. Escolha outro horário.", "conflict");
+    throw new DomainError("Ih, esse horário acabou de ser ocupado. Escolhe outro?", "conflict");
   throw err;
 }
 
@@ -40,7 +40,7 @@ export async function createAppointment(
   const policy = await loadPolicy(tx, orgId);
   const services = await loadServices(tx, orgId, input.serviceIds, { onlineOnly: opts.source === "online" });
   if (!(await professionalCanDo(tx, orgId, input.professionalId, input.serviceIds)))
-    throw new DomainError("A profissional escolhida não realiza todos os serviços selecionados.");
+    throw new DomainError("Essa profissional não faz todos os serviços escolhidos. Troca a profissional ou o serviço?");
   const t = totals(services);
   const start = zonedDateTime(input.date, input.time, policy.timezone);
   const end = new Date(start.getTime() + t.minutes * MIN);
@@ -49,9 +49,9 @@ export async function createAppointment(
 
   if (opts.source === "online") {
     if (start.getTime() < now.getTime() + policy.minAdvanceMinutes * MIN)
-      throw new DomainError("Este horário não respeita a antecedência mínima do estabelecimento.");
+      throw new DomainError("Esse horário está em cima da hora para a antecedência mínima do salão.");
     if (start.getTime() > now.getTime() + (policy.maxAdvanceDays + 1) * 86_400_000)
-      throw new DomainError("Data além do período aberto para agendamento.");
+      throw new DomainError("Essa data ainda não está aberta para agendamento.");
   }
 
   await assertSlotBookable(tx, orgId, input.professionalId, input.date, { start, end }, blockedUntil, policy, {
@@ -60,7 +60,7 @@ export async function createAppointment(
 
   const [client] = await tx<{ id: string; archived_at: Date | null }[]>`
     select id, archived_at from app.clients where organization_id = ${orgId} and id = ${input.clientId}`;
-  if (!client) throw new DomainError("Cliente não encontrada.");
+  if (!client) throw new DomainError("Não achei essa cliente. Ela pode ter sido apagada.");
 
   let appt: { id: string; organization_id: string; client_id: string; starts_at: Date; status: string; public_token: string };
   try {
@@ -101,17 +101,17 @@ export async function rescheduleAppointment(tx: Tx, actor: Actor, input: z.infer
   const [cur] = await tx<{ id: string; status: AppointmentStatus; starts_at: Date; ends_at: Date; blocked_until: Date; professional_id: string; version: number; client_id: string }[]>`
     select id, status, starts_at, ends_at, blocked_until, professional_id, version, client_id
     from app.appointments where organization_id = ${orgId} and id = ${input.appointmentId} for update`;
-  if (!cur) throw new DomainError("Agendamento não encontrado.");
-  if (!canReschedule(cur.status)) throw new DomainError(`Não é possível reagendar um atendimento "${STATUS_LABEL[cur.status].toLowerCase()}".`);
+  if (!cur) throw new DomainError("Não achei esse agendamento. Atualiza a página?");
+  if (!canReschedule(cur.status)) throw new DomainError(`Não dá para remarcar um atendimento "${STATUS_LABEL[cur.status].toLowerCase()}".`);
   if (input.expectedVersion !== undefined && input.expectedVersion !== cur.version)
-    throw new DomainError("Este agendamento foi alterado por outra pessoa. Atualize a página.", "stale");
+    throw new DomainError("Alguém mexeu nesse agendamento agora há pouco. Atualiza a página para ver a versão nova.", "stale");
 
   const serviceIds = (await tx<{ service_id: string | null }[]>`
     select service_id from app.appointment_services where appointment_id = ${cur.id} order by position`).map((r) => r.service_id);
   if (input.professionalId !== cur.professional_id) {
     const valid = serviceIds.filter((x): x is string => x !== null);
     if (valid.length !== serviceIds.length || !(await professionalCanDo(tx, orgId, input.professionalId, valid)))
-      throw new DomainError("A nova profissional não realiza todos os serviços deste agendamento.");
+      throw new DomainError("A nova profissional não faz todos os serviços desse agendamento.");
   }
 
   const durationMs = cur.ends_at.getTime() - cur.starts_at.getTime();
@@ -151,10 +151,10 @@ export async function changeStatus(
   const [cur] = await tx<{ id: string; status: AppointmentStatus; organization_id: string; client_id: string; starts_at: Date }[]>`
     select id, status, organization_id, client_id, starts_at from app.appointments
     where organization_id = ${orgId} and id = ${appointmentId} for update`;
-  if (!cur) throw new DomainError("Agendamento não encontrado.");
+  if (!cur) throw new DomainError("Não achei esse agendamento. Atualiza a página?");
   if (cur.status === to) return cur;
   if (!canTransition(cur.status, to))
-    throw new DomainError(`Não é possível mudar de "${STATUS_LABEL[cur.status]}" para "${STATUS_LABEL[to]}".`);
+    throw new DomainError(`Não dá para mudar de "${STATUS_LABEL[cur.status]}" para "${STATUS_LABEL[to]}".`);
   try {
     await tx`
       update app.appointments set status = ${to}, updated_at = now(), version = version + 1,
@@ -186,20 +186,20 @@ export async function undoLastStatusChange(tx: Tx, actor: Actor, appointmentId: 
   const orgId = actor.organizationId;
   const [cur] = await tx<{ id: string; status: AppointmentStatus }[]>`
     select id, status from app.appointments where organization_id = ${orgId} and id = ${appointmentId} for update`;
-  if (!cur) throw new DomainError("Agendamento não encontrado.");
+  if (!cur) throw new DomainError("Não achei esse agendamento. Atualiza a página?");
   const [ev] = await tx<{ data: { from: AppointmentStatus; to: AppointmentStatus }; actor_user_id: string | null; age: number }[]>`
     select data, actor_user_id, extract(epoch from now() - created_at)::int as age from app.appointment_events
     where appointment_id = ${cur.id} and type in ('status_changed', 'status_reverted')
     order by created_at desc, id desc limit 1`;
   if (!ev || ev.data.to !== cur.status || ev.actor_user_id !== actor.userId || ev.age > UNDO_WINDOW_SECONDS)
-    throw new DomainError("Não há uma mudança recente para desfazer.");
+    throw new DomainError("Não tem nada recente para desfazer.");
   const back = ev.data.from;
   try {
     await tx`update app.appointments set status = ${back}, updated_at = now(), version = version + 1,
                cancelled_at = null, cancel_reason = null where id = ${cur.id}`;
   } catch (err) {
     if (pgErrorCode(err) === PG_EXCLUSION_VIOLATION)
-      throw new DomainError("Não dá para desfazer: o horário já foi ocupado por outro agendamento.", "conflict");
+      throw new DomainError("Não deu para desfazer: o horário antigo já foi ocupado por outra cliente.", "conflict");
     throw err;
   }
   if (cur.status === "cancelled" || cur.status === "no_show") {
@@ -219,8 +219,8 @@ export async function undoLastStatusChange(tx: Tx, actor: Actor, appointmentId: 
 export async function recordConfirmationSent(tx: Tx, actor: Actor, appointmentId: string) {
   const [a] = await tx<{ id: string; status: AppointmentStatus }[]>`
     select id, status from app.appointments where organization_id = ${actor.organizationId} and id = ${appointmentId}`;
-  if (!a) throw new DomainError("Agendamento não encontrado.");
-  if (a.status !== "pending" && a.status !== "confirmed") throw new DomainError("Este agendamento não está mais ativo.");
+  if (!a) throw new DomainError("Não achei esse agendamento. Atualiza a página?");
+  if (a.status !== "pending" && a.status !== "confirmed") throw new DomainError("Esse agendamento não está mais ativo.");
   await logEvent(tx, actor, a.id, "confirmation_sent", { via: "whatsapp" });
 }
 
@@ -237,14 +237,14 @@ export async function addServiceToAppointment(tx: Tx, actor: Actor, input: z.inf
   const [cur] = await tx<{ id: string; status: AppointmentStatus; starts_at: Date; ends_at: Date; professional_id: string; allow_overlap: boolean }[]>`
     select id, status, starts_at, ends_at, professional_id, allow_overlap
     from app.appointments where organization_id = ${orgId} and id = ${input.appointmentId} for update`;
-  if (!cur) throw new DomainError("Agendamento não encontrado.");
+  if (!cur) throw new DomainError("Não achei esse agendamento. Atualiza a página?");
   if (cur.status !== "pending" && cur.status !== "confirmed")
-    throw new DomainError("Só dá para acrescentar serviços a agendamentos aguardando ou confirmados.");
+    throw new DomainError("Só dá para incluir serviços em agendamentos aguardando ou confirmados.");
   const [svc] = await loadServices(tx, orgId, [input.serviceId]);
   const already = await tx`select 1 from app.appointment_services where appointment_id = ${cur.id} and service_id = ${svc!.id}`;
-  if (already.length) throw new DomainError("Este serviço já está no agendamento.");
+  if (already.length) throw new DomainError("Esse serviço já está no agendamento. 😉");
   if (!(await professionalCanDo(tx, orgId, cur.professional_id, [svc!.id])))
-    throw new DomainError("A profissional deste horário não realiza este serviço.");
+    throw new DomainError("A profissional desse horário não faz esse serviço.");
 
   const end = new Date(cur.ends_at.getTime() + svc!.duration_minutes * MIN);
   const blockedUntil = new Date(end.getTime() + svc!.buffer_after_minutes * MIN);

@@ -96,7 +96,7 @@ describe("reagendamento e mensagens", () => {
       asTenant(sql, A.ownerId, A.orgId, (tx) =>
         rescheduleAppointment(tx, actor(), { appointmentId: appt.id, professionalId: A.professionalId, date: futureDate(10), time: "11:00", squeezeIn: false, expectedVersion: 99 }),
       ),
-    ).rejects.toThrow(/alterado por outra pessoa/);
+    ).rejects.toThrow(/mexeu nesse agendamento/);
   });
 
   it("uma mensagem não é enviada duas vezes, mesmo com despachantes concorrentes e retentativas", async () => {
@@ -140,7 +140,7 @@ describe("financeiro", () => {
     );
     await expect(
       asTenant(sql, A.ownerId, A.orgId, (tx) => recordPayment(tx, actor(), { appointmentId: appt.id, amountCents: 4000, method: "pix", isDeposit: false })),
-    ).rejects.toThrow(/saldo/);
+    ).rejects.toThrow(/falta receber/);
 
     await asTenant(sql, A.ownerId, A.orgId, (tx) => changeStatus(tx, actor(), appt.id, "cancelled", "Cliente desistiu"));
     const payments = await sql`select kind, amount_cents from app.payments where appointment_id = ${appt.id}`;
@@ -149,7 +149,7 @@ describe("financeiro", () => {
     await asTenant(sql, A.ownerId, A.orgId, (tx) => refundPayment(tx, actor(), { paymentId: pay.id, amountCents: 1500, reason: "Devolução parcial do sinal" }));
     await expect(
       asTenant(sql, A.ownerId, A.orgId, (tx) => refundPayment(tx, actor(), { paymentId: pay.id, amountCents: 1000, reason: "Mais estorno" })),
-    ).rejects.toThrow(/ultrapassa/);
+    ).rejects.toThrow(/passa do valor/);
     const bal = await asTenant(sql, A.ownerId, A.orgId, (tx) => appointmentBalance(tx, A.orgId, appt.id));
     expect(bal.paid).toBe(500);
     const audit = await sql`select action from app.audit_log where organization_id = ${A.orgId}`;
@@ -191,7 +191,7 @@ describe("agendamento online", () => {
     await expect(withSystem((tx) => bookOnline(tx, biz, {
       serviceId: A.serviceId, professionalId: null, date, time: first.time,
       fullName: "Outra Pessoa", phone: "(11) 98888-0000", email: "", acceptPolicy: true, marketingConsent: false,
-    }), sql)).rejects.toThrow(/não está mais disponível/);
+    }), sql)).rejects.toThrow(/acabou de sair/);
   });
 
   it("negócio com agendamento online desativado não aparece", async () => {

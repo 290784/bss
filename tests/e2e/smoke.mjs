@@ -49,7 +49,7 @@ try {
   await step("cadastro valida campos e cria conta", async () => {
     await page.goto(`${BASE}/cadastro`);
     await page.getByRole("button", { name: "Criar conta grátis" }).click();
-    await page.getByText("Revise os campos destacados.").waitFor();
+    await page.getByText("Dá uma olhadinha nos campos destacados.").waitFor();
     await page.getByLabel("Seu nome").fill("Ana Teste");
     await page.getByLabel("E-mail").fill(email);
     await page.getByLabel("Senha").fill("senha-segura-123");
@@ -69,9 +69,9 @@ try {
     await page.getByLabel("Término").fill("20:00");
     await page.getByRole("button", { name: "Continuar" }).click();
     await page.getByText("Seus serviços").waitFor();
-    await page.getByRole("button", { name: "Abrir minha agenda" }).click();
+    await page.getByRole("button", { name: /minha agenda/ }).click();
     await page.waitForURL(/\/app\?bem-vinda=1/);
-    await page.getByText("Primeiros passos").waitFor();
+    await page.getByText("Vamos deixar tudo pronto?").waitFor();
     slug = (await page.locator("text=/\\/b\\//").first().innerText()).split("/b/")[1].trim();
     await shot(page, "03-dashboard-novo");
   });
@@ -97,9 +97,9 @@ try {
     await page.locator("dialog[open]").getByRole("checkbox").first().check();
     await page.getByText("Horários livres").waitFor();
     await page.locator("dialog[open] button", { hasText: "10:00" }).first().click();
-    await page.locator("dialog[open]").getByRole("button", { name: "Agendar", exact: true }).click();
-    await page.getByText("Agendamento criado.").waitFor();
-    await page.locator("dialog[open]").getByText("Agendamento criado pela equipe").waitFor();
+    await page.locator("dialog[open]").getByRole("button", { name: "Marcar horário", exact: true }).click();
+    await page.getByText("Horário marcado! ✨").waitFor();
+    await page.locator("dialog[open]").getByText("Marcado pela equipe").waitFor();
     await shot(page, "04-agendamento-detalhe");
   });
 
@@ -108,10 +108,10 @@ try {
     await dlg.getByRole("button", { name: "Registrar pagamento" }).click();
     await dlg.getByLabel("Valor (R$)").fill("10,00");
     await dlg.getByRole("button", { name: "Registrar", exact: true }).click();
-    await page.getByText("Pagamento registrado.").waitFor();
+    await page.getByText("Pagamento anotado! 💰").waitFor();
     await dlg.getByText(/Pagamento de R\$\s?10,00 registrado/).waitFor();
-    await dlg.getByRole("button", { name: "Concluir atendimento" }).click();
-    await page.getByText("Status atualizado.").waitFor();
+    await dlg.getByRole("button", { name: "Atendimento feito" }).click();
+    await page.getByText("Prontinho, atualizado!").waitFor();
     await dlg.getByRole("button", { name: "Fechar" }).click();
   });
 
@@ -121,8 +121,8 @@ try {
     await dlg.getByLabel("Cliente", { exact: true }).fill("Beat");
     await dlg.getByRole("button", { name: /Beatriz Cliente/ }).click();
     await dlg.getByRole("checkbox").first().check();
-    await dlg.getByLabel("Horário").fill("10:00");
-    await dlg.getByRole("button", { name: "Agendar", exact: true }).click();
+    await dlg.getByLabel("Horário", { exact: true }).fill("10:00");
+    await dlg.getByRole("button", { name: "Marcar horário", exact: true }).click();
     await dlg.getByText(/já está ocupado/).waitFor();
     await dlg.getByRole("button", { name: "Fechar" }).click();
   });
@@ -179,7 +179,7 @@ try {
     await page.waitForURL(/agendamento=/);
     await page.getByRole("dialog").getByRole("button", { name: "Confirmar", exact: true }).click();
     await page.getByRole("dialog").getByText("Confirmação para a cliente").waitFor();
-    await page.getByRole("dialog").getByRole("button", { name: "Concluir atendimento" }).waitFor(); // já recarregou como confirmado
+    await page.getByRole("dialog").getByRole("button", { name: "Atendimento feito" }).waitFor(); // já recarregou como confirmado
     const wa = await page.getByRole("dialog").getByRole("link", { name: /Enviar no WhatsApp/ }).getAttribute("href");
     const text = decodeURIComponent(new URL(wa).searchParams.get("text") ?? "");
     if (!/^Oi, Carla! 😊 Tudo bem\? Passando pra confirmar seu horário de manicure, na .+ \(\d\d\/\d\d\), às \d+h(\d\d)?, com .+\.\n\nDeixei aqui o link com o endereço e a confirmação de presença, tá bom\? 💚\n\n🔗 Ver meu agendamento:\nhttp\S+\/agendamento\/[a-f0-9]{64}\n\nTe esperamos! 🥰$/.test(text))

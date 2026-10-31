@@ -18,7 +18,7 @@ export function SignInForm({ next }: { next?: string }) {
       </Field>
       <SubmitButton size="lg" pending={pending} pendingLabel="Entrando…">Entrar</SubmitButton>
       <p className="text-center text-sm text-muted">
-        Ainda não tem conta? <Link href="/cadastro" className="font-medium text-accent-text hover:underline">Comece grátis</Link>
+        Ainda não tem conta? <Link href="/cadastro" className="font-medium text-accent-text hover:underline">Comece grátis ✨</Link>
       </p>
     </ActionForm>
   );
@@ -36,7 +36,7 @@ export function SignUpForm() {
       <Field label="E-mail" htmlFor="email" error={fe?.email}>
         <Input id="email" name="email" type="email" autoComplete="email" required aria-invalid={!!fe?.email} />
       </Field>
-      <Field label="Senha" htmlFor="password" error={fe?.password} hint="Mínimo de 10 caracteres.">
+      <Field label="Senha" htmlFor="password" error={fe?.password} hint="Pelo menos 10 caracteres, tá?">
         <Input id="password" name="password" type="password" autoComplete="new-password" required minLength={10} aria-invalid={!!fe?.password} />
       </Field>
       <Checkbox
@@ -44,7 +44,7 @@ export function SignUpForm() {
         label={<>Li e aceito os <Link href="/termos" className="text-accent-text underline" target="_blank">termos de uso</Link> e a <Link href="/privacidade" className="text-accent-text underline" target="_blank">política de privacidade</Link>.</>}
       />
       {fe?.acceptTerms && <p role="alert" className="-mt-2 text-[13px] text-danger">{fe.acceptTerms[0]}</p>}
-      <SubmitButton size="lg" pending={pending} pendingLabel="Criando conta…">Criar conta grátis</SubmitButton>
+      <SubmitButton size="lg" pending={pending} pendingLabel="Criando sua conta…">Criar conta grátis</SubmitButton>
       <p className="text-center text-sm text-muted">
         Já tem conta? <Link href="/entrar" className="font-medium text-accent-text hover:underline">Entrar</Link>
       </p>

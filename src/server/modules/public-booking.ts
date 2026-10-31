@@ -132,14 +132,14 @@ export const onlineBookingSchema = z.object({
 
 export async function bookOnline(tx: Tx, biz: PublicBusiness, input: z.infer<typeof onlineBookingSchema>, now = new Date()) {
   const service = biz.services.find((s) => s.id === input.serviceId);
-  if (!service) throw new DomainError("Serviço indisponível para agendamento online.");
+  if (!service) throw new DomainError("Esse serviço não está disponível para marcar online.");
   if (input.professionalId && !service.professional_ids.includes(input.professionalId))
-    throw new DomainError("Profissional indisponível para este serviço.");
+    throw new DomainError("Essa profissional não está disponível para esse serviço.");
 
   // Revalida no servidor: o horário precisa estar disponível agora, não quando a página carregou.
   const slots = await publicSlots(tx, biz, input.serviceId, input.professionalId, input.date, now);
   const slot = slots.find((s) => s.time === input.time);
-  if (!slot) throw new DomainError("Este horário não está mais disponível. Escolha outro.", "conflict");
+  if (!slot) throw new DomainError("Poxa, esse horário acabou de sair. Escolhe outro? 💜", "conflict");
 
   const phone = normalizePhone(input.phone)!;
   const email = input.email || null;
@@ -190,5 +190,5 @@ export async function bookOnline(tx: Tx, biz: PublicBusiness, input: z.infer<typ
       if (!(err instanceof DomainError)) throw err;
     }
   }
-  throw lastError ?? new DomainError("Este horário não está mais disponível.");
+  throw lastError ?? new DomainError("Poxa, esse horário não está mais disponível.");
 }

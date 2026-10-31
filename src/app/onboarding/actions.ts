@@ -22,14 +22,14 @@ export async function createBusiness(_: ActionState, form: FormData): Promise<Ac
     ownerDisplayName: session.fullName,
     timezone: process.env.DEFAULT_TIMEZONE ?? "America/Sao_Paulo",
   });
-  if (!parsed.success) return { ok: false, message: "Revise os campos.", fieldErrors: z.flattenError(parsed.error).fieldErrors };
+  if (!parsed.success) return { ok: false, message: "Dá uma olhadinha nos campos.", fieldErrors: z.flattenError(parsed.error).fieldErrors };
   const org = await withSystem((tx) => createOrganizationForUser(tx, session.userId, parsed.data));
   await setActiveOrganization(session.sessionId, org.organizationId);
   return { ok: true };
 }
 
 const hoursPayload = z.object({
-  days: z.array(z.number().int().min(0).max(6)).min(1, "Escolha pelo menos um dia de atendimento."),
+  days: z.array(z.number().int().min(0).max(6)).min(1, "Escolhe pelo menos um dia de atendimento."),
   start: z.string().regex(/^\d{2}:\d{2}$/),
   end: z.string().regex(/^\d{2}:\d{2}$/),
   breakStart: z.string().regex(/^\d{2}:\d{2}$/).optional(),
@@ -40,7 +40,7 @@ export async function saveOnboardingHours(input: z.infer<typeof hoursPayload>): 
   try {
     const ctx = await actionContext("settings.manage");
     const h = hoursPayload.parse(input);
-    if (h.end <= h.start) throw new DomainError("O horário de término deve ser depois do início.");
+    if (h.end <= h.start) throw new DomainError("O horário de fim precisa ser depois do início.");
     const windows: HourWindow[] = h.days.flatMap((weekday) =>
       h.breakStart && h.breakEnd && h.breakStart > h.start && h.breakEnd < h.end && h.breakEnd > h.breakStart
         ? [{ weekday, start: h.start, end: h.breakStart }, { weekday, start: h.breakEnd, end: h.end }]
@@ -63,7 +63,7 @@ const servicesPayload = z.array(z.object({
   minutes: z.number().int().min(5).max(720),
   buffer: z.number().int().min(0).max(120),
   returnDays: z.number().int().optional(),
-})).min(1, "Escolha pelo menos um serviço.").max(30);
+})).min(1, "Escolhe pelo menos um serviço. ✨").max(30);
 
 export async function finishOnboarding(input: z.infer<typeof servicesPayload>): Promise<ActionState> {
   try {
@@ -92,12 +92,12 @@ export async function finishOnboarding(input: z.infer<typeof servicesPayload>): 
 
 function parsePrice(v: string) {
   const n = Math.round(Number(v.replace(/\./g, "").replace(",", ".")) * 100);
-  if (!Number.isFinite(n) || n < 0) throw new DomainError("Preço inválido em um dos serviços.");
+  if (!Number.isFinite(n) || n < 0) throw new DomainError("Um dos preços ficou estranho. Confere?");
   return n;
 }
 
 function toState(err: unknown): ActionState {
   if (err instanceof DomainError) return { ok: false, message: err.message };
-  if (err instanceof z.ZodError) return { ok: false, message: err.issues[0]?.message ?? "Dados inválidos." };
+  if (err instanceof z.ZodError) return { ok: false, message: err.issues[0]?.message ?? "Algo não ficou certo. Confere os dados?" };
   throw err;
 }

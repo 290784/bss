@@ -98,10 +98,10 @@ function useQuickStatus() {
   const [pending, start] = useTransition();
   const set = (item: AgendaItemDTO, status: AppointmentStatus, label: string) => start(async () => {
     const r = await changeStatusAction({ appointmentId: item.id, status });
-    if (!r?.ok) { toast(r?.message ?? "Não foi possível atualizar.", "error"); return; }
+    if (!r?.ok) { toast(r?.message ?? "Não deu certo. Tenta de novo?", "error"); return; }
     router.refresh();
     toast(`${item.clientName.split(" ")[0]}: ${label}.`, "success", {
-      action: { label: "Desfazer", onClick: async () => { const u = await undoStatusAction(item.id); toast(u?.message ?? "Não foi possível desfazer.", u?.ok ? "success" : "error"); router.refresh(); } },
+      action: { label: "Desfazer", onClick: async () => { const u = await undoStatusAction(item.id); toast(u?.message ?? "Não consegui desfazer. Tenta de novo?", u?.ok ? "success" : "error"); router.refresh(); } },
     });
   });
   return { set, pending };
@@ -123,7 +123,7 @@ export function ListView({ items, pros, tz, canManage, gapsByPro, onOpen, onSlot
   const gaps = gapsByPro.flatMap(({ pro, gaps }) => gaps.map(([s, e]) => ({ pro, s, e }))).sort((a, b) => a.s - b.s);
 
   if (sorted.length === 0 && gaps.length === 0)
-    return <EmptyState icon={Clock} title="Nenhum atendimento neste dia" description="Toque em Agendar para marcar um horário." />;
+    return <EmptyState icon={Clock} title="Dia livrinho" description="Toque em Agendar para marcar alguém." />;
 
   // Atendimentos e horários livres intercalados por horário.
   type Row = { kind: "appt"; at: number; item: AgendaItemDTO } | { kind: "gap"; at: number; pro: AgendaProfessional; s: number; e: number };
@@ -172,9 +172,9 @@ export function ListView({ items, pros, tz, canManage, gapsByPro, onOpen, onSlot
                   {i.clientConfirmedAt && <CheckCheck className="h-3.5 w-3.5 text-st-confirmed" aria-label="A cliente confirmou" />}
                 </span>
                 <span className="block truncate text-xs text-muted">{i.services}{pros.length > 1 && pro ? ` · ${pro.name}` : ""}</span>
-                <span className="mt-1.5 flex items-center gap-2 sm:hidden">
+                <span className="mt-1.5 flex flex-wrap items-center gap-x-2 gap-y-1 sm:hidden">
                   <StatusBadge status={i.status} />
-                  <span className="text-xs text-muted tabular">{formatMoney(i.priceCents)}{i.paidCents >= i.priceCents && i.priceCents > 0 ? " · pago" : ""}</span>
+                  <span className="text-xs whitespace-nowrap text-muted tabular">{formatMoney(i.priceCents)}{i.paidCents >= i.priceCents && i.priceCents > 0 ? " · pago" : ""}</span>
                 </span>
               </span>
               <span className="hidden shrink-0 flex-col items-end gap-1 sm:flex">
@@ -185,8 +185,8 @@ export function ListView({ items, pros, tz, canManage, gapsByPro, onOpen, onSlot
             {canManage && (active || (i.status === "completed" && i.paidCents < i.priceCents)) && (
               <div className="flex flex-wrap gap-1.5 border-t border-line px-3 py-2">
                 {i.status === "pending" && <Quick onClick={() => set(i, "confirmed", "confirmado")} disabled={pending}><Check className="h-3.5 w-3.5" />Confirmar</Quick>}
-                {active && started && <Quick onClick={() => set(i, "completed", "atendimento concluído")} disabled={pending} tone="ok"><CheckCheck className="h-3.5 w-3.5" />Concluir</Quick>}
-                {active && started && <Quick onClick={() => set(i, "no_show", "marcada falta")} disabled={pending} tone="bad"><UserX className="h-3.5 w-3.5" />Falta</Quick>}
+                {active && started && <Quick onClick={() => set(i, "completed", "atendimento feito ✨")} disabled={pending} tone="ok"><CheckCheck className="h-3.5 w-3.5" />Concluir</Quick>}
+                {active && started && <Quick onClick={() => set(i, "no_show", "falta anotada")} disabled={pending} tone="bad"><UserX className="h-3.5 w-3.5" />Falta</Quick>}
                 {canSendConfirmation(i, ctx.now) && (
                   <a href={waLink(i, ctx)} target="_blank" rel="noreferrer" onClick={() => record(i.id)}
                     className="inline-flex h-9 items-center gap-1.5 rounded-lg border border-line px-3 text-xs font-medium text-ink-soft transition hover:bg-sunken">

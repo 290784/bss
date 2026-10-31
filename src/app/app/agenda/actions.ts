@@ -17,9 +17,9 @@ import { localTime } from "@/lib/time";
 
 function fail(err: unknown): { ok: false; message: string } {
   if (err instanceof DomainError) return { ok: false, message: err.message };
-  if (err instanceof z.ZodError) return { ok: false, message: err.issues[0]?.message ?? "Dados inválidos." };
+  if (err instanceof z.ZodError) return { ok: false, message: err.issues[0]?.message ?? "Algo não ficou certinho. Confere os dados?" };
   console.error("[agenda]", err instanceof Error ? err.message : err);
-  return { ok: false, message: "Não foi possível concluir. Tente novamente." };
+  return { ok: false, message: "Ops, não deu certo. Tenta de novo em instantes?" };
 }
 
 const actorOf = (ctx: Awaited<ReturnType<typeof actionContext>>) => ({ userId: ctx.user.userId, organizationId: ctx.org.id });
@@ -27,7 +27,7 @@ const actorOf = (ctx: Awaited<ReturnType<typeof actionContext>>) => ({ userId: c
 /** Profissionais só criam/alteram na própria agenda (o RLS também impõe isso). */
 function assertOwnAgenda(ctx: Awaited<ReturnType<typeof actionContext>>, professionalId: string) {
   if (!can(ctx.role, "agenda.view_all") && ctx.professionalId !== professionalId)
-    throw new DomainError("Você só pode gerenciar a sua própria agenda.", "forbidden");
+    throw new DomainError("Você só pode mexer na sua própria agenda.", "forbidden");
 }
 
 export async function createAppointmentAction(input: unknown): Promise<ActionState<{ id: string }>> {
@@ -37,7 +37,7 @@ export async function createAppointmentAction(input: unknown): Promise<ActionSta
     assertOwnAgenda(ctx, data.professionalId);
     const appt = await tenant(ctx, (tx) => createAppointment(tx, actorOf(ctx), data));
     revalidatePath("/app", "layout");
-    return { ok: true, message: "Agendamento criado.", data: { id: appt.id } };
+    return { ok: true, message: "Horário marcado! ✨", data: { id: appt.id } };
   } catch (err) {
     return fail(err);
   }
@@ -50,7 +50,7 @@ export async function rescheduleAction(input: unknown): Promise<ActionState> {
     assertOwnAgenda(ctx, data.professionalId);
     await tenant(ctx, (tx) => rescheduleAppointment(tx, actorOf(ctx), data));
     revalidatePath("/app", "layout");
-    return { ok: true, message: "Agendamento reagendado. Lembretes atualizados." };
+    return { ok: true, message: "Remarcado! Os lembretes já foram ajustados." };
   } catch (err) {
     return fail(err);
   }
@@ -64,7 +64,7 @@ export async function changeStatusAction(input: unknown): Promise<ActionState> {
     const data = statusInput.parse(input);
     await tenant(ctx, (tx) => changeStatus(tx, actorOf(ctx), data.appointmentId, data.status, data.reason));
     revalidatePath("/app", "layout");
-    return { ok: true, message: "Status atualizado." };
+    return { ok: true, message: "Prontinho, atualizado!" };
   } catch (err) {
     return fail(err);
   }
@@ -76,7 +76,7 @@ export async function recordPaymentAction(input: unknown): Promise<ActionState> 
     const data = recordPaymentSchema.parse(input);
     await tenant(ctx, (tx) => recordPayment(tx, actorOf(ctx), data));
     revalidatePath("/app", "layout");
-    return { ok: true, message: "Pagamento registrado." };
+    return { ok: true, message: "Pagamento anotado! 💰" };
   } catch (err) {
     return fail(err);
   }
@@ -88,7 +88,7 @@ export async function refundAction(input: unknown): Promise<ActionState> {
     const data = refundSchema.parse(input);
     await tenant(ctx, (tx) => refundPayment(tx, actorOf(ctx), data));
     revalidatePath("/app", "layout");
-    return { ok: true, message: "Estorno registrado." };
+    return { ok: true, message: "Estorno anotado." };
   } catch (err) {
     return fail(err);
   }
@@ -112,7 +112,7 @@ export async function undoStatusAction(appointmentId: string): Promise<ActionSta
     const id = z.uuid().parse(appointmentId);
     await tenant(ctx, (tx) => undoLastStatusChange(tx, actorOf(ctx), id));
     revalidatePath("/app", "layout");
-    return { ok: true, message: "Desfeito. O horário voltou para a agenda." };
+    return { ok: true, message: "Desfeito! O horário voltou para a agenda." };
   } catch (err) {
     return fail(err);
   }
@@ -124,7 +124,7 @@ export async function confirmationSentAction(appointmentId: string): Promise<Act
     const id = z.uuid().parse(appointmentId);
     await tenant(ctx, (tx) => recordConfirmationSent(tx, actorOf(ctx), id));
     revalidatePath("/app/agenda");
-    return { ok: true, message: "Envio registrado no histórico." };
+    return { ok: true, message: "Envio anotado no histórico." };
   } catch (err) {
     return fail(err);
   }
@@ -178,7 +178,7 @@ export async function quickCreateClientAction(input: { fullName: string; phone: 
     return await tenant(ctx, async (tx) => {
       if (!input.force) {
         const dups = await findPossibleDuplicates(tx, ctx.org.id, data);
-        if (dups.length) return { ok: false as const, message: "Encontramos cadastros parecidos. Use um deles ou confirme o novo cadastro.", fieldErrors: { duplicates: dups.map((d) => JSON.stringify(d)) } };
+        if (dups.length) return { ok: false as const, message: "Achei cadastros parecidos. Use um deles ou confirme que é uma cliente nova.", fieldErrors: { duplicates: dups.map((d) => JSON.stringify(d)) } };
       }
       const c = await createClient(tx, actorOf(ctx), data);
       return { ok: true as const, data: { id: c.id, full_name: data.fullName } };
@@ -197,7 +197,7 @@ export async function findSlotsAction(input: unknown): Promise<{ ok: boolean; ti
     const data = slotsInput.parse(input);
     return await tenant(ctx, async (tx) => {
       if (!(await professionalCanDo(tx, ctx.org.id, data.professionalId, data.serviceIds)))
-        return { ok: false, times: [], message: "Esta profissional não realiza todos os serviços escolhidos." };
+        return { ok: false, times: [], message: "Essa profissional não faz todos os serviços escolhidos." };
       const policy = await loadPolicy(tx, ctx.org.id);
       const t = totals(await loadServices(tx, ctx.org.id, data.serviceIds));
       const slots = await slotsForProfessional(tx, ctx.org.id, data.professionalId, data.date, policy, t.minutes, t.bufferAfter, new Date(), { ignoreAdvanceRules: true });

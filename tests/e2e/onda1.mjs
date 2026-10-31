@@ -55,18 +55,21 @@ try {
   await p.getByRole("button", { name: "Não sou eu" }).tap();
   ok(await p.getByLabel("Seu nome").inputValue() === "" && await p.evaluate(() => localStorage.getItem("ge-cliente")) === null, "\"Não sou eu\" apaga os dados do aparelho");
 
-  // 2) Painel: cartão "Próxima cliente"
+  // 2) Painel: cartão "Próxima cliente". O pedido feito pela página pública cai no primeiro horário
+  // livre (que pode ser agora) e passaria na frente da Ana: sai da agenda antes de olhar o cartão.
+  await sql`update app.appointments a set status = 'cancelled' from app.clients c
+    where c.id = a.client_id and a.organization_id = ${org.id} and c.full_name = 'Dani Lembrada' and a.status in ('pending', 'confirmed')`;
   await p.goto(`${BASE}/entrar`);
   await p.getByLabel("E-mail").fill("demo@beautyos.dev"); await p.getByLabel("Senha").fill(process.env.DEMO_PASSWORD ?? "demo-senha-123");
   await p.getByRole("button", { name: "Entrar" }).tap(); await p.waitForURL(/\/app$/);
   const card = p.getByTestId("next-client");
   await card.waitFor();
   const cardText = await card.innerText();
-  ok(/Próxima cliente · (agora|em \d+ min)/i.test(cardText) && cardText.includes("Ana Onda"), "cartão mostra a próxima cliente e quanto falta");
-  ok(cardText.includes("ainda não recebeu a confirmação") && cardText.includes("Depois: mais"), "cartão mostra a situação da confirmação e os próximos");
+  ok(/próxima cliente · (agora|em \d+ min)/i.test(cardText) && cardText.includes("Ana Onda"), "cartão mostra a próxima cliente e quanto falta");
+  ok(cardText.includes("ainda não recebeu a confirmação") && cardText.includes("Depois dela, mais"), "cartão mostra a situação da confirmação e os próximos");
   const [popup] = await Promise.all([p.waitForEvent("popup"), card.getByRole("link", { name: "Enviar confirmação" }).tap()]);
   await popup.close();
-  await card.getByText("Confirmação enviada, ainda sem resposta de Ana").waitFor();
+  await card.getByText("Você já mandou a confirmação; Ana ainda não respondeu").waitFor();
   ok(true, "enviar pelo cartão registra o envio");
 
   // 3) Botões do topo com 44 px no celular
@@ -85,7 +88,7 @@ try {
   await undo.waitFor();
   ok(true, "cancelar mostra o aviso com \"Desfazer\"");
   await undo.tap();
-  await p.getByText("Desfeito. O horário voltou para a agenda.").waitFor();
+  await p.getByText("Desfeito! O horário voltou para a agenda.").waitFor();
   await p.getByRole("dialog").getByText(/Desfeito: Cancelado → Confirmado/).waitFor();
   const [st] = await sql`select status from app.appointments where id = ${created[0].appt}`;
   ok(st.status === "confirmed", "desfazer devolve o agendamento para Confirmado");

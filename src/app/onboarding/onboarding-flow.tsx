@@ -49,11 +49,11 @@ function BusinessStep({ businessTypes, value, onType, onDone }: { businessTypes:
   const fe = state && !state.ok ? state.fieldErrors : undefined;
   return (
     <Card className="p-6 sm:p-8">
-      <h1 className="font-tight tracking-[-0.02em] text-[26px] font-extrabold">Vamos montar seu espaço</h1>
-      <p className="mt-1 mb-6 text-sm text-muted">Três passos rápidos. Tudo pode ser ajustado depois.</p>
+      <h1 className="font-tight tracking-[-0.02em] text-[26px] font-extrabold">Oi! Vamos deixar tudo com a sua cara? ✨</h1>
+      <p className="mt-1 mb-6 text-sm text-muted">São só três passinhos e dá para mudar tudo depois.</p>
       <ActionForm action={action} className="flex flex-col gap-5">
         <FormMessage state={state} />
-        <Field label="Nome do negócio" htmlFor="name" error={fe?.name} hint="Aparece na sua página de agendamento.">
+        <Field label="Nome do negócio" htmlFor="name" error={fe?.name} hint="É o nome que as suas clientes vão ver no seu link.">
           <Input id="name" name="name" required placeholder="Ex.: Studio Ana Lima" autoFocus />
         </Field>
         <Field label="O que você faz?" htmlFor="businessType" error={fe?.businessType}>
@@ -64,8 +64,8 @@ function BusinessStep({ businessTypes, value, onType, onDone }: { businessTypes:
         <Field label="WhatsApp do negócio" htmlFor="phone" optional>
           <Input id="phone" name="phone" type="tel" inputMode="tel" placeholder="(11) 90000-0000" />
         </Field>
-        <Checkbox name="attends" defaultChecked label="Eu também atendo clientes" description="Criamos sua agenda de profissional automaticamente." />
-        <div className="flex justify-end pt-2"><SubmitButton size="lg" pending={pending} pendingLabel="Criando…">Continuar</SubmitButton></div>
+        <Checkbox name="attends" defaultChecked label="Eu também atendo clientes" description="A gente já cria a sua agenda de profissional." />
+        <div className="flex justify-end pt-2"><SubmitButton size="lg" pending={pending} pendingLabel="Montando…">Continuar</SubmitButton></div>
       </ActionForm>
     </Card>
   );
@@ -87,7 +87,7 @@ function HoursStep({ onDone }: { onDone: () => void }) {
   return (
     <Card className="p-6 sm:p-8">
       <h1 className="font-tight tracking-[-0.02em] text-[26px] font-extrabold">Quando você atende?</h1>
-      <p className="mt-1 mb-6 text-sm text-muted">Usamos isso para mostrar apenas horários reais na sua agenda e na página de agendamento.</p>
+      <p className="mt-1 mb-6 text-sm text-muted">Assim a sua agenda e o seu link só mostram horários que você realmente atende.</p>
       {error && <div className="mb-4"><FormMessage state={{ ok: false, message: error }} /></div>}
       <fieldset className="mb-6">
         <legend className="mb-2 text-[13px] font-medium text-ink-soft">Dias de atendimento</legend>
@@ -140,7 +140,7 @@ function ServicesStep({ presets, onBack }: { presets: Preset[]; onBack: () => vo
   return (
     <Card className="p-6 sm:p-8">
       <h1 className="font-tight tracking-[-0.02em] text-[26px] font-extrabold">Seus serviços</h1>
-      <p className="mt-1 mb-6 text-sm text-muted">Sugestões comuns para o seu segmento. Ajuste preço e duração ou desmarque o que não oferece — os valores são só ponto de partida.</p>
+      <p className="mt-1 mb-6 text-sm text-muted">Separei os serviços mais comuns da sua área. Ajusta preço e duração, ou desmarca o que você não faz: os valores são só um ponto de partida.</p>
       {error && <div className="mb-4"><FormMessage state={{ ok: false, message: error }} /></div>}
       <ul className="divide-y divide-line rounded-xl border border-line">
         {items.map((s, i) => (
@@ -164,7 +164,7 @@ function ServicesStep({ presets, onBack }: { presets: Preset[]; onBack: () => vo
       </div>
       <div className="mt-8 flex justify-between">
         <Button variant="ghost" onClick={onBack}>Voltar</Button>
-        <Button size="lg" onClick={submit} disabled={pending || !items.some((i) => i.on)}>{pending ? "Finalizando…" : "Abrir minha agenda"}</Button>
+        <Button size="lg" onClick={submit} disabled={pending || !items.some((i) => i.on)}>{pending ? "Deixando tudo pronto…" : "Bora ver minha agenda! 💜"}</Button>
       </div>
     </Card>
   );

@@ -25,7 +25,7 @@ export async function appointmentBalance(tx: Tx, orgId: string, appointmentId: s
       coalesce((select sum(case when p.kind = 'payment' then p.amount_cents else -p.amount_cents end)
                 from app.payments p where p.appointment_id = a.id), 0)::int as paid
     from app.appointments a where a.organization_id = ${orgId} and a.id = ${appointmentId}`;
-  if (!r) throw new DomainError("Agendamento não encontrado.");
+  if (!r) throw new DomainError("Não achei esse agendamento. Atualiza a página?");
   return { due: r.due, paid: r.paid, remaining: Math.max(r.due - r.paid, 0) };
 }
 
@@ -36,12 +36,12 @@ export async function appointmentBalance(tx: Tx, orgId: string, appointmentId: s
 export async function recordPayment(tx: Tx, actor: Actor, input: z.infer<typeof recordPaymentSchema>) {
   const [appt] = await tx<{ id: string; client_id: string; status: string }[]>`
     select id, client_id, status from app.appointments where organization_id = ${actor.organizationId} and id = ${input.appointmentId} for update`;
-  if (!appt) throw new DomainError("Agendamento não encontrado.");
+  if (!appt) throw new DomainError("Não achei esse agendamento. Atualiza a página?");
   if (appt.status === "cancelled" && !input.isDeposit)
-    throw new DomainError("Atendimento cancelado não recebe novos pagamentos (apenas retenção de sinal).");
+    throw new DomainError("Atendimento cancelado não recebe pagamento novo (só dá para reter o sinal).");
   const bal = await appointmentBalance(tx, actor.organizationId, appt.id);
   if (input.amountCents > bal.remaining)
-    throw new DomainError("O valor ultrapassa o saldo em aberto deste atendimento.");
+    throw new DomainError("Esse valor passa do que falta receber nesse atendimento.");
   const [p] = await tx<{ id: string }[]>`
     insert into app.payments (organization_id, appointment_id, client_id, kind, amount_cents, method, is_deposit, notes, created_by)
     values (${actor.organizationId}, ${appt.id}, ${appt.client_id}, 'payment', ${input.amountCents}, ${input.method},
@@ -67,11 +67,11 @@ export async function refundPayment(tx: Tx, actor: Actor, input: z.infer<typeof 
   const [orig] = await tx<{ id: string; appointment_id: string | null; client_id: string | null; amount_cents: number; method: string; kind: string }[]>`
     select id, appointment_id, client_id, amount_cents, method, kind from app.payments
     where organization_id = ${actor.organizationId} and id = ${input.paymentId}`;
-  if (!orig || orig.kind !== "payment") throw new DomainError("Pagamento não encontrado.");
+  if (!orig || orig.kind !== "payment") throw new DomainError("Não achei esse pagamento.");
   const [{ refunded } = { refunded: 0 }] = await tx<{ refunded: number }[]>`
     select coalesce(sum(amount_cents), 0)::int as refunded from app.payments where refund_of = ${orig.id}`;
   if (input.amountCents > orig.amount_cents - refunded)
-    throw new DomainError("O estorno ultrapassa o valor ainda não estornado deste pagamento.");
+    throw new DomainError("O estorno passa do valor que ainda dá para devolver nesse pagamento.");
   const [r] = await tx<{ id: string }[]>`
     insert into app.payments (organization_id, appointment_id, client_id, kind, amount_cents, method, refund_of, notes, created_by)
     values (${actor.organizationId}, ${orig.appointment_id}, ${orig.client_id}, 'refund', ${input.amountCents}, ${orig.method},

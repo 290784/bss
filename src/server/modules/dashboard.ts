@@ -6,8 +6,8 @@ export type PeriodId = "today" | "week" | "month" | "30d";
 export const PERIOD_LABEL: Record<PeriodId, string> = { today: "Hoje", week: "Esta semana", month: "Este mês", "30d": "Últimos 30 dias" };
 /** Com o que cada período é comparado (texto exibido no painel). */
 export const COMPARACAO: Record<PeriodId, string> = {
-  today: "comparação com ontem", week: "comparação com o mesmo trecho da semana passada (até ontem)",
-  month: "comparação com o mesmo período do mês passado (até ontem)", "30d": "comparação com os 30 dias anteriores",
+  today: "comparados com ontem", week: "comparados com o mesmo pedaço da semana passada (até ontem)",
+  month: "comparados com os mesmos dias do mês passado (até ontem)", "30d": "comparados com os 30 dias anteriores",
 };
 
 export type Period = {
@@ -412,23 +412,23 @@ export async function loadTrends(tx: Tx, orgId: string, timeZone: string, now = 
   for (const t of trends.filter((t) => t.growth !== null && t.growth <= -15 && t.prev90Count >= 6).sort((a, b) => (a.growth ?? 0) - (b.growth ?? 0)).slice(0, 3))
     alerts.push({
       kind: "queda", title: `${t.name} caiu ${pctTxt(t.growth!)}`,
-      detail: `${t.last90Count} atendimento(s) nos últimos 90 dias, contra ${t.prev90Count} nos 90 anteriores.`,
-      tip: "Ofereça como serviço adicional no agendamento ou faça uma condição especial nos horários vagos.",
+      detail: `${t.last90Count} atendimento(s) nos últimos 90 dias, contra ${t.prev90Count} nos 90 dias antes.`,
+      tip: "Que tal oferecer como um mimo extra no agendamento ou fazer um preço especial nos horários livres?",
     });
   // Serviço parado: tinha procura e não aparece há 45 dias ou mais.
   for (const t of trends.filter((t) => now.getTime() - t.lastSeen.getTime() > 45 * DAY && t.prev90Count + t.last90Count >= 3).slice(0, 2))
     alerts.push({
       kind: "parado", title: `${t.name} sem atendimentos há ${Math.floor((now.getTime() - t.lastSeen.getTime()) / DAY)} dias`,
-      detail: "O serviço tinha procura e parou de aparecer na agenda.",
-      tip: "Confira se ele está visível no agendamento online e avise as clientes que costumavam fazer.",
+      detail: "Ele tinha procura e sumiu da agenda.",
+      tip: "Veja se ele aparece no seu link de agendamento e chame as clientes que costumavam fazer.",
     });
   // Faltas acima da média do salão.
   const avgMiss = overall && overall.done + overall.missed > 0 ? overall.missed / (overall.done + overall.missed) : 0;
   for (const n of noShow.filter((n) => n.done + n.missed >= 10 && n.missed / (n.done + n.missed) >= Math.max(0.12, avgMiss * 2)).slice(0, 2))
     alerts.push({
       kind: "faltas", title: `Faltas altas em ${n.name}`,
-      detail: `${Math.round((n.missed / (n.done + n.missed)) * 100)}% de faltas nos últimos 90 dias (média do salão: ${Math.round(avgMiss * 100)}%).`,
-      tip: "Peça sinal no agendamento desse serviço e confirme na véspera.",
+      detail: `${Math.round((n.missed / (n.done + n.missed)) * 100)}% das clientes faltaram nos últimos 90 dias (a média do salão é ${Math.round(avgMiss * 100)}%).`,
+      tip: "Peça um sinal para esse serviço e mande a confirmação na véspera.",
     });
   // Categoria em queda.
   const cats = new Map<string, { last: number; prev: number; prevCount: number }>();
@@ -440,7 +440,7 @@ export async function loadTrends(tx: Tx, orgId: string, timeZone: string, now = 
   for (const [name, c] of cats) {
     const g = percentChange(c.last, c.prev);
     if (g !== null && g <= -10 && c.prevCount >= 10)
-      alerts.push({ kind: "categoria", title: `${name} caiu ${pctTxt(g)}`, detail: "Queda no faturamento da categoria nos últimos 90 dias.", tip: "Vale rever preço, divulgação e horários dessa área." });
+      alerts.push({ kind: "categoria", title: `${name} caiu ${pctTxt(g)}`, detail: "Essa área faturou menos nos últimos 90 dias.", tip: "Vale dar uma olhada no preço, na divulgação e nos horários dela." });
   }
 
   return { trends, alerts: alerts.slice(0, 4), monthKeys: keys.slice(0, 6) };

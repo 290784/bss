@@ -39,7 +39,7 @@ export function useRecordSent() {
   const [pending, start] = useTransition();
   const record = (id: string) => start(async () => {
     const r = await confirmationSentAction(id);
-    if (!r?.ok) toast(r?.message ?? "Não foi possível registrar o envio.");
+    if (!r?.ok) toast(r?.message ?? "Não consegui anotar o envio. Tenta de novo?");
     router.refresh();
   });
   return { record, pending };
@@ -100,7 +100,7 @@ export function ConfirmationsDialog({ open, onClose, items, title, tomorrowHref 
         </button>
       )}
       {list.length === 0 ? (
-        <p className="text-sm text-muted">Nenhum agendamento futuro com WhatsApp neste período.</p>
+        <p className="text-sm text-muted">Nenhuma cliente com WhatsApp para confirmar neste período.</p>
       ) : (
         <ul className="flex flex-col gap-2">
           {list.map((i) => {
@@ -133,13 +133,13 @@ export function ConfirmationsDialog({ open, onClose, items, title, tomorrowHref 
           })}
         </ul>
       )}
-      {noPhone > 0 && <p className="mt-3 text-xs text-muted">{noPhone} agendamento(s) sem WhatsApp cadastrado não aparecem aqui.</p>}
+      {noPhone > 0 && <p className="mt-3 text-xs text-muted">{noPhone === 1 ? "1 agendamento sem WhatsApp cadastrado não aparece aqui." : `${noPhone} agendamentos sem WhatsApp cadastrado não aparecem aqui.`}</p>}
       {tomorrowHref && (
         <Link href={tomorrowHref} onClick={onClose} className="mt-4 flex min-h-11 items-center justify-between rounded-xl border border-line px-4 text-sm font-medium hover:bg-sunken">
           Confirmações de amanhã<ArrowRight className="h-4 w-4" />
         </Link>
       )}
-      <p className="mt-3 text-xs text-muted">Abre o seu WhatsApp com a mensagem e o link do comprovante prontos. Cada envio fica no histórico do agendamento.</p>
+      <p className="mt-3 text-xs text-muted">Abre o seu WhatsApp com a mensagem e o link do comprovante prontinhos. Cada envio fica anotado no histórico do horário.</p>
     </Dialog>
   );
 }

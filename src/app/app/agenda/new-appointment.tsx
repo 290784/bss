@@ -55,21 +55,21 @@ export function NewAppointmentDialog({
 
   const submit = () => {
     setError(null);
-    if (!client) return setError("Escolha ou cadastre a cliente.");
-    if (serviceIds.length === 0) return setError("Escolha pelo menos um serviço.");
-    if (!time) return setError("Escolha o horário.");
+    if (!client) return setError("Escolhe a cliente (ou cadastra uma nova).");
+    if (serviceIds.length === 0) return setError("Escolhe pelo menos um serviço.");
+    if (!time) return setError("Falta escolher o horário.");
     start(async () => {
       const r = await createAppointmentAction({ professionalId, clientId: client.id, date, time, serviceIds, squeezeIn, status, internalNotes: notes || undefined });
-      if (r?.ok) { toast(r.message ?? "Agendamento criado."); onCreated(r.data!.id); }
+      if (r?.ok) { toast(r.message ?? "Horário marcado! ✨"); onCreated(r.data!.id); }
       else if (r) setError(r.message);
     });
   };
 
   return (
-    <Dialog open onClose={onClose} title="Novo agendamento" side="right"
+    <Dialog open onClose={onClose} title="Marcar horário" side="right"
       footer={<>
         <Button variant="ghost" onClick={onClose}>Cancelar</Button>
-        <Button onClick={submit} disabled={pending}>{pending ? "Agendando…" : "Agendar"}</Button>
+        <Button onClick={submit} disabled={pending}>{pending ? "Marcando…" : "Marcar horário"}</Button>
       </>}>
       <div className="flex flex-col gap-5">
         {error && <FormMessage state={{ ok: false, message: error }} />}
@@ -86,7 +86,7 @@ export function NewAppointmentDialog({
         <fieldset>
           <legend className="mb-1.5 text-[13px] font-medium text-ink-soft">Serviços</legend>
           {available.length === 0 ? (
-            <p className="rounded-lg bg-sunken px-3 py-2 text-sm text-muted">Nenhum serviço vinculado a esta profissional. Vincule em Serviços.</p>
+            <p className="rounded-lg bg-sunken px-3 py-2 text-sm text-muted">Essa profissional ainda não tem serviços. Dá para ligar isso em Serviços.</p>
           ) : (
             <div className="flex flex-col divide-y divide-line rounded-xl border border-line">
               {available.map((s) => {
@@ -112,13 +112,13 @@ export function NewAppointmentDialog({
 
         {serviceIds.length > 0 && (
           <div>
-            <div className="mb-1.5 text-[13px] font-medium text-ink-soft">Horários livres</div>
+            <div className="mb-1.5 text-[13px] font-medium text-ink-soft">Horários livres para ela</div>
             {slots.loading ? (
               <div className="flex gap-2">{[0, 1, 2, 3].map((i) => <div key={i} className="skeleton h-8 w-16" />)}</div>
             ) : slots.message ? (
               <p className="text-sm text-danger">{slots.message}</p>
             ) : slots.times.length === 0 ? (
-              <p className="text-sm text-muted">Sem horários livres neste dia para essa duração. Escolha outra data ou marque como encaixe.</p>
+              <p className="text-sm text-muted">Esse dia já está cheio para essa duração. Tenta outra data ou marca como encaixe.</p>
             ) : (
               <div className="flex max-h-32 flex-wrap gap-1.5 overflow-y-auto">
                 {slots.times.map((t) => (
@@ -130,13 +130,13 @@ export function NewAppointmentDialog({
               </div>
             )}
             {time && !slots.loading && !timeIsFree && !squeezeIn && (
-              <p className="mt-2 rounded-lg bg-st-pending-bg px-3 py-2 text-[13px] text-st-pending">Este horário está ocupado ou fora do expediente. Para agendar mesmo assim, marque como encaixe.</p>
+              <p className="mt-2 rounded-lg bg-st-pending-bg px-3 py-2 text-[13px] text-st-pending">Esse horário está ocupado ou fora do expediente. Se quiser marcar mesmo assim, é só ligar o encaixe.</p>
             )}
           </div>
         )}
 
         <Checkbox checked={squeezeIn} onChange={(e) => setSqueezeIn(e.target.checked)} label="Encaixe"
-          description="Permite sobrepor outro atendimento ou agendar fora do expediente. Use com cuidado." />
+          description="Deixa marcar por cima de outro horário ou fora do expediente. Use com carinho." />
 
         <Field label="Status inicial" htmlFor="status">
           <Select id="status" value={status} onChange={(e) => setStatus(e.target.value as "confirmed" | "pending")}>
@@ -145,7 +145,7 @@ export function NewAppointmentDialog({
           </Select>
         </Field>
         <Field label="Observação interna" htmlFor="notes" optional>
-          <Textarea id="notes" value={notes} onChange={(e) => setNotes(e.target.value)} maxLength={2000} placeholder="Visível apenas para a equipe" />
+          <Textarea id="notes" value={notes} onChange={(e) => setNotes(e.target.value)} maxLength={2000} placeholder="Só a equipe vê" />
         </Field>
       </div>
     </Dialog>
@@ -195,7 +195,7 @@ function ClientPicker({ value, onChange, canCreate }: { value: { id: string; nam
     <Field label="Cliente" htmlFor="client-q">
       <div className="relative">
         <Search className="pointer-events-none absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-muted" />
-        <Input id="client-q" value={q} onChange={(e) => { setQ(e.target.value); setCreating(false); setDups([]); }} placeholder="Nome ou telefone" className="pl-9" autoComplete="off" autoFocus />
+        <Input id="client-q" value={q} onChange={(e) => { setQ(e.target.value); setCreating(false); setDups([]); }} placeholder="Busque pelo nome ou telefone" className="pl-9" autoComplete="off" autoFocus />
       </div>
       {results.length > 0 && !creating && (
         <ul className="mt-1 divide-y divide-line overflow-hidden rounded-xl border border-line">
@@ -231,7 +231,7 @@ function ClientPicker({ value, onChange, canCreate }: { value: { id: string; nam
           )}
           <div className="flex justify-end gap-2">
             <Button size="sm" variant="ghost" onClick={() => setCreating(false)}>Cancelar</Button>
-            <Button size="sm" onClick={() => create(dups.length > 0)} disabled={pending}>{dups.length ? "Criar mesmo assim" : "Cadastrar"}</Button>
+            <Button size="sm" onClick={() => create(dups.length > 0)} disabled={pending}>{dups.length ? "Cadastrar mesmo assim" : "Cadastrar"}</Button>
           </div>
         </div>
       )}

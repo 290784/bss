@@ -17,7 +17,7 @@ export default async function TeamPage() {
   const active = data.professionals.filter((p) => p.is_active).length;
   return (
     <div>
-      <PageHeader title="Equipe e horários" description={`${active} de ${ctx.plan.maxProfessionals} profissional(is) ativa(s) no plano ${ctx.plan.name}${ctx.subscription.status === "trialing" ? " (teste)" : ""}.`} />
+      <PageHeader title="Equipe e horários" description={`${active} de ${ctx.plan.maxProfessionals} ${ctx.plan.maxProfessionals === 1 ? "profissional ativa" : "profissionais ativas"} no plano ${ctx.plan.name}${ctx.subscription.status === "trialing" ? " (teste)" : ""}.`} />
       <TeamManager
         readOnly={ctx.access === "read_only"}
         timeZone={ctx.org.timezone}

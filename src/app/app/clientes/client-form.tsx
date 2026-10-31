@@ -34,7 +34,7 @@ export function ClientForm({ initial, canInternal, onSaved }: { initial?: Client
         <Field label="E-mail" htmlFor="email" error={fe?.email} optional>
           <Input id="email" name="email" type="email" defaultValue={initial?.email ?? ""} />
         </Field>
-        <Field label="Data de nascimento" htmlFor="birthDate" error={fe?.birthDate} optional hint="Usada apenas para mensagens de aniversário, se houver consentimento.">
+        <Field label="Data de nascimento" htmlFor="birthDate" error={fe?.birthDate} optional hint="Só para mandar um carinho no aniversário, se ela autorizar. 🎂">
           <Input id="birthDate" name="birthDate" type="date" defaultValue={initial?.birthDate ?? ""} />
         </Field>
         <Field label="Prefere ser contatada por" htmlFor="contactPreference">
@@ -43,17 +43,17 @@ export function ClientForm({ initial, canInternal, onSaved }: { initial?: Client
           </Select>
         </Field>
       </div>
-      <Field label="Preferências de atendimento" htmlFor="preferences" optional hint="Visível para toda a equipe. Ex.: prefere esmalte claro, gosta de café.">
+      <Field label="Preferências de atendimento" htmlFor="preferences" optional hint="Toda a equipe vê. Ex.: ama esmalte nude, prefere café sem açúcar.">
         <Textarea id="preferences" name="preferences" defaultValue={initial?.preferences ?? ""} maxLength={1000} />
       </Field>
       {canInternal && (
-        <Field label="Observações internas" htmlFor="internalNotes" optional hint="Restrito a proprietária, gerência e recepção. Não registre dados de saúde sem necessidade e consentimento.">
+        <Field label="Observações internas" htmlFor="internalNotes" optional hint="Só a dona, a gerência e a recepção veem. Evite anotar dados de saúde sem necessidade e sem o ok da cliente.">
           <Textarea id="internalNotes" name="internalNotes" defaultValue={initial?.internalNotes ?? ""} maxLength={2000} />
         </Field>
       )}
       <Checkbox name="marketingConsent" defaultChecked={initial?.marketingConsent}
-        label="Aceita receber novidades e promoções"
-        description="Registre apenas com autorização da cliente. Lembretes de agendamento não dependem deste consentimento." />
+        label="Topa receber novidades e promoções"
+        description="Marque só se ela autorizou. Os lembretes de horário são enviados de qualquer jeito." />
       <div className="flex justify-end pt-2"><SubmitButton pending={pending}>{dupWarn ? "Salvar mesmo assim" : "Salvar"}</SubmitButton></div>
     </ActionForm>
   );
