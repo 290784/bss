@@ -16,6 +16,8 @@ import { STATUS_LABEL } from "@/domain/appointment-status";
 import { DashboardChart } from "./dashboard-chart";
 import { PeriodTabs } from "./period-tabs";
 import { DashboardInsights } from "./dashboard-insights";
+import { DicasCard } from "./dicas-card";
+import { loadDicas } from "@/server/modules/dicas";
 import { ForecastAndAlerts, ServiceGrowth } from "./dashboard-trends";
 import { CopyLink } from "./copy-link";
 import { NextClientCard } from "./next-client";
@@ -36,8 +38,9 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
   const finance = can(ctx.role, "finance.view");
   const todayKey = localDateKey(new Date(), tz);
 
-  const { d, insights, trends, forecast, todayItems, gaps, setup } = await tenant(ctx, async (tx) => {
-    const [d, insights, trends, forecast, todayItems, gaps, [setup]] = await Promise.all([
+  const appUrl = process.env.APP_URL ?? "http://localhost:3000";
+  const { d, insights, trends, forecast, todayItems, gaps, setup, dicas } = await tenant(ctx, async (tx) => {
+    const [d, insights, trends, forecast, todayItems, gaps, [setup], dicas] = await Promise.all([
       loadDashboard(tx, ctx.org.id, tz, period, { includeFinance: finance }),
       loadInsights(tx, ctx.org.id, tz, period),
       loadTrends(tx, ctx.org.id, tz),
@@ -49,8 +52,9 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
                (select count(*) from app.clients where organization_id = ${ctx.org.id})::int as clients,
                (select count(*) from app.appointments where organization_id = ${ctx.org.id})::int as appointments,
                (select count(*) from app.working_hours where organization_id = ${ctx.org.id})::int as hours`,
+      loadDicas(tx, ctx.org.id, tz, { finance, bookingUrl: `${appUrl}/b/${ctx.org.slug}` }),
     ]);
-    return { d, insights, trends, forecast, todayItems, gaps, setup: setup! };
+    return { d, insights, trends, forecast, todayItems, gaps, setup: setup!, dicas };
   });
 
   const activation = [
@@ -60,7 +64,6 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
     { done: setup.appointments > 0, label: "Marque o primeiro horário", href: "/app/agenda" },
   ];
   const activationDone = activation.every((a) => a.done);
-  const appUrl = process.env.APP_URL ?? "http://localhost:3000";
   const activeToday = todayItems.filter((i) => i.status !== "cancelled");
   // Próxima cliente: o primeiro atendimento de hoje que ainda não terminou.
   const now = new Date().getTime();
@@ -135,6 +138,7 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
       </div>
 
       {setup.appointments > 0 && <ForecastAndAlerts forecast={forecast} alerts={trends.alerts} finance={finance} />}
+      {setup.appointments > 0 && <DicasCard dicas={dicas} />}
 
       <div className="mt-6 grid gap-6 xl:grid-cols-[minmax(0,1fr)_380px]">
         <Card>
