@@ -36,13 +36,16 @@ export default async function AgendaPage({ searchParams }: { searchParams: Promi
   const to = zonedDateTime(end, "00:00", tz);
 
   const data = await tenant(ctx, async (tx) => {
-    const [professionals, services, items, timeOff] = await Promise.all([
+    const novoId = sp.novo && /^[0-9a-f-]{36}$/i.test(sp.novo) ? sp.novo : null;
+    const [professionals, services, items, timeOff, novo] = await Promise.all([
       listProfessionals(tx, ctx.org.id, { activeOnly: true }),
       listServices(tx, ctx.org.id, { activeOnly: true }),
       listAgenda(tx, ctx.org.id, from, to, seeAll ? null : ctx.professionalId),
       listTimeOff(tx, ctx.org.id, from),
+      // "Agendar" na ficha da cliente: abre o novo agendamento já com ela escolhida.
+      novoId ? tx<{ id: string; full_name: string }[]>`select id, full_name from app.clients where organization_id = ${ctx.org.id} and id = ${novoId} and archived_at is null` : Promise.resolve([]),
     ]);
-    return { professionals, services, items, timeOff: timeOff.filter((t) => t.starts_at < to) };
+    return { professionals, services, items, timeOff: timeOff.filter((t) => t.starts_at < to), newFor: novo[0] ? { id: novo[0].id, name: novo[0].full_name } : null };
   });
 
   const visiblePros = seeAll ? data.professionals : data.professionals.filter((p) => p.id === ctx.professionalId);
@@ -60,6 +63,7 @@ export default async function AgendaPage({ searchParams }: { searchParams: Promi
       initialProfessionalId={sp.profissional ?? null}
       openAppointmentId={sp.agendamento ?? null}
       openConfirmations={sp.confirmacoes === "1"}
+      newForClient={ctx.access !== "read_only" && can(ctx.role, "agenda.manage") ? data.newFor : null}
       readOnly={ctx.access === "read_only"}
       canManage={ctx.access !== "read_only" && can(ctx.role, "agenda.manage")}
       canSeeAll={seeAll}

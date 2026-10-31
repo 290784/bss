@@ -75,17 +75,32 @@ export async function archiveClient(tx: Tx, actor: Actor, id: string, archived: 
 
 export const SEGMENTS = {
   all: "Todas",
-  new: "Novas (30 dias)",
-  recurring: "Recorrentes",
-  inactive: "Inativas (+60 dias)",
-  high_value: "Alto valor",
+  new: "Novas",
+  recurring: "Fiéis",
+  birthday: "Aniversariantes do mês",
+  inactive: "Sumidas",
+  high_value: "VIP",
   archived: "Arquivadas",
 } as const;
 export type Segment = keyof typeof SEGMENTS;
+/** Explicação curta de cada grupo (aparece ao escolher o filtro). */
+export const SEGMENT_HINT: Record<Segment, string> = {
+  all: "Todas as clientes ativas.",
+  new: "Primeira visita (ou cadastro) nos últimos 30 dias.",
+  recurring: "Já vieram 2 vezes ou mais.",
+  birthday: "Fazem aniversário este mês: hora do mimo! 🎂",
+  inactive: "Vieram antes, mas estão há mais de 60 dias sem aparecer e sem horário marcado.",
+  high_value: "As 20% que mais investiram com você.",
+  archived: "Tiradas das listas, com o histórico guardado.",
+};
+
+export const SORTS = { nome: "Nome", recentes: "Última visita", visitas: "Mais visitas", gasto: "Quem mais gastou" } as const;
+export type Sort = keyof typeof SORTS;
 
 export type ClientRow = {
   id: string; full_name: string; phone_normalized: string | null; email: string | null;
   visits: number; last_visit: Date | null; next_visit: Date | null; total_spent_cents: number; created_at: Date;
+  first_visit: Date | null; birth_md: string | null; is_vip: boolean;
 };
 
 /**
@@ -93,10 +108,12 @@ export type ClientRow = {
  * - visits / last_visit: atendimentos concluídos;
  * - total_spent: pagamentos menos estornos (não valores agendados).
  */
-export async function listClients(tx: Tx, orgId: string, opts: { q?: string; segment?: Segment; limit?: number; offset?: number; includeSpent: boolean }) {
+export async function listClients(tx: Tx, orgId: string, opts: { q?: string; segment?: Segment; sort?: Sort; limit?: number; offset?: number; includeSpent: boolean; timeZone?: string }) {
   const q = opts.q?.trim() ?? "";
   const qPhone = q.replace(/\D/g, "");
   const seg = opts.segment ?? "all";
+  const sort = opts.sort && opts.sort in SORTS && (opts.sort !== "gasto" || opts.includeSpent) ? opts.sort : "nome";
+  const tz = opts.timeZone ?? "America/Sao_Paulo";
   return tx<ClientRow[]>`
     with stats as (
       select c.id,
@@ -114,7 +131,8 @@ export async function listClients(tx: Tx, orgId: string, opts: { q?: string; seg
       select percentile_cont(0.8) within group (order by total) as p80 from spent where total > 0
     )
     select c.id, c.full_name, c.phone_normalized, c.email, s.visits, s.last_visit, s.next_visit,
-      coalesce(sp.total, 0) as total_spent_cents, c.created_at
+      coalesce(sp.total, 0) as total_spent_cents, c.created_at, s.first_visit, to_char(c.birth_date, 'MM-DD') as birth_md,
+      (${opts.includeSpent} and ranked.p80 is not null and coalesce(sp.total, 0) >= ranked.p80 and coalesce(sp.total, 0) > 0) as is_vip
     from app.clients c join stats s on s.id = c.id left join spent sp on sp.client_id = c.id, ranked
     where c.organization_id = ${orgId}
       and (${seg} = 'archived') = (c.archived_at is not null)
@@ -125,9 +143,42 @@ export async function listClients(tx: Tx, orgId: string, opts: { q?: string; seg
         when 'recurring' then s.visits >= 2
         when 'inactive' then s.visits >= 1 and s.last_visit < now() - interval '60 days' and s.next_visit is null
         when 'high_value' then ranked.p80 is not null and coalesce(sp.total, 0) >= ranked.p80 and coalesce(sp.total, 0) > 0
+        when 'birthday' then extract(month from c.birth_date) = extract(month from now() at time zone ${tz})
         else true end
-    order by c.full_name
+    order by
+      case when ${seg} = 'birthday' then to_char(c.birth_date, 'DD') end,
+      case when ${sort} = 'recentes' then s.last_visit end desc nulls last,
+      case when ${sort} = 'visitas' then s.visits end desc,
+      case when ${sort} = 'gasto' then coalesce(sp.total, 0) end desc,
+      c.full_name
     limit ${opts.limit ?? 50} offset ${opts.offset ?? 0}`;
+}
+
+/** Quantas clientes há em cada grupo (para os filtros da lista). */
+export async function countSegments(tx: Tx, orgId: string, opts: { includeSpent: boolean; timeZone: string }) {
+  const [r] = await tx<Record<Segment, number>[]>`
+    with stats as (
+      select c.id, c.archived_at, c.created_at, c.birth_date,
+        count(a.id) filter (where a.status = 'completed')::int as visits,
+        max(a.starts_at) filter (where a.status = 'completed') as last_visit,
+        min(a.starts_at) filter (where a.status = 'completed') as first_visit,
+        min(a.starts_at) filter (where a.status in ('pending', 'confirmed') and a.starts_at > now()) as next_visit
+      from app.clients c left join app.appointments a on a.client_id = c.id
+      where c.organization_id = ${orgId} group by c.id
+    ), spent as (
+      select client_id, sum(case when kind = 'payment' then amount_cents else -amount_cents end)::int as total
+      from app.payments where organization_id = ${orgId} and ${opts.includeSpent} group by client_id
+    ), ranked as (select percentile_cont(0.8) within group (order by total) as p80 from spent where total > 0)
+    select
+      count(*) filter (where archived_at is null)::int as "all",
+      count(*) filter (where archived_at is null and (first_visit >= now() - interval '30 days' or (visits = 0 and created_at >= now() - interval '30 days')))::int as "new",
+      count(*) filter (where archived_at is null and visits >= 2)::int as recurring,
+      count(*) filter (where archived_at is null and extract(month from birth_date) = extract(month from now() at time zone ${opts.timeZone}))::int as birthday,
+      count(*) filter (where archived_at is null and visits >= 1 and last_visit < now() - interval '60 days' and next_visit is null)::int as inactive,
+      count(*) filter (where archived_at is null and ranked.p80 is not null and coalesce(sp.total, 0) >= ranked.p80 and coalesce(sp.total, 0) > 0)::int as high_value,
+      count(*) filter (where archived_at is not null)::int as archived
+    from stats left join spent sp on sp.client_id = stats.id, ranked`;
+  return r!;
 }
 
 export async function getClientProfile(tx: Tx, orgId: string, id: string, opts: { includeFinance: boolean; includeInternal: boolean }) {
@@ -152,6 +203,16 @@ export async function getClientProfile(tx: Tx, orgId: string, id: string, opts: 
         from app.payments where organization_id = ${orgId} and client_id = ${id}`
     : [{ total: 0 }];
   const completed = history.filter((h) => h.status === "completed");
+  const services = await tx<{ name: string; n: number; last: Date; interval: number | null }[]>`
+    select x.service_name as name, count(*)::int as n, max(a.starts_at) as last, max(s.return_interval_days) as interval
+    from app.appointment_services x join app.appointments a on a.id = x.appointment_id
+    left join app.services s on s.id = x.service_id
+    where a.organization_id = ${orgId} and a.client_id = ${id} and a.status = 'completed'
+    group by x.service_name order by n desc, last desc limit 5`;
+  const [vip] = opts.includeFinance ? await tx<{ p80: number | null }[]>`
+    select percentile_cont(0.8) within group (order by total) as p80 from (
+      select sum(case when kind = 'payment' then amount_cents else -amount_cents end) as total
+      from app.payments where organization_id = ${orgId} group by client_id) t where total > 0` : [{ p80: null }];
   const professionals = new Map<string, number>();
   for (const h of completed) professionals.set(h.professional_name, (professionals.get(h.professional_name) ?? 0) + 1);
   const now = Date.now();
@@ -175,5 +236,14 @@ export async function getClientProfile(tx: Tx, orgId: string, id: string, opts: 
       avgIntervalDays,
       favoriteProfessional: [...professionals.entries()].sort((a, b) => b[1] - a[1])[0]?.[0] ?? null,
     },
+    services,
+    /** Quando ela deveria voltar: pelo retorno sugerido do último serviço com retorno, ou pela frequência dela. */
+    idealReturn: (() => {
+      const withInterval = services.filter((s) => s.interval).sort((a, b) => b.last.getTime() - a.last.getTime())[0];
+      if (withInterval) return { date: new Date(withInterval.last.getTime() + withInterval.interval! * 86_400_000), reason: `retorno de ${withInterval.name}` };
+      if (lastVisit && avgIntervalDays) return { date: new Date(lastVisit.getTime() + avgIntervalDays * 86_400_000), reason: "pela frequência dela" };
+      return null;
+    })(),
+    isVip: !!(opts.includeFinance && vip?.p80 && spent!.total >= vip.p80 && spent!.total > 0),
   };
 }
