@@ -143,6 +143,27 @@ export async function novaSenhaVitrine(sql: Sql, password: string) {
   return { status: "senha_trocada" as const, email: EMAIL, ...r! };
 }
 
+/**
+ * Preenche o aniversário das clientes da vitrine que ainda não têm (contas criadas antes de existir
+ * essa data). Usa o mesmo cálculo da criação, pelo número do telefone fictício (5511 90000-NNNN), então
+ * o resultado é igual ao de uma vitrine nova. Não mexe em mais nada: atendimentos e senha continuam.
+ */
+export async function preencherAniversariosVitrine(sql: Sql) {
+  const clientes = await sql<{ id: string; phone: string }[]>`
+    select c.id, c.phone_normalized as phone from app.clients c
+    join app.organizations o on o.id = c.organization_id
+    join app.users u on u.id = o.created_by
+    where lower(u.email) = ${EMAIL} and o.is_demo and c.birth_date is null and c.phone_normalized like '551190000%'`;
+  let preenchidas = 0;
+  for (const c of clientes) {
+    const data = aniversario(Number(c.phone.slice(-4)));
+    if (!data) continue;
+    await sql`update app.clients set birth_date = ${data} where id = ${c.id} and birth_date is null`;
+    preenchidas++;
+  }
+  return { status: "aniversarios_preenchidos" as const, sem_data_antes: clientes.length, preenchidas };
+}
+
 /** Cria (ou, com reset, recria) a conta vitrine. Determinístico para a mesma data. */
 export async function criarContaVitrine(sql: Sql, opts: { password: string; reset?: boolean }): Promise<ResultadoVitrine> {
   rnd = prng(20261029);

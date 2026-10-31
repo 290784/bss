@@ -1,14 +1,15 @@
 import { after, NextResponse } from "next/server";
 import { randomBytes, timingSafeEqual } from "node:crypto";
 import { getSql } from "@/server/db";
-import { criarContaVitrine, EMAIL_VITRINE, novaSenhaVitrine, vitrineExiste } from "@/server/modules/vitrine";
+import { criarContaVitrine, EMAIL_VITRINE, novaSenhaVitrine, preencherAniversariosVitrine, vitrineExiste } from "@/server/modules/vitrine";
 
 /**
  * Cria a conta vitrine no banco do ambiente publicado (onde só o servidor tem a credencial do banco).
  * Desligada por padrão: só responde quando VITRINE_SEED_TOKEN está definida e a chave confere.
  * Uso único: GET /api/interno/vitrine?chave=<VITRINE_SEED_TOKEN>[&reset=1] — devolve o login e uma
  * senha nova. `&acao=senha` só gera uma senha nova e mostra um resumo do que existe (rápido; útil se a
- * resposta da criação se perder). Depois de usar, troque ou apague VITRINE_SEED_TOKEN (a chave passou pela URL).
+ * resposta da criação se perder). `&acao=aniversarios` só preenche o aniversário das clientes que ainda
+ * não têm (sem apagar nada nem trocar a senha). Depois de usar, troque ou apague VITRINE_SEED_TOKEN (a chave passou pela URL).
  */
 export const dynamic = "force-dynamic";
 export const maxDuration = 300;
@@ -20,8 +21,10 @@ export async function GET(request: Request) {
   if (given.length !== token.length || !timingSafeEqual(Buffer.from(given), Buffer.from(token)))
     return NextResponse.json({ error: "unauthorized" }, { status: 401 });
 
-  const senha = randomBytes(12).toString("base64url");
   const params = new URL(request.url).searchParams;
+  if (params.get("acao") === "aniversarios")
+    return NextResponse.json(await preencherAniversariosVitrine(getSql()), { headers: { "cache-control": "no-store" } });
+  const senha = randomBytes(12).toString("base64url");
   if (params.get("acao") === "senha") {
     const r = await novaSenhaVitrine(getSql(), senha);
     return NextResponse.json(r ? { ...r, senha } : { status: "nao_existe" }, { headers: { "cache-control": "no-store" } });
