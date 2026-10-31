@@ -27,7 +27,7 @@ export default async function ClientsPage({ searchParams }: { searchParams: Prom
 
   return (
     <div>
-      <PageHeader title="Clientes" description="Histórico, frequência e valor de cada cliente."
+      <PageHeader title="Clientes" description="Suas clientes: quem vem sempre, quem sumiu e quanto cada uma já deixou com você."
         actions={<>
           {can(ctx.role, "clients.manage") && (
             <a href={`/app/clientes/exportar?${qs({})}`} className="inline-flex h-10 items-center gap-2 rounded-[10px] border border-line-strong bg-surface px-4 text-sm font-medium hover:bg-sunken">
@@ -40,7 +40,7 @@ export default async function ClientsPage({ searchParams }: { searchParams: Prom
       <div className="mb-4 flex flex-col gap-3 md:flex-row md:items-center">
         <form className="flex-1" role="search">
           <input type="hidden" name="segmento" value={segment} />
-          <input name="q" defaultValue={sp.q} placeholder="Buscar por nome, telefone ou e-mail" aria-label="Buscar"
+          <input name="q" defaultValue={sp.q} placeholder="Busque pelo nome, telefone ou e-mail" aria-label="Buscar"
             className="h-10 w-full rounded-[10px] border border-line-strong bg-surface px-3 text-sm focus:border-accent focus:ring-2 focus:ring-accent-muted focus:outline-none md:max-w-sm" />
         </form>
         <nav className="-mx-4 flex gap-1.5 overflow-x-auto px-4 md:mx-0 md:px-0" aria-label="Segmentos">
@@ -55,8 +55,8 @@ export default async function ClientsPage({ searchParams }: { searchParams: Prom
 
       <Card className="overflow-hidden">
         {rows.length === 0 ? (
-          <EmptyState icon={Users} title={sp.q ? "Nenhuma cliente encontrada" : "Nenhuma cliente neste segmento"}
-            description={sp.q ? "Confira a grafia ou busque pelo telefone." : "Clientes cadastradas pela equipe ou pela página de agendamento aparecem aqui."} />
+          <EmptyState icon={Users} title={sp.q ? "Não achei ninguém com esse nome" : "Ninguém por aqui ainda"}
+            description={sp.q ? "Confere a escrita ou tenta pelo telefone." : "As clientes que você cadastrar ou que marcarem pelo seu link aparecem aqui."} />
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full min-w-[640px] text-sm">

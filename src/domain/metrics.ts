@@ -4,23 +4,23 @@
  */
 export const METRIC_DEFINITIONS = {
   revenue_received:
-    "Soma dos pagamentos registrados no período (data do pagamento), descontados os estornos. Não inclui valores apenas agendados.",
+    "Tudo o que entrou no caixa no período (pela data do pagamento), já tirando os estornos. O que só está agendado não entra aqui.",
   scheduled_value:
-    "Valor dos atendimentos com início no período e status aguardando, confirmado ou concluído (preço − desconto). É uma previsão, não dinheiro recebido.",
+    "Soma dos atendimentos do período que estão aguardando, confirmados ou feitos (preço − desconto). É uma previsão: ainda não é dinheiro no caixa.",
   receivable:
-    "Atendimentos concluídos cujo valor (preço − desconto) ainda não foi totalmente pago. Considera pagamentos menos estornos.",
+    "Atendimentos já feitos que ainda não foram pagos por completo (preço − desconto, menos o que já entrou).",
   produced_value:
-    "Valor (preço − desconto) dos atendimentos concluídos no período, pagos ou não. Base para comissões.",
-  appointments_count: "Atendimentos com início no período, exceto cancelados.",
-  no_shows: "Atendimentos do período marcados como falta.",
-  no_show_rate: "Faltas ÷ (concluídos + faltas) do período. Mostra quanto do que deveria acontecer não aconteceu.",
+    "Valor dos atendimentos feitos no período (preço − desconto), pagos ou não. É a base para comissões.",
+  appointments_count: "Atendimentos marcados para o período, sem contar os cancelados.",
+  no_shows: "Clientes que tinham horário no período e não vieram.",
+  no_show_rate: "Faltas ÷ (feitos + faltas) no período: de quem tinha horário, quantas não vieram.",
   occupancy:
-    "Minutos ocupados por atendimentos ativos ÷ minutos de expediente cadastrados das profissionais ativas no período. Bloqueios reduzem o expediente.",
-  average_ticket: "Receita recebida ÷ número de atendimentos concluídos no período.",
-  new_clients: "Clientes cujo primeiro atendimento concluído aconteceu no período.",
-  returning_clients: "Clientes com atendimento concluído no período que já tinham um atendimento concluído antes.",
+    "Quanto do horário de atendimento das profissionais está ocupado com clientes no período. Bloqueios (folgas, compromissos) não contam como horário disponível.",
+  average_ticket: "Quanto entrou no caixa ÷ atendimentos feitos no período: em média, quanto cada cliente deixa.",
+  new_clients: "Clientes que vieram pela primeira vez neste período.",
+  returning_clients: "Clientes que já tinham vindo antes e voltaram neste período.",
   inactive_clients:
-    "Clientes com pelo menos um atendimento concluído, sem visita há mais de 60 dias e sem agendamento futuro.",
+    "Clientes que já vieram, estão há mais de 60 dias sem aparecer e não têm horário marcado.",
 } as const;
 
 export type MetricKey = keyof typeof METRIC_DEFINITIONS;

@@ -10,6 +10,7 @@ import { configuredProviders } from "@/server/modules/messaging";
 import { OrganizationForm } from "./organization-form";
 import { DangerZone } from "./danger-zone";
 import { CopyLink } from "../copy-link";
+import { plural } from "@/lib/text";
 
 export const metadata: Metadata = { title: "Configurações" };
 
@@ -46,7 +47,7 @@ export default async function SettingsPage() {
 
   return (
     <div>
-      <PageHeader title="Configurações" description="Dados do negócio, regras de agendamento, assinatura e privacidade." />
+      <PageHeader title="Configurações" description="Tudo do seu negócio num lugar só: dados, regras de agendamento, plano e privacidade." />
       <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_380px]">
         <div className="flex flex-col gap-6">
           <OrganizationForm org={org} readOnly={ctx.access === "read_only"} />
@@ -54,7 +55,7 @@ export default async function SettingsPage() {
         <div className="flex flex-col gap-6">
           <Card data-theme="dark" className="bg-royal ring-glass relative overflow-hidden border-transparent p-5 text-white">
             <h2 className="text-[15px] font-semibold">Página de agendamento</h2>
-            <p className="mt-1 mb-3 text-xs text-white/65">{org.online_booking_enabled ? "Ativa — clientes podem solicitar horários." : "Desativada — a página mostra que o agendamento online está indisponível."}</p>
+            <p className="mt-1 mb-3 text-xs text-white/65">{org.online_booking_enabled ? "No ar: as clientes já podem marcar pelo seu link. ✨" : "Pausada: o seu link avisa que o agendamento online está fechado por enquanto."}</p>
             <CopyLink url={`${appUrl}/b/${ctx.org.slug}`} />
           </Card>
 
@@ -66,16 +67,16 @@ export default async function SettingsPage() {
                 {Object.values(PLANS).map((p) => (
                   <li key={p.id} className={cn("rounded-lg border px-3 py-2 text-sm", ctx.plan.id === p.id ? "border-accent bg-accent-subtle" : "border-line")}>
                     <div className="flex items-center justify-between font-medium">{p.name}{ctx.plan.id === p.id && <Badge variant="plum">Atual</Badge>}</div>
-                    <div className="text-xs text-muted">{p.tagline} · até {p.maxProfessionals} profissional(is) · {p.maxUnits} unidade(s)</div>
+                    <div className="text-xs text-muted">{p.tagline} · até {plural(p.maxProfessionals, "profissional", "profissionais")} · {plural(p.maxUnits, "unidade")}</div>
                   </li>
                 ))}
               </ul>
-              <p className="mt-3 text-xs text-muted">Preços e cobrança automática ainda não estão disponíveis: o provedor de pagamentos será integrado em uma próxima etapa. Nenhum valor é cobrado durante o teste.</p>
+              <p className="mt-3 text-xs text-muted">Os planos pagos ainda estão chegando. Durante o teste você usa tudo de graça e nada é cobrado.</p>
             </div>
           </Card>
 
           <Card>
-            <CardHeader title="Canais de mensagem" description="Lembretes e confirmações automáticas" />
+            <CardHeader title="Canais de mensagem" description="Para mandar lembretes e confirmações sozinha" />
             <ul className="px-5 pt-3 pb-5 text-sm">
               {(["whatsapp", "email"] as const).map((ch) => {
                 const connected = providers.some((p) => p.channel === ch);
@@ -86,12 +87,12 @@ export default async function SettingsPage() {
                   </li>
                 );
               })}
-              <li className="pt-2 text-xs text-muted">Enquanto nenhum canal estiver conectado, as mensagens ficam registradas como “não enviadas” no agendamento. Nada é enviado às clientes.</li>
+              <li className="pt-2 text-xs text-muted">Enquanto nada estiver conectado, as mensagens ficam anotadas como “não enviadas” no agendamento e nada vai para as clientes. Você pode mandar a confirmação pelo seu WhatsApp direto da agenda.</li>
             </ul>
           </Card>
 
           <Card>
-            <CardHeader title="Equipe com acesso" description="Convites por e-mail chegam em breve" />
+            <CardHeader title="Equipe com acesso" description="Convites por e-mail chegam em breve 💌" />
             <ul className="divide-y divide-line px-5 pt-2 pb-4 text-sm">
               {members.map((m) => (
                 <li key={m.user_id} className="flex items-center justify-between py-2">
@@ -109,7 +110,7 @@ export default async function SettingsPage() {
                 {auditRows.map((a, i) => (
                   <li key={i} className="py-2">
                     <div>{ACTION_LABEL[a.action] ?? a.action}</div>
-                    <div className="text-xs text-muted">{a.actor_user_id ? names.get(a.actor_user_id)?.full_name ?? "—" : "Página pública"} · {formatInTz(a.created_at, tz, { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" })}</div>
+                    <div className="text-xs text-muted">{a.actor_user_id ? names.get(a.actor_user_id)?.full_name ?? "—" : "Seu link de agendamento"} · {formatInTz(a.created_at, tz, { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" })}</div>
                   </li>
                 ))}
               </ul>

@@ -40,7 +40,7 @@ export async function saveProfessional(tx: Tx, actor: Actor, plan: Plan, input: 
       update app.professionals set display_name = ${input.displayName}, specialty = ${input.specialty ?? null}, color = ${input.color},
         commission_percent = ${input.commissionPercent}, accepts_online = ${input.acceptsOnline}
       where organization_id = ${orgId} and id = ${id}`;
-    if (r.count === 0) throw new DomainError("Profissional não encontrada.");
+    if (r.count === 0) throw new DomainError("Não achei essa profissional.");
   }
   await tx`delete from app.professional_services where organization_id = ${orgId} and professional_id = ${pid!}`;
   for (const sid of input.serviceIds)
@@ -99,7 +99,7 @@ export const timeOffSchema = z.object({
 export async function addTimeOff(tx: Tx, actor: Actor, timezone: string, input: z.infer<typeof timeOffSchema>) {
   const start = zonedDateTime(input.startDate, input.startTime, timezone);
   const end = zonedDateTime(input.endDate, input.endTime, timezone);
-  if (end <= start) throw new DomainError("O fim do bloqueio deve ser depois do início.");
+  if (end <= start) throw new DomainError("O fim do bloqueio precisa ser depois do início.");
   const [r] = await tx<{ id: string }[]>`
     insert into app.time_off (organization_id, professional_id, starts_at, ends_at, reason, created_by)
     values (${actor.organizationId}, ${input.professionalId}, ${start}, ${end}, ${input.reason ?? null}, ${actor.userId})

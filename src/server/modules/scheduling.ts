@@ -25,7 +25,7 @@ export async function loadPolicy(tx: Tx, orgId: string): Promise<BookingPolicy> 
   }[]>`select timezone, min_advance_minutes, max_advance_days, slot_interval_minutes, online_requires_approval,
               online_booking_enabled, cancellation_notice_hours
        from app.organizations where id = ${orgId}`;
-  if (!o) throw new DomainError("Organização não encontrada.");
+  if (!o) throw new DomainError("Não achei o seu negócio. Entra de novo?");
   return {
     timezone: o.timezone,
     minAdvanceMinutes: o.min_advance_minutes,
@@ -41,15 +41,15 @@ export type ServicePick = { id: string; name: string; price_cents: number; durat
 
 /** Carrega serviços ativos na ordem informada. */
 export async function loadServices(tx: Tx, orgId: string, ids: string[], opts: { onlineOnly?: boolean } = {}): Promise<ServicePick[]> {
-  if (ids.length === 0) throw new DomainError("Escolha pelo menos um serviço.");
-  if (new Set(ids).size !== ids.length) throw new DomainError("Serviço repetido no agendamento.");
+  if (ids.length === 0) throw new DomainError("Escolhe pelo menos um serviço. ✨");
+  if (new Set(ids).size !== ids.length) throw new DomainError("Esse serviço apareceu duas vezes no agendamento.");
   const rows = await tx<(ServicePick & { online_bookable: boolean })[]>`
     select id, name, price_cents, duration_minutes, buffer_after_minutes, online_bookable
     from app.services where organization_id = ${orgId} and is_active and id in ${tx(ids)}`;
   const byId = new Map(rows.map((r) => [r.id, r]));
   return ids.map((id) => {
     const s = byId.get(id);
-    if (!s || (opts.onlineOnly && !s.online_bookable)) throw new DomainError("Serviço indisponível.");
+    if (!s || (opts.onlineOnly && !s.online_bookable)) throw new DomainError("Esse serviço não está disponível agora.");
     return s;
   });
 }
@@ -141,14 +141,14 @@ export async function assertSlotBookable(
 ) {
   const [prof] = await tx<{ id: string; is_active: boolean }[]>`
     select id, is_active from app.professionals where organization_id = ${orgId} and id = ${professionalId} for update`;
-  if (!prof) throw new DomainError("Profissional não encontrada.");
-  if (!prof.is_active) throw new DomainError("Esta profissional está inativa.");
+  if (!prof) throw new DomainError("Não achei essa profissional.");
+  if (!prof.is_active) throw new DomainError("Essa profissional está desativada.");
   if (!opts.squeezeIn) {
     const hours = await loadWorkingHours(tx, orgId, professionalId);
     if (!fitsWorkingHours(range, date, policy.timezone, hours))
-      throw new DomainError("O horário está fora do expediente da profissional.", "outside_hours");
+      throw new DomainError("Esse horário está fora do expediente da profissional.", "outside_hours");
   }
   const busy = await loadBusy(tx, orgId, professionalId, range.start, blockedUntil, opts.excludeAppointmentId);
   if (!opts.squeezeIn && busy.some((b) => b.start < blockedUntil && range.start < b.end))
-    throw new DomainError("Este horário já está ocupado. Escolha outro ou marque como encaixe.", "conflict");
+    throw new DomainError("Esse horário já está ocupado. Escolhe outro ou marca como encaixe.", "conflict");
 }

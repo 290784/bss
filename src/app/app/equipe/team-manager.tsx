@@ -10,6 +10,7 @@ import { useToast } from "@/components/ui/toast";
 import { formatInTz } from "@/lib/time";
 import { cn } from "@/lib/cn";
 import { addTimeOffAction, removeTimeOffAction, saveHoursAction, saveProfessionalAction, toggleProfessionalAction } from "./actions";
+import { plural } from "@/lib/text";
 
 const COLORS = ["#7c3a5c", "#3f6f6a", "#8a5a2b", "#4b5aa8", "#a0466b", "#5f7a3a", "#6b4fa0", "#2f6f8f"];
 const DAYS = ["Domingo", "Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado"];
@@ -35,9 +36,9 @@ export function TeamManager({ professionals, services, timeOff, timeZone, atLimi
       <section>
         <div className="mb-3 flex items-center justify-between">
           <h2 className="text-[15px] font-semibold">Profissionais</h2>
-          {!readOnly && <Button size="sm" onClick={() => setEditing("new")} disabled={atLimit} title={atLimit ? "Limite do plano atingido" : undefined}><Plus className="h-4 w-4" />Adicionar</Button>}
+          {!readOnly && <Button size="sm" onClick={() => setEditing("new")} disabled={atLimit} title={atLimit ? "Sua equipe chegou ao limite do plano" : undefined}><Plus className="h-4 w-4" />Adicionar</Button>}
         </div>
-        {atLimit && !readOnly && <p className="mb-3 rounded-lg bg-highlight-subtle px-3 py-2 text-[13px] text-highlight-text">Você atingiu o limite de profissionais do plano atual. Para adicionar mais, será preciso fazer upgrade.</p>}
+        {atLimit && !readOnly && <p className="mb-3 rounded-lg bg-highlight-subtle px-3 py-2 text-[13px] text-highlight-text">Para trazer mais gente para o time, é só mudar de plano. 💜</p>}
         <div className="grid gap-3 md:grid-cols-2">
           {professionals.map((p) => (
             <Card key={p.id} className={cn("p-4", !p.is_active && "opacity-60")}>
@@ -45,7 +46,7 @@ export function TeamManager({ professionals, services, timeOff, timeZone, atLimi
                 <Avatar name={p.display_name} color={p.color} className="h-10 w-10 text-sm" />
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-2 font-medium">{p.display_name}{!p.is_active && <Badge>Inativa</Badge>}</div>
-                  <div className="text-[13px] text-muted">{p.specialty || "Sem especialidade"} · {p.service_ids.length} serviço(s){p.commission_percent ? ` · comissão ${p.commission_percent}%` : ""}</div>
+                  <div className="text-[13px] text-muted">{p.specialty || "Sem especialidade"} · {plural(p.service_ids.length, "serviço")}{p.commission_percent ? ` · comissão ${p.commission_percent}%` : ""}</div>
                 </div>
               </div>
               <ul className="mt-3 grid grid-cols-1 gap-0.5 text-xs text-ink-soft">
@@ -67,17 +68,17 @@ export function TeamManager({ professionals, services, timeOff, timeZone, atLimi
       </section>
 
       <Card>
-        <CardHeader title="Bloqueios e feriados" description="Férias, cursos, feriados e indisponibilidades"
+        <CardHeader title="Folgas, férias e feriados" description="Quando alguém (ou o salão todo) não vai atender"
           action={!readOnly ? <Button size="sm" variant="secondary" onClick={() => setBlocking(true)}><Plus className="h-3.5 w-3.5" />Bloquear</Button> : undefined} />
         <div className="px-5 pt-3 pb-5">
           {timeOff.length === 0 ? (
-            <EmptyState className="py-6" icon={CalendarOff} title="Nenhum bloqueio futuro" description="Bloqueios removem os horários da agenda e da página de agendamento." />
+            <EmptyState className="py-6" icon={CalendarOff} title="Nenhuma folga marcada" description="Os dias bloqueados somem da agenda e do seu link de agendamento." />
           ) : (
             <ul className="divide-y divide-line">
               {timeOff.map((t) => (
                 <li key={t.id} className="flex items-center gap-3 py-2.5 text-sm">
                   <div className="min-w-0 flex-1">
-                    <div className="font-medium">{t.professional_name ?? "Todo o negócio"}{t.reason ? <span className="font-normal text-muted"> · {t.reason}</span> : null}</div>
+                    <div className="font-medium">{t.professional_name ?? "O salão todo"}{t.reason ? <span className="font-normal text-muted"> · {t.reason}</span> : null}</div>
                     <div className="text-xs text-muted tabular">
                       {formatInTz(new Date(t.starts_at), timeZone, { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" })} → {formatInTz(new Date(t.ends_at), timeZone, { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" })}
                     </div>
@@ -94,7 +95,7 @@ export function TeamManager({ professionals, services, timeOff, timeZone, atLimi
       {hoursFor && <HoursDialog pro={hoursFor} onClose={() => setHoursFor(null)} onSaved={() => { setHoursFor(null); router.refresh(); }} />}
       {blocking && <TimeOffDialog professionals={professionals.filter((p) => p.is_active)} onClose={() => setBlocking(false)} onSaved={() => { setBlocking(false); router.refresh(); }} />}
       <ConfirmDialog open={!!removeId} onClose={() => setRemoveId(null)} title="Remover bloqueio?" confirmLabel="Remover" danger
-        description="Os horários voltarão a ficar disponíveis na agenda e no agendamento online."
+        description="Os horários voltam a ficar livres na agenda e no seu link."
         onConfirm={() => { const id = removeId!; setRemoveId(null); act(removeTimeOffAction(id)); }} />
     </div>
   );
@@ -120,7 +121,7 @@ function ProfessionalDialog({ pro, services, onClose, onSaved }: { pro: Pro | nu
       <div className="flex flex-col gap-4">
         {error && <FormMessage state={{ ok: false, message: error }} />}
         <Field label="Nome de exibição" htmlFor="pn"><Input id="pn" value={name} onChange={(e) => setName(e.target.value)} /></Field>
-        <Field label="Especialidade" htmlFor="ps" optional><Input id="ps" value={specialty} onChange={(e) => setSpecialty(e.target.value)} placeholder="Ex.: Nail designer" /></Field>
+        <Field label="Especialidade" htmlFor="ps" optional><Input id="ps" value={specialty} onChange={(e) => setSpecialty(e.target.value)} placeholder="Ex.: Nail designer, lash, cabeleireira" /></Field>
         <fieldset>
           <legend className="mb-1.5 text-[13px] font-medium text-ink-soft">Cor na agenda</legend>
           <div className="flex flex-wrap gap-2">
@@ -130,10 +131,10 @@ function ProfessionalDialog({ pro, services, onClose, onSaved }: { pro: Pro | nu
             ))}
           </div>
         </fieldset>
-        <Field label="Comissão padrão (%)" htmlFor="pc" hint="Usada nos relatórios de comissão (em breve)."><Input id="pc" type="number" min={0} max={100} value={commission} onChange={(e) => setCommission(e.target.value)} /></Field>
-        <Checkbox checked={online} onChange={(e) => setOnline(e.target.checked)} label="Aparece no agendamento online" />
+        <Field label="Comissão padrão (%)" htmlFor="pc" hint="Vai ser usada nos relatórios de comissão (em breve!)."><Input id="pc" type="number" min={0} max={100} value={commission} onChange={(e) => setCommission(e.target.value)} /></Field>
+        <Checkbox checked={online} onChange={(e) => setOnline(e.target.checked)} label="Aparece no seu link de agendamento" />
         <fieldset>
-          <legend className="mb-1.5 text-[13px] font-medium text-ink-soft">Serviços que realiza</legend>
+          <legend className="mb-1.5 text-[13px] font-medium text-ink-soft">Serviços que ela faz</legend>
           <div className="flex flex-col gap-2">
             {services.map((s) => (
               <Checkbox key={s.id} checked={serviceIds.includes(s.id)} label={s.name}
@@ -141,7 +142,7 @@ function ProfessionalDialog({ pro, services, onClose, onSaved }: { pro: Pro | nu
             ))}
           </div>
         </fieldset>
-        {!pro && <p className="text-xs text-muted">O expediente inicial é copiado da primeira profissional e pode ser ajustado em “Horários”.</p>}
+        {!pro && <p className="text-xs text-muted">Ela começa com os mesmos horários da primeira profissional; dá para ajustar em “Horários”.</p>}
       </div>
     </Dialog>
   );
@@ -162,7 +163,7 @@ function HoursDialog({ pro, onClose, onSaved }: { pro: Pro; onClose: () => void;
     if (r?.ok) { toast(r.message!); onSaved(); } else if (r) setError(r.message);
   });
   return (
-    <Dialog open onClose={onClose} title={`Horários de ${pro.display_name}`} description="Adicione um segundo período para registrar pausas." side="right"
+    <Dialog open onClose={onClose} title={`Horários de ${pro.display_name}`} description="Coloque um segundo período para registrar o almoço ou outras pausas." side="right"
       footer={<><Button variant="ghost" onClick={onClose}>Cancelar</Button><Button onClick={save} disabled={pending}>{pending ? "Salvando…" : "Salvar horários"}</Button></>}>
       {error && <div className="mb-3"><FormMessage state={{ ok: false, message: error }} /></div>}
       <ul className="flex flex-col divide-y divide-line">
@@ -220,7 +221,7 @@ function TimeOffDialog({ professionals, onClose, onSaved }: { professionals: Pro
         {error && <FormMessage state={{ ok: false, message: error }} />}
         <Field label="Quem" htmlFor="tp">
           <Select id="tp" value={pro} onChange={(e) => setPro(e.target.value)}>
-            <option value="all">Todo o negócio (feriado, reforma…)</option>
+            <option value="all">O salão todo (feriado, reforma…)</option>
             {professionals.map((p) => <option key={p.id} value={p.id}>{p.display_name}</option>)}
           </Select>
         </Field>
@@ -235,7 +236,7 @@ function TimeOffDialog({ professionals, onClose, onSaved }: { professionals: Pro
             <Field label="Às" htmlFor="et"><Input id="et" type="time" value={endTime} onChange={(e) => setEndTime(e.target.value)} /></Field>
           </div>
         )}
-        <Field label="Motivo" htmlFor="rs" optional><Input id="rs" value={reason} onChange={(e) => setReason(e.target.value)} placeholder="Ex.: Férias, curso, feriado" /></Field>
+        <Field label="Motivo" htmlFor="rs" optional><Input id="rs" value={reason} onChange={(e) => setReason(e.target.value)} placeholder="Ex.: férias, curso, feriado" /></Field>
       </div>
     </Dialog>
   );

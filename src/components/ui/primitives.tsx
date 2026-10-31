@@ -1,6 +1,5 @@
 import type { ComponentProps, ReactNode } from "react";
 import type { LucideIcon } from "lucide-react";
-import { Info } from "lucide-react";
 import { cn } from "@/lib/cn";
 import { Sparkle } from "@/components/brand/sparkles";
 import { STATUS_LABEL, type AppointmentStatus } from "@/domain/appointment-status";
@@ -82,18 +81,7 @@ export function Skeleton({ className }: { className?: string }) {
 }
 
 /** Explicação de uma métrica. Acessível por teclado (foco) e toque. */
-export function InfoTip({ text, label = "Como é calculado" }: { text: string; label?: string }) {
-  return (
-    <span className="group relative inline-flex align-middle">
-      <button type="button" className="relative rounded-full p-0.5 text-muted after:absolute after:-inset-3 after:content-[''] hover:text-ink focus:text-ink" aria-label={`${label}: ${text}`}>
-        <Info className="h-3.5 w-3.5" />
-      </button>
-      <span role="tooltip" className="pointer-events-none absolute bottom-full left-1/2 z-30 mb-2 hidden w-64 max-w-[70vw] -translate-x-1/2 rounded-lg bg-raised px-3 py-2 text-xs leading-relaxed font-normal text-ink ring-1 ring-line-strong shadow-[var(--shadow-pop)] group-focus-within:block group-hover:block">
-        {text}
-      </span>
-    </span>
-  );
-}
+export { InfoTip } from "./info-tip";
 
 export function Avatar({ name, color, className }: { name: string; color?: string; className?: string }) {
   const parts = name.trim().split(/\s+/);

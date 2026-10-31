@@ -14,17 +14,17 @@ const safeNext = (v: FormDataEntryValue | null) => {
 };
 
 const signupSchema = z.object({
-  fullName: z.string().trim().min(2, "Informe seu nome.").max(120),
-  email: z.email("E-mail inválido.").max(160).transform((v) => v.toLowerCase().trim()),
-  password: z.string().min(10, "Use pelo menos 10 caracteres.").max(200),
-  acceptTerms: z.literal("on", { error: "É preciso aceitar os termos e a política de privacidade." }),
+  fullName: z.string().trim().min(2, "Como você se chama?").max(120),
+  email: z.email("Esse e-mail não parece certo. Confere?").max(160).transform((v) => v.toLowerCase().trim()),
+  password: z.string().min(10, "A senha precisa de pelo menos 10 caracteres.").max(200),
+  acceptTerms: z.literal("on", { error: "Para continuar, é só aceitar os termos e a política de privacidade." }),
 });
 
 export async function signUp(_: ActionState, form: FormData): Promise<ActionState> {
   const ip = await clientIp();
-  if (!(await rateLimit(`signup:${ip}`, 10, 3600))) return { ok: false, message: "Muitas tentativas. Tente novamente mais tarde." };
+  if (!(await rateLimit(`signup:${ip}`, 10, 3600))) return { ok: false, message: "Muitas tentativas seguidas. Respira e tenta de novo daqui a pouquinho." };
   const parsed = signupSchema.safeParse(Object.fromEntries(form));
-  if (!parsed.success) return { ok: false, message: "Revise os campos destacados.", fieldErrors: z.flattenError(parsed.error).fieldErrors };
+  if (!parsed.success) return { ok: false, message: "Dá uma olhadinha nos campos destacados.", fieldErrors: z.flattenError(parsed.error).fieldErrors };
   const { fullName, email, password } = parsed.data;
   const hash = await hashPassword(password);
   let userId: string;
@@ -35,7 +35,7 @@ export async function signUp(_: ActionState, form: FormData): Promise<ActionStat
     await withSystem((tx) => trackEvent(tx, "signup.completed", null, userId));
   } catch (err) {
     if (pgErrorCode(err) === PG_UNIQUE_VIOLATION)
-      return { ok: false, message: "Já existe uma conta com este e-mail. Entre ou recupere o acesso.", fieldErrors: { email: ["E-mail já cadastrado."] } };
+      return { ok: false, message: "Você já tem conta com esse e-mail! É só entrar.", fieldErrors: { email: ["Esse e-mail já tem conta."] } };
     throw err;
   }
   await createSession(userId);
@@ -47,11 +47,11 @@ export async function signIn(_: ActionState, form: FormData): Promise<ActionStat
   const password = String(form.get("password") ?? "");
   const ip = await clientIp();
   const allowed = (await rateLimit(`login:ip:${ip}`, 30, 900)) && (await rateLimit(`login:email:${email}`, 8, 900));
-  if (!allowed) return { ok: false, message: "Muitas tentativas de acesso. Aguarde alguns minutos." };
+  if (!allowed) return { ok: false, message: "Muitas tentativas seguidas. Espera uns minutinhos e tenta de novo." };
   const [u] = await withSystem((tx) => tx<{ id: string; password_hash: string }[]>`
     select id, password_hash from app.users where lower(email) = ${email}`);
   const ok = await verifyPassword(password, u?.password_hash ?? DUMMY_HASH);
-  if (!u || !ok) return { ok: false, message: "E-mail ou senha incorretos." };
+  if (!u || !ok) return { ok: false, message: "E-mail ou senha não batem. Tenta de novo?" };
   await createSession(u.id);
   redirect(safeNext(form.get("next")));
 }

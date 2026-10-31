@@ -408,6 +408,10 @@
   [data-theme="light"] .ambient { --rib-glow: 0.22; --rib-core: 0.35; }
 }
 
+/* Painel trocando de período: os números esmaecem até os novos chegarem. */
+html[data-atualizando] main { opacity: 0.55; transition: opacity 0.2s ease; pointer-events: none; }
+html[data-atualizando] main [aria-label="Período"] { opacity: 1; pointer-events: auto; }
+
 @keyframes shimmer { to { background-position: -200% 0; } }
 @keyframes ge-escrever { to { stroke-dashoffset: 0; } }
 @keyframes toast-time { from { transform: scaleX(1); } to { transform: scaleX(0); } }

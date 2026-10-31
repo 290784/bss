@@ -177,7 +177,7 @@ function Notifications({ items }: { items: ShellProps["notifications"] }) {
         <div className="absolute right-0 z-40 mt-2 w-[min(92vw,360px)] overflow-hidden rounded-xl border border-line bg-surface shadow-[var(--shadow-pop)]">
           <div className="border-b border-line px-4 py-3 text-sm font-semibold">Notificações</div>
           {list.length === 0 ? (
-            <p className="px-4 py-8 text-center text-sm text-muted">Nada por aqui. Avisaremos quando chegar um agendamento online.</p>
+            <p className="px-4 py-8 text-center text-sm text-muted">Tudo tranquilo por aqui. Quando uma cliente marcar pelo seu link, eu te aviso! 💜</p>
           ) : (
             <ul className="max-h-[60vh] divide-y divide-line overflow-y-auto">
               {list.map((n) => (

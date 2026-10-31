@@ -25,7 +25,7 @@ export function ServicesManager({ services, professionals, readOnly }: { service
     <>
       {!readOnly && <div className="mb-4 flex justify-end"><Button onClick={() => setEditing("new")}><Plus className="h-4 w-4" />Novo serviço</Button></div>}
       {services.length === 0 ? (
-        <Card><EmptyState icon={Scissors} title="Nenhum serviço cadastrado" description="Cadastre seus serviços para poder agendar e abrir o agendamento online." /></Card>
+        <Card><EmptyState icon={Scissors} title="Nenhum serviço por aqui ainda" description="Cadastre seus serviços para começar a marcar horários e liberar o seu link de agendamento." /></Card>
       ) : (
         <div className="flex flex-col gap-6">
           {[...groups.entries()].map(([cat, list]) => (
@@ -38,11 +38,11 @@ export function ServicesManager({ services, professionals, readOnly }: { service
                       <div className="flex items-center gap-2 text-sm font-medium">
                         {s.name}
                         {s.online_bookable && s.is_active && <Badge variant="plum"><Globe className="h-3 w-3" />Online</Badge>}
-                        {s.professional_ids.length === 0 && s.is_active && <Badge variant="warning">Sem profissional</Badge>}
+                        {s.professional_ids.length === 0 && s.is_active && <Badge variant="warning">Ninguém faz ainda</Badge>}
                       </div>
                       <div className="mt-0.5 text-[13px] text-muted">
-                        {s.duration_minutes} min{s.buffer_after_minutes ? ` + ${s.buffer_after_minutes} min de preparação` : ""}
-                        {s.return_interval_days ? ` · retorno sugerido em ${s.return_interval_days} dias` : ""}
+                        {s.duration_minutes} min{s.buffer_after_minutes ? ` + ${s.buffer_after_minutes} min de preparo` : ""}
+                        {s.return_interval_days ? ` · ideal voltar em ${s.return_interval_days} dias` : ""}
                       </div>
                     </button>
                     <div className="flex items-center gap-3">
@@ -88,17 +88,17 @@ function ServiceDialog({ service, professionals, categories, onClose }: { servic
         <div className="grid grid-cols-2 gap-4">
           <Field label="Preço (R$)" htmlFor="price" error={fe?.price}><Input id="price" name="price" inputMode="decimal" defaultValue={service ? (service.price_cents / 100).toFixed(2).replace(".", ",") : ""} required /></Field>
           <Field label="Duração (min)" htmlFor="durationMinutes" error={fe?.durationMinutes}><Input id="durationMinutes" name="durationMinutes" type="number" min={5} step={5} defaultValue={service?.duration_minutes ?? 60} /></Field>
-          <Field label="Preparação/limpeza (min)" htmlFor="bufferAfterMinutes" hint="Bloqueado após o atendimento."><Input id="bufferAfterMinutes" name="bufferAfterMinutes" type="number" min={0} step={5} defaultValue={service?.buffer_after_minutes ?? 0} /></Field>
-          <Field label="Retorno sugerido (dias)" htmlFor="returnIntervalDays" optional><Input id="returnIntervalDays" name="returnIntervalDays" type="number" min={1} defaultValue={service?.return_interval_days ?? ""} /></Field>
+          <Field label="Preparo e limpeza (min)" htmlFor="bufferAfterMinutes" hint="Fica reservado depois do atendimento."><Input id="bufferAfterMinutes" name="bufferAfterMinutes" type="number" min={0} step={5} defaultValue={service?.buffer_after_minutes ?? 0} /></Field>
+          <Field label="Ideal voltar em (dias)" htmlFor="returnIntervalDays" optional><Input id="returnIntervalDays" name="returnIntervalDays" type="number" min={1} defaultValue={service?.return_interval_days ?? ""} /></Field>
         </div>
-        <Field label="Descrição" htmlFor="description" optional hint="Aparece na página de agendamento online."><Textarea id="description" name="description" defaultValue={service?.description ?? ""} maxLength={1000} /></Field>
+        <Field label="Descrição" htmlFor="description" optional hint="Aparece no seu link de agendamento."><Textarea id="description" name="description" defaultValue={service?.description ?? ""} maxLength={1000} /></Field>
         <fieldset>
-          <legend className="mb-1.5 text-[13px] font-medium text-ink-soft">Quem realiza</legend>
+          <legend className="mb-1.5 text-[13px] font-medium text-ink-soft">Quem faz</legend>
           <div className="flex flex-col gap-2">
             {professionals.map((p) => <Checkbox key={p.id} name="professionalIds" value={p.id} defaultChecked={service ? service.professional_ids.includes(p.id) : true} label={p.name} />)}
           </div>
         </fieldset>
-        <Checkbox name="onlineBookable" defaultChecked={service?.online_bookable ?? true} label="Disponível no agendamento online" />
+        <Checkbox name="onlineBookable" defaultChecked={service?.online_bookable ?? true} label="Aparece no seu link de agendamento" />
         <div className="flex justify-end pt-2"><SubmitButton pending={pending}>Salvar serviço</SubmitButton></div>
       </ActionForm>
     </Dialog>

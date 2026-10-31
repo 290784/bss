@@ -130,7 +130,7 @@ describe("agendamento online → comprovante, aviso à equipe e sugestões", () 
     await expect(asTenant(sql, A.ownerId, A.orgId, (tx) =>
       addServiceToAppointment(tx, actor(), { appointmentId: apptId, serviceId: svc.gel! }))).rejects.toThrow(/já está/);
     await expect(asTenant(sql, A.ownerId, A.orgId, (tx) =>
-      addServiceToAppointment(tx, actor(), { appointmentId: apptId, serviceId: svc.massagem! }))).rejects.toThrow(/não realiza/);
+      addServiceToAppointment(tx, actor(), { appointmentId: apptId, serviceId: svc.massagem! }))).rejects.toThrow(/não faz/);
     const r = (await withSystem((tx) => getReceipt(tx, A.slug, token), sql))!;
     expect(r.services.map((s) => s.name)).toEqual(["Manicure", "Esmaltação em gel"]); // comprovante já mostra o novo total
   });
@@ -193,7 +193,7 @@ describe("onda 1: desfazer e primeiro horário livre", () => {
     await asTenant(sql, A.ownerId, A.orgId, (tx) => changeStatus(tx, actor(), appt.id, "cancelled", "engano"));
     const manager = await addMember(sql, A.orgId, "manager");
     await expect(asTenant(sql, manager, A.orgId, (tx) => undoLastStatusChange(tx, { userId: manager, organizationId: A.orgId }, appt.id)))
-      .rejects.toThrow(/Não há uma mudança recente/);
+      .rejects.toThrow(/nada recente para desfazer/);
     await asTenant(sql, A.ownerId, A.orgId, (tx) => undoLastStatusChange(tx, actor(), appt.id));
     const [a] = await sql`select status, cancelled_at, cancel_reason from app.appointments where id = ${appt.id}`;
     expect(a).toMatchObject({ status: "confirmed", cancelled_at: null, cancel_reason: null });
@@ -223,7 +223,7 @@ describe("onda 1: desfazer e primeiro horário livre", () => {
     }));
     await asTenant(sql, A.ownerId, A.orgId, (tx) => changeStatus(tx, actor(), appt.id, "no_show"));
     await sql`update app.appointment_events set created_at = now() - interval '3 minutes' where appointment_id = ${appt.id} and type = 'status_changed'`;
-    await expect(asTenant(sql, A.ownerId, A.orgId, (tx) => undoLastStatusChange(tx, actor(), appt.id))).rejects.toThrow(/Não há uma mudança recente/);
+    await expect(asTenant(sql, A.ownerId, A.orgId, (tx) => undoLastStatusChange(tx, actor(), appt.id))).rejects.toThrow(/nada recente para desfazer/);
   });
 
   it("primeiro horário livre respeita agenda ocupada, limpeza e antecedência", async () => {

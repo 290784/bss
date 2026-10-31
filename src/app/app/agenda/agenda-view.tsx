@@ -14,6 +14,7 @@ import { BlockSendButton, canSendConfirmation, ConfirmationContext, Confirmation
 import { DaySummary, freeGaps, ListView } from "./agenda-extras";
 import { rescheduleAction } from "./actions";
 import { useToast } from "@/components/ui/toast";
+import { plural } from "@/lib/text";
 
 export type AgendaViewMode = "dia" | "semana" | "mes" | "lista";
 export type AgendaProfessional = { id: string; name: string; color: string; serviceIds: string[]; hours: { weekday: number; start: string; end: string }[] };
@@ -124,13 +125,13 @@ export function AgendaView(props: Props) {
     const time = `${String(Math.floor(d.minute / 60)).padStart(2, "0")}:${String(d.minute % 60).padStart(2, "0")}`;
     const before = { date: localDateKey(new Date(d.item.startsAt), timeZone), time: localTime(new Date(d.item.startsAt), timeZone), pro: d.item.professionalId };
     const r = await rescheduleAction({ appointmentId: d.item.id, professionalId: d.pro, date: d.day, time, squeezeIn: false });
-    if (!r?.ok) { toast(r?.message ?? "Não foi possível remarcar.", "error"); return; }
+    if (!r?.ok) { toast(r?.message ?? "Não deu para remarcar. Tenta outro horário?", "error"); return; }
     router.refresh();
     const proName = professionals.find((p) => p.id === d.pro)?.name;
     toast(`${d.item.clientName.split(" ")[0]} remarcada para ${d.day === before.date ? "" : `${d.day.slice(8)}/${d.day.slice(5, 7)} `}${time}${d.pro !== before.pro && proName ? ` com ${proName}` : ""}.`, "success", {
       action: { label: "Desfazer", onClick: async () => {
         const u = await rescheduleAction({ appointmentId: d.item.id, professionalId: before.pro, date: before.date, time: before.time, squeezeIn: d.item.squeezeIn });
-        toast(u?.ok ? "Voltou para o horário anterior." : (u?.message ?? "Não foi possível desfazer."), u?.ok ? "success" : "error");
+        toast(u?.ok ? "Prontinho, voltou para o horário de antes." : (u?.message ?? "Não consegui desfazer. Tenta de novo?"), u?.ok ? "success" : "error");
         router.refresh();
       } },
     });
@@ -190,7 +191,7 @@ export function AgendaView(props: Props) {
 
   if (professionals.length === 0)
     return (
-      <EmptyState icon={CalendarDays} title="Nenhuma agenda ativa" description="Cadastre uma profissional com horários de atendimento para começar a agendar."
+      <EmptyState icon={CalendarDays} title="Sua agenda ainda está vazia" description="Cadastre uma profissional com os horários de atendimento e já dá para começar a marcar."
         action={props.canSeeAll ? <Button onClick={() => router.push("/app/equipe")}>Cadastrar profissional</Button> : undefined} />
     );
 
@@ -253,7 +254,7 @@ export function AgendaView(props: Props) {
         ))}
         <label className="inline-flex cursor-pointer items-center gap-1.5">
           <input type="checkbox" className="accent-accent-strong" checked={showCancelled} onChange={(e) => setShowCancelled(e.target.checked)} />
-          Mostrar cancelados ({counts.cancelled ?? 0})
+          Ver cancelados ({counts.cancelled ?? 0})
         </label>
       </div>
 
@@ -273,7 +274,7 @@ export function AgendaView(props: Props) {
           onSlot={(d, time) => !readOnly && setDraft({ date: d, time, professionalId: visiblePros[0]?.id ?? "" })} />
       )}
       {props.canManage && (view === "dia" || view === "semana") && (
-        <p className="hidden text-xs text-muted sm:block">Dica: arraste um atendimento para outro horário{view === "dia" && visiblePros.length > 1 ? " ou outra profissional" : ""} para remarcar. No celular, toque e segure antes de arrastar.</p>
+        <p className="hidden text-xs text-muted sm:block">Dica: arraste um horário para outro lugar{view === "dia" && visiblePros.length > 1 ? " (ou para outra profissional)" : ""} e pronto, remarcado! No celular, toque e segure antes de arrastar.</p>
       )}
       {view === "mes" && <MonthGrid {...props} items={visibleItems} pros={visiblePros} onDay={(d) => go({ data: d, visao: "dia" })} />}
 
@@ -560,7 +561,7 @@ function MonthGrid({ rangeStart, date, today, timeZone, items, pros, onDay }: Pr
           return (
             <button key={d} onClick={() => onDay(d)}
               className={cn("flex min-h-[92px] flex-col gap-1 border-r border-b border-line p-1.5 text-left transition hover:bg-accent-subtle active:bg-accent-muted sm:min-h-[112px] sm:p-2 [&:nth-child(7n)]:border-r-0", !inMonth && "bg-canvas/50 text-muted")}
-              aria-label={`${d.split("-").reverse().join("/")}: ${list.length} atendimento(s)`}>
+              aria-label={`${d.split("-").reverse().join("/")}: ${plural(list.length, "atendimento")}`}>
               <span className={cn("grid h-6 w-6 place-items-center rounded-full text-[13px] font-medium tabular", d === today && "btn-glow text-white")}>{Number(d.slice(8))}</span>
               {list.slice(0, 3).map((i) => {
                 const pro = pros.find((p) => p.id === i.professionalId);

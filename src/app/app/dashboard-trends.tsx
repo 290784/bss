@@ -10,7 +10,7 @@ const mes = (key: string, longo = false) => (longo ? MESES_LONGOS : MESES)[Numbe
 const mil = (cents: number) => (cents >= 100_000 ? `R$ ${(cents / 100_000).toFixed(1).replace(".", ",")} mil` : formatMoney(cents));
 
 function Crescimento({ value }: { value: number | null }) {
-  if (value === null) return <span className="text-xs text-muted">novo</span>;
+  if (value === null) return <span className="text-xs text-muted">novidade</span>;
   const r = Math.round(value);
   if (r === 0) return <span className="text-xs text-muted">estável</span>;
   return (
@@ -40,16 +40,16 @@ export function ForecastAndAlerts({ forecast, alerts, finance }: { forecast: For
     <div className={cn("mt-6 grid gap-6", finance && forecast && "xl:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]")}>
       {finance && forecast && (
         <Card>
-          <CardHeader title="Projeção de faturamento" description="Estimativa do recebido, pelo ritmo atual"
-            action={<InfoTip text="Este mês: recebido até ontem ÷ dias de atendimento que já passaram × dias de atendimento do mês. Próximos meses: o mesmo ritmo diário, corrigido pela tendência média dos últimos 3 meses completos (limitada a ±10% ao mês), proporcional aos dias de atendimento de cada mês. É uma estimativa, não uma garantia." />} />
+          <CardHeader title="Quanto você deve faturar" description="Uma estimativa no ritmo que você está"
+            action={<InfoTip text="Este mês: o que entrou até ontem ÷ dias de atendimento que já passaram × dias de atendimento do mês. Próximos meses: o mesmo ritmo por dia, ajustado pela tendência dos últimos 3 meses (no máximo ±10% ao mês) e pelos dias de atendimento de cada mês. É uma estimativa, não uma promessa." />} />
           <div className="px-5 pt-4 pb-5">
             {!forecast.ready ? (
-              <p className="text-sm text-muted">A projeção aparece depois dos 3 primeiros dias de atendimento do mês.{forecast.scheduledRest > 0 && ` Já há ${formatMoney(forecast.scheduledRest)} agendados para o resto do mês.`}</p>
+              <p className="text-sm text-muted">A estimativa aparece depois dos 3 primeiros dias de atendimento do mês.{forecast.scheduledRest > 0 && ` Você já tem ${formatMoney(forecast.scheduledRest)} marcados para o resto do mês!`}</p>
             ) : (
               <>
                 <div className="flex flex-wrap items-end justify-between gap-x-4 gap-y-1">
                   <div>
-                    <div className="text-[13px] text-muted">Este mês deve fechar em</div>
+                    <div className="text-[13px] text-muted">Este mês deve fechar em torno de</div>
                     <div className="text-[28px] leading-tight font-semibold tracking-[-0.01em] tabular">~{mil(forecast.thisMonth)}</div>
                   </div>
                   {forecast.vsLastMonth !== null && (
@@ -63,8 +63,8 @@ export function ForecastAndAlerts({ forecast, alerts, finance }: { forecast: For
                   <span className="block h-full rounded-full bg-[linear-gradient(90deg,var(--color-violet-500),var(--color-violet-300))]" style={{ width: `${Math.min(100, (forecast.soFar / Math.max(1, forecast.thisMonth)) * 100)}%` }} />
                 </div>
                 <p className="mt-2 text-xs text-muted">
-                  {formatMoney(forecast.soFar)} recebidos em {forecast.elapsedDays} de {forecast.monthDays} dias de atendimento
-                  {forecast.scheduledRest > 0 && <> · <CalendarClock className="inline h-3.5 w-3.5 align-[-2px]" /> {formatMoney(forecast.scheduledRest)} já agendados para o resto do mês</>}
+                  {formatMoney(forecast.soFar)} no caixa em {forecast.elapsedDays} de {forecast.monthDays} dias de atendimento
+                  {forecast.scheduledRest > 0 && <> · <CalendarClock className="inline h-3.5 w-3.5 align-[-2px]" /> {formatMoney(forecast.scheduledRest)} já marcados para o resto do mês</>}
                 </p>
                 <div className="mt-4 grid grid-cols-3 gap-2">
                   {forecast.next.map((n) => (
@@ -76,7 +76,7 @@ export function ForecastAndAlerts({ forecast, alerts, finance }: { forecast: For
                   ))}
                 </div>
                 <p className="mt-2 text-xs text-muted">
-                  Tendência dos últimos 3 meses: {forecast.growth >= 0 ? "+" : "−"}{Math.abs(Math.round(forecast.growth * 100))}% ao mês.
+                  {forecast.growth >= 0 ? "Você vem crescendo" : "Seu ritmo caiu"} {Math.abs(Math.round(forecast.growth * 100))}% ao mês nos últimos 3 meses.
                 </p>
               </>
             )}
@@ -85,11 +85,11 @@ export function ForecastAndAlerts({ forecast, alerts, finance }: { forecast: For
       )}
 
       <Card>
-        <CardHeader title="Pontos de atenção" description="O que não está performando bem nos últimos 90 dias" />
+        <CardHeader title="Fica de olho" description="O que pode render mais (últimos 90 dias)" />
         <div className="px-5 pt-3 pb-5">
           {alerts.length === 0 ? (
             <div className="flex items-center gap-3 rounded-xl bg-st-completed-bg px-4 py-3 text-sm text-st-completed">
-              <CircleCheck className="h-5 w-5 shrink-0" />Nenhum serviço em queda, parado ou com faltas acima do normal.
+              <CircleCheck className="h-5 w-5 shrink-0" />Tudo indo bem: nenhum serviço caindo, parado ou com muitas faltas. 💜
             </div>
           ) : (
             <ul className="flex flex-col gap-2.5">
@@ -101,7 +101,7 @@ export function ForecastAndAlerts({ forecast, alerts, finance }: { forecast: For
                     <span className="min-w-0">
                       <span className="block text-sm font-semibold">{a.title}</span>
                       <span className="block text-xs text-ink-soft">{a.detail}</span>
-                      <span className="mt-1 block text-xs text-muted"><span className="font-medium text-ink-soft">Sugestão:</span> {a.tip}</span>
+                      <span className="mt-1 block text-xs text-muted"><span className="font-medium text-ink-soft">Dica:</span> {a.tip}</span>
                     </span>
                   </li>
                 );
@@ -120,10 +120,10 @@ export function ServiceGrowth({ data, finance }: { data: TrendsData; finance: bo
     .sort((a, b) => (b.growth ?? 999) - (a.growth ?? 999));
   return (
     <Card className="mt-6">
-      <CardHeader title="Crescimento por serviço" description="Últimos 90 dias contra os 90 anteriores (até ontem) · do que mais cresce ao que mais caiu"
-        action={<InfoTip text="Valor dos serviços em atendimentos concluídos nos últimos 90 dias fechados, comparado com os 90 dias anteriores. O mini-gráfico mostra os últimos 6 meses (o mês atual, ainda em andamento, mais claro)." />} />
+      <CardHeader title="O que mais cresce" description="Últimos 90 dias contra os 90 dias antes (até ontem), do que mais subiu ao que mais caiu"
+        action={<InfoTip text="Valor de cada serviço feito nos últimos 90 dias, comparado com os 90 dias antes. O gráfico pequeno mostra os últimos 6 meses (o mês atual, que ainda está rolando, fica mais clarinho)." />} />
       <div className="overflow-x-auto px-5 pt-3 pb-5">
-        {rows.length === 0 ? <p className="py-6 text-center text-sm text-muted">Ainda não há histórico para comparar.</p> : (
+        {rows.length === 0 ? <p className="py-6 text-center text-sm text-muted">Ainda não tem histórico para comparar. Logo aparece!</p> : (
           <table className="w-full text-sm">
             <thead className="text-left text-xs text-muted">
               <tr>

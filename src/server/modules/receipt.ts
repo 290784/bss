@@ -61,10 +61,10 @@ export async function getReceipt(tx: Tx, slug: string, token: string): Promise<R
 /** A cliente confirma presença pelo comprovante: registra, avisa a equipe e sugere serviços para oferecer. */
 export async function confirmAttendance(tx: Tx, slug: string, token: string, now = new Date()) {
   const r = await getReceipt(tx, slug, token);
-  if (!r) throw new DomainError("Agendamento não encontrado.");
+  if (!r) throw new DomainError("Não achei esse agendamento. Atualiza a página?");
   // Vale também para pedidos aguardando aprovação: a cliente avisa que vem; o estabelecimento aprova depois.
-  if (r.status !== "confirmed" && r.status !== "pending") throw new DomainError("Este agendamento não pode mais ser confirmado.");
-  if (r.startsAt <= now) throw new DomainError("Este horário já passou.");
+  if (r.status !== "confirmed" && r.status !== "pending") throw new DomainError("Esse agendamento não pode mais ser confirmado.");
+  if (r.startsAt <= now) throw new DomainError("Esse horário já passou.");
   const [updated] = await tx<{ id: string; professional_id: string }[]>`
     update app.appointments set client_confirmed_at = ${now}, updated_at = now()
     where id = ${r.id} and client_confirmed_at is null

@@ -93,10 +93,10 @@ export async function requireAppContext(permission?: Permission): Promise<AppCon
 /** Para server actions: lança DomainError em vez de redirecionar. */
 export async function actionContext(permission?: Permission, opts: { write?: boolean } = { write: true }): Promise<AppContext> {
   const ctx = await getAppContext();
-  if (!ctx) throw new DomainError("Sua sessão expirou. Entre novamente.", "unauthenticated");
-  if (permission && !can(ctx.role, permission)) throw new DomainError("Você não tem permissão para esta ação.", "forbidden");
+  if (!ctx) throw new DomainError("Sua sessão expirou. Entra de novo rapidinho?", "unauthenticated");
+  if (permission && !can(ctx.role, permission)) throw new DomainError("Essa ação não está liberada para o seu perfil.", "forbidden");
   if (opts.write !== false && ctx.access === "read_only")
-    throw new DomainError("Sua assinatura está inativa. Os dados continuam disponíveis para consulta e exportação.", "read_only");
+    throw new DomainError("Seu plano está pausado. Tudo continua guardado para você consultar e exportar.", "read_only");
   return ctx;
 }
 

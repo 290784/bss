@@ -30,12 +30,12 @@ export function OrganizationForm({ org, readOnly }: { org: Org; readOnly: boolea
         </fieldset>
       </Card>
       <Card>
-        <CardHeader title="Regras de agendamento" description="Valem para a agenda e para a página pública" />
+        <CardHeader title="Regras de agendamento" description="Valem para a sua agenda e para o seu link" />
         <fieldset disabled={readOnly} className="grid gap-4 p-5 sm:grid-cols-2">
-          <Checkbox name="onlineBookingEnabled" defaultChecked={org.online_booking_enabled} label="Agendamento online ativo" className="sm:col-span-2" />
+          <Checkbox name="onlineBookingEnabled" defaultChecked={org.online_booking_enabled} label="Agendamento pelo link ligado" className="sm:col-span-2" />
           <Checkbox name="onlineRequiresApproval" defaultChecked={org.online_requires_approval} className="sm:col-span-2"
-            label="Revisar solicitações online antes de confirmar" description="Desmarcado, os horários escolhidos online já entram como confirmados." />
-          <Field label="Antecedência mínima" htmlFor="minAdvanceMinutes" hint="Para agendamentos online.">
+            label="Quero revisar os pedidos antes de confirmar" description="Desmarcado, o que a cliente escolher no link já entra confirmado." />
+          <Field label="Antecedência mínima" htmlFor="minAdvanceMinutes" hint="Para quem marca pelo link.">
             <Select id="minAdvanceMinutes" name="minAdvanceMinutes" defaultValue={String(org.min_advance_minutes)}>
               {[[0, "Sem mínimo"], [60, "1 hora"], [120, "2 horas"], [240, "4 horas"], [720, "12 horas"], [1440, "1 dia"], [2880, "2 dias"]].map(([v, l]) => <option key={v} value={v}>{l}</option>)}
             </Select>
@@ -50,12 +50,12 @@ export function OrganizationForm({ org, readOnly }: { org: Org; readOnly: boolea
               {[5, 10, 15, 20, 30, 60].map((v) => <option key={v} value={v}>A cada {v} min</option>)}
             </Select>
           </Field>
-          <Field label="Cancelamento sem custo até" htmlFor="cancellationNoticeHours" hint="Exibido na política para a cliente.">
+          <Field label="Cancelamento sem custo até" htmlFor="cancellationNoticeHours" hint="Aparece nas regras para a cliente.">
             <Select id="cancellationNoticeHours" name="cancellationNoticeHours" defaultValue={String(org.cancellation_notice_hours)}>
               {[0, 2, 6, 12, 24, 48, 72].map((v) => <option key={v} value={v}>{v === 0 ? "Qualquer momento" : `${v}h antes`}</option>)}
             </Select>
           </Field>
-          <Field label="Política de agendamento" htmlFor="bookingPolicyText" optional className="sm:col-span-2" hint="Ex.: tolerância de atraso, sinal, regras de remarcação.">
+          <Field label="Política de agendamento" htmlFor="bookingPolicyText" optional className="sm:col-span-2" hint="Ex.: tolerância de atraso, sinal, como remarcar.">
             <Textarea id="bookingPolicyText" name="bookingPolicyText" defaultValue={org.booking_policy_text ?? ""} maxLength={2000} />
           </Field>
         </fieldset>

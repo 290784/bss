@@ -8,6 +8,7 @@ import { buttonClass } from "@/components/ui/button";
 import { confirmationMessage } from "@/lib/messages";
 import { localTime } from "@/lib/time";
 import { confirmationSentAction } from "./agenda/actions";
+import { plural } from "@/lib/text";
 
 export type NextClient = {
   id: string; date: string; clientName: string; clientPhone: string | null; services: string[]; professionalName: string;
@@ -44,7 +45,7 @@ export function NextClientCard({ next, later, timeZone, now, canManage }: { next
           </div>
           <div className="min-w-0">
             <p className="flex items-center gap-1.5 text-[12px] font-semibold tracking-wide text-accent-text uppercase">
-              <Clock className="h-3.5 w-3.5" />Próxima cliente · {relative(startsAt, endsAt, now, timeZone)}
+              <Clock className="h-3.5 w-3.5" />Sua próxima cliente · {relative(startsAt, endsAt, now, timeZone)}
             </p>
             <h2 className="mt-0.5 truncate text-lg font-bold">{next.clientName}</h2>
             <p className="truncate text-sm text-ink-soft">{next.services.join(" + ")} · com {next.professionalName} · até {localTime(endsAt, timeZone)}</p>
@@ -52,8 +53,8 @@ export function NextClientCard({ next, later, timeZone, now, canManage }: { next
               {next.clientConfirmedAt
                 ? <span className="inline-flex items-center gap-1 font-medium text-st-completed"><CheckCheck className="h-4 w-4" />{first} confirmou presença</span>
                 : next.confirmationSentAt
-                  ? <span className="text-muted">Confirmação enviada, ainda sem resposta de {first}</span>
-                  : <span className="text-st-pending">{first} ainda não recebeu a confirmação</span>}
+                  ? <span className="text-muted">Você já mandou a confirmação; {first} ainda não respondeu</span>
+                  : <span className="text-st-pending">{first} ainda não recebeu a confirmação: manda agora?</span>}
             </p>
           </div>
         </div>
@@ -75,7 +76,7 @@ export function NextClientCard({ next, later, timeZone, now, canManage }: { next
           </Link>
         </div>
       </div>
-      {later > 0 && <p className="border-t border-line px-5 py-2 text-xs text-muted">Depois: mais {later} atendimento(s) hoje.</p>}
+      {later > 0 && <p className="border-t border-line px-5 py-2 text-xs text-muted">Depois dela, mais {plural(later, "atendimento")} hoje.</p>}
     </Card>
   );
 }

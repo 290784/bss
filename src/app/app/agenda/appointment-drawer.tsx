@@ -1,4 +1,5 @@
 "use client";
+import { copyText } from "@/lib/clipboard";
 import Link from "next/link";
 import { useCallback, useEffect, useState, useTransition } from "react";
 import { CalendarClock, CheckCheck, Copy, ExternalLink, Globe, MessageCircle, Phone, Plus, Receipt, TrendingUp, Undo2, Zap } from "lucide-react";
@@ -18,10 +19,10 @@ import { addServiceAction, changeStatusAction, confirmationSentAction, undoStatu
 const METHOD_LABEL: Record<string, string> = { pix: "PIX", cash: "Dinheiro", credit_card: "Crédito", debit_card: "Débito", bank_transfer: "Transferência", other: "Outro" };
 const MSG_STATUS: Record<string, { label: string; variant: "neutral" | "success" | "warning" | "danger" }> = {
   pending: { label: "Agendada", variant: "neutral" }, processing: { label: "Enviando", variant: "warning" }, sent: { label: "Enviada", variant: "success" },
-  failed: { label: "Falhou", variant: "danger" }, cancelled: { label: "Cancelada", variant: "neutral" }, skipped: { label: "Não enviada", variant: "warning" },
+  failed: { label: "Falhou", variant: "danger" }, cancelled: { label: "Cancelada", variant: "neutral" }, skipped: { label: "Não foi enviada", variant: "warning" },
 };
 const TEMPLATE_LABEL: Record<string, string> = { appointment_confirmation: "Confirmação", appointment_reminder: "Lembrete 24h antes", appointment_cancelled: "Aviso de cancelamento" };
-const ACTION_LABEL: Partial<Record<AppointmentStatus, string>> = { confirmed: "Confirmar", completed: "Concluir atendimento", no_show: "Marcar falta", pending: "Voltar para aguardando", cancelled: "Cancelar" };
+const ACTION_LABEL: Partial<Record<AppointmentStatus, string>> = { confirmed: "Confirmar", completed: "Atendimento feito", no_show: "Ela não veio", pending: "Voltar para aguardando", cancelled: "Cancelar" };
 
 export function AppointmentDrawer({ id, timeZone, professionals, readOnly, onClose, onChanged }: {
   id: string; timeZone: string; professionals: AgendaProfessional[]; readOnly: boolean; onClose: () => void; onChanged: () => void;
@@ -41,18 +42,18 @@ export function AppointmentDrawer({ id, timeZone, professionals, readOnly, onClo
     setError(null);
     const r = await fn();
     if (r?.ok) {
-      toast(undoable ?? r.message ?? "Atualizado.", "success", undoable ? { action: { label: "Desfazer", onClick: () => undo() } } : undefined);
+      toast(undoable ?? r.message ?? "Prontinho, atualizado!", "success", undoable ? { action: { label: "Desfazer", onClick: () => undo() } } : undefined);
       setMode("view"); await load(); onChanged();
-    } else if (r) setError(r.message ?? "Erro.");
+    } else if (r) setError(r.message ?? "Ops, não deu certo. Tenta de novo?");
   });
   const undo = () => start(async () => {
     const r = await undoStatusAction(id);
-    toast(r?.message ?? (r?.ok ? "Desfeito." : "Não foi possível desfazer."), r?.ok ? "success" : "error");
+    toast(r?.message ?? (r?.ok ? "Desfeito, voltou como estava." : "Não consegui desfazer. Tenta de novo?"), r?.ok ? "success" : "error");
     await load(); onChanged();
   });
 
   if (data === null)
-    return <Dialog open onClose={onClose} title="Agendamento" side="right"><p className="text-sm text-muted">Agendamento não encontrado ou sem permissão de acesso.</p></Dialog>;
+    return <Dialog open onClose={onClose} title="Agendamento" side="right"><p className="text-sm text-muted">Não encontrei esse agendamento (ou você não tem acesso a ele).</p></Dialog>;
 
   const start_ = data ? new Date(data.startsAt) : null;
   const due = data ? data.priceCents - data.discountCents : 0;
@@ -67,7 +68,7 @@ export function AppointmentDrawer({ id, timeZone, professionals, readOnly, onClo
           <div className="flex w-full flex-wrap gap-2">
             {nextStatuses(data.status).filter((s) => s !== "cancelled").map((s) => (
               <Button key={s} variant={s === "completed" || s === "confirmed" ? "primary" : "secondary"} size="sm" disabled={pending}
-                onClick={() => run(() => changeStatusAction({ appointmentId: data.id, status: s }), s === "no_show" ? "Falta registrada." : undefined)}>
+                onClick={() => run(() => changeStatusAction({ appointmentId: data.id, status: s }), s === "no_show" ? "Falta anotada." : undefined)}>
                 {ACTION_LABEL[s]}
               </Button>
             ))}
@@ -85,7 +86,7 @@ export function AppointmentDrawer({ id, timeZone, professionals, readOnly, onClo
               <StatusBadge status={data.status} />
               {data.source === "online" && <Badge variant="plum"><Globe className="h-3 w-3" />Online</Badge>}
               {data.squeezeIn && <Badge variant="champagne"><Zap className="h-3 w-3" />Encaixe</Badge>}
-              {data.clientConfirmedAt && <Badge variant="success"><CheckCheck className="h-3 w-3" />Cliente confirmou presença</Badge>}
+              {data.clientConfirmedAt && <Badge variant="success"><CheckCheck className="h-3 w-3" />A cliente confirmou presença 💜</Badge>}
             </div>
 
             {mode === "reschedule" && (
@@ -105,7 +106,7 @@ export function AppointmentDrawer({ id, timeZone, professionals, readOnly, onClo
                   <a href={`https://wa.me/${data.clientPhone}`} target="_blank" rel="noreferrer" className="text-accent-text" aria-label="Abrir WhatsApp"><MessageCircle className="h-4 w-4" /></a>
                   <a href={`tel:+${data.clientPhone}`} className="text-accent-text" aria-label="Ligar"><Phone className="h-4 w-4" /></a>
                 </span>) : "—"} />
-              <Info label="Ficha" value={<Link href={`/app/clientes/${data.clientId}`} className="font-medium text-accent-text hover:underline">Ver histórico da cliente</Link>} />
+              <Info label="Ficha" value={<Link href={`/app/clientes/${data.clientId}`} className="font-medium text-accent-text hover:underline">Ver a ficha da cliente</Link>} />
             </section>
 
             <section>
@@ -119,14 +120,14 @@ export function AppointmentDrawer({ id, timeZone, professionals, readOnly, onClo
             </section>
 
             {(data.status === "pending" || data.status === "confirmed") && (
-              <ClientConfirmation data={data} timeZone={timeZone} onCopied={() => toast("Link do comprovante copiado.")}
+              <ClientConfirmation data={data} timeZone={timeZone} onCopied={() => toast("Link copiado! É só colar para a cliente.")}
                 onSent={readOnly ? undefined : () => { confirmationSentAction(data.id).then(() => { load(); onChanged(); }); }} />
             )}
 
             {data.suggestions.length > 0 && (data.status === "pending" || data.status === "confirmed" || data.status === "completed") && (
               <section aria-labelledby="upsell-title">
-                <h3 id="upsell-title" className="mb-1 flex items-center gap-1.5 text-[13px] font-semibold text-ink-soft"><TrendingUp className="h-4 w-4 text-accent-text" />Para subir o ticket</h3>
-                <p className="mb-2 text-xs text-muted">Sugestões a partir do histórico do seu estabelecimento.</p>
+                <h3 id="upsell-title" className="mb-1 flex items-center gap-1.5 text-[13px] font-semibold text-ink-soft"><TrendingUp className="h-4 w-4 text-accent-text" />Que tal oferecer um extra?</h3>
+                <p className="mb-2 text-xs text-muted">Ideias com base no que suas clientes costumam fazer juntas.</p>
                 <ul className="flex flex-col gap-2">
                   {data.suggestions.map((sg) => (
                     <li key={sg.id} className="rounded-xl border border-line p-3 text-sm">
@@ -138,7 +139,7 @@ export function AppointmentDrawer({ id, timeZone, professionals, readOnly, onClo
                         <span className="shrink-0 text-right text-[13px] tabular text-ink-soft">+{formatMoney(sg.priceCents)}<span className="block text-xs text-muted">+{sg.minutes} min</span></span>
                       </div>
                       <div className="mt-2 flex flex-wrap items-center gap-2">
-                        <Badge variant={sg.fitsRightAfter ? "success" : "neutral"}>{sg.fitsRightAfter ? "Cabe logo depois" : "Sem horário livre logo depois"}</Badge>
+                        <Badge variant={sg.fitsRightAfter ? "success" : "neutral"}>{sg.fitsRightAfter ? "Cabe logo depois ✨" : "Sem horário livre logo em seguida"}</Badge>
                         <span className="flex-1" />
                         {data.clientPhone && (
                           <a href={`https://wa.me/${data.clientPhone}?text=${encodeURIComponent(offerText(data, sg, timeZone))}`} target="_blank" rel="noreferrer"
@@ -164,7 +165,7 @@ export function AppointmentDrawer({ id, timeZone, professionals, readOnly, onClo
                   Pagamentos
                   <span className="font-normal text-muted">Pago <strong className="text-ink tabular">{formatMoney(paid)}</strong> de <span className="tabular">{formatMoney(due)}</span></span>
                 </h3>
-                {data.payments.length === 0 ? <p className="text-sm text-muted">Nenhum pagamento registrado.</p> : (
+                {data.payments.length === 0 ? <p className="text-sm text-muted">Nenhum pagamento anotado ainda.</p> : (
                   <ul className="divide-y divide-line rounded-xl border border-line text-sm">
                     {data.payments.map((p) => (
                       <PaymentRow key={p.id} p={p} timeZone={timeZone} refunded={data.payments.filter((r) => r.refund_of === p.id).reduce((a, r) => a + r.amount_cents, 0)}
@@ -184,9 +185,9 @@ export function AppointmentDrawer({ id, timeZone, professionals, readOnly, onClo
             )}
 
             <section>
-              <h3 className="mb-2 text-[13px] font-semibold text-ink-soft">Mensagens automáticas</h3>
+              <h3 className="mb-2 text-[13px] font-semibold text-ink-soft">Mensagens automáticas para a cliente</h3>
               {data.messages.length === 0 ? (
-                <p className="text-sm text-muted">Nenhuma mensagem prevista (cliente sem contato ou prefere não receber).</p>
+                <p className="text-sm text-muted">Nenhuma mensagem programada (a cliente não tem contato ou prefere não receber).</p>
               ) : (
                 <ul className="flex flex-col gap-1.5 text-sm">
                   {data.messages.map((m, i) => (
@@ -197,8 +198,8 @@ export function AppointmentDrawer({ id, timeZone, professionals, readOnly, onClo
                   ))}
                 </ul>
               )}
-              {data.messages.some((m) => m.last_error === "Canal não conectado") && (
-                <p className="mt-2 text-xs text-muted">O canal de envio ainda não está conectado. Nenhuma mensagem foi enviada à cliente.</p>
+              {data.messages.some((m) => m.last_error === "WhatsApp ainda não conectado") && (
+                <p className="mt-2 text-xs text-muted">O envio automático ainda não está conectado, então nada foi mandado para a cliente. Você pode enviar pelo seu WhatsApp aqui em cima.</p>
               )}
             </section>
 
@@ -217,9 +218,9 @@ export function AppointmentDrawer({ id, timeZone, professionals, readOnly, onClo
           </div>
         )}
       </Dialog>
-      <ConfirmDialog open={confirmCancel} onClose={() => setConfirmCancel(false)} danger title="Cancelar agendamento?" confirmLabel="Cancelar agendamento"
-        description="O horário será liberado e os lembretes pendentes serão cancelados. Pagamentos já registrados continuam no histórico."
-        onConfirm={() => { setConfirmCancel(false); if (data) run(() => changeStatusAction({ appointmentId: data.id, status: "cancelled", reason: cancelReason || undefined }), "Agendamento cancelado. O horário foi liberado."); }}>
+      <ConfirmDialog open={confirmCancel} onClose={() => setConfirmCancel(false)} danger title="Cancelar esse horário?" confirmLabel="Cancelar agendamento"
+        description="O horário fica livre de novo e os lembretes param de ser enviados. Os pagamentos já anotados continuam guardados no histórico."
+        onConfirm={() => { setConfirmCancel(false); if (data) run(() => changeStatusAction({ appointmentId: data.id, status: "cancelled", reason: cancelReason || undefined }), "Horário cancelado e liberado na agenda."); }}>
         <Field label="Motivo" htmlFor="reason" optional className="mt-4">
           <Input id="reason" value={cancelReason} onChange={(e) => setCancelReason(e.target.value)} maxLength={300} />
         </Field>
@@ -249,7 +250,7 @@ function ClientConfirmation({ data, timeZone, onCopied, onSent }: { data: Appoin
   return (
     <section>
       <h3 className="mb-1 text-[13px] font-semibold text-ink-soft">Confirmação para a cliente</h3>
-      <p className="mb-2 text-xs text-muted">Comprovante com serviços, horário, profissional, endereço, botão para salvar na agenda e para confirmar presença.</p>
+      <p className="mb-2 text-xs text-muted">Um comprovante bonitinho com serviços, horário, profissional, endereço e botões para ela salvar na agenda e confirmar presença.</p>
       {lastSent && <p className="mb-2 text-xs text-ink-soft">Última confirmação enviada em {formatInTz(new Date(lastSent.created_at), timeZone, { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" })}.</p>}
       <div className="flex flex-wrap gap-2">
         {data.clientPhone && (
@@ -258,7 +259,7 @@ function ClientConfirmation({ data, timeZone, onCopied, onSent }: { data: Appoin
             <MessageCircle className="h-3.5 w-3.5" />{lastSent ? "Reenviar no WhatsApp" : "Enviar no WhatsApp"}
           </a>
         )}
-        <button type="button" onClick={() => navigator.clipboard?.writeText(data.receiptUrl).then(onCopied)}
+        <button type="button" onClick={async () => { if (await copyText(data.receiptUrl)) onCopied(); else window.prompt("Copie o link:", data.receiptUrl); }}
           className="inline-flex h-10 sm:h-8 items-center gap-1.5 rounded-lg border border-line-strong px-3 text-[13px] font-medium hover:bg-sunken">
           <Copy className="h-3.5 w-3.5" />Copiar link
         </button>
@@ -277,12 +278,12 @@ function Info({ label, value }: { label: string; value: React.ReactNode }) {
 function describeEvent(e: { type: string; data: Record<string, unknown> }, tz: string) {
   const d = e.data;
   switch (e.type) {
-    case "created": return d.source === "online" ? "Solicitado pela página de agendamento online" : "Agendamento criado pela equipe";
+    case "created": return d.source === "online" ? "A cliente marcou pelo seu link" : "Marcado pela equipe";
     case "rescheduled": return `Reagendado de ${fmt(String(d.from), tz)} para ${fmt(String(d.to), tz)}`;
     case "status_changed": return `Status: ${STATUS_LABEL[d.from as AppointmentStatus]} → ${STATUS_LABEL[d.to as AppointmentStatus]}${d.reason ? ` (${d.reason})` : ""}`;
     case "payment_recorded": return `Pagamento de ${formatMoney(Number(d.amountCents))} registrado${d.isDeposit ? " (sinal)" : ""}`;
     case "payment_refunded": return `Estorno de ${formatMoney(Number(d.amountCents))}: ${d.reason}`;
-    case "client_confirmed": return "A cliente confirmou presença pelo comprovante";
+    case "client_confirmed": return "A cliente confirmou presença pelo comprovante 💜";
     case "confirmation_sent": return "Confirmação enviada pelo WhatsApp";
     case "status_reverted": return `Desfeito: ${STATUS_LABEL[d.from as AppointmentStatus]} → ${STATUS_LABEL[d.to as AppointmentStatus]}`;
     case "service_added": return `Serviço adicionado: ${d.name} (+${formatMoney(Number(d.priceCents))})`;
@@ -312,8 +313,8 @@ function RescheduleForm({ data, timeZone, professionals, pending, onCancel, onSu
           <Select id="rp" value={pro} onChange={(e) => setPro(e.target.value)}>{professionals.map((p) => <option key={p.id} value={p.id}>{p.name}</option>)}</Select>
         </Field>
       )}
-      <Checkbox checked={squeezeIn} onChange={(e) => setSqueezeIn(e.target.checked)} label="Encaixe (permitir sobreposição)" />
-      <p className="text-xs text-muted">Lembretes pendentes serão cancelados e recriados para o novo horário.</p>
+      <Checkbox checked={squeezeIn} onChange={(e) => setSqueezeIn(e.target.checked)} label="Encaixe (pode ficar por cima de outro horário)" />
+      <p className="text-xs text-muted">Os lembretes já programados são refeitos para o novo horário, automático.</p>
       <div className="flex justify-end gap-2">
         <Button size="sm" variant="ghost" onClick={onCancel}>Voltar</Button>
         <Button size="sm" disabled={pending} onClick={() => onSubmit({ professionalId: pro, date, time, squeezeIn })}>Salvar novo horário</Button>
@@ -340,13 +341,13 @@ function PaymentForm({ remaining, pending, onCancel, onSubmit }: {
           </Select>
         </Field>
       </div>
-      <Checkbox checked={isDeposit} onChange={(e) => setIsDeposit(e.target.checked)} label="É um sinal (pagamento antecipado)" />
-      <p className="text-xs text-muted">Registro manual. Nenhuma cobrança é feita pelo sistema.</p>
+      <Checkbox checked={isDeposit} onChange={(e) => setIsDeposit(e.target.checked)} label="É um sinal (ela pagou antes)" />
+      <p className="text-xs text-muted">Aqui você só anota o que recebeu: o app não cobra nada da cliente.</p>
       <div className="flex justify-end gap-2">
         <Button size="sm" variant="ghost" onClick={onCancel}>Voltar</Button>
         <Button size="sm" disabled={pending} onClick={() => {
           const cents = parseMoneyToCents(amount);
-          if (!cents) return setErr("Valor inválido.");
+          if (!cents) return setErr("Confere o valor? Algo como 80,00.");
           onSubmit({ amountCents: cents, method, isDeposit });
         }}>Registrar</Button>
       </div>

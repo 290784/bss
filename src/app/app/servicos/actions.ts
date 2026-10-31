@@ -19,11 +19,11 @@ export async function saveServiceAction(_: ActionState, form: FormData): Promise
       onlineBookable: form.get("onlineBookable") === "on",
       professionalIds: form.getAll("professionalIds").map(String),
     });
-    if (!parsed.success) return { ok: false, message: "Revise os campos destacados.", fieldErrors: z.flattenError(parsed.error).fieldErrors };
+    if (!parsed.success) return { ok: false, message: "Dá uma olhadinha nos campos destacados.", fieldErrors: z.flattenError(parsed.error).fieldErrors };
     const id = String(form.get("id") ?? "") || undefined;
     await tenant(ctx, (tx) => saveService(tx, { userId: ctx.user.userId, organizationId: ctx.org.id }, parsed.data, id));
     revalidatePath("/app/servicos");
-    return { ok: true, message: id ? "Serviço atualizado." : "Serviço criado." };
+    return { ok: true, message: id ? "Serviço atualizado! ✨" : "Serviço criado! ✨" };
   } catch (err) {
     if (err instanceof DomainError) return { ok: false, message: err.message };
     throw err;
@@ -35,7 +35,7 @@ export async function toggleServiceAction(id: string, active: boolean): Promise<
     const ctx = await actionContext("services.manage");
     await tenant(ctx, (tx) => setServiceActive(tx, { userId: ctx.user.userId, organizationId: ctx.org.id }, id, active));
     revalidatePath("/app/servicos");
-    return { ok: true, message: active ? "Serviço reativado." : "Serviço desativado. O histórico foi mantido." };
+    return { ok: true, message: active ? "Serviço de volta ao cardápio!" : "Serviço pausado. O histórico continua guardado." };
   } catch (err) {
     if (err instanceof DomainError) return { ok: false, message: err.message };
     throw err;

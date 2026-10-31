@@ -42,7 +42,7 @@ export async function saveService(tx: Tx, actor: Actor, input: ServiceInput, id?
         price_cents = ${input.price}, duration_minutes = ${input.durationMinutes}, buffer_after_minutes = ${input.bufferAfterMinutes},
         return_interval_days = ${input.returnIntervalDays ?? null}, online_bookable = ${input.onlineBookable}
       where organization_id = ${orgId} and id = ${id}`;
-    if (r.count === 0) throw new DomainError("Serviço não encontrado.");
+    if (r.count === 0) throw new DomainError("Não achei esse serviço.");
   } else {
     const [s] = await tx<{ id: string }[]>`
       insert into app.services (organization_id, category_id, name, description, price_cents, duration_minutes,

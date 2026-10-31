@@ -60,7 +60,7 @@ const t2 = (await p.locator("[role=status]").allInnerTexts()).join(" ");
 ok(/remarcada para|Este horário|expediente|ocupado|não/.test(t2), `dia: soltar remarca ou explica por que não dá ("${t2.slice(0, 60)}")`);
 if (/remarcada/.test(t2)) {
   await p.getByRole("button", { name: "Desfazer" }).first().click(); await p.waitForTimeout(1500);
-  ok(/horário anterior/.test((await p.locator("[role=status]").allInnerTexts()).join(" ")), "dia: Desfazer devolve ao horário anterior");
+  ok(/horário de antes/.test((await p.locator("[role=status]").allInnerTexts()).join(" ")), "dia: Desfazer devolve ao horário anterior");
 }
 
 // Celular abre em lista

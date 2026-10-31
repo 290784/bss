@@ -54,7 +54,7 @@ export async function createClient(tx: Tx, actor: Actor, input: ClientInput, sou
 export async function updateClient(tx: Tx, actor: Actor, id: string, input: ClientInput, opts: { canEditInternalNotes: boolean }) {
   const [prev] = await tx<{ marketing_consent: boolean; internal_notes: string | null }[]>`
     select marketing_consent, internal_notes from app.clients where organization_id = ${actor.organizationId} and id = ${id} for update`;
-  if (!prev) throw new DomainError("Cliente não encontrada.");
+  if (!prev) throw new DomainError("Não achei essa cliente. Ela pode ter sido apagada.");
   const notes = opts.canEditInternalNotes ? input.internalNotes : prev.internal_notes;
   await tx`
     update app.clients set full_name = ${input.fullName}, phone = ${input.phone}, phone_normalized = ${normalizePhone(input.phone)},
