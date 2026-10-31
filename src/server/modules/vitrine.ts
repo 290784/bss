@@ -23,6 +23,16 @@ import { recordPayment } from "@/server/modules/payments";
 import { withSystem, withTenant, type Sql, type Tx } from "@/server/db";
 import { addDaysToKey, localDateKey, localWeekday } from "@/lib/time";
 
+/**
+ * Aniversário de 4 em cada 5 clientes, derivado do número da cliente (sem usar o sorteio, para os
+ * demais dados continuarem iguais): espalhado pelo ano, idades de 22 a 55.
+ */
+function aniversario(n: number): string | null {
+  if (n % 5 === 0) return null;
+  const d = new Date(Date.UTC(1971 + ((n * 7) % 34), 0, 1) + ((n * 53) % 365) * 86_400_000);
+  return d.toISOString().slice(0, 10);
+}
+
 export const EMAIL_VITRINE = "vitrine@beautyos.dev";
 const EMAIL = EMAIL_VITRINE;
 const TZ = "America/Sao_Paulo";
@@ -193,8 +203,8 @@ export async function criarContaVitrine(sql: Sql, opts: { password: string; rese
       // na demonstração pode chegar a uma pessoa de verdade.
       const fone = `90000${String(++seqFone).padStart(4, "0")}`;
       const [c] = await tx<{ id: string }[]>`
-        insert into app.clients (organization_id, full_name, phone, phone_normalized, marketing_consent, source)
-        values (${org.organizationId}, ${nome}, ${`(11) ${fone.slice(0, 5)}-${fone.slice(5)}`}, ${`5511${fone}`}, ${rnd() < 0.7}, ${origem})
+        insert into app.clients (organization_id, full_name, phone, phone_normalized, marketing_consent, source, birth_date)
+        values (${org.organizationId}, ${nome}, ${`(11) ${fone.slice(0, 5)}-${fone.slice(5)}`}, ${`5511${fone}`}, ${rnd() < 0.7}, ${origem}, ${aniversario(seqFone)})
         returning id`;
       return { id: c!.id, peso: 0.4 + rnd() * 2.2 }; // frequência: algumas vêm toda semana, outras de vez em quando
     };
