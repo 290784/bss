@@ -25,7 +25,7 @@ export function canSendConfirmation(i: AgendaItemDTO, now: number) {
   return (i.status === "pending" || i.status === "confirmed") && new Date(i.startsAt).getTime() > now && !!i.clientPhone;
 }
 
-function waLink(i: AgendaItemDTO, ctx: Ctx) {
+export function waLink(i: AgendaItemDTO, ctx: Ctx) {
   const text = confirmationMessage({
     clientName: i.clientName, services: i.serviceNames, startsAt: new Date(i.startsAt), timeZone: ctx.timeZone,
     professionalName: ctx.pros.find((p) => p.id === i.professionalId)?.name ?? "", url: i.receiptUrl, pending: i.status === "pending",
@@ -33,7 +33,7 @@ function waLink(i: AgendaItemDTO, ctx: Ctx) {
   return `https://wa.me/${i.clientPhone}?text=${encodeURIComponent(text)}`;
 }
 
-function useRecordSent() {
+export function useRecordSent() {
   const router = useRouter();
   const toast = useToast();
   const [pending, start] = useTransition();

@@ -19,7 +19,8 @@ const errs = []; p.on("pageerror", (e) => errs.push(e.message));
 
 // Prepara: três atendimentos de hoje — um em andamento e dois logo em seguida (encaixe, para não
 // depender da agenda da demo nem cruzar a meia-noite).
-const [org] = await sql`select id, slug from app.organizations where is_demo limit 1`;
+// A conta demo (a vitrine também é de demonstração, mas é outra organização).
+const [org] = await sql`select o.id, o.slug from app.organizations o join app.users u on u.id = o.created_by where o.is_demo and u.email = 'demo@beautyos.dev' limit 1`;
 const [pro] = await sql`select id from app.professionals where organization_id = ${org.id} and is_active order by created_at limit 1`;
 const [svc] = await sql`select id, name, price_cents, duration_minutes from app.services where organization_id = ${org.id} and is_active order by name limit 1`;
 const created = [];
