@@ -1,6 +1,8 @@
 import type { Tx } from "@/server/db";
 import { addDaysToKey, localDateKey, localWeekday, zonedDateTime } from "@/lib/time";
+import { localTime } from "@/lib/time";
 import { servicesText } from "@/lib/messages";
+import { freeGapsToday } from "@/server/modules/dashboard";
 
 /**
  * Dicas da Gê: sugestões práticas tiradas dos dados do próprio negócio, em quatro grupos.
@@ -28,6 +30,9 @@ export type Dica = {
   /** Quantas clientes ficaram fora da lista mostrada. */
   moreClients?: number;
   checklist?: string[];
+  /** Importância (0–100): as dicas vêm ordenadas por ela; 85+ aparece como "Urgente". */
+  priority: number;
+  urgent: boolean;
 };
 
 const DAY = 86_400_000;
@@ -55,7 +60,7 @@ export async function loadDicas(tx: Tx, orgId: string, timeZone: string, opts: {
   const today = zonedDateTime(todayKey, "00:00", timeZone);
   const in7 = zonedDateTime(addDaysToKey(todayKey, 7), "00:00", timeZone);
   const tomorrowKey = addDaysToKey(todayKey, 1);
-  const dicas: Dica[] = [];
+  const dicas: Omit<Dica, "priority" | "urgent">[] = [];
 
   const [org] = await tx<{ name: string; online_booking_enabled: boolean }[]>`
     select name, online_booking_enabled from app.organizations where id = ${orgId}`;
@@ -403,7 +408,111 @@ export async function loadDicas(tx: Tx, orgId: string, timeZone: string, opts: {
     });
   }
 
-  return dicas;
+  // ───────── Novas dicas ─────────
+
+  // Horários livres ainda hoje: dá tempo de encaixar alguém (status do WhatsApp, lista de espera).
+  const gaps = await freeGapsToday(tx, orgId, timeZone, now);
+  const freeMin = gaps.reduce((t, g) => t + (g.end.getTime() - g.start.getTime()) / 60_000, 0);
+  if (gaps.length > 0 && freeMin >= 60) {
+    const lista = gaps.slice(0, 4).map((g) => `${localTime(g.start, timeZone)}`).join(", ");
+    dicas.push({
+      id: `livres-hoje-${todayKey}-${gaps.length}`,
+      kind: "faturamento",
+      title: `Ainda dá para encaixar ${gaps.length === 1 ? "1 cliente" : `até ${gaps.length} clientes`} hoje`,
+      detail: `Tem ${Math.round(freeMin / 60)}h livres na agenda de hoje (a partir de ${lista}). Posta no status: quem está por perto adora um horário de última hora.`,
+      copy: { label: "Copiar texto do status", text: `Abriu horário HOJE ✨ ${lista}. Quem quiser se cuidar ainda hoje, me chama ou marca aqui: ${opts.bookingUrl} 💜` },
+      action: { label: "Ver a agenda de hoje", href: `/app/agenda?data=${todayKey}&visao=lista` },
+    });
+  }
+
+  // Quem já faltou e tem horário marcado nos próximos 3 dias: confirmar com carinho (ou pedir sinal).
+  const faltosas = await tx<{ name: string; phone: string | null; starts_at: Date; faltas: number }[]>`
+    select c.full_name as name, c.phone_normalized as phone, a.starts_at,
+      (select count(*) from app.appointments n where n.client_id = c.id and n.status = 'no_show' and n.starts_at >= ${new Date(today.getTime() - 180 * DAY)})::int as faltas
+    from app.appointments a join app.clients c on c.id = a.client_id
+    where a.organization_id = ${orgId} and a.status in ('pending', 'confirmed') and a.client_confirmed_at is null
+      and a.starts_at >= ${now} and a.starts_at < ${new Date(today.getTime() + 4 * DAY)}
+    order by a.starts_at`;
+  const risco = faltosas.filter((f) => f.faltas >= 1);
+  if (risco.length > 0) {
+    const fmt = (d: Date) => { const k = localDateKey(d, timeZone); return `${k === todayKey ? "hoje" : k === tomorrowKey ? "amanhã" : `${WEEKDAY[localWeekday(k)]}`} às ${localTime(d, timeZone)}`; };
+    dicas.push({
+      id: `risco-falta-${todayKey}-${risco.length}`,
+      kind: "avisos",
+      title: risco.length === 1 ? `${first(risco[0]!.name)} já faltou antes e vem ${fmt(risco[0]!.starts_at)}` : `${risco.length} clientes que já faltaram vêm nos próximos dias`,
+      detail: "Ainda não confirmaram. Uma mensagem carinhosa hoje evita o horário vazio, e para quem falta sempre vale pedir um sinal na próxima vez.",
+      clients: risco.slice(0, 6).map((f) => ({
+        name: f.name, phone: f.phone, note: `${f.faltas} falta${f.faltas === 1 ? "" : "s"} · ${fmt(f.starts_at)}`,
+        message: `Oi, ${first(f.name)}! Tudo bem? 💜 Passando pra confirmar seu horário ${fmt(f.starts_at)}. Posso contar com você? Se precisar remarcar, me avisa que eu ajeito!`,
+      })),
+      moreClients: Math.max(0, risco.length - 6),
+    });
+  }
+
+  // Clientes novas que vieram uma vez (há 20 a 50 dias) e não voltaram: a segunda visita é a que fideliza.
+  const primeiraVez = await tx<{ name: string; phone: string | null; service: string; first: Date }[]>`
+    select c.full_name as name, c.phone_normalized as phone, min(a.starts_at) as first,
+      (select x.service_name from app.appointment_services x where x.appointment_id = (array_agg(a.id order by a.starts_at))[1] order by x.position limit 1) as service
+    from app.clients c join app.appointments a on a.client_id = c.id and a.status = 'completed'
+    where c.organization_id = ${orgId} and c.archived_at is null and c.contact_preference <> 'none'
+      and not exists (select 1 from app.appointments f where f.client_id = c.id and f.status in ('pending', 'confirmed') and f.starts_at >= ${now})
+    group by c.id, c.full_name, c.phone_normalized
+    having count(a.id) = 1 and min(a.starts_at) between ${new Date(today.getTime() - 50 * DAY)} and ${new Date(today.getTime() - 20 * DAY)}
+    order by min(a.starts_at) desc`;
+  if (primeiraVez.length > 0) {
+    dicas.push({
+      id: `segunda-visita-${todayKey.slice(0, 7)}-${primeiraVez.length}`,
+      kind: "faturamento",
+      title: primeiraVez.length === 1 ? `${first(primeiraVez[0]!.name)} veio uma vez e ainda não voltou` : `${primeiraVez.length} clientes novas vieram uma vez e não voltaram`,
+      detail: "A segunda visita é a que transforma cliente nova em cliente fiel. Um convite com um agradinho (10% ou um mimo) costuma resolver.",
+      clients: primeiraVez.slice(0, 6).map((p) => ({
+        name: p.name, phone: p.phone, note: `${p.service} em ${brDate(localDateKey(p.first, timeZone))}`,
+        message: `Oi, ${first(p.name)}! Amei te atender 💜 Como ficou o ${servicesText([p.service])}? Pra sua próxima visita separei um mimo especial. Bora marcar? ${opts.bookingUrl}`,
+      })),
+      moreClients: Math.max(0, primeiraVez.length - 6),
+    });
+  }
+
+  // VIPs (as que mais gastam) que não vêm há mais de 45 dias e não têm nada marcado.
+  if (opts.finance) {
+    const vipsSumidas = await tx<{ name: string; phone: string | null; last: Date; spent: number }[]>`
+      with gasto as (
+        select a.client_id, sum(a.price_cents - a.discount_cents)::int as spent, max(a.starts_at) as last
+        from app.appointments a where a.organization_id = ${orgId} and a.status = 'completed' and a.starts_at >= ${new Date(today.getTime() - 365 * DAY)}
+        group by a.client_id
+      ), corte as (select percentile_cont(0.8) within group (order by spent) as p80 from gasto)
+      select c.full_name as name, c.phone_normalized as phone, g.last, g.spent
+      from gasto g join app.clients c on c.id = g.client_id, corte
+      where g.spent >= corte.p80 and g.last < ${new Date(today.getTime() - 45 * DAY)} and c.archived_at is null
+        and not exists (select 1 from app.appointments f where f.client_id = g.client_id and f.status in ('pending', 'confirmed') and f.starts_at >= ${now})
+      order by g.spent desc`;
+    if (vipsSumidas.length > 0) {
+      dicas.push({
+        id: `vip-sumida-${todayKey.slice(0, 7)}-${vipsSumidas.length}`,
+        kind: "mimos",
+        title: vipsSumidas.length === 1 ? `${first(vipsSumidas[0]!.name)}, uma das suas VIPs, sumiu` : `${vipsSumidas.length} clientes VIP estão sumidas`,
+        detail: "Estão entre as que mais investiram com você no último ano e não aparecem há mais de 45 dias. Vale um carinho pessoal (e um mimo) antes que elas se acostumem com outro lugar.",
+        value: { cents: Math.round(vipsSumidas.reduce((t, v) => t + v.spent, 0) / 12), label: "por mês em jogo" },
+        clients: vipsSumidas.slice(0, 6).map((v) => ({
+          name: v.name, phone: v.phone, note: `última visita ${brDate(localDateKey(v.last, timeZone))}`,
+          message: `Oi, ${first(v.name)}! Que saudade! 💜 Faz tempinho que você não aparece e eu separei um mimo especial pra sua próxima visita. Bora matar a saudade? ${opts.bookingUrl}`,
+        })),
+        moreClients: Math.max(0, vipsSumidas.length - 6),
+      });
+    }
+  }
+
+  // Ordem por importância: o que precisa de ação hoje primeiro, depois o que vale mais dinheiro.
+  const PRIORITY: [string, number][] = [
+    ["confirmar-", 95], ["risco-falta-", 92], ["livres-hoje-", 90], ["aniversario-", 78], ["retorno-", 80], ["vip-sumida-", 76],
+    ["segunda-visita-", 72], ["dia-fraco-", 68], ["receber-", 62], ["estoque-", 58], ["boas-vindas-", 55], ["fidelidade-", 50],
+    ["combo-", 46], ["upsell-", 44], ["reajuste-", 42], ["vips-", 36], ["cfg-link-", 34], ["cfg-retorno-", 26], ["cfg-aniversario-", 22], ["inventario-", 20],
+  ];
+  return dicas.map((d) => {
+    let p = PRIORITY.find(([k]) => d.id.startsWith(k))?.[1] ?? 30;
+    if (d.id.startsWith("aniversario-") && d.title.includes("hoje")) p = 93;
+    return { ...d, priority: p, urgent: p >= 85 };
+  }).sort((a, b) => b.priority - a.priority);
 }
 
 export type DicasData = Awaited<ReturnType<typeof loadDicas>>;

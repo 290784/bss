@@ -18,7 +18,7 @@ import { PeriodTabs } from "./period-tabs";
 import { DashboardInsights } from "./dashboard-insights";
 import { DicasCard } from "./dicas-card";
 import { AvisosTicker } from "./avisos-ticker";
-import { loadDicas } from "@/server/modules/dicas";
+import { loadDicas, type Dica } from "@/server/modules/dicas";
 import { ForecastAndAlerts, ServiceGrowth } from "./dashboard-trends";
 import { CopyLink } from "./copy-link";
 import { NextClientCard } from "./next-client";
@@ -29,6 +29,11 @@ import { plural } from "@/lib/text";
 export const metadata: Metadata = { title: "Início" };
 
 const PERIODS: PeriodId[] = ["today", "week", "month", "30d"];
+
+const tickerItem = (d: Dica) => ({
+  id: d.id, text: d.title, kind: d.kind, href: `#dica-${d.id}`, urgent: d.urgent,
+  value: d.value && d.value.cents > 0 ? formatMoney(d.value.cents) : undefined,
+});
 
 export default async function DashboardPage({ searchParams }: { searchParams: Promise<{ periodo?: string; "bem-vinda"?: string }> }) {
   const ctx = await requireAppContext();
@@ -117,8 +122,10 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
 
       {setup.appointments > 0 && (
         <AvisosTicker items={[
+          // Urgentes primeiro, depois os pontos de atenção do painel e o resto das dicas (já em ordem de importância).
+          ...dicas.filter((d) => d.urgent).map(tickerItem),
           ...trends.alerts.map((a, i) => ({ id: `alerta-${i}`, text: a.title, kind: "atencao" as const, href: "#fica-de-olho" })),
-          ...dicas.map((d) => ({ id: d.id, text: d.title, kind: d.kind, href: d.action?.href ?? "#dicas" })),
+          ...dicas.filter((d) => !d.urgent).map(tickerItem),
         ]} />
       )}
 

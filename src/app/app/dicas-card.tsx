@@ -40,6 +40,23 @@ export function DicasCard({ dicas }: { dicas: Dica[] }) {
   const [checks, setChecks] = useState<Record<string, number>>({});
   const [showAll, setShowAll] = useState(false);
   const [showDone, setShowDone] = useState(false);
+  const [focus, setFocus] = useState<string | null>(null);
+
+  // Vindo da faixa de avisos (#dica-<id>): mostra todas, rola até a dica e destaca por uns segundos.
+  useEffect(() => {
+    const go = () => {
+      const h = decodeURIComponent(window.location.hash);
+      if (!h.startsWith("#dica-")) return;
+      const id = h.slice(6);
+      setKind("todas"); setShowDone(false); setShowAll(true); setFocus(id);
+      requestAnimationFrame(() => requestAnimationFrame(() => document.getElementById(`dica-${id}`)?.scrollIntoView({ behavior: "smooth", block: "center" })));
+      window.setTimeout(() => setFocus((f) => (f === id ? null : f)), 3000);
+      window.history.replaceState(null, "", window.location.pathname + window.location.search);
+    };
+    go();
+    window.addEventListener("hashchange", go);
+    return () => window.removeEventListener("hashchange", go);
+  }, []);
 
   useEffect(() => {
     const now = Date.now();
@@ -110,11 +127,15 @@ export function DicasCard({ dicas }: { dicas: Dica[] }) {
             {visible.map((d) => {
               const Icon = ICON[d.kind];
               return (
-                <li key={d.id} className={cn("rounded-2xl border border-line bg-surface p-3.5 sm:p-4", showDone && "opacity-70")}>
+                <li key={d.id} id={`dica-${d.id}`} className={cn("scroll-mt-24 rounded-2xl border bg-surface p-3.5 transition-shadow duration-500 sm:p-4", showDone && "opacity-70",
+                  focus === d.id ? "border-accent shadow-[0_0_0_4px_var(--color-accent-muted)]" : d.urgent ? "border-st-pending/40" : "border-line")}>
                   <div className="flex items-start gap-3">
                     <span className={cn("grid h-9 w-9 shrink-0 place-items-center rounded-xl", TONE[d.kind])}><Icon className="h-4.5 w-4.5" /></span>
                     <div className="min-w-0 flex-1">
-                      <h3 className="text-[15px] leading-snug font-semibold">{d.title}</h3>
+                      <h3 className="text-[15px] leading-snug font-semibold">
+                        {d.urgent && !showDone && <span className="mr-1.5 inline-flex -translate-y-px items-center rounded-full bg-st-pending-bg px-1.5 py-0.5 align-middle text-[10px] font-bold tracking-wide text-st-pending uppercase">Urgente</span>}
+                        {d.title}
+                      </h3>
                       {d.value && d.value.cents > 0 && <span className="text-xs font-semibold whitespace-nowrap text-st-completed tabular">{formatMoney(d.value.cents)} {d.value.label}</span>}
                     </div>
                   </div>

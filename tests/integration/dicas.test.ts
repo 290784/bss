@@ -71,4 +71,16 @@ describe("dicas da Gê", () => {
     expect(semFinanceiro.some((d) => d.id.startsWith("receber-") || d.id.startsWith("vips-"))).toBe(false);
     expect(semFinanceiro.every((d) => !d.value)).toBe(true);
   });
+
+  it("quem já faltou e vem logo aparece como urgente, no topo, e a lista vem por importância", async () => {
+    const eva = await client("Eva Faltosa", "5511944440000");
+    await appt(eva, new Date(Date.now() - 20 * DAY), "no_show");
+    await appt(eva, new Date(Date.now() + 1.5 * DAY), "pending");
+    const dicas = await load();
+    const risco = dicas.find((d) => d.id.startsWith("risco-falta-"));
+    expect(risco?.urgent).toBe(true);
+    expect(risco?.clients?.[0]?.message).toMatch(/Oi, Eva!/);
+    expect(dicas[0]!.urgent).toBe(true);
+    for (let i = 1; i < dicas.length; i++) expect(dicas[i - 1]!.priority).toBeGreaterThanOrEqual(dicas[i]!.priority);
+  });
 });

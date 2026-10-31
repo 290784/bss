@@ -4,12 +4,20 @@ import { useRouter } from "next/navigation";
 import { AlertTriangle, Bell, Gift, Package, TrendingUp } from "lucide-react";
 import { cn } from "@/lib/cn";
 
-export type TickerItem = { id: string; text: string; kind: "faturamento" | "estoque" | "mimos" | "avisos" | "atencao"; href: string };
+export type TickerItem = { id: string; text: string; kind: "faturamento" | "estoque" | "mimos" | "avisos" | "atencao"; href: string; value?: string; urgent?: boolean };
+const LABEL = { faturamento: "Faturar", estoque: "Estoque", mimos: "Mimo", avisos: "Aviso", atencao: "Atenção" };
 
 const ICON = { faturamento: TrendingUp, estoque: Package, mimos: Gift, avisos: Bell, atencao: AlertTriangle };
 const TONE = {
-  faturamento: "text-st-completed", estoque: "text-gold-600", mimos: "text-accent-text", avisos: "text-st-pending", atencao: "text-st-pending",
+  faturamento: "bg-st-completed-bg text-st-completed", estoque: "bg-gold-50 text-gold-700", mimos: "bg-accent-subtle text-accent-text",
+  avisos: "bg-st-pending-bg text-st-pending", atencao: "bg-st-pending-bg text-st-pending",
 };
+/** Abre um aviso: dica do cartão (#dica-…) pelo hash (o cartão rola e destaca), outra seção rolando, ou outra página. */
+function openHref(href: string, push: (h: string) => void) {
+  if (href.startsWith("#dica-")) window.location.hash = href;
+  else if (href.startsWith("#")) document.getElementById(href.slice(1))?.scrollIntoView({ behavior: "smooth", block: "start" });
+  else push(href);
+}
 /** Velocidade do movimento sozinho (px por segundo): devagar, para dar tempo de ler. */
 const SPEED = 22;
 /** Depois de arrastar, espera um pouco antes de voltar a andar. */
@@ -81,10 +89,7 @@ export function AvisosTicker({ items }: { items: TickerItem[] }) {
       // Toque/clique: abre o aviso que está debaixo do dedo.
       const a = (document.elementFromPoint(e.clientX, e.clientY) as HTMLElement | null)?.closest<HTMLAnchorElement>("a[data-href]");
       const href = a?.dataset.href;
-      if (href) {
-        if (href.startsWith("#")) document.getElementById(href.slice(1))?.scrollIntoView({ behavior: "smooth", block: "start" });
-        else router.push(href);
-      }
+      if (href) openHref(href, router.push);
     }
   };
 
@@ -94,9 +99,15 @@ export function AvisosTicker({ items }: { items: TickerItem[] }) {
       <li key={`${copy}-${i.id}`} aria-hidden={copy > 0 || undefined}>
         <a href={i.href} data-href={i.href} tabIndex={copy > 0 ? -1 : undefined} draggable={false}
           onClick={(e) => e.preventDefault() /* a navegação é feita no soltar, para não confundir com arrasto */}
-          onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); if (i.href.startsWith("#")) document.getElementById(i.href.slice(1))?.scrollIntoView({ behavior: "smooth" }); else router.push(i.href); } }}
-          className="inline-flex h-9 items-center gap-2 rounded-full border border-line bg-surface/80 px-3.5 text-[13px] font-medium whitespace-nowrap shadow-sm backdrop-blur transition-colors hover:border-accent">
-          <Icon className={cn("h-4 w-4 shrink-0", TONE[i.kind])} />{i.text}
+          onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); openHref(i.href, router.push); } }}
+          className={cn("inline-flex h-10 items-center gap-2 rounded-full border bg-surface/85 py-1 pr-3.5 pl-1 text-[13px] font-medium whitespace-nowrap shadow-sm backdrop-blur transition-colors hover:border-accent",
+            i.urgent ? "border-st-pending/50" : "border-line")}>
+          <span className={cn("inline-flex h-8 items-center gap-1 rounded-full px-2.5 text-[11px] font-semibold", TONE[i.kind])}>
+            {i.urgent ? <span className="relative mr-0.5 flex h-2 w-2"><span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-current opacity-60" /><span className="relative inline-flex h-2 w-2 rounded-full bg-current" /></span> : <Icon className="h-3.5 w-3.5" />}
+            {i.urgent ? "Urgente" : LABEL[i.kind]}
+          </span>
+          {i.text}
+          {i.value && <span className="font-semibold text-st-completed tabular">{i.value}</span>}
         </a>
       </li>
     );
