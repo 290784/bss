@@ -28,7 +28,7 @@ export type TimeOffDTO = { id: string; professionalId: string | null; startsAt: 
 
 type Props = {
   view: AgendaViewMode; explicitView?: boolean; date: string; today: string; rangeStart: string; rangeEnd: string; timeZone: string;
-  initialProfessionalId: string | null; openAppointmentId: string | null; openConfirmations?: boolean; readOnly: boolean; canManage: boolean; canSeeAll: boolean; canCreateClients: boolean;
+  initialProfessionalId: string | null; openAppointmentId: string | null; openConfirmations?: boolean; newForClient?: { id: string; name: string } | null; readOnly: boolean; canManage: boolean; canSeeAll: boolean; canCreateClients: boolean;
   professionals: AgendaProfessional[]; services: AgendaService[]; items: AgendaItemDTO[]; timeOff: TimeOffDTO[];
 };
 
@@ -45,7 +45,9 @@ export function AgendaView(props: Props) {
   const router = useRouter();
   const [proFilter, setProFilter] = useState<string>(props.initialProfessionalId ?? "all");
   const [showCancelled, setShowCancelled] = useState(false);
-  const [draft, setDraft] = useState<NewDraft | null>(null);
+  const [draft, setDraft] = useState<NewDraft | null>(() => props.newForClient
+    ? { date, time: "", professionalId: (props.initialProfessionalId ?? professionals[0]?.id) ?? "", clientId: props.newForClient.id, clientName: props.newForClient.name }
+    : null);
   const [openId, setOpenId] = useState<string | null>(props.openAppointmentId);
   const [showConfirmations, setShowConfirmations] = useState(!!props.openConfirmations);
   const toast = useToast();
@@ -135,6 +137,11 @@ export function AgendaView(props: Props) {
         router.refresh();
       } },
     });
+  };
+  /** Tira o "?novo=" da URL (veio da ficha da cliente) para não reabrir ao atualizar a página. */
+  const dropNovo = () => {
+    const u = new URL(window.location.href);
+    if (u.searchParams.has("novo")) { u.searchParams.delete("novo"); window.history.replaceState(null, "", u); }
   };
   const openItem = (id: string) => { if (!justDragged.current) setOpenId(id); };
   const dragProps = { drag, startDrag: props.canManage ? startDrag : undefined };
@@ -281,8 +288,8 @@ export function AgendaView(props: Props) {
       {draft && (
         <NewAppointmentDialog
           draft={draft}
-          onClose={() => setDraft(null)}
-          onCreated={(id) => { setDraft(null); router.refresh(); setOpenId(id); }}
+          onClose={() => { setDraft(null); dropNovo(); }}
+          onCreated={(id) => { setDraft(null); dropNovo(); router.refresh(); setOpenId(id); }}
           professionals={professionals}
           services={props.services}
           canCreateClients={props.canCreateClients}

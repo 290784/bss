@@ -245,7 +245,7 @@ try {
     await d.getByText("conta de demonstração").waitFor();
     await shot(d, "08-dashboard-demo");
     // Pega um id de cliente da conta E2E e tenta abrir com a sessão da demo
-    const clientUrl = await page.goto(`${BASE}/app/clientes?q=Beatriz`).then(() => page.getByRole("link", { name: "Beatriz Cliente" }).getAttribute("href"));
+    const clientUrl = await page.goto(`${BASE}/app/clientes?q=Beatriz`).then(() => page.getByRole("link", { name: /^Beatriz Cliente/ }).getAttribute("href"));
     // Com streaming (loading.tsx) o Next envia status 200 antes do notFound(); o que importa é não vazar dados.
     await d.goto(`${BASE}${clientUrl}`);
     await d.getByText("Página não encontrada").waitFor();
