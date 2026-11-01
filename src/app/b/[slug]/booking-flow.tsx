@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { ArrowLeft, ArrowRight, CalendarCheck, Check, Clock, Sparkles } from "lucide-react";
+import { ArrowLeft, ArrowRight, CalendarCheck, Check, Clock, Flame, Moon, Search, Sparkles, Sun, Sunrise } from "lucide-react";
 import { Card } from "@/components/ui/primitives";
 import { Button } from "@/components/ui/button";
 import { ActionForm, Checkbox, Field, FormMessage, Input, Textarea } from "@/components/ui/form";
@@ -27,10 +27,22 @@ function writeSaved(v: Saved | null) {
 }
 const WD = ["dom", "seg", "ter", "qua", "qui", "sex", "sáb"];
 
-export function BookingFlow({ slug, timeZone, days, requiresApproval, cancellationNoticeHours, policyText, services, professionals, firstSlots = {} }: {
+/** Manhã / Tarde / Noite, para não virar uma parede de horários. */
+const PERIODS = [
+  { label: "Manhã", icon: Sunrise, test: (t: string) => t < "12:00" },
+  { label: "Tarde", icon: Sun, test: (t: string) => t >= "12:00" && t < "18:00" },
+  { label: "Noite", icon: Moon, test: (t: string) => t >= "18:00" },
+];
+const norm = (v: string) => v.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+
+export function BookingFlow({ slug, timeZone, days, requiresApproval, cancellationNoticeHours, policyText, services, professionals, firstSlots = {}, openWeekdays, popularIds = [] }: {
   slug: string; timeZone: string; days: string[]; requiresApproval: boolean; cancellationNoticeHours: number; policyText: string | null;
   services: Service[]; professionals: Professional[]; firstSlots?: Record<string, { date: string; time: string }>;
+  /** Dias da semana em que alguém atende (os outros aparecem como "fechado"). Sem a lista, todos abertos. */
+  openWeekdays?: number[]; popularIds?: string[];
 }) {
+  const [cat, setCat] = useState<string | null>(null);
+  const [query, setQuery] = useState("");
   const [service, setService] = useState<Service | null>(null);
   const [pro, setPro] = useState<string | null | undefined>(undefined); // null = sem preferência
   const [date, setDate] = useState<string | null>(null);
@@ -41,6 +53,9 @@ export function BookingFlow({ slug, timeZone, days, requiresApproval, cancellati
   const [notice, setNotice] = useState<string | null>(null);
 
   const prosForService = service ? professionals.filter((p) => service.professionalIds.includes(p.id)) : [];
+  const categories = [...new Set(services.map((s) => s.category ?? "Outros"))];
+  const shown = services.filter((s) => (query ? norm(`${s.name} ${s.category ?? ""} ${s.description ?? ""}`).includes(norm(query)) : !cat || (s.category ?? "Outros") === cat));
+  const isOpen = (d: string) => !openWeekdays || openWeekdays.length === 0 || openWeekdays.includes(localWeekday(d));
   const step = !service ? 1 : pro === undefined ? 2 : !date || !time ? 3 : 4;
 
   const slotKey = service && pro !== undefined && date ? JSON.stringify([service.id, pro, date, refresh]) : null;
@@ -106,14 +121,38 @@ export function BookingFlow({ slug, timeZone, days, requiresApproval, cancellati
         {step === 1 && (
           <>
             <h2 className="mb-3 text-lg font-semibold">Escolha o serviço</h2>
+            {services.length > 8 && (
+              <label className="relative mb-3 block">
+                <Search className="pointer-events-none absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-muted" />
+                <input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Procurar serviço" aria-label="Procurar serviço"
+                  className="h-11 w-full rounded-xl border border-line-strong bg-surface pr-3 pl-9 text-[15px] focus:border-accent focus:ring-2 focus:ring-accent-muted focus:outline-none" />
+              </label>
+            )}
+            {categories.length > 1 && !query && (
+              <div className="-mx-5 mb-3 flex gap-1.5 overflow-x-auto px-5 pb-1 sm:-mx-6 sm:px-6" role="tablist" aria-label="Categorias">
+                {[null, ...categories].map((c) => (
+                  <button key={c ?? "todas"} type="button" role="tab" aria-selected={cat === c} onClick={() => setCat(c)}
+                    className={cn("h-9 shrink-0 rounded-full border px-3.5 text-[13px] font-medium transition",
+                      cat === c ? "border-transparent btn-glow text-white" : "border-line bg-surface text-ink-soft hover:text-ink")}>
+                    {c ?? "Todos"}
+                  </button>
+                ))}
+              </div>
+            )}
+            {shown.length === 0 && <p className="rounded-xl bg-sunken px-4 py-6 text-center text-sm text-muted">Não achei esse serviço. Tenta outro nome?</p>}
             <ul className="flex flex-col gap-2">
-              {services.map((s) => {
+              {shown.map((s, i) => {
                 const first = firstSlots[s.id];
+                const header = categories.length > 1 && !cat && !query && s.category !== shown[i - 1]?.category;
                 return (
-                  <li key={s.id} className="lift overflow-hidden rounded-2xl border border-line bg-surface">
+                  <li key={s.id} className="contents">
+                  {header && <h3 className={cn("px-1 text-xs font-semibold tracking-wide text-muted uppercase", i > 0 && "mt-3")}>{s.category ?? "Outros"}</h3>}
+                  <div className="lift overflow-hidden rounded-2xl border border-line bg-surface">
                     <button onClick={() => chooseService(s)} className="flex w-full items-start justify-between gap-4 p-4 text-left">
                       <span>
-                        <span className="block font-medium">{s.name}</span>
+                        <span className="flex flex-wrap items-center gap-x-2 gap-y-1 font-medium">{s.name}
+                          {popularIds.includes(s.id) && <span className="inline-flex items-center gap-0.5 rounded-full bg-highlight-subtle px-2 py-0.5 text-[11px] font-semibold text-highlight-text"><Flame className="h-3 w-3" />Mais pedido</span>}
+                        </span>
                         {s.description && <span className="mt-0.5 block text-[13px] text-muted">{s.description}</span>}
                         <span className="mt-1 inline-flex items-center gap-1 text-xs text-muted"><Clock className="h-3 w-3" />{s.minutes} min</span>
                       </span>
@@ -126,6 +165,7 @@ export function BookingFlow({ slug, timeZone, days, requiresApproval, cancellati
                         <span className="inline-flex shrink-0 items-center gap-1 font-semibold text-accent-text">Agendar<ArrowRight className="h-3.5 w-3.5" /></span>
                       </button>
                     )}
+                  </div>
                   </li>
                 );
               })}
@@ -156,23 +196,40 @@ export function BookingFlow({ slug, timeZone, days, requiresApproval, cancellati
             <p className="mb-4 text-[13px] text-muted">{service.name} · {service.minutes} min · horários no fuso do estabelecimento</p>
             {notice && <div className="mb-4"><FormMessage state={{ ok: false, message: notice }} /></div>}
             <div className="-mx-5 mb-5 flex snap-x gap-2 overflow-x-auto px-5 pb-1 sm:-mx-6 sm:px-6">
-              {days.map((d) => (
-                <button key={d} onClick={() => { setDate(d); setTime(null); }} aria-pressed={date === d}
-                  className={cn("lift flex w-14 shrink-0 snap-start flex-col items-center rounded-xl border py-2.5", date === d ? "border-violet-300 btn-glow text-white" : "border-line hover:border-accent")}>
-                  <span className={cn("text-[11px] uppercase", date === d ? "text-accent-muted" : "text-muted")}>{WD[localWeekday(d)]}</span>
-                  <span className="text-lg font-semibold tabular">{Number(d.slice(8))}</span>
-                </button>
-              ))}
+              {days.map((d) => {
+                const open = isOpen(d);
+                return (
+                  <button key={d} onClick={() => { setDate(d); setTime(null); }} aria-pressed={date === d} disabled={!open}
+                    aria-label={`${dayLabel(d)}${open ? "" : " (fechado)"}`}
+                    className={cn("flex w-14 shrink-0 snap-start flex-col items-center rounded-xl border py-2.5",
+                      !open ? "cursor-not-allowed border-dashed border-line opacity-45" : date === d ? "lift border-violet-300 btn-glow text-white" : "lift border-line hover:border-accent")}>
+                    <span className={cn("text-[11px] uppercase", date === d ? "text-accent-muted" : "text-muted")}>{d === days[0] ? "hoje" : WD[localWeekday(d)]}</span>
+                    <span className="text-lg font-semibold tabular">{Number(d.slice(8))}</span>
+                    {!open && <span className="text-[9px] text-muted">fechado</span>}
+                  </button>
+                );
+              })}
             </div>
             {!date ? <p className="text-sm text-muted">Selecione um dia para ver os horários livres.</p>
               : slots.loading ? <div className="grid grid-cols-4 gap-2 sm:grid-cols-6">{Array.from({ length: 8 }, (_, i) => <div key={i} className="skeleton h-10" />)}</div>
               : slots.message ? <p className="text-sm text-danger">{slots.message}</p>
               : slots.list.length === 0 ? <p className="rounded-xl bg-sunken px-4 py-6 text-center text-sm text-muted">Nenhum horário livre neste dia. Tente outra data.</p>
               : (
-                <div className="grid grid-cols-4 gap-2 sm:grid-cols-6">
-                  {slots.list.map((s) => (
-                    <button key={s.time} onClick={() => { setTime(s.time); setNotice(null); }} className="lift h-10 rounded-lg border border-line bg-surface text-sm font-medium tabular hover:border-violet-300 hover:bg-sunken">{s.time}</button>
-                  ))}
+                <div className="flex flex-col gap-4">
+                  {PERIODS.map((p) => {
+                    const list = slots.list.filter((s) => p.test(s.time));
+                    if (list.length === 0) return null;
+                    return (
+                      <div key={p.label}>
+                        <h3 className="mb-2 flex items-center gap-1.5 text-[13px] font-medium text-ink-soft"><p.icon className="h-4 w-4 text-accent-text" />{p.label}<span className="text-xs text-muted">· {list.length}</span></h3>
+                        <div className="grid grid-cols-4 gap-2 sm:grid-cols-6">
+                          {list.map((s) => (
+                            <button key={s.time} onClick={() => { setTime(s.time); setNotice(null); }} className="lift h-11 rounded-lg border border-line bg-surface text-sm font-medium tabular hover:border-violet-300 hover:bg-sunken">{s.time}</button>
+                          ))}
+                        </div>
+                      </div>
+                    );
+                  })}
                 </div>
               )}
           </>
@@ -180,7 +237,12 @@ export function BookingFlow({ slug, timeZone, days, requiresApproval, cancellati
 
         {step === 4 && service && date && time && (
           <DetailsForm slug={slug} serviceId={service.id} professionalId={pro ?? null} date={date} time={time}
-            summary={`${service.name} · ${formatInTz(zonedDateTime(date, "12:00", timeZone), timeZone, { weekday: "short", day: "numeric", month: "short" })} às ${time} · ${formatMoney(service.priceCents)}`}
+            summary={{
+              service: service.name,
+              when: `${formatInTz(zonedDateTime(date, "12:00", timeZone), timeZone, { weekday: "long", day: "numeric", month: "long" })} às ${time}`,
+              who: pro ? professionals.find((p) => p.id === pro)?.name ?? null : null,
+              minutes: service.minutes, price: formatMoney(service.priceCents),
+            }}
             requiresApproval={requiresApproval} cancellationNoticeHours={cancellationNoticeHours} policyText={policyText}
             onConflict={() => { setTime(null); setRefresh((n) => n + 1); setNotice("Esse horário acabou de ser reservado por outra pessoa. Escolha outro, por favor."); }} onDone={() => setDone(true)} />
         )}
@@ -190,7 +252,8 @@ export function BookingFlow({ slug, timeZone, days, requiresApproval, cancellati
 }
 
 function DetailsForm({ slug, serviceId, professionalId, date, time, summary, requiresApproval, cancellationNoticeHours, policyText, onConflict, onDone }: {
-  slug: string; serviceId: string; professionalId: string | null; date: string; time: string; summary: string;
+  slug: string; serviceId: string; professionalId: string | null; date: string; time: string;
+  summary: { service: string; when: string; who: string | null; minutes: number; price: string };
   requiresApproval: boolean; cancellationNoticeHours: number; policyText: string | null;
   onConflict: () => void; onDone: () => void;
 }) {
@@ -223,7 +286,17 @@ function DetailsForm({ slug, serviceId, professionalId, date, time, summary, req
   });
   return (
     <ActionForm key={formKey} action={submit} className="flex flex-col gap-4" noValidate>
-      <div className="flex items-center gap-2 rounded-xl bg-sunken px-4 py-3 text-sm font-medium text-ink"><CalendarCheck className="h-4 w-4 shrink-0" />{summary}</div>
+      <div className="rounded-2xl border border-accent/25 bg-accent-subtle/50 p-4" data-testid="booking-summary">
+        <div className="flex items-start gap-3">
+          <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-surface text-accent-text"><CalendarCheck className="h-5 w-5" /></span>
+          <div className="min-w-0 flex-1">
+            <div className="font-semibold">{summary.service}</div>
+            <div className="text-sm text-ink-soft first-letter:uppercase">{summary.when}</div>
+            <div className="mt-1 text-xs text-muted">{summary.who ? `com ${summary.who}` : "com a profissional disponível"} · {summary.minutes} min</div>
+          </div>
+          <div className="shrink-0 text-right font-semibold tabular">{summary.price}</div>
+        </div>
+      </div>
       {error && <FormMessage state={{ ok: false, message: error }} />}
       {saved && (
         <p className="-mb-1 flex flex-wrap items-center justify-between gap-2 text-[13px] text-ink-soft" data-testid="saved-client">

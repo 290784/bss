@@ -21,6 +21,10 @@ export type PublicBusiness = {
   bookingPolicyText: string | null; requiresApproval: boolean; cancellationNoticeHours: number; maxAdvanceDays: number;
   services: { id: string; name: string; description: string | null; price_cents: number; duration_minutes: number; category: string | null; professional_ids: string[] }[];
   professionals: { id: string; display_name: string; specialty: string | null }[];
+  /** Dias da semana (0 = domingo) em que alguém atende online. */
+  openWeekdays: number[];
+  /** Os serviços mais feitos nos últimos 90 dias (até 3), para o selo "Mais pedido". Só ids, nada de clientes. */
+  popularServiceIds: string[];
 };
 
 export async function getPublicBusiness(tx: Tx, slug: string): Promise<PublicBusiness | null> {
@@ -47,7 +51,16 @@ export async function getPublicBusiness(tx: Tx, slug: string): Promise<PublicBus
         group by s.id, c.name, c.position
         order by c.position nulls last, c.name nulls last, s.name`
     : [];
+  const [open, popular] = profIds.length ? await Promise.all([
+    tx<{ weekday: number }[]>`select distinct weekday from app.working_hours where organization_id = ${o.id} and professional_id in ${tx(profIds)}`,
+    tx<{ id: string }[]>`
+      select x.service_id as id from app.appointment_services x join app.appointments a on a.id = x.appointment_id
+      where a.organization_id = ${o.id} and a.status = 'completed' and a.starts_at > now() - interval '90 days'
+        and x.service_id in ${tx(services.length ? services.map((sv) => sv.id) : ["00000000-0000-0000-0000-000000000000"])}
+      group by x.service_id having count(*) >= 5 order by count(*) desc limit 3`,
+  ]) : [[], []];
   return {
+    openWeekdays: open.map((r) => r.weekday), popularServiceIds: popular.map((r) => r.id).filter((id) => services.some((s) => s.id === id)),
     id: o.id, name: o.name, slug: o.slug, timezone: o.timezone, phone: o.phone, instagram: o.instagram, address: o.address,
     bookingPolicyText: o.booking_policy_text, requiresApproval: o.online_requires_approval,
     cancellationNoticeHours: o.cancellation_notice_hours, maxAdvanceDays: o.max_advance_days,
