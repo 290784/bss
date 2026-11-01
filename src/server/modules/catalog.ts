@@ -1,5 +1,7 @@
 import { z } from "zod";
 import type { Tx } from "@/server/db";
+import { audit } from "@/server/modules/audit";
+import { adjustedPrice } from "@/domain/pricing";
 import { DomainError } from "@/server/errors";
 import { parseMoneyToCents } from "@/lib/money";
 import type { Actor } from "@/server/modules/appointments";
@@ -61,6 +63,36 @@ export async function saveService(tx: Tx, actor: Actor, input: ServiceInput, id?
 
 export async function setServiceActive(tx: Tx, actor: Actor, id: string, active: boolean) {
   await tx`update app.services set is_active = ${active} where organization_id = ${actor.organizationId} and id = ${id}`;
+}
+
+/** Desempenho de cada serviço: últimos 30 dias contra os 30 anteriores (atendimentos concluídos). */
+export type ServiceStats = { count30: number; revenue30: number; countPrev30: number };
+export async function serviceStats(tx: Tx, orgId: string): Promise<Record<string, ServiceStats>> {
+  const rows = await tx<{ id: string; count30: number; revenue30: number; prev: number }[]>`
+    select x.service_id as id,
+      count(*) filter (where a.starts_at >= now() - interval '30 days')::int as count30,
+      coalesce(sum(x.price_cents) filter (where a.starts_at >= now() - interval '30 days'), 0)::int as revenue30,
+      count(*) filter (where a.starts_at < now() - interval '30 days')::int as prev
+    from app.appointment_services x join app.appointments a on a.id = x.appointment_id
+    where a.organization_id = ${orgId} and a.status = 'completed' and x.service_id is not null
+      and a.starts_at >= now() - interval '60 days' and a.starts_at < now()
+    group by x.service_id`;
+  return Object.fromEntries(rows.map((r) => [r.id, { count30: r.count30, revenue30: r.revenue30, countPrev30: r.prev }]));
+}
+
+/** Reajuste de preços em lote (ver adjustedPrice). Só mexe nos serviços ativos da organização que foram escolhidos. */
+export async function adjustPrices(tx: Tx, actor: Actor, input: { serviceIds: string[]; percent: number; roundTo: number }) {
+  if (!Number.isFinite(input.percent) || input.percent <= -50 || input.percent > 100) throw new DomainError("Escolhe uma porcentagem entre -50% e 100%.");
+  if (input.serviceIds.length === 0) throw new DomainError("Escolhe pelo menos um serviço.");
+  const rows = await tx<{ id: string; name: string; price_cents: number }[]>`
+    select id, name, price_cents from app.services
+    where organization_id = ${actor.organizationId} and is_active and id in ${tx(input.serviceIds)} for update`;
+  for (const r of rows) {
+    const next = adjustedPrice(r.price_cents, input.percent, input.roundTo);
+    if (next !== r.price_cents) await tx`update app.services set price_cents = ${next} where id = ${r.id}`;
+  }
+  await audit(tx, actor, "service.prices_adjusted", "service", null, { percent: input.percent, roundTo: input.roundTo, count: rows.length });
+  return rows.length;
 }
 
 export type ServiceRow = {
