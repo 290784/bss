@@ -11,6 +11,12 @@ export function hourText(instant: Date, timeZone: string) {
   return `${Number(h)}h${m === "00" ? "" : m}`;
 }
 
+/** "na terça-feira" / "no sábado" / "no domingo": o artigo certo para o dia da semana. */
+export function onDay(instant: Date, timeZone: string) {
+  const weekday = formatInTz(instant, timeZone, { weekday: "long" });
+  return `${/^(sábado|domingo)/.test(weekday) ? "no" : "na"} ${dayText(instant, timeZone)}`;
+}
+
 /** "terça-feira (27/10)" */
 export function dayText(instant: Date, timeZone: string) {
   const weekday = formatInTz(instant, timeZone, { weekday: "long" });
@@ -32,7 +38,7 @@ export function confirmationMessage(p: {
   clientName: string; services: string[]; startsAt: Date; timeZone: string; professionalName: string; url: string; pending?: boolean;
 }) {
   const first = p.clientName.trim().split(/\s+/)[0] ?? p.clientName;
-  const when = `${servicesText(p.services)}, na ${dayText(p.startsAt, p.timeZone)}, às ${hourText(p.startsAt, p.timeZone)}, com ${p.professionalName}`;
+  const when = `${servicesText(p.services)}, ${onDay(p.startsAt, p.timeZone)}, às ${hourText(p.startsAt, p.timeZone)}, com ${p.professionalName}`;
   const opening = p.pending
     ? `Recebemos seu pedido de horário de ${when}. Já já confirmamos pra você.`
     : `Passando pra confirmar seu horário de ${when}.`;
