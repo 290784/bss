@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { AtSign, CalendarCheck2, MapPin } from "lucide-react";
+import { AtSign, CalendarCheck2, MapPin, MessageCircle } from "lucide-react";
+import { normalizePhone } from "@/lib/text";
 import { withSystem } from "@/server/db";
 import { Sparkles } from "@/components/brand/sparkles";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
@@ -28,6 +29,7 @@ export default async function PublicBookingPage({ params }: Params) {
   if (!biz) notFound();
   const firstSlots = await withSystem((tx) => firstAvailableSlots(tx, biz));
   const today = localDateKey(new Date(), biz.timezone);
+  const whats = normalizePhone(biz.phone);
   const days = Array.from({ length: Math.min(biz.maxAdvanceDays + 1, 30) }, (_, i) => addDaysToKey(today, i));
   return (
     <div className="min-h-dvh">
@@ -41,6 +43,12 @@ export default async function PublicBookingPage({ params }: Params) {
             {biz.address && <span className="inline-flex items-center gap-1"><MapPin className="h-3.5 w-3.5" />{biz.address}</span>}
             {biz.instagram && <a href={`https://instagram.com/${biz.instagram}`} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 hover:text-ink"><AtSign className="h-3.5 w-3.5" />{biz.instagram}</a>}
           </div>
+          {whats && (
+            <a href={`https://wa.me/${whats}?text=${encodeURIComponent(`Oi! Vim pelo link de agendamento e queria tirar uma dúvida 💜`)}`} target="_blank" rel="noreferrer"
+              className="mt-4 inline-flex h-10 items-center gap-2 rounded-full bg-white/12 px-4 text-[13px] font-medium text-ink ring-1 ring-white/20 backdrop-blur transition hover:bg-white/20">
+              <MessageCircle className="h-4 w-4" />Tirar dúvida no WhatsApp
+            </a>
+          )}
         </div>
       </header>
       <main className="relative mx-auto -mt-10 max-w-2xl px-4 pb-16">
@@ -52,6 +60,8 @@ export default async function PublicBookingPage({ params }: Params) {
           cancellationNoticeHours={biz.cancellationNoticeHours}
           policyText={biz.bookingPolicyText}
           firstSlots={firstSlots}
+          openWeekdays={biz.openWeekdays}
+          popularIds={biz.popularServiceIds}
           services={biz.services.map((s) => ({ id: s.id, name: s.name, description: s.description, priceCents: s.price_cents, minutes: s.duration_minutes, category: s.category, professionalIds: s.professional_ids }))}
           professionals={biz.professionals.map((p) => ({ id: p.id, name: p.display_name, specialty: p.specialty }))}
         />
