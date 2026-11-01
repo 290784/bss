@@ -17,6 +17,7 @@ export async function saveServiceAction(_: ActionState, form: FormData): Promise
       bufferAfterMinutes: form.get("bufferAfterMinutes") || 0,
       returnIntervalDays: form.get("returnIntervalDays") || undefined,
       onlineBookable: form.get("onlineBookable") === "on",
+      offerAsExtra: form.get("offerAsExtra") === "on",
       professionalIds: form.getAll("professionalIds").map(String),
     });
     if (!parsed.success) return { ok: false, message: "Dá uma olhadinha nos campos destacados.", fieldErrors: z.flattenError(parsed.error).fieldErrors };

@@ -55,3 +55,20 @@ export async function requestAccountDeletionAction(): Promise<ActionState> {
   });
   return { ok: true, message: "Pedido anotado. Vamos falar com você por e-mail para confirmar antes de apagar qualquer coisa." };
 }
+
+/** Liga/desliga as automações do WhatsApp (lembrete com confirmação e oferta de serviço extra). */
+export async function saveAutomationsAction(input: { reminder: boolean; upsell: boolean }): Promise<ActionState> {
+  try {
+    const ctx = await actionContext("settings.manage");
+    const reminder = input.reminder === true, upsell = input.upsell === true && input.reminder === true;
+    await tenant(ctx, async (tx) => {
+      await tx`update app.organizations set whatsapp_reminder_enabled = ${reminder}, whatsapp_upsell_enabled = ${upsell} where id = ${ctx.org.id}`;
+      await audit(tx, { userId: ctx.user.userId, organizationId: ctx.org.id }, "organization.automations_updated", "organization", ctx.org.id, { reminder, upsell });
+    });
+    revalidatePath("/app/configuracoes");
+    return { ok: true, message: reminder ? (upsell ? "Lembrete e oferta de extra ligados ✨" : "Lembrete ligado, oferta de extra desligada.") : "Automações desligadas." };
+  } catch (err) {
+    if (err instanceof DomainError) return { ok: false, message: err.message };
+    throw err;
+  }
+}

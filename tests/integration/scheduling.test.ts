@@ -1,3 +1,4 @@
+import { reminderTime } from "@/server/modules/messaging";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import type { Sql } from "@/server/db";
 import { withSystem } from "@/server/db";
@@ -84,7 +85,8 @@ describe("reagendamento e mensagens", () => {
       select template, status, scheduled_for from app.message_jobs where appointment_id = ${appt.id}`;
     const pendingReminders = jobs.filter((j) => j.template === "appointment_reminder" && j.status === "pending");
     expect(pendingReminders).toHaveLength(1);
-    expect(pendingReminders[0]!.scheduled_for.getTime()).toBe(row!.starts_at.getTime() - 24 * 3_600_000);
+    // Lembrete na véspera às 9h (horário do negócio), recalculado para o novo horário.
+    expect(pendingReminders[0]!.scheduled_for.getTime()).toBe(reminderTime(row!.starts_at, "America/Sao_Paulo", new Date(pendingReminders[0]!.scheduled_for.getTime() - 1))!.getTime());
     expect(jobs.filter((j) => j.status === "cancelled").length).toBeGreaterThanOrEqual(1);
     const events = await sql`select type from app.appointment_events where appointment_id = ${appt.id}`;
     expect(events.map((e) => e.type)).toContain("rescheduled");

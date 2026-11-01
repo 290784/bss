@@ -14,6 +14,7 @@ import { recordPayment, recordPaymentSchema, refundPayment, refundSchema } from 
 import { clientSchema, createClient, findPossibleDuplicates } from "@/server/modules/clients";
 import { loadPolicy, loadServices, professionalCanDo, slotsForProfessional, totals } from "@/server/modules/scheduling";
 import { localTime } from "@/lib/time";
+import { dispatchSoon } from "@/server/dispatch-soon";
 
 function fail(err: unknown): { ok: false; message: string } {
   if (err instanceof DomainError) return { ok: false, message: err.message };
@@ -36,6 +37,7 @@ export async function createAppointmentAction(input: unknown): Promise<ActionSta
     const data = createAppointmentSchema.parse(input);
     assertOwnAgenda(ctx, data.professionalId);
     const appt = await tenant(ctx, (tx) => createAppointment(tx, actorOf(ctx), data));
+    dispatchSoon();
     revalidatePath("/app", "layout");
     return { ok: true, message: "Horário marcado! ✨", data: { id: appt.id } };
   } catch (err) {
@@ -49,6 +51,7 @@ export async function rescheduleAction(input: unknown): Promise<ActionState> {
     const data = rescheduleSchema.parse(input);
     assertOwnAgenda(ctx, data.professionalId);
     await tenant(ctx, (tx) => rescheduleAppointment(tx, actorOf(ctx), data));
+    dispatchSoon();
     revalidatePath("/app", "layout");
     return { ok: true, message: "Remarcado! Os lembretes já foram ajustados." };
   } catch (err) {
@@ -63,6 +66,7 @@ export async function changeStatusAction(input: unknown): Promise<ActionState> {
     const ctx = await actionContext("agenda.manage");
     const data = statusInput.parse(input);
     await tenant(ctx, (tx) => changeStatus(tx, actorOf(ctx), data.appointmentId, data.status, data.reason));
+    dispatchSoon();
     revalidatePath("/app", "layout");
     return { ok: true, message: "Prontinho, atualizado!" };
   } catch (err) {
