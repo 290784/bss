@@ -140,3 +140,40 @@ export async function listTimeOff(tx: Tx, orgId: string, from: Date) {
     where t.organization_id = ${orgId} and t.ends_at >= ${from}
     order by t.starts_at limit 100`;
 }
+
+/**
+ * Números do mês por profissional (atendimentos concluídos no mês atual, no fuso do negócio):
+ * faturamento (valor cobrado menos desconto), comissão (a do serviço, se tiver, senão a da
+ * profissional) e ocupação da semana atual (minutos marcados ÷ minutos de expediente).
+ */
+export type TeamStats = { completed: number; revenue: number; commission: number; noShows: number; weekBooked: number; weekAvailable: number };
+export async function teamStats(tx: Tx, orgId: string, timeZone: string, now = new Date()): Promise<Record<string, TeamStats>> {
+  const rows = await tx<{ id: string; completed: number; revenue: number; commission: number; no_shows: number; week_booked: number; week_available: number }[]>`
+    with mes as (
+      select date_trunc('month', now() at time zone ${timeZone}) at time zone ${timeZone} as ini
+    ), semana as (
+      select date_trunc('week', now() at time zone ${timeZone}) at time zone ${timeZone} as ini
+    ), feitos as (
+      select a.professional_id, a.id, a.price_cents - a.discount_cents as valor,
+        a.discount_cents::numeric / nullif(a.price_cents, 0) as desc_frac
+      from app.appointments a, mes
+      where a.organization_id = ${orgId} and a.status = 'completed' and a.starts_at >= mes.ini and a.starts_at < ${now}
+    ), comissao as (
+      select f.professional_id,
+        sum(x.price_cents * (1 - coalesce(f.desc_frac, 0)) * coalesce(s.commission_percent, p.commission_percent) / 100) as v
+      from feitos f join app.appointment_services x on x.appointment_id = f.id
+      left join app.services s on s.id = x.service_id join app.professionals p on p.id = f.professional_id
+      group by f.professional_id
+    )
+    select p.id,
+      (select count(*) from feitos f where f.professional_id = p.id)::int as completed,
+      coalesce((select sum(valor) from feitos f where f.professional_id = p.id), 0)::int as revenue,
+      coalesce((select round(v) from comissao c where c.professional_id = p.id), 0)::int as commission,
+      (select count(*) from app.appointments a, mes where a.professional_id = p.id and a.status = 'no_show' and a.starts_at >= mes.ini)::int as no_shows,
+      coalesce((select sum(extract(epoch from (a.ends_at - a.starts_at)) / 60) from app.appointments a, semana
+        where a.professional_id = p.id and a.status in ('pending', 'confirmed', 'completed')
+          and a.starts_at >= semana.ini and a.starts_at < semana.ini + interval '7 days'), 0)::int as week_booked,
+      coalesce((select sum(extract(epoch from (w.end_time - w.start_time)) / 60) from app.working_hours w where w.professional_id = p.id), 0)::int as week_available
+    from app.professionals p where p.organization_id = ${orgId}`;
+  return Object.fromEntries(rows.map((r) => [r.id, { completed: r.completed, revenue: r.revenue, commission: r.commission, noShows: r.no_shows, weekBooked: r.week_booked, weekAvailable: r.week_available }]));
+}
