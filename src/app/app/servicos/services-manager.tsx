@@ -129,7 +129,7 @@ function AdjustPricesDialog({ services, onClose }: { services: ServiceRow[]; onC
   const pickCat = (c: string) => { setCat(c); setPicked(new Set(services.filter((s) => c === "todas" || (s.category ?? "Sem categoria") === c).map((s) => s.id))); };
   return (
     <Dialog open onClose={onClose} title="Reajustar preços" side="right">
-      <p className="-mt-1 mb-4 text-sm text-ink-soft">Um reajuste de 5 a 10% por ano costuma passar despercebido. Avise as clientes fiéis com antecedência: elas adoram esse cuidado. 💜</p>
+      <p className="-mt-1 mb-4 text-sm text-ink-soft">Um reajuste de 5 a 10% por ano costuma passar despercebido. Avise as clientes fiéis com antecedência: elas reparam nesse cuidado.</p>
       <div className="grid grid-cols-2 gap-3">
         <Field label="Reajuste (%)" htmlFor="pct" hint="Use negativo para baixar.">
           <Input id="pct" inputMode="decimal" value={percent} onChange={(e) => setPercent(e.target.value)} />

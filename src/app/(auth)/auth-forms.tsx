@@ -18,7 +18,7 @@ export function SignInForm({ next }: { next?: string }) {
       </Field>
       <SubmitButton size="lg" pending={pending} pendingLabel="Entrando…">Entrar</SubmitButton>
       <p className="text-center text-sm text-muted">
-        Ainda não tem conta? <Link href="/cadastro" className="font-medium text-accent-text hover:underline">Comece grátis ✨</Link>
+        Ainda não tem conta? <Link href="/cadastro" className="font-medium text-accent-text hover:underline">Comece grátis</Link>
       </p>
     </ActionForm>
   );

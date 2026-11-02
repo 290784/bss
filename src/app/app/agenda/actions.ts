@@ -39,7 +39,7 @@ export async function createAppointmentAction(input: unknown): Promise<ActionSta
     const appt = await tenant(ctx, (tx) => createAppointment(tx, actorOf(ctx), data));
     dispatchSoon();
     revalidatePath("/app", "layout");
-    return { ok: true, message: "Horário marcado! ✨", data: { id: appt.id } };
+    return { ok: true, message: "Horário marcado.", data: { id: appt.id } };
   } catch (err) {
     return fail(err);
   }
@@ -68,7 +68,7 @@ export async function changeStatusAction(input: unknown): Promise<ActionState> {
     await tenant(ctx, (tx) => changeStatus(tx, actorOf(ctx), data.appointmentId, data.status, data.reason));
     dispatchSoon();
     revalidatePath("/app", "layout");
-    return { ok: true, message: "Prontinho, atualizado!" };
+    return { ok: true, message: "Status atualizado." };
   } catch (err) {
     return fail(err);
   }
@@ -80,7 +80,7 @@ export async function recordPaymentAction(input: unknown): Promise<ActionState> 
     const data = recordPaymentSchema.parse(input);
     await tenant(ctx, (tx) => recordPayment(tx, actorOf(ctx), data));
     revalidatePath("/app", "layout");
-    return { ok: true, message: "Pagamento anotado! 💰" };
+    return { ok: true, message: "Pagamento anotado." };
   } catch (err) {
     return fail(err);
   }
@@ -116,7 +116,7 @@ export async function undoStatusAction(appointmentId: string): Promise<ActionSta
     const id = z.uuid().parse(appointmentId);
     await tenant(ctx, (tx) => undoLastStatusChange(tx, actorOf(ctx), id));
     revalidatePath("/app", "layout");
-    return { ok: true, message: "Desfeito! O horário voltou para a agenda." };
+    return { ok: true, message: "Desfeito. O horário voltou para a agenda." };
   } catch (err) {
     return fail(err);
   }

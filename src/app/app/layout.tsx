@@ -24,7 +24,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
   else if (ctx.access === "grace")
     banner = <div className="bg-st-pending-bg px-4 py-2 text-center text-[13px] text-st-pending">Tem um pagamento do plano pendente. Acerta ele para não perder o acesso às mudanças, tá?</div>;
   else if (trialDays !== null && trialDays <= 5 && can(ctx.role, "billing.manage"))
-    banner = <div className="bg-highlight-subtle px-4 py-2 text-center text-[13px] text-highlight-text">Faltam {trialDays} {trialDays === 1 ? "dia" : "dias"} do seu teste grátis. ✨ <Link className="font-medium underline" href="/app/configuracoes#assinatura">Ver planos</Link></div>;
+    banner = <div className="bg-highlight-subtle px-4 py-2 text-center text-[13px] text-highlight-text">Faltam {trialDays} {trialDays === 1 ? "dia" : "dias"} do seu teste grátis. <Link className="font-medium underline" href="/app/configuracoes#assinatura">Ver planos</Link></div>;
 
   return (
     <ToastProvider>

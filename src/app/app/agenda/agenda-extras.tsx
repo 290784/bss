@@ -185,7 +185,7 @@ export function ListView({ items, pros, tz, canManage, gapsByPro, onOpen, onSlot
             {canManage && (active || (i.status === "completed" && i.paidCents < i.priceCents)) && (
               <div className="flex flex-wrap gap-1.5 border-t border-line px-3 py-2">
                 {i.status === "pending" && <Quick onClick={() => set(i, "confirmed", "confirmado")} disabled={pending}><Check className="h-3.5 w-3.5" />Confirmar</Quick>}
-                {active && started && <Quick onClick={() => set(i, "completed", "atendimento feito ✨")} disabled={pending} tone="ok"><CheckCheck className="h-3.5 w-3.5" />Concluir</Quick>}
+                {active && started && <Quick onClick={() => set(i, "completed", "atendimento feito")} disabled={pending} tone="ok"><CheckCheck className="h-3.5 w-3.5" />Concluir</Quick>}
                 {active && started && <Quick onClick={() => set(i, "no_show", "falta anotada")} disabled={pending} tone="bad"><UserX className="h-3.5 w-3.5" />Falta</Quick>}
                 {canSendConfirmation(i, ctx.now) && (
                   <a href={waLink(i, ctx)} target="_blank" rel="noreferrer" onClick={() => record(i.id)}

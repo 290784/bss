@@ -133,7 +133,7 @@ export function AgendaView(props: Props) {
     toast(`${d.item.clientName.split(" ")[0]} remarcada para ${d.day === before.date ? "" : `${d.day.slice(8)}/${d.day.slice(5, 7)} `}${time}${d.pro !== before.pro && proName ? ` com ${proName}` : ""}.`, "success", {
       action: { label: "Desfazer", onClick: async () => {
         const u = await rescheduleAction({ appointmentId: d.item.id, professionalId: before.pro, date: before.date, time: before.time, squeezeIn: d.item.squeezeIn });
-        toast(u?.ok ? "Prontinho, voltou para o horário de antes." : (u?.message ?? "Não consegui desfazer. Tenta de novo?"), u?.ok ? "success" : "error");
+        toast(u?.ok ? "Voltou para o horário de antes." : (u?.message ?? "Não consegui desfazer. Tenta de novo?"), u?.ok ? "success" : "error");
         router.refresh();
       } },
     });

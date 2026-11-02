@@ -277,7 +277,7 @@ export async function loadDicas(tx: Tx, orgId: string, timeZone: string, opts: {
     dicas.push({
       id: `aniversario-${todayKey}-${upcomingBdays.length}`,
       kind: "mimos",
-      title: upcomingBdays.length === 1 ? `${first(upcomingBdays[0]!.name)} faz aniversário ${upcomingBdays[0]!.key === todayKey ? "hoje! 🎂" : "logo, logo 🎂"}` : `${upcomingBdays.length} aniversárias nas próximas 2 semanas 🎂`,
+      title: upcomingBdays.length === 1 ? `${first(upcomingBdays[0]!.name)} faz aniversário ${upcomingBdays[0]!.key === todayKey ? "hoje" : "em breve"}` : `${upcomingBdays.length} aniversárias nas próximas 2 semanas`,
       detail: "Um parabéns com um presentinho (um mimo no próximo horário ou 10% no mês do aniversário) faz a cliente se sentir especial e volta como agendamento.",
       moreClients: Math.max(0, upcomingBdays.length - 6),
       clients: upcomingBdays.slice(0, 6).map((b) => ({
@@ -303,7 +303,7 @@ export async function loadDicas(tx: Tx, orgId: string, timeZone: string, opts: {
       id: `fidelidade-${todayKey}-${marcos.length}`,
       kind: "mimos",
       title: marcos.length === 1 ? `${first(marcos[0]!.name)} vem pela ${marcos[0]!.visits + 1}ª vez ${fmtDay(marcos[0]!.starts_at)}` : `${marcos.length} clientes completam uma visita especial esta semana`,
-      detail: "Marcos assim merecem comemoração: um esmalte, uma amostra, um cartãozinho escrito à mão. Custa pouco e vira post no Instagram delas. 📸",
+      detail: "Marcos assim merecem comemoração: um esmalte, uma amostra, um cartãozinho escrito à mão. Custa pouco e costuma virar post no Instagram delas.",
       moreClients: Math.max(0, marcos.length - 6),
       clients: marcos.slice(0, 6).map((m) => ({ name: m.name, phone: null, note: `${m.visits + 1}ª visita · ${fmtDay(m.starts_at)}`, message: "" })),
     });
@@ -313,7 +313,7 @@ export async function loadDicas(tx: Tx, orgId: string, timeZone: string, opts: {
     dicas.push({
       id: `boas-vindas-${todayKey}-${novas.length}`,
       kind: "mimos",
-      title: novas.length === 1 ? `${first(novas[0]!.name)} vem pela primeira vez ${fmtDay(novas[0]!.starts_at)} ✨` : `${novas.length} clientes novas vêm esta semana ✨`,
+      title: novas.length === 1 ? `${first(novas[0]!.name)} vem pela primeira vez ${fmtDay(novas[0]!.starts_at)}` : `${novas.length} clientes novas vêm esta semana`,
       detail: "A primeira visita decide se ela volta. Um brinde de boas-vindas (amostra, cartão de fidelidade ou 10% no retorno) e uma mensagem no dia seguinte fazem toda a diferença.",
       moreClients: Math.max(0, novas.length - 6),
       clients: novas.slice(0, 6).map((m) => ({ name: m.name, phone: null, note: fmtDay(m.starts_at), message: "" })),
@@ -332,7 +332,7 @@ export async function loadDicas(tx: Tx, orgId: string, timeZone: string, opts: {
       dicas.push({
         id: `vips-${todayKey.slice(0, 7)}`,
         kind: "mimos",
-        title: `Suas ${tops.length} clientes VIP merecem um carinho 💜`,
+        title: `Suas ${tops.length} clientes VIP merecem um carinho`,
         detail: "São as que mais investiram com você nos últimos 3 meses. Um mimo surpresa (sem ser aniversário!) mostra que você repara nelas e faz elas indicarem você para as amigas.",
         value: { cents: tops.reduce((t, c) => t + c.spent, 0), label: "em 3 meses" },
         clients: tops.map((c) => ({

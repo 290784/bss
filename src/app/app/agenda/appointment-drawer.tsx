@@ -42,7 +42,7 @@ export function AppointmentDrawer({ id, timeZone, professionals, readOnly, onClo
     setError(null);
     const r = await fn();
     if (r?.ok) {
-      toast(undoable ?? r.message ?? "Prontinho, atualizado!", "success", undoable ? { action: { label: "Desfazer", onClick: () => undo() } } : undefined);
+      toast(undoable ?? r.message ?? "Status atualizado.", "success", undoable ? { action: { label: "Desfazer", onClick: () => undo() } } : undefined);
       setMode("view"); await load(); onChanged();
     } else if (r) setError(r.message ?? "Ops, não deu certo. Tenta de novo?");
   });
@@ -86,7 +86,7 @@ export function AppointmentDrawer({ id, timeZone, professionals, readOnly, onClo
               <StatusBadge status={data.status} />
               {data.source === "online" && <Badge variant="plum"><Globe className="h-3 w-3" />Online</Badge>}
               {data.squeezeIn && <Badge variant="champagne"><Zap className="h-3 w-3" />Encaixe</Badge>}
-              {data.clientConfirmedAt && <Badge variant="success"><CheckCheck className="h-3 w-3" />A cliente confirmou presença 💜</Badge>}
+              {data.clientConfirmedAt && <Badge variant="success"><CheckCheck className="h-3 w-3" />A cliente confirmou presença</Badge>}
             </div>
 
             {mode === "reschedule" && (
@@ -139,7 +139,7 @@ export function AppointmentDrawer({ id, timeZone, professionals, readOnly, onClo
                         <span className="shrink-0 text-right text-[13px] tabular text-ink-soft">+{formatMoney(sg.priceCents)}<span className="block text-xs text-muted">+{sg.minutes} min</span></span>
                       </div>
                       <div className="mt-2 flex flex-wrap items-center gap-2">
-                        <Badge variant={sg.fitsRightAfter ? "success" : "neutral"}>{sg.fitsRightAfter ? "Cabe logo depois ✨" : "Sem horário livre logo em seguida"}</Badge>
+                        <Badge variant={sg.fitsRightAfter ? "success" : "neutral"}>{sg.fitsRightAfter ? "Cabe logo depois" : "Sem horário livre logo em seguida"}</Badge>
                         <span className="flex-1" />
                         {data.clientPhone && (
                           <a href={`https://wa.me/${data.clientPhone}?text=${encodeURIComponent(offerText(data, sg, timeZone))}`} target="_blank" rel="noreferrer"
@@ -283,8 +283,8 @@ function describeEvent(e: { type: string; data: Record<string, unknown> }, tz: s
     case "status_changed": return `Status: ${STATUS_LABEL[d.from as AppointmentStatus]} → ${STATUS_LABEL[d.to as AppointmentStatus]}${d.reason ? ` (${d.reason})` : ""}`;
     case "payment_recorded": return `Pagamento de ${formatMoney(Number(d.amountCents))} registrado${d.isDeposit ? " (sinal)" : ""}`;
     case "payment_refunded": return `Estorno de ${formatMoney(Number(d.amountCents))}: ${d.reason}`;
-    case "client_confirmed": return d.via === "whatsapp" ? "A cliente confirmou pelo WhatsApp 💜" : "A cliente confirmou presença pelo comprovante 💜";
-    case "upsell_accepted": return `A cliente aceitou ${d.name} pelo WhatsApp (+${formatMoney(Number(d.priceCents))}) ✨`;
+    case "client_confirmed": return d.via === "whatsapp" ? "A cliente confirmou pelo WhatsApp" : "A cliente confirmou presença pelo comprovante";
+    case "upsell_accepted": return `A cliente aceitou ${d.name} pelo WhatsApp (+${formatMoney(Number(d.priceCents))})`;
     case "confirmation_sent": return "Confirmação enviada pelo WhatsApp";
     case "status_reverted": return `Desfeito: ${STATUS_LABEL[d.from as AppointmentStatus]} → ${STATUS_LABEL[d.to as AppointmentStatus]}`;
     case "service_added": return `Serviço adicionado: ${d.name} (+${formatMoney(Number(d.priceCents))})`;
