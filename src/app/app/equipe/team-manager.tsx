@@ -120,7 +120,7 @@ export function TeamManager({ professionals, services, timeOff, timeZone, atLimi
       <Card>
         <CardHeader title="Folgas, férias e feriados" description="Quando alguém (ou o salão todo) não vai atender"
           action={!readOnly ? <Button size="sm" variant="secondary" onClick={() => setBlocking(true)}><Plus className="h-3.5 w-3.5" />Bloquear</Button> : undefined} />
-        <div className="px-5 pt-3 pb-5">
+        <div className="px-5 pt-3 pb-5 sm:px-6 sm:pb-6">
           {timeOff.length === 0 ? (
             <EmptyState className="py-6" icon={CalendarOff} title="Nenhuma folga marcada" description="Os dias bloqueados somem da agenda e do seu link de agendamento." />
           ) : (

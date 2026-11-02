@@ -28,10 +28,10 @@ export function ColumnChart({ data, series, height = 220 }: { data: ColumnDatum[
   return (
     <div>
       <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
-        <div role="tablist" aria-label="Métrica do gráfico" className="flex rounded-[10px] bg-sunken p-1">
+        <div role="tablist" aria-label="Métrica do gráfico" className="flex rounded-full bg-sunken/70 p-1">
           {series.map((x) => (
             <button key={x.key} role="tab" aria-selected={active === x.key} onClick={() => setActive(x.key)}
-              className={cn("h-7 rounded-md px-3 text-[13px] font-medium", active === x.key ? "bg-surface text-ink shadow-sm" : "text-muted hover:text-ink")}>
+              className={cn("h-7 rounded-full px-3.5 text-[13px] font-medium transition-colors", active === x.key ? "bg-surface text-accent-text shadow-[var(--shadow-control)]" : "text-muted hover:text-ink")}>
               {x.label}
             </button>
           ))}
@@ -41,7 +41,7 @@ export function ColumnChart({ data, series, height = 220 }: { data: ColumnDatum[
         </button>
       </div>
       {asTable ? (
-        <div className="max-h-[260px] overflow-y-auto rounded-lg border border-line">
+        <div className="max-h-[260px] overflow-y-auto rounded-xl border border-line/70">
           <table className="w-full text-sm">
             <thead className="sticky top-0 bg-canvas text-left text-xs text-muted"><tr><th className="px-3 py-2 font-medium">Dia</th>{series.map((x) => <th key={x.key} className="px-3 py-2 text-right font-medium">{x.label}</th>)}</tr></thead>
             <tbody className="divide-y divide-line">
@@ -57,14 +57,14 @@ export function ColumnChart({ data, series, height = 220 }: { data: ColumnDatum[
             ))}
           </div>
           <div className="relative flex-1" onMouseLeave={() => setHover(null)}>
-            {ticks.map((t) => <div key={t} className="absolute inset-x-0 border-t border-line" style={{ bottom: `${(t / max) * 100}%` }} aria-hidden />)}
+            {ticks.map((t) => <div key={t} className="absolute inset-x-0 border-t border-dashed border-line/80" style={{ bottom: `${(t / max) * 100}%` }} aria-hidden />)}
             <div className="absolute inset-0 flex items-end" role="img" aria-label={`${s.label} por dia`}>
               {data.map((d, i) => {
                 const v = d.values[active] ?? 0;
                 return (
                   <div key={i} className="relative flex h-full flex-1 items-end justify-center" onMouseEnter={() => setHover(i)} onFocus={() => setHover(i)} tabIndex={0}
                     aria-label={`${d.longLabel}: ${s.format(v)}`}>
-                    <div className={cn("w-[min(24px,70%)] rounded-t-[4px] transition-colors", hover === i ? "bg-accent-text" : "bg-accent")}
+                    <div className={cn("w-[min(22px,64%)] rounded-t-full bg-gradient-to-t transition-[opacity,filter] duration-200", hover === i ? "from-accent-strong to-accent" : "from-accent to-accent-border", hover !== null && hover !== i && "opacity-60")}
                       style={{ height: `${(v / max) * 100}%`, minHeight: v > 0 ? 2 : 0 }} />
                     {i % labelEvery === 0 && <span className="absolute -bottom-5 text-[11px] text-muted tabular">{d.label}</span>}
                   </div>
@@ -72,7 +72,7 @@ export function ColumnChart({ data, series, height = 220 }: { data: ColumnDatum[
               })}
             </div>
             {hover !== null && data[hover] && (
-              <div className="pointer-events-none absolute z-10 -translate-x-1/2 rounded-lg bg-raised px-2.5 py-1.5 text-xs whitespace-nowrap text-ink ring-1 ring-line-strong shadow-[var(--shadow-pop)]"
+              <div className="pointer-events-none absolute z-10 -translate-x-1/2 rounded-xl bg-raised px-2.5 py-1.5 text-xs whitespace-nowrap text-ink ring-1 ring-line-strong shadow-[var(--shadow-pop)]"
                 style={{ left: `${((hover + 0.5) / data.length) * 100}%`, bottom: `calc(${((data[hover].values[active] ?? 0) / max) * 100}% + 8px)` }}>
                 <div className="text-muted">{data[hover].longLabel}</div>
                 <div className="font-semibold tabular">{s.format(data[hover].values[active] ?? 0)}</div>

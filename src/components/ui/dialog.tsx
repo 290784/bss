@@ -26,20 +26,20 @@ export function Dialog({
       onClose={onClose}
       onClick={(e) => { if (e.target === ref.current) onClose(); }}
       className={cn(
-        "m-0 mt-auto max-h-[92dvh] w-full max-w-none overflow-hidden rounded-t-2xl bg-surface p-0 text-ink shadow-[var(--shadow-pop)] [animation:sheet-up_.22s_ease-out]",
-        side === "center" && "sm:m-auto sm:max-w-lg sm:rounded-2xl sm:[animation:toast-in_.18s_ease-out]",
-        side === "right" && "sm:my-0 sm:mr-0 sm:ml-auto sm:h-dvh sm:max-h-dvh sm:max-w-[440px] sm:rounded-none sm:rounded-l-2xl sm:[animation:sheet-in_.22s_ease-out]",
+        "m-0 mt-auto max-h-[92dvh] w-full max-w-none overflow-hidden rounded-t-[28px] bg-surface p-0 text-ink shadow-[var(--shadow-pop)] [animation:sheet-up_.22s_ease-out]",
+        side === "center" && "sm:m-auto sm:max-w-lg sm:rounded-[24px] sm:[animation:toast-in_.18s_ease-out]",
+        side === "right" && "sm:my-0 sm:mr-0 sm:ml-auto sm:h-dvh sm:max-h-dvh sm:max-w-[440px] sm:rounded-none sm:rounded-l-[28px] sm:[animation:sheet-in_.22s_ease-out]",
         className,
       )}
     >
       {open && (
         <div className={cn("flex max-h-[92dvh] flex-col", side === "right" && "sm:h-dvh sm:max-h-dvh")}>
-          <div className="flex items-start justify-between gap-4 border-b border-line px-5 py-4">
+          <div className="flex items-start justify-between gap-4 border-b border-line/70 px-5 py-4 sm:px-6">
             <div className="min-w-0">
-              <h2 className="text-base font-semibold">{title}</h2>
+              <h2 className="font-serif text-[19px] leading-snug font-semibold">{title}</h2>
               {description && <div className="mt-0.5 text-[13px] text-muted">{description}</div>}
             </div>
-            <button onClick={onClose} className="-mr-1 rounded-lg p-1.5 text-muted hover:bg-sunken hover:text-ink" aria-label="Fechar">
+            <button onClick={onClose} className="-mr-1.5 grid h-9 w-9 place-items-center rounded-full text-muted transition-colors hover:bg-hover-tint hover:text-ink" aria-label="Fechar">
               <X className="h-4 w-4" />
             </button>
           </div>

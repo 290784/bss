@@ -31,7 +31,7 @@ export function WhatsAppAutomations({ connected, planHasAutomations, reminder, u
       <CardHeader title={<span className="inline-flex items-center gap-2"><MessageCircle className="h-4.5 w-4.5 text-st-completed" />Automações do WhatsApp</span>}
         description="Lembrete na véspera, confirmação com um toque e oferta de serviço extra dentro da conversa"
         action={<Badge variant={connected ? "success" : "neutral"}>{connected ? "WhatsApp conectado" : "WhatsApp não conectado"}</Badge>} />
-      <div className="grid gap-5 px-5 pt-3 pb-5 lg:grid-cols-[minmax(0,1fr)_300px]">
+      <div className="grid gap-5 px-5 pt-3 pb-5 sm:px-6 sm:pb-6 lg:grid-cols-[minmax(0,1fr)_300px]">
         <div className="flex flex-col gap-3">
           {!planHasAutomations && <p className="rounded-xl bg-highlight-subtle px-3 py-2 text-[13px] text-highlight-text">As automações fazem parte do plano Pro. No seu plano atual, as confirmações continuam pelo botão de WhatsApp da agenda.</p>}
           {!connected && <p className="rounded-xl bg-sunken px-3 py-2 text-[13px] text-ink-soft">Tudo pronto para quando o WhatsApp for conectado. Até lá, nada é enviado sozinho.</p>}

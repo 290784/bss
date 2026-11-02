@@ -111,6 +111,11 @@
   --color-skeleton-hi: #36265c;
   --color-hover-tint: rgb(255 255 255 / 0.04);
 
+  /* Raio dos controles (botões, campos, abas) e pílulas. */
+  --radius-control: 12px;
+  --shadow-card-hover: 0 18px 40px -20px rgb(0 0 0 / 0.8);
+  --shadow-control: 0 0 0 1px rgb(255 255 255 / 0.02);
+  --shadow-button: 0 8px 20px -10px rgb(0 0 0 / 0.7);
   --radius-card: 22px;
   --shadow-card: 0 0 0 1px rgb(234 207 252 / 0.05), inset 0 1px 0 rgb(255 255 255 / 0.06), 0 14px 34px -20px rgb(8 2 20 / 0.85);
   --shadow-pop: 0 24px 60px -20px rgb(0 0 0 / 0.85), 0 0 0 1px rgb(234 207 252 / 0.08), 0 0 40px -10px rgb(150 13 242 / 0.35);
@@ -164,10 +169,14 @@
   --color-danger-border: #f0b8c4;
   --color-field-hover: #b3a796;
   --color-skeleton-hi: #e7e1d8;
-  --color-hover-tint: rgb(30 26 23 / 0.035);
-  --radius-card: 14px;
-  --shadow-card: 0 1px 0 rgb(30 26 23 / 0.04);
-  --shadow-pop: 0 18px 44px -18px rgb(30 26 23 / 0.28), 0 0 0 1px rgb(30 26 23 / 0.06);
+  --color-hover-tint: rgb(100 35 80 / 0.04);
+  /* Cantos e sombras: cartões macios, sombra difusa com um toque de ameixa (nunca preta). */
+  --radius-card: 20px;
+  --shadow-card: 0 1px 2px rgb(100 35 80 / 0.04), 0 12px 32px -18px rgb(100 35 80 / 0.16);
+  --shadow-card-hover: 0 1px 2px rgb(100 35 80 / 0.05), 0 18px 40px -18px rgb(100 35 80 / 0.24);
+  --shadow-control: 0 1px 2px rgb(100 35 80 / 0.05);
+  --shadow-button: 0 8px 18px -10px rgb(100 35 80 / 0.6);
+  --shadow-pop: 0 24px 56px -22px rgb(100 35 80 / 0.32), 0 0 0 1px rgb(100 35 80 / 0.06);
   color-scheme: light;
 }
 [data-theme="dark"] {
@@ -208,8 +217,11 @@
   --color-field-hover: #5c5060;
   --color-skeleton-hi: #2f2834;
   --color-hover-tint: rgb(255 255 255 / 0.04);
-  --radius-card: 14px;
-  --shadow-card: 0 0 0 1px rgb(255 255 255 / 0.02);
+  --radius-card: 20px;
+  --shadow-card: 0 0 0 1px rgb(255 255 255 / 0.02), 0 14px 34px -20px rgb(0 0 0 / 0.7);
+  --shadow-card-hover: 0 0 0 1px rgb(255 255 255 / 0.05), 0 18px 40px -20px rgb(0 0 0 / 0.8);
+  --shadow-control: 0 0 0 1px rgb(255 255 255 / 0.02);
+  --shadow-button: 0 8px 20px -10px rgb(0 0 0 / 0.7);
   --shadow-pop: 0 24px 60px -20px rgb(0 0 0 / 0.8), 0 0 0 1px rgb(255 255 255 / 0.06);
   color-scheme: dark;
 }
@@ -311,8 +323,9 @@
   }
   /* Botão principal: degradê violeta com brilho */
   /* Botão principal do app: a cor de ação, chapada. */
-  .btn-glow { background: var(--color-accent-strong); box-shadow: inset 0 -1px 0 rgb(0 0 0 / 0.18); }
+  .btn-glow { background: var(--color-accent-strong); box-shadow: inset 0 -1px 0 rgb(0 0 0 / 0.16), var(--shadow-button); transition: background-color 0.2s ease, box-shadow 0.2s ease, transform 0.12s ease; }
   .btn-glow:hover { background: var(--color-accent); }
+  .btn-glow:active { transform: translateY(1px); }
   [data-landing] [data-theme="dark"] .btn-glow {
     background: linear-gradient(135deg, var(--color-violet-400) 0%, var(--color-violet-500) 45%, var(--color-violet-600) 100%);
     box-shadow: 0 0 0 1px rgb(234 207 252 / 0.25) inset, 0 8px 24px -6px rgb(150 13 242 / 0.6), 0 0 32px -8px rgb(192 110 247 / 0.55);
@@ -332,10 +345,10 @@
    */
   .lift {
     -webkit-tap-highlight-color: transparent;
-    transition: border-color 0.15s ease, background-color 0.15s ease, transform 0.12s ease;
+    transition: border-color 0.2s ease, background-color 0.2s ease, box-shadow 0.25s ease, transform 0.12s ease;
   }
   @media (hover: hover) {
-    .lift:hover { border-color: var(--color-line-strong); background-color: var(--color-raised); }
+    .lift:hover { border-color: var(--color-accent-muted); box-shadow: var(--shadow-card-hover); }
   }
   .lift:active { transform: scale(0.99); }
   .lift:focus-visible { outline: 2px solid var(--color-accent-text); outline-offset: 2px; }
@@ -371,7 +384,7 @@
     background: linear-gradient(90deg, var(--color-sunken) 0%, var(--color-skeleton-hi) 50%, var(--color-sunken) 100%);
     background-size: 200% 100%;
     animation: shimmer 1.4s ease-in-out infinite;
-    border-radius: 8px;
+    border-radius: 12px;
   }
 }
 
@@ -383,7 +396,20 @@
 [data-theme="light"] .text-shimmer:not(:where([data-theme="dark"] *)) {
   background-image: linear-gradient(100deg, var(--color-violet-600) 0%, var(--color-violet-400) 25%, var(--color-violet-700) 50%, var(--color-violet-400) 75%, var(--color-violet-600) 100%);
 }
-[data-theme="light"] body { background: var(--color-canvas); }
+/* Fundo do app: papel quente com um véu rosado no alto e champanhe à esquerda (as cores da própria paleta). */
+[data-theme="light"] body {
+  background:
+    radial-gradient(1100px 560px at 88% -12%, rgb(246 236 242 / 0.95), transparent 62%),
+    radial-gradient(900px 520px at -12% 28%, rgb(248 240 225 / 0.7), transparent 60%),
+    var(--color-canvas);
+  background-attachment: fixed;
+}
+[data-theme="dark"] body {
+  background:
+    radial-gradient(1100px 560px at 88% -12%, rgb(156 74 130 / 0.14), transparent 62%),
+    var(--color-canvas);
+  background-attachment: fixed;
+}
 [data-theme="light"] ::selection { background: var(--color-accent-muted); }
 [data-theme="light"] dialog::backdrop { background: rgb(29 18 48 / 0.35); }
 
@@ -436,6 +462,14 @@
 @media (max-width: 640px) {
   .ambient { --rib-glow: 0.32; --rib-core: 0.42; }
   [data-theme="light"] .ambient { --rib-glow: 0.22; --rib-core: 0.35; }
+}
+
+/* Painel lateral do login/cadastro: véu ameixa no alto e champanhe embaixo. */
+.auth-panel {
+  background:
+    radial-gradient(900px 520px at 100% 0%, var(--color-accent-muted), transparent 60%),
+    radial-gradient(700px 480px at 0% 100%, var(--color-highlight-subtle), transparent 60%),
+    var(--color-accent-subtle);
 }
 
 /* Painel trocando de período: os números esmaecem até os novos chegarem. */

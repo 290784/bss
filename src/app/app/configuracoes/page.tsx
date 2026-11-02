@@ -83,8 +83,8 @@ export default async function SettingsPage() {
             preview={preview} stats={{ reminders: auto.stats.reminders, confirmed: auto.stats.confirmed, offers: auto.stats.offers, accepted: auto.stats.accepted, extraCents: auto.stats.extra_cents }} />
         </div>
         <div className="flex flex-col gap-6">
-          <Card data-theme="dark" className="relative overflow-hidden border-transparent bg-plum! p-5 text-white">
-            <h2 className="text-[15px] font-semibold">Página de agendamento</h2>
+          <Card data-theme="dark" className="relative overflow-hidden border-transparent bg-plum! p-5 text-white sm:p-6">
+            <h2 className="font-serif text-[18px] font-semibold">Página de agendamento</h2>
             <p className="mt-1 mb-3 text-xs text-white/65">{org.online_booking_enabled ? "No ar: as clientes já podem marcar pelo seu link." : "Pausada: o seu link avisa que o agendamento online está fechado por enquanto."}</p>
             <CopyLink url={`${appUrl}/b/${ctx.org.slug}`} />
           </Card>
@@ -92,10 +92,10 @@ export default async function SettingsPage() {
           <Card id="assinatura">
             <CardHeader title="Assinatura" description={sub.status === "trialing" && sub.trialEndsAt ? `Teste gratuito até ${formatInTz(sub.trialEndsAt, tz, { day: "2-digit", month: "2-digit", year: "numeric" })}` : undefined}
               action={<Badge variant={ctx.access === "full" ? "success" : ctx.access === "grace" ? "warning" : "danger"}>{{ trialing: "Em teste", active: "Ativa", past_due: "Pagamento pendente", canceled: "Cancelada" }[sub.status]}</Badge>} />
-            <div className="px-5 pt-3 pb-5">
+            <div className="px-5 pt-3 pb-5 sm:px-6 sm:pb-6">
               <ul className="flex flex-col gap-2">
                 {Object.values(PLANS).map((p) => (
-                  <li key={p.id} className={cn("rounded-lg border px-3 py-2 text-sm", ctx.plan.id === p.id ? "border-accent bg-accent-subtle" : "border-line")}>
+                  <li key={p.id} className={cn("rounded-[var(--radius-control)] border px-4 py-3 text-sm", ctx.plan.id === p.id ? "border-accent-muted bg-accent-subtle" : "border-line/80")}>
                     <div className="flex items-center justify-between font-medium">{p.name}{ctx.plan.id === p.id && <Badge variant="plum">Atual</Badge>}</div>
                     <div className="text-xs text-muted">{p.tagline} · até {plural(p.maxProfessionals, "profissional", "profissionais")} · {plural(p.maxUnits, "unidade")}</div>
                   </li>
@@ -107,7 +107,7 @@ export default async function SettingsPage() {
 
           <Card>
             <CardHeader title="Canais de mensagem" description="Para mandar lembretes e confirmações sozinha" />
-            <ul className="px-5 pt-3 pb-5 text-sm">
+            <ul className="px-5 pt-3 pb-5 sm:px-6 sm:pb-6 text-sm">
               {(["whatsapp", "email"] as const).map((ch) => {
                 const connected = providers.some((p) => p.channel === ch);
                 return (
@@ -123,7 +123,7 @@ export default async function SettingsPage() {
 
           <Card>
             <CardHeader title="Equipe com acesso" description="Convites por e-mail ainda não estão disponíveis" />
-            <ul className="divide-y divide-line px-5 pt-2 pb-4 text-sm">
+            <ul className="divide-y divide-line/70 px-5 pt-2 pb-4 sm:px-6 text-sm">
               {members.map((m) => (
                 <li key={m.user_id} className="flex items-center justify-between py-2">
                   <span className="min-w-0 truncate">{names.get(m.user_id)?.full_name ?? "—"}<span className="block truncate text-xs text-muted">{names.get(m.user_id)?.email}</span></span>
@@ -136,7 +136,7 @@ export default async function SettingsPage() {
           {auditRows.length > 0 && (
             <Card>
               <CardHeader title="Atividades recentes" description="Registro de auditoria" />
-              <ul className="divide-y divide-line px-5 pt-2 pb-4 text-[13px]">
+              <ul className="divide-y divide-line/70 px-5 pt-2 pb-4 sm:px-6 text-[13px]">
                 {auditRows.map((a, i) => (
                   <li key={i} className="py-2">
                     <div>{ACTION_LABEL[a.action] ?? a.action}</div>

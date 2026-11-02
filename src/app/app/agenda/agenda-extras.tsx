@@ -161,8 +161,8 @@ export function ListView({ items, pros, tz, canManage, gapsByPro, onOpen, onSlot
         const active = i.status === "pending" || i.status === "confirmed";
         const started = isToday && nowMinute !== null && minutesOf(start) <= nowMinute;
         return [nowLine, (
-          <li key={i.id} className={cn("rounded-xl border border-line bg-surface shadow-sm transition", i.status === "cancelled" && "opacity-60")}>
-            <button type="button" onClick={() => onOpen(i.id)} className="flex w-full items-start gap-3 px-3 pt-3 pb-2 text-left">
+          <li key={i.id} className={cn("rounded-[var(--radius-card)] border border-line/70 bg-surface shadow-[var(--shadow-card)] transition", i.status === "cancelled" && "opacity-60")}>
+            <button type="button" onClick={() => onOpen(i.id)} className="flex w-full items-start gap-3 px-4 pt-3.5 pb-2.5 text-left">
               <span className="w-12 shrink-0 text-sm font-semibold tabular">{start}<span className="block text-xs font-normal text-muted">{end}</span></span>
               <span className="h-10 w-1 shrink-0 rounded-full" style={{ background: pro?.color }} aria-hidden />
               <span className="min-w-0 flex-1">
@@ -183,13 +183,13 @@ export function ListView({ items, pros, tz, canManage, gapsByPro, onOpen, onSlot
               </span>
             </button>
             {canManage && (active || (i.status === "completed" && i.paidCents < i.priceCents)) && (
-              <div className="flex flex-wrap gap-1.5 border-t border-line px-3 py-2">
+              <div className="flex flex-wrap gap-1.5 border-t border-line/70 px-4 py-2.5">
                 {i.status === "pending" && <Quick onClick={() => set(i, "confirmed", "confirmado")} disabled={pending}><Check className="h-3.5 w-3.5" />Confirmar</Quick>}
                 {active && started && <Quick onClick={() => set(i, "completed", "atendimento feito")} disabled={pending} tone="ok"><CheckCheck className="h-3.5 w-3.5" />Concluir</Quick>}
                 {active && started && <Quick onClick={() => set(i, "no_show", "falta anotada")} disabled={pending} tone="bad"><UserX className="h-3.5 w-3.5" />Falta</Quick>}
                 {canSendConfirmation(i, ctx.now) && (
                   <a href={waLink(i, ctx)} target="_blank" rel="noreferrer" onClick={() => record(i.id)}
-                    className="inline-flex h-9 items-center gap-1.5 rounded-lg border border-line px-3 text-xs font-medium text-ink-soft transition hover:bg-sunken">
+                    className="inline-flex h-9 items-center gap-1.5 rounded-full border border-line px-3.5 text-xs font-medium text-ink-soft transition hover:bg-hover-tint">
                     <MessageCircle className="h-3.5 w-3.5" />{i.confirmationSentAt ? "Reenviar confirmação" : "Enviar confirmação"}
                   </a>
                 )}
@@ -208,10 +208,10 @@ export function ListView({ items, pros, tz, canManage, gapsByPro, onOpen, onSlot
 function Quick({ children, onClick, disabled, tone }: { children: React.ReactNode; onClick: () => void; disabled?: boolean; tone?: "ok" | "bad" }) {
   return (
     <button type="button" onClick={onClick} disabled={disabled}
-      className={cn("inline-flex h-9 items-center gap-1.5 rounded-lg border px-3 text-xs font-medium transition disabled:opacity-50",
+      className={cn("inline-flex h-9 items-center gap-1.5 rounded-full border px-3.5 text-xs font-medium transition disabled:opacity-50",
         tone === "ok" ? "border-st-completed/40 bg-st-completed-bg text-st-completed hover:brightness-110"
           : tone === "bad" ? "border-st-noshow/40 bg-st-noshow-bg text-st-noshow hover:brightness-110"
-          : "border-line text-ink-soft hover:bg-sunken")}>
+          : "border-line text-ink-soft hover:bg-hover-tint")}>
       {children}
     </button>
   );

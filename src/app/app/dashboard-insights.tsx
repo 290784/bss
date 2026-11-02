@@ -39,7 +39,7 @@ export function DashboardInsights({ data, periodLabel, compareLabel, finance }: 
         <Card>
           <CardHeader title="Seus serviços" description={`${periodLabel} · atendimentos concluídos · variação: ${compareLabel}`}
             action={<InfoTip text="Cada serviço feito no período, pelo valor cobrado. Se a cliente fez dois serviços, conta para os dois." />} />
-          <div className="overflow-x-auto px-5 pt-3 pb-5">
+          <div className="overflow-x-auto px-5 pt-3 pb-5 sm:px-6 sm:pb-6">
             {data.byService.length === 0 ? (
               <p className="py-6 text-center text-sm text-muted">Nenhum atendimento feito neste período ainda.</p>
             ) : (
@@ -82,7 +82,7 @@ export function DashboardInsights({ data, periodLabel, compareLabel, finance }: 
         <div className="flex flex-col gap-6">
           <Card>
             <CardHeader title="Por área" description={finance ? "Quanto cada área traz para o caixa" : "Quanto cada área ocupa da agenda"} />
-            <div className="px-5 pt-4 pb-5">
+            <div className="px-5 pt-4 pb-5 sm:px-6 sm:pb-6">
               {data.byCategory.length === 0 ? <p className="text-sm text-muted">Ainda sem atendimentos neste período.</p> : <>
                 <div className="flex h-3 overflow-hidden rounded-full bg-sunken" aria-hidden>
                   {data.byCategory.map((c, i) => (
@@ -107,7 +107,7 @@ export function DashboardInsights({ data, periodLabel, compareLabel, finance }: 
           <Card>
             <CardHeader title="Vendas extras" description="Clientes que saíram com mais de um serviço"
               action={<InfoTip text="Atendimentos do período em que a cliente fez mais de um serviço (por exemplo, topou a sugestão de um extra). O valor a mais é a soma dos serviços além do primeiro." />} />
-            <div className="grid grid-cols-2 gap-3 px-5 pt-4 pb-5">
+            <div className="grid grid-cols-2 gap-3 px-5 pt-4 pb-5 sm:px-6 sm:pb-6">
               <div>
                 <div className="text-2xl font-semibold tabular">{pct(data.upsell.rate)}</div>
                 <div className="text-xs text-muted">{data.upsell.withExtra} de {data.upsell.completed} atendimentos</div>
@@ -131,7 +131,7 @@ export function DashboardInsights({ data, periodLabel, compareLabel, finance }: 
       <div className="mt-6 grid gap-6 lg:grid-cols-[380px_minmax(0,1fr)]">
         <Card>
           <CardHeader title="De onde vêm os horários" description={`${periodLabel} · exceto cancelados`} />
-          <div className="px-5 pt-4 pb-5">
+          <div className="px-5 pt-4 pb-5 sm:px-6 sm:pb-6">
             {originTotal === 0 ? <p className="text-sm text-muted">Nenhum horário marcado neste período ainda.</p> : <>
               <div className="flex h-3 overflow-hidden rounded-full bg-sunken" aria-hidden>
                 <span className="bg-data-1" style={{ width: `${(data.origin.online / originTotal) * 100}%` }} />
@@ -155,7 +155,7 @@ export function DashboardInsights({ data, periodLabel, compareLabel, finance }: 
 
         <Card>
           <CardHeader title="Seus últimos 6 meses" description={finance ? "Quanto entrou por mês (o mês atual, até hoje)" : "Atendimentos feitos por mês (o mês atual, até hoje)"} />
-          <div className="px-5 pt-4 pb-5">
+          <div className="px-5 pt-4 pb-5 sm:px-6 sm:pb-6">
             <div className="flex h-44 items-end gap-3" role="img"
               aria-label={data.months.map((m) => `${MESES[Number(m.key.slice(5, 7)) - 1]}: ${finance ? formatMoney(m.revenue) : `${m.completed} atendimentos`}`).join("; ")}>
               {data.months.map((m) => {

@@ -1,55 +1,54 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { ArrowDownRight, ArrowUpRight, CalendarPlus, Check, Clock, Link2, UserPlus, Users } from "lucide-react";
+import { CalendarPlus, Check, ChevronRight, Clock, Link2, UserPlus } from "lucide-react";
+import { Illustration, type IllustrationName } from "@/components/ui/illustration";
 import { requireAppContext, tenant } from "@/server/context";
 import { can } from "@/domain/permissions";
-import { METRIC_DEFINITIONS, type MetricKey } from "@/domain/metrics";
-import { COMPARACAO, freeGapsToday, loadDashboard, loadForecast, loadInsights, loadTrends, PERIOD_LABEL, type PeriodId } from "@/server/modules/dashboard";
+import { freeGapsToday, loadDashboard, loadTrends } from "@/server/modules/dashboard";
 import { listAgenda } from "@/server/modules/appointments";
-import { Card, CardHeader, EmptyState, InfoTip, PageHeader, StatusBadge, STATUS_STYLE } from "@/components/ui/primitives";
+import { Card, CardHeader, EmptyState, PageHeader, StatusBadge, STATUS_STYLE } from "@/components/ui/primitives";
 import { ButtonLink } from "@/components/ui/button";
 import { formatMoney } from "@/lib/money";
 import { addDaysToKey, formatInTz, localDateKey, localTime, zonedDateTime } from "@/lib/time";
 import { cn } from "@/lib/cn";
-import { STATUS_LABEL } from "@/domain/appointment-status";
-import { DashboardChart } from "./dashboard-chart";
-import { PeriodTabs } from "./period-tabs";
-import { DashboardInsights } from "./dashboard-insights";
-import { DicasCard } from "./dicas-card";
 import { AvisosTicker } from "./avisos-ticker";
 import { loadDicas, type Dica } from "@/server/modules/dicas";
-import { ForecastAndAlerts, ServiceGrowth } from "./dashboard-trends";
 import { CopyLink } from "./copy-link";
 import { NextClientCard } from "./next-client";
+import { Kpi } from "./dashboard-kpi";
 import { receiptUrl } from "@/server/modules/receipt";
 import { plural } from "@/lib/text";
 
 export const metadata: Metadata = { title: "Início" };
 
-const PERIODS: PeriodId[] = ["today", "week", "month", "30d"];
-
+/** Avisos da faixa abrem a dica na tela de Dicas. */
 const tickerItem = (d: Dica) => ({
-  id: d.id, text: d.title, kind: d.kind, href: `#dica-${d.id}`, urgent: d.urgent,
+  id: d.id, text: d.title, kind: d.kind, href: `/app/dicas#dica-${d.id}`, urgent: d.urgent,
   value: d.value && d.value.cents > 0 ? formatMoney(d.value.cents) : undefined,
 });
 
-export default async function DashboardPage({ searchParams }: { searchParams: Promise<{ periodo?: string; "bem-vinda"?: string }> }) {
+/**
+ * Início: só o que importa hoje (próxima cliente, agenda do dia, quatro números do mês e atalhos).
+ * Os números completos ficam em Relatórios e as dicas em Dicas.
+ */
+export default async function DashboardPage({ searchParams }: { searchParams: Promise<{ "bem-vinda"?: string; periodo?: string }> }) {
   const ctx = await requireAppContext();
   if (!can(ctx.role, "dashboard.view")) redirect("/app/agenda");
   const sp = await searchParams;
-  const period: PeriodId = PERIODS.includes(sp.periodo as PeriodId) ? (sp.periodo as PeriodId) : "month";
+  // Links antigos com ?periodo= abrem os relatórios no mesmo período.
+  if (sp.periodo) redirect(`/app/relatorios?periodo=${encodeURIComponent(sp.periodo)}`);
   const tz = ctx.org.timezone;
   const finance = can(ctx.role, "finance.view");
   const todayKey = localDateKey(new Date(), tz);
+  const canBook = ctx.access !== "read_only";
 
   const appUrl = process.env.APP_URL ?? "http://localhost:3000";
-  const { d, insights, trends, forecast, todayItems, gaps, setup, dicas } = await tenant(ctx, async (tx) => {
-    const [d, insights, trends, forecast, todayItems, gaps, [setup], dicas] = await Promise.all([
-      loadDashboard(tx, ctx.org.id, tz, period, { includeFinance: finance }),
-      loadInsights(tx, ctx.org.id, tz, period),
+  const bookingUrl = `${appUrl}/b/${ctx.org.slug}`;
+  const { d, trends, todayItems, gaps, setup, dicas } = await tenant(ctx, async (tx) => {
+    const [d, trends, todayItems, gaps, [setup], dicas] = await Promise.all([
+      loadDashboard(tx, ctx.org.id, tz, "month", { includeFinance: finance }),
       loadTrends(tx, ctx.org.id, tz),
-      finance ? loadForecast(tx, ctx.org.id, tz) : Promise.resolve(null),
       listAgenda(tx, ctx.org.id, zonedDateTime(todayKey, "00:00", tz), zonedDateTime(addDaysToKey(todayKey, 1), "00:00", tz)),
       freeGapsToday(tx, ctx.org.id, tz),
       tx<{ services: number; clients: number; appointments: number; hours: number }[]>`
@@ -57,9 +56,9 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
                (select count(*) from app.clients where organization_id = ${ctx.org.id})::int as clients,
                (select count(*) from app.appointments where organization_id = ${ctx.org.id})::int as appointments,
                (select count(*) from app.working_hours where organization_id = ${ctx.org.id})::int as hours`,
-      loadDicas(tx, ctx.org.id, tz, { finance, bookingUrl: `${appUrl}/b/${ctx.org.slug}` }),
+      loadDicas(tx, ctx.org.id, tz, { finance, bookingUrl }),
     ]);
-    return { d, insights, trends, forecast, todayItems, gaps, setup: setup!, dicas };
+    return { d, trends, todayItems, gaps, setup: setup!, dicas };
   });
 
   const activation = [
@@ -75,33 +74,31 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
   const upcoming = activeToday.filter((i) => (i.status === "pending" || i.status === "confirmed") && i.ends_at.getTime() > now);
   const next = upcoming[0];
 
-  const series = d.series.map((s) => ({
-    label: s.day.slice(8),
-    longLabel: s.day.split("-").reverse().join("/"),
-    values: { revenue: s.revenue, appointments: s.appointments },
-  }));
+  const shortcuts: { href: string; label: string; hint: string; art: IllustrationName; show: boolean }[] = [
+    { href: "/app/agenda", label: "Marcar horário", hint: "Abre a agenda", art: "calendar-plus", show: canBook },
+    { href: "/app/clientes?nova=1", label: "Nova cliente", hint: "Cadastro rápido", art: "user-plus", show: canBook && can(ctx.role, "clients.view") },
+    { href: "/app/dicas", label: "Dicas", hint: dicas.length ? plural(dicas.length, "ideia") + " para faturar mais" : "Nada pendente", art: "lightbulb", show: true },
+    { href: "/app/relatorios", label: "Relatórios", hint: "Todos os números", art: "chart", show: true },
+  ];
 
   return (
     <div>
       <PageHeader
         title={sp["bem-vinda"] ? `Tudo pronto, ${ctx.user.fullName.split(" ")[0]}` : `Oi, ${ctx.user.fullName.split(" ")[0]}`}
         description={<span className="first-letter:uppercase">{formatInTz(new Date(), tz, { weekday: "long", day: "numeric", month: "long" })} · {plural(activeToday.length, "atendimento")} hoje</span>}
-        actions={<>
-          <PeriodTabs periods={PERIODS.map((p) => ({ id: p, label: PERIOD_LABEL[p] }))} current={period} />
-          {ctx.access !== "read_only" && <ButtonLink href="/app/agenda" size="md"><CalendarPlus className="h-4 w-4" />Agendar</ButtonLink>}
-        </>}
+        actions={canBook && <ButtonLink href="/app/agenda" size="md"><CalendarPlus className="h-4 w-4" />Agendar</ButtonLink>}
       />
 
       {!activationDone && (
         <Card className="mb-6 overflow-hidden">
-          <div className="grid gap-6 p-5 md:grid-cols-[1fr_auto] md:items-center">
+          <div className="grid gap-6 p-5 sm:p-6 md:grid-cols-[1fr_auto] md:items-center">
             <div>
               <h2 className="font-serif text-[22px] font-semibold">Vamos deixar tudo pronto?</h2>
               <p className="mt-1 text-sm text-muted">Faltam poucos passos para as clientes começarem a marcar com você. {activation.filter((a) => a.done).length} de {activation.length} prontos.</p>
               <ul className="mt-4 grid gap-2 sm:grid-cols-2">
                 {activation.map((a) => (
                   <li key={a.label}>
-                    <Link href={a.href} className={cn("lift flex items-center gap-2.5 rounded-xl border px-3 py-2 text-sm", a.done ? "border-transparent bg-st-completed-bg text-st-completed" : "border-line hover:border-accent")}>
+                    <Link href={a.href} className={cn("lift flex items-center gap-2.5 rounded-xl border px-3 py-2.5 text-sm", a.done ? "border-transparent bg-st-completed-bg text-st-completed" : "border-line hover:border-accent")}>
                       <span className={cn("grid h-5 w-5 place-items-center rounded-full border", a.done ? "border-st-completed bg-st-completed text-white" : "border-line-strong")}>{a.done && <Check className="h-3 w-3" />}</span>
                       {a.label}
                     </Link>
@@ -109,10 +106,10 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
                 ))}
               </ul>
             </div>
-            <div data-theme="dark" className="relative overflow-hidden rounded-xl bg-plum p-4 text-white md:w-72">
+            <div data-theme="dark" className="relative overflow-hidden rounded-2xl bg-plum p-5 text-white md:w-72">
               <div className="flex items-center gap-2 text-sm font-medium"><Link2 className="h-4 w-4" />Seu link de agendamento</div>
               <p className="mt-1 mb-3 text-xs text-white/65">Coloque na bio do Instagram e mande no WhatsApp: as clientes marcam sozinhas, 24h.</p>
-              <CopyLink url={`${appUrl}/b/${ctx.org.slug}`} />
+              <CopyLink url={bookingUrl} />
             </div>
           </div>
         </Card>
@@ -120,15 +117,15 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
 
       {setup.appointments > 0 && (
         <AvisosTicker items={[
-          // Urgentes primeiro, depois os pontos de atenção do painel e o resto das dicas (já em ordem de importância).
-          ...dicas.filter((d) => d.urgent).map(tickerItem),
-          ...trends.alerts.map((a, i) => ({ id: `alerta-${i}`, text: a.title, kind: "atencao" as const, href: "#fica-de-olho" })),
-          ...dicas.filter((d) => !d.urgent).map(tickerItem),
+          // Urgentes primeiro, depois os pontos de atenção e o resto das dicas (já em ordem de importância).
+          ...dicas.filter((x) => x.urgent).map(tickerItem),
+          ...trends.alerts.map((a, i) => ({ id: `alerta-${i}`, text: a.title, kind: "atencao" as const, href: "/app/relatorios#fica-de-olho" })),
+          ...dicas.filter((x) => !x.urgent).map(tickerItem),
         ]} />
       )}
 
       {next && (
-        <NextClientCard timeZone={tz} now={now} later={upcoming.length - 1} canManage={ctx.access !== "read_only" && can(ctx.role, "agenda.manage")}
+        <NextClientCard timeZone={tz} now={now} later={upcoming.length - 1} canManage={canBook && can(ctx.role, "agenda.manage")}
           next={{
             id: next.id, date: todayKey, clientName: next.client_name, clientPhone: next.client_phone, services: next.service_names,
             professionalName: next.professional_name, startsAt: next.starts_at.toISOString(), endsAt: next.ends_at.toISOString(),
@@ -137,39 +134,17 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
           }} />
       )}
 
-      <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-        {d.revenue && <Kpi highlight label="Recebido" metric="revenue_received" value={formatMoney(d.revenue.value)} change={d.revenue.change} />}
-        <Kpi highlight={!d.revenue} label="Previsto na agenda" metric="scheduled_value" value={formatMoney(d.scheduledValue.value)} change={d.scheduledValue.change} />
-        <Kpi label="Atendimentos" metric="appointments_count" value={String(d.appointments.value)} change={d.appointments.change} />
-        <Kpi label="Agenda ocupada" metric="occupancy" value={d.occupancy.value === null ? "—" : `${Math.round(d.occupancy.value * 100)}%`}
-          sub={d.occupancy.capacityMinutes ? `${Math.round(d.occupancy.bookedMinutes / 60)}h de ${Math.round(d.occupancy.capacityMinutes / 60)}h` : "Sem horário de atendimento no período"} />
-        {d.averageTicket && <Kpi label="Ticket médio" metric="average_ticket" value={d.averageTicket.value === null ? "—" : formatMoney(d.averageTicket.value)} />}
-        <Kpi label="Faltas" metric="no_show_rate" value={String(d.noShows.value)} invert change={d.noShows.change}
-          sub={d.noShowRate.value === null ? "Nenhum atendimento ainda" : `${Math.round(d.noShowRate.value * 100)}% de quem tinha horário`} />
-        <Kpi label="Clientes novas" metric="new_clients" value={String(d.newClients.value)} change={d.newClients.change} sub={`${d.returningClients.value} voltaram`} />
-        {d.receivable && <Kpi label="A receber" metric="receivable" value={formatMoney(d.receivable.total)} sub={`${d.receivable.count === 1 ? "1 atendimento feito" : `${d.receivable.count} atendimentos feitos`} sem pagamento`} />}
-      </div>
-
-      {setup.appointments > 0 && <ForecastAndAlerts forecast={forecast} alerts={trends.alerts} finance={finance} />}
-      {setup.appointments > 0 && <DicasCard dicas={dicas} />}
-
-      <div className="mt-6 grid gap-6 xl:grid-cols-[minmax(0,1fr)_380px]">
-        <Card>
-          <CardHeader title="Dia a dia" description={`${PERIOD_LABEL[period]} · os números lá em cima: ${COMPARACAO[period]}`} />
-          <div className="px-5 pt-4 pb-5">
-            <DashboardChart data={series} includeRevenue={finance} />
-          </div>
-        </Card>
+      <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_340px]">
         <Card>
           <CardHeader title="Hoje" description={plural(activeToday.length, "atendimento")} action={<Link href="/app/agenda" className="text-[13px] font-medium text-accent-text hover:underline">Ver agenda</Link>} />
-          <div className="px-5 pt-3 pb-5">
+          <div className="px-5 pt-3 pb-5 sm:px-6 sm:pb-6">
             {activeToday.length === 0 ? (
               <EmptyState className="py-6" icon={Clock} title="Dia livre por aqui" description="Que tal mandar seu link para as clientes e encher essa agenda?" />
             ) : (
-              <ul className="flex flex-col divide-y divide-line">
+              <ul className="flex flex-col divide-y divide-line/70">
                 {activeToday.slice(0, 8).map((a) => (
                   <li key={a.id}>
-                    <Link href={`/app/agenda?data=${todayKey}&agendamento=${a.id}`} className="-mx-2 flex items-center gap-3 rounded-xl px-2 py-2.5 transition hover:bg-hover-tint active:scale-[0.99]">
+                    <Link href={`/app/agenda?data=${todayKey}&agendamento=${a.id}`} className="-mx-2 flex items-center gap-3 rounded-xl px-2 py-3 transition hover:bg-hover-tint active:scale-[0.99]">
                       <span className="w-11 text-sm font-semibold tabular">{localTime(a.starts_at, tz)}</span>
                       <span className={cn("h-8 w-1 rounded-full", STATUS_STYLE[a.status].dot)} aria-hidden />
                       <span className="min-w-0 flex-1">
@@ -182,12 +157,13 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
                 ))}
               </ul>
             )}
+            {activeToday.length > 8 && <Link href="/app/agenda" className="mt-2 inline-block text-[13px] font-medium text-accent-text hover:underline">Ver os outros {activeToday.length - 8} na agenda</Link>}
             {gaps.length > 0 && (
-              <div className="mt-4 rounded-xl bg-highlight-subtle p-3">
-                <div className="mb-1.5 text-[13px] font-medium text-highlight-text">Horários livres hoje: dá para encaixar alguém!</div>
+              <div className="mt-4 rounded-2xl border border-highlight-border/60 bg-highlight-subtle p-3.5">
+                <div className="mb-1.5 text-[13px] font-medium text-highlight-text">Horários livres hoje: dá para encaixar alguém</div>
                 <ul className="flex flex-wrap gap-1.5">
                   {gaps.slice(0, 6).map((g, i) => (
-                    <li key={i} className="rounded-md bg-surface px-2 py-1 text-xs text-ink-soft tabular">
+                    <li key={i} className="rounded-full bg-surface px-2.5 py-1 text-xs text-ink-soft tabular">
                       {localTime(g.start, tz)}–{localTime(g.end, tz)}{d.byProfessional.length > 1 ? ` · ${g.name}` : ""}
                     </li>
                   ))}
@@ -196,107 +172,52 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
             )}
           </div>
         </Card>
+
+        <div className="flex flex-col gap-6">
+          <Card>
+            <CardHeader title="Atalhos" />
+            <ul className="grid grid-cols-2 gap-2.5 px-5 pt-4 pb-5 sm:px-6 sm:pb-6 lg:grid-cols-1">
+              {shortcuts.filter((x) => x.show).map((x) => (
+                <li key={x.href}>
+                  <Link href={x.href} className="lift flex h-full items-center gap-3 rounded-2xl border border-line/70 bg-surface p-3">
+                    <Illustration name={x.art} className="h-11 w-11" />
+                    <span className="min-w-0">
+                      <span className="block text-sm font-medium">{x.label}</span>
+                      <span className="hidden truncate text-xs text-muted sm:block">{x.hint}</span>
+                    </span>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </Card>
+          {activationDone && (
+            <div data-theme="dark" className="relative overflow-hidden rounded-[var(--radius-card)] bg-plum p-5 text-white">
+              <div className="flex items-center gap-2 text-sm font-medium"><Link2 className="h-4 w-4" />Seu link de agendamento</div>
+              <p className="mt-1 mb-3 text-xs text-white/65">Mande no WhatsApp ou coloque na bio: as clientes marcam sozinhas.</p>
+              <CopyLink url={bookingUrl} />
+            </div>
+          )}
+        </div>
       </div>
 
-      <DashboardInsights data={insights} periodLabel={PERIOD_LABEL[period]} compareLabel={COMPARACAO[period].replace(/^comparação com /, "")} finance={finance} />
-      {setup.appointments > 0 && <ServiceGrowth data={trends} finance={finance} />}
-
-      <div className="mt-6 grid gap-6 lg:grid-cols-2">
-        <Card>
-          <CardHeader title="Como foram os atendimentos" description={PERIOD_LABEL[period]} />
-          <div className="px-5 pt-4 pb-5">
-            <StatusBreakdown counts={d.statusCounts} />
-          </div>
-        </Card>
-        <Card>
-          <CardHeader title="Clientes com saudade" description="Mais de 60 dias sem vir e sem horário marcado: hora de mandar um oi"
-            action={<InfoTip text={METRIC_DEFINITIONS.inactive_clients} />} />
-          <div className="px-5 pt-3 pb-5">
-            {d.reactivate.length === 0 ? (
-              <EmptyState className="py-6" icon={Users} title="Ninguém sumida por aqui" description="Se alguma cliente ficar mais de 60 dias sem voltar, ela aparece aqui para você chamar." />
-            ) : (
-              <ul className="divide-y divide-line">
-                {d.reactivate.map((c) => (
-                  <li key={c.id}>
-                    <Link href={`/app/clientes/${c.id}`} className="-mx-2 flex items-center justify-between rounded-xl px-2 py-2.5 text-sm transition hover:bg-hover-tint active:scale-[0.99]">
-                      <span className="font-medium">{c.full_name}</span>
-                      <span className="text-xs text-muted">{plural(c.visits, "visita")} · última em {formatInTz(c.last_visit, tz, { day: "2-digit", month: "2-digit", year: "numeric" })}</span>
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </div>
-        </Card>
-      </div>
-
-      {d.byProfessional.length > 1 && (
-        <Card className="mt-6">
-          <CardHeader title="Como está cada profissional" description={PERIOD_LABEL[period]} action={<InfoTip text={METRIC_DEFINITIONS.produced_value} />} />
-          <div className="overflow-x-auto px-5 pt-3 pb-5">
-            <table className="w-full min-w-[480px] text-sm">
-              <thead className="text-left text-xs text-muted"><tr><th className="py-2 font-medium">Profissional</th><th className="py-2 text-right font-medium">Concluídos</th><th className="py-2 text-right font-medium">Faltas</th><th className="py-2 text-right font-medium">Horas agendadas</th>{finance && <th className="py-2 text-right font-medium">Produção</th>}</tr></thead>
-              <tbody className="divide-y divide-line">
-                {d.byProfessional.map((p) => (
-                  <tr key={p.id}>
-                    <td className="py-2.5"><span className="mr-2 inline-block h-2 w-2 rounded-full" style={{ background: p.color }} aria-hidden />{p.name}</td>
-                    <td className="py-2.5 text-right tabular">{p.completed}</td>
-                    <td className="py-2.5 text-right tabular">{p.no_show}</td>
-                    <td className="py-2.5 text-right tabular">{(p.booked_minutes / 60).toFixed(1).replace(".", ",")}</td>
-                    {finance && <td className="py-2.5 text-right tabular">{formatMoney(p.produced)}</td>}
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </Card>
-      )}
+      <section aria-labelledby="mes" className="mt-8">
+        <div className="mb-3 flex items-end justify-between gap-3">
+          <h2 id="mes" className="font-serif text-[20px] font-semibold">Este mês</h2>
+          <Link href="/app/relatorios" className="inline-flex min-h-10 items-center gap-0.5 text-[13px] font-medium text-accent-text hover:underline">Ver relatórios<ChevronRight className="h-4 w-4" /></Link>
+        </div>
+        <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
+          {d.revenue && <Kpi highlight label="Recebido" metric="revenue_received" value={formatMoney(d.revenue.value)} change={d.revenue.change} />}
+          <Kpi highlight={!d.revenue} label="Previsto na agenda" metric="scheduled_value" value={formatMoney(d.scheduledValue.value)} change={d.scheduledValue.change} />
+          <Kpi label="Atendimentos" metric="appointments_count" value={String(d.appointments.value)} change={d.appointments.change} />
+          <Kpi label="Agenda ocupada" metric="occupancy" value={d.occupancy.value === null ? "—" : `${Math.round(d.occupancy.value * 100)}%`}
+            sub={d.occupancy.capacityMinutes ? `${Math.round(d.occupancy.bookedMinutes / 60)}h de ${Math.round(d.occupancy.capacityMinutes / 60)}h` : "Sem horário de atendimento no período"} />
+          {!d.revenue && <Kpi label="Clientes novas" metric="new_clients" value={String(d.newClients.value)} change={d.newClients.change} sub={`${d.returningClients.value} voltaram`} />}
+        </div>
+      </section>
 
       {setup.clients === 0 && (
         <div className="mt-6 flex justify-center"><ButtonLink href="/app/clientes?nova=1" variant="secondary"><UserPlus className="h-4 w-4" />Cadastrar cliente</ButtonLink></div>
       )}
-    </div>
-  );
-}
-
-function Kpi({ label, value, change, sub, metric, invert, highlight }: { label: string; value: string; change?: number | null; sub?: string; metric: MetricKey; invert?: boolean; highlight?: boolean }) {
-  const good = change !== undefined && change !== null && (invert ? change < 0 : change > 0);
-  const bad = change !== undefined && change !== null && (invert ? change > 0 : change < 0);
-  return (
-    <Card data-theme={highlight ? "dark" : undefined} className={cn("relative overflow-hidden p-4", highlight && "border-transparent bg-plum!")}>
-      <div className={cn("relative flex items-center gap-1 text-[13px]", highlight ? "text-white/80" : "text-muted")}>{label}<InfoTip text={METRIC_DEFINITIONS[metric]} /></div>
-      <div className="mt-1.5 text-[22px] leading-tight font-semibold tracking-[-0.01em] tabular sm:text-2xl">{value}</div>
-      <div className="mt-1 flex min-h-[18px] flex-wrap items-center gap-x-1.5 gap-y-0.5 text-xs">
-        {change !== undefined && (change === null
-          ? <span className="text-muted">primeira vez por aqui</span>
-          : change === 0 ? <span className="text-muted">igualzinho ao anterior</span>
-          : <span className={cn("inline-flex items-center gap-0.5 font-medium", good && "text-st-completed", bad && "text-st-noshow")}>
-              {change > 0 ? <ArrowUpRight className="h-3.5 w-3.5" /> : <ArrowDownRight className="h-3.5 w-3.5" />}{Math.abs(Math.round(change))}% vs. anterior
-            </span>)}
-        {sub && <span className="text-muted">{sub}</span>}
-      </div>
-    </Card>
-  );
-}
-
-function StatusBreakdown({ counts }: { counts: Record<"pending" | "confirmed" | "completed" | "cancelled" | "no_show", number> }) {
-  const order = ["completed", "confirmed", "pending", "no_show", "cancelled"] as const;
-  const total = order.reduce((a, k) => a + counts[k], 0);
-  if (total === 0) return <p className="text-sm text-muted">Nenhum atendimento neste período ainda.</p>;
-  return (
-    <div>
-      <div className="flex h-3 gap-[2px] overflow-hidden rounded-full" role="img" aria-label="Distribuição por status">
-        {order.filter((k) => counts[k] > 0).map((k) => <div key={k} className={STATUS_STYLE[k].dot} style={{ width: `${(counts[k] / total) * 100}%` }} />)}
-      </div>
-      <ul className="mt-4 grid grid-cols-2 gap-2 sm:grid-cols-3">
-        {order.map((k) => (
-          <li key={k} className="flex items-center gap-2 text-sm">
-            <span className={cn("h-2.5 w-2.5 rounded-sm", STATUS_STYLE[k].dot)} aria-hidden />
-            <span className="text-ink-soft">{STATUS_LABEL[k]}</span>
-            <span className="ml-auto font-medium tabular">{counts[k]}</span>
-          </li>
-        ))}
-      </ul>
     </div>
   );
 }

@@ -120,7 +120,7 @@ export default async function ClientProfilePage({ params }: { params: Promise<{ 
       <div className="mt-6 grid gap-6 lg:grid-cols-[minmax(0,1fr)_340px]">
         <Card>
           <CardHeader title="Histórico com você" description={plural(history.length, "registro")} />
-          <div className="px-5 pt-3 pb-5">
+          <div className="px-5 pt-3 pb-5 sm:px-6 sm:pb-6">
             {history.length === 0 ? (
               <EmptyState className="py-8" icon={CalendarDays} title="Nenhum atendimento ainda" description="Assim que ela marcar, os horários aparecem aqui." />
             ) : (

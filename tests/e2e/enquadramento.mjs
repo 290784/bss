@@ -43,7 +43,7 @@ for (const dev of ["iPhone SE", "iPhone 15", "iPhone 15 Pro Max", "Pixel 7", "Ga
   await p.goto(BASE + "/entrar");
   await p.getByLabel("E-mail").fill("demo@beautyos.dev"); await p.getByLabel("Senha").fill("demo-senha-123");
   await p.getByRole("button", { name: "Entrar" }).click(); await p.waitForURL(/\/app$/);
-  for (const path of ["/app", "/app/agenda", "/app/agenda?visao=semana", "/app/agenda?visao=mes", "/app/clientes", "/app/servicos", "/app/equipe", "/app/configuracoes"]) await scan(path);
+  for (const path of ["/app", "/app/relatorios", "/app/dicas", "/app/agenda", "/app/agenda?visao=semana", "/app/agenda?visao=mes", "/app/clientes", "/app/servicos", "/app/equipe", "/app/configuracoes"]) await scan(path);
   const cid = await p.goto(BASE + "/app/clientes").then(() => p.locator('a[href^="/app/clientes/"]:not([href*="exportar"])').first().getAttribute("href"));
   if (cid) await scan(cid);
   fail += bad.length;
