@@ -165,7 +165,7 @@ export function ListView({ items, pros, tz, canManage, gapsByPro, onOpen, onSlot
         const active = i.status === "pending" || i.status === "confirmed";
         const started = isToday && nowMinute !== null && minutesOf(start) <= nowMinute;
         return [nowLine, (
-          <li key={i.id} className={cn("rounded-[var(--radius-card)] border border-line/70 bg-surface shadow-[var(--shadow-card)] transition", i.status === "cancelled" && "opacity-60")}>
+          <li key={i.id} className={cn("glow-hover rounded-[var(--radius-card)] border border-line/70 bg-surface shadow-[var(--shadow-card)]", i.status === "cancelled" && "opacity-60")}>
             <button type="button" onClick={() => onOpen(i.id)} className="flex w-full items-start gap-3 px-4 pt-3.5 pb-2.5 text-left">
               <span className="w-12 shrink-0 text-sm font-semibold tabular">{start}<span className="block text-xs font-normal text-muted">{end}</span></span>
               <span className="h-10 w-1 shrink-0 rounded-full" style={{ background: pro?.color }} aria-hidden />

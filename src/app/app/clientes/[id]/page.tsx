@@ -170,7 +170,7 @@ export default async function ClientProfilePage({ params, searchParams }: { para
                 <ol className="divide-y divide-line/70">
                   {history.map((h) => (
                     <li key={h.id}>
-                      <Link href={`/app/agenda?data=${localDateKey(h.starts_at, tz)}&agendamento=${h.id}`} className="-mx-2 flex items-center gap-3 rounded-xl px-2 py-3 transition hover:bg-hover-tint active:scale-[0.99]">
+                      <Link href={`/app/agenda?data=${localDateKey(h.starts_at, tz)}&agendamento=${h.id}`} className="row-link -mx-2 flex items-center gap-3 rounded-xl px-2 py-3">
                         <div className="w-20 shrink-0 text-sm tabular sm:w-24">
                           <div className="font-medium">{formatInTz(h.starts_at, tz, { day: "2-digit", month: "2-digit", year: "2-digit" })}</div>
                           <div className="text-xs text-muted">{formatInTz(h.starts_at, tz, { hour: "2-digit", minute: "2-digit" })}</div>

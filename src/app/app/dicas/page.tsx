@@ -46,7 +46,7 @@ export default async function DicasPage() {
             <ul className="divide-y divide-line/70">
               {reactivate.map((c) => (
                 <li key={c.id}>
-                  <Link href={`/app/clientes/${c.id}`} className="-mx-2 flex items-center justify-between gap-3 rounded-xl px-2 py-3 text-sm transition hover:bg-hover-tint active:scale-[0.99]">
+                  <Link href={`/app/clientes/${c.id}`} className="row-link -mx-2 flex items-center justify-between gap-3 rounded-xl px-2 py-3 text-sm">
                     <span className="font-medium">{c.full_name}</span>
                     <span className="text-right text-xs text-muted">{plural(c.visits, "visita")} · última em {formatInTz(c.last_visit, tz, { day: "2-digit", month: "2-digit", year: "numeric" })}</span>
                   </Link>
