@@ -17,12 +17,12 @@ export function setTheme(t: Theme) {
   if (t === "light") document.documentElement.dataset.theme = "light";
   else delete document.documentElement.dataset.theme;
   try { localStorage.setItem(THEME_KEY, t); } catch { /* modo privado: vale só nesta visita */ }
-  document.querySelector('meta[name="theme-color"]')?.setAttribute("content", t === "light" ? "#f8f4fc" : "#150b28");
+  document.querySelector('meta[name="theme-color"]')?.setAttribute("content", t === "light" ? "#f6f3ee" : "#16121a");
 }
 
 /** Botão de sol/lua para alternar entre tema claro e escuro. */
 export function ThemeToggle({ className }: { className?: string }) {
-  const theme = useSyncExternalStore(subscribe, read, () => "dark" as Theme);
+  const theme = useSyncExternalStore(subscribe, read, () => "light" as Theme);
   const next: Theme = theme === "light" ? "dark" : "light";
   return (
     <button type="button" onClick={() => setTheme(next)} className={cn("grid h-11 w-11 shrink-0 place-items-center rounded-lg text-ink-soft transition hover:bg-sunken hover:text-ink lg:h-9 lg:w-9", className)}
