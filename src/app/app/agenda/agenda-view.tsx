@@ -198,7 +198,7 @@ export function AgendaView(props: Props) {
 
   if (professionals.length === 0)
     return (
-      <EmptyState icon={CalendarDays} title="Sua agenda ainda está vazia" description="Cadastre uma profissional com os horários de atendimento e já dá para começar a marcar."
+      <EmptyState art="calendar" title="Sua agenda ainda está vazia" description="Cadastre uma profissional com os horários de atendimento e já dá para começar a marcar."
         action={props.canSeeAll ? <Button onClick={() => router.push("/app/equipe")}>Cadastrar profissional</Button> : undefined} />
     );
 

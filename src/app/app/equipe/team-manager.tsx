@@ -1,7 +1,7 @@
 "use client";
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { CalendarOff, Clock, Copy, Plus, Trash2, Wallet } from "lucide-react";
+import { Clock, Copy, Plus, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ConfirmDialog, Dialog } from "@/components/ui/dialog";
 import { Checkbox, Field, FormMessage, Input, Select } from "@/components/ui/form";
@@ -45,11 +45,11 @@ export function TeamManager({ professionals, services, timeOff, timeZone, atLimi
   return (
     <div className="flex flex-col gap-6">
     {tab === "resumo" && !(finance && activePros.length > 0) && (
-      <Card><EmptyState className="py-10" icon={Wallet} title="Resumo indisponível" description={finance ? "Cadastre uma profissional ativa para ver atendimentos, faturamento e comissões do mês." : "Só quem vê o financeiro acessa o resumo de comissões."} /></Card>
+      <Card><EmptyState className="py-10" art="wallet" title="Resumo indisponível" description={finance ? "Cadastre uma profissional ativa para ver atendimentos, faturamento e comissões do mês." : "Só quem vê o financeiro acessa o resumo de comissões."} /></Card>
     )}
     {tab === "resumo" && finance && activePros.length > 0 && (
       <Card>
-        <CardHeader title={<span className="inline-flex items-center gap-2"><Wallet className="h-4.5 w-4.5 text-gold-600" />Resumo de {monthLabel}</span>}
+        <CardHeader art="wallet" title={`Resumo de ${monthLabel}`}
           description="Atendimentos concluídos no mês até agora. A comissão usa a do serviço quando ele tem uma, senão a da profissional." />
         <div className="overflow-x-auto px-5 pt-2 pb-4 sm:px-6">
           <table className="w-full min-w-[480px] text-sm">
@@ -131,11 +131,11 @@ export function TeamManager({ professionals, services, timeOff, timeZone, atLimi
 
     {tab === "folgas" && (
       <Card className="max-w-3xl">
-        <CardHeader title="Folgas, férias e feriados" description="Quando alguém (ou o salão todo) não vai atender"
+        <CardHeader art="calendar-off" title="Folgas, férias e feriados" description="Quando alguém (ou o salão todo) não vai atender"
           action={!readOnly ? <Button size="sm" variant="secondary" onClick={() => setBlocking(true)}><Plus className="h-3.5 w-3.5" />Bloquear</Button> : undefined} />
         <div className="px-5 pt-3 pb-5 sm:px-6 sm:pb-6">
           {timeOff.length === 0 ? (
-            <EmptyState className="py-6" icon={CalendarOff} title="Nenhuma folga marcada" description="Os dias bloqueados somem da agenda e do seu link de agendamento." />
+            <EmptyState className="py-6" art="calendar-off" title="Nenhuma folga marcada" description="Os dias bloqueados somem da agenda e do seu link de agendamento." />
           ) : (
             <ul className="divide-y divide-line">
               {timeOff.map((t) => (

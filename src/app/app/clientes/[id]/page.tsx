@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { CalendarDays, CalendarPlus, ChevronLeft, Crown, Cake, Heart, History, Moon, NotebookPen, Sparkles, UserPlus } from "lucide-react";
+import { CalendarPlus, ChevronLeft, Crown, Cake, History, Moon, NotebookPen, Sparkles, UserPlus } from "lucide-react";
 import { SubTabs } from "@/components/ui/sub-tabs";
 import { Illustration, type IllustrationName } from "@/components/ui/illustration";
 import { z } from "zod";
@@ -108,7 +108,7 @@ export default async function ClientProfilePage({ params, searchParams }: { para
 
       {tab === "resumo" && idealReturn && !stats.nextVisit && !c.archived_at && (
         <div className={cn("mb-6 flex flex-col gap-3 rounded-2xl border p-4 sm:flex-row sm:items-center", returnDays! < 0 ? "border-st-pending/30 bg-st-pending-bg" : "border-line bg-surface")}>
-          <CalendarDays className={cn("h-5 w-5 shrink-0", returnDays! < 0 ? "text-st-pending" : "text-accent-text")} />
+          <Illustration name="calendar-plus" className="h-12 w-12" />
           <div className="flex-1 text-sm">
             <span className="font-semibold">
               {returnDays! < 0 ? `Já passou ${Math.abs(returnDays!)} ${Math.abs(returnDays!) === 1 ? "dia" : "dias"} do tempo ideal de voltar` : returnDays === 0 ? "Hoje é o dia ideal para ela voltar" : `Ideal voltar até ${formatInTz(idealReturn.date, tz, { day: "2-digit", month: "2-digit" })} (em ${returnDays} ${returnDays === 1 ? "dia" : "dias"})`}
@@ -133,7 +133,7 @@ export default async function ClientProfilePage({ params, searchParams }: { para
               : <Card className="p-5 text-sm text-muted">{c.archived_at ? "Cliente arquivada: as mensagens rápidas ficam desligadas." : "Ela prefere não ser contatada."}</Card>}
             {services.length > 0 ? (
               <Card className="p-5 sm:p-6">
-                <h2 className="flex items-center gap-2 font-serif text-[18px] font-semibold"><Heart className="h-4 w-4 text-accent-text" />O que ela mais faz</h2>
+                <h2 className="flex items-center gap-2 font-serif text-[18px] font-semibold"><Illustration name="heart" className="-my-2 -ml-1 h-11 w-11" />O que ela mais faz</h2>
                 <ul className="mt-4 flex flex-col gap-3">
                   {services.map((s) => (
                     <li key={s.name} className="text-sm">
@@ -147,7 +147,7 @@ export default async function ClientProfilePage({ params, searchParams }: { para
                 </ul>
               </Card>
             ) : (
-              <Card><EmptyState className="py-8" icon={Heart} title="Ainda sem favoritos" description="Depois dos primeiros atendimentos, os serviços que ela mais faz aparecem aqui." /></Card>
+              <Card><EmptyState className="py-8" art="heart" title="Ainda sem favoritos" description="Depois dos primeiros atendimentos, os serviços que ela mais faz aparecem aqui." /></Card>
             )}
           </div>
         </>
@@ -162,10 +162,10 @@ export default async function ClientProfilePage({ params, searchParams }: { para
             <Stat art="user-plus" label="Profissional favorita" value={stats.favoriteProfessional ?? "—"} />
           </div>
           <Card className="mt-6">
-            <CardHeader title="Histórico com você" description={plural(history.length, "registro")} />
+            <CardHeader art="calendar" title="Histórico com você" description={plural(history.length, "registro")} />
             <div className="px-5 pt-3 pb-5 sm:px-6 sm:pb-6">
               {history.length === 0 ? (
-                <EmptyState className="py-8" icon={CalendarDays} title="Nenhum atendimento ainda" description="Assim que ela marcar, os horários aparecem aqui." />
+                <EmptyState className="py-8" art="calendar" title="Nenhum atendimento ainda" description="Assim que ela marcar, os horários aparecem aqui." />
               ) : (
                 <ol className="divide-y divide-line/70">
                   {history.map((h) => (
@@ -194,18 +194,18 @@ export default async function ClientProfilePage({ params, searchParams }: { para
         <div className="grid gap-6 lg:grid-cols-2 lg:items-start">
           <div className="flex flex-col gap-6">
             <Card className="p-5 sm:p-6">
-              <h2 className="font-serif text-[18px] font-semibold">Preferências</h2>
+              <h2 className="flex items-center gap-2 font-serif text-[18px] font-semibold"><Illustration name="notebook" className="-my-2 -ml-1 h-11 w-11" />Preferências</h2>
               <p className="mt-2 text-sm whitespace-pre-line text-ink-soft">{c.preferences || <span className="text-muted">Nenhuma preferência anotada ainda. Use “Editar” para anotar.</span>}</p>
             </Card>
             {internal && (
               <Card className="p-5 sm:p-6">
-                <h2 className="flex items-center gap-2 font-serif text-[18px] font-semibold">Observações internas <Badge>restrito</Badge></h2>
+                <h2 className="flex items-center gap-2 font-serif text-[18px] font-semibold"><Illustration name="shield" className="-my-2 -ml-1 h-11 w-11" />Observações internas <Badge>restrito</Badge></h2>
                 <p className="mt-2 text-sm whitespace-pre-line text-ink-soft">{c.internal_notes || <span className="text-muted">Nenhuma observação ainda.</span>}</p>
               </Card>
             )}
           </div>
           <Card className="p-5 text-sm sm:p-6">
-            <h2 className="font-serif text-[18px] font-semibold">Contato e autorizações</h2>
+            <h2 className="flex items-center gap-2 font-serif text-[18px] font-semibold"><Illustration name="chat" className="-my-2 -ml-1 h-11 w-11" />Contato e autorizações</h2>
             <dl className="mt-3 space-y-2 text-ink-soft">
               <div className="flex justify-between gap-3"><dt className="text-muted">Cadastro</dt><dd>{date(c.created_at)}</dd></div>
               <div className="flex justify-between gap-3"><dt className="text-muted">Contato preferido</dt><dd>{{ whatsapp: "WhatsApp", email: "E-mail", phone: "Ligação", none: "Prefere não ser contatada" }[c.contact_preference]}</dd></div>

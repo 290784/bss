@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { CalendarPlus, Check, ChevronRight, Clock, Link2, UserPlus } from "lucide-react";
+import { CalendarPlus, Check, ChevronRight, Link2, UserPlus } from "lucide-react";
 import { Illustration, type IllustrationName } from "@/components/ui/illustration";
 import { requireAppContext, tenant } from "@/server/context";
 import { can } from "@/domain/permissions";
@@ -84,6 +84,7 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
   return (
     <div>
       <PageHeader
+        art="sparkles"
         title={sp["bem-vinda"] ? `Tudo pronto, ${ctx.user.fullName.split(" ")[0]}` : `Oi, ${ctx.user.fullName.split(" ")[0]}`}
         description={<span className="first-letter:uppercase">{formatInTz(new Date(), tz, { weekday: "long", day: "numeric", month: "long" })} · {plural(activeToday.length, "atendimento")} hoje</span>}
         actions={canBook && <ButtonLink href="/app/agenda" size="md"><CalendarPlus className="h-4 w-4" />Agendar</ButtonLink>}
@@ -136,10 +137,10 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
 
       <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_340px]">
         <Card>
-          <CardHeader title="Hoje" description={plural(activeToday.length, "atendimento")} action={<Link href="/app/agenda" className="text-[13px] font-medium text-accent-text hover:underline">Ver agenda</Link>} />
+          <CardHeader art="calendar" title="Hoje" description={plural(activeToday.length, "atendimento")} action={<Link href="/app/agenda" className="text-[13px] font-medium text-accent-text hover:underline">Ver agenda</Link>} />
           <div className="px-5 pt-3 pb-5 sm:px-6 sm:pb-6">
             {activeToday.length === 0 ? (
-              <EmptyState className="py-6" icon={Clock} title="Dia livre por aqui" description="Que tal mandar seu link para as clientes e encher essa agenda?" />
+              <EmptyState className="py-6" art="clock" title="Dia livre por aqui" description="Que tal mandar seu link para as clientes e encher essa agenda?" />
             ) : (
               <ul className="flex flex-col divide-y divide-line/70">
                 {activeToday.slice(0, 8).map((a) => (
@@ -175,7 +176,7 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
 
         <div className="flex flex-col gap-6">
           <Card>
-            <CardHeader title="Atalhos" />
+            <CardHeader art="sparkles" title="Atalhos" />
             <ul className="grid grid-cols-2 gap-2.5 px-5 pt-4 pb-5 sm:px-6 sm:pb-6 lg:grid-cols-1">
               {shortcuts.filter((x) => x.show).map((x) => (
                 <li key={x.href}>

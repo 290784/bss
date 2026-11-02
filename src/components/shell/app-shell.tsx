@@ -6,6 +6,7 @@ import { BarChart3, Bell, CalendarDays, ChevronsUpDown, Home, Lightbulb, LogOut,
 import { Logo } from "@/components/brand/logo";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
 import { Avatar } from "@/components/ui/primitives";
+import { Illustration } from "@/components/ui/illustration";
 import { cn } from "@/lib/cn";
 import type { NavItem } from "./nav-items";
 import { markNotificationsRead, switchOrganization } from "@/app/app/shell-actions";
@@ -177,7 +178,7 @@ function Notifications({ items }: { items: ShellProps["notifications"] }) {
         <div className="absolute right-0 z-40 mt-2 w-[min(92vw,360px)] overflow-hidden rounded-[var(--radius-card)] border border-line/70 bg-surface shadow-[var(--shadow-pop)]">
           <div className="border-b border-line/70 px-5 py-3.5 font-serif text-[17px] font-semibold">Notificações</div>
           {list.length === 0 ? (
-            <p className="px-4 py-8 text-center text-sm text-muted">Nada novo por aqui. Quando uma cliente marcar pelo seu link, o aviso aparece aqui.</p>
+            <div className="flex flex-col items-center px-6 py-8 text-center"><Illustration name="bell" className="mb-2 h-16 w-16" /><p className="text-sm text-muted">Nada novo por aqui. Quando uma cliente marcar pelo seu link, o aviso aparece aqui.</p></div>
           ) : (
             <ul className="max-h-[60vh] divide-y divide-line overflow-y-auto">
               {list.map((n) => (

@@ -5,6 +5,7 @@ import { can, ROLE_LABEL, type Role } from "@/domain/permissions";
 import { PLANS } from "@/domain/plans";
 import { Badge, Card, CardHeader, PageHeader } from "@/components/ui/primitives";
 import { SubTabs } from "@/components/ui/sub-tabs";
+import { Illustration } from "@/components/ui/illustration";
 import { CreditCard, MessageCircle, ShieldCheck, Store, Users } from "lucide-react";
 import { formatInTz } from "@/lib/time";
 import { cn } from "@/lib/cn";
@@ -87,7 +88,7 @@ export default async function SettingsPage({ searchParams }: { searchParams: Pro
 
   const linkCard = (
     <Card data-theme="dark" className="relative overflow-hidden border-transparent bg-plum! p-5 text-white sm:p-6">
-      <h2 className="font-serif text-[18px] font-semibold">Página de agendamento</h2>
+      <h2 className="flex items-center gap-2 font-serif text-[18px] font-semibold"><Illustration name="link" className="-my-2 -ml-1 h-11 w-11" />Página de agendamento</h2>
       <p className="mt-1 mb-3 text-xs text-white/65">{org.online_booking_enabled ? "No ar: as clientes já podem marcar pelo seu link." : "Pausada: o seu link avisa que o agendamento online está fechado por enquanto."}</p>
       <CopyLink url={`${appUrl}/b/${ctx.org.slug}`} />
     </Card>
@@ -95,7 +96,7 @@ export default async function SettingsPage({ searchParams }: { searchParams: Pro
 
   return (
     <div>
-      <PageHeader title="Configurações" description="Escolha um assunto: dados do negócio, mensagens, plano, acesso da equipe ou privacidade." />
+      <PageHeader art="store" title="Configurações" description="Escolha um assunto: dados do negócio, mensagens, plano, acesso da equipe ou privacidade." />
       <SubTabs label="Assuntos das configurações" tabs={[...TABS]} current={tab} href={(id) => (id === "negocio" ? "/app/configuracoes" : `/app/configuracoes?aba=${id}`)} />
 
       {tab === "negocio" && (
@@ -111,7 +112,7 @@ export default async function SettingsPage({ searchParams }: { searchParams: Pro
             reminder={auto.flags.whatsapp_reminder_enabled} upsell={auto.flags.whatsapp_upsell_enabled} readOnly={ctx.access === "read_only"}
             preview={preview} stats={{ reminders: auto.stats.reminders, confirmed: auto.stats.confirmed, offers: auto.stats.offers, accepted: auto.stats.accepted, extraCents: auto.stats.extra_cents }} />
           <Card>
-            <CardHeader title="Canais de mensagem" description="Para mandar lembretes e confirmações sozinha" />
+            <CardHeader art="chat" title="Canais de mensagem" description="Para mandar lembretes e confirmações sozinha" />
             <ul className="px-5 pt-3 pb-5 text-sm sm:px-6 sm:pb-6">
               {(["whatsapp", "email"] as const).map((ch) => {
                 const connected = providers.some((p) => p.channel === ch);
@@ -131,7 +132,7 @@ export default async function SettingsPage({ searchParams }: { searchParams: Pro
       {tab === "plano" && (
         <div className="max-w-2xl">
           <Card id="assinatura">
-            <CardHeader title="Assinatura" description={sub.status === "trialing" && sub.trialEndsAt ? `Teste gratuito até ${formatInTz(sub.trialEndsAt, tz, { day: "2-digit", month: "2-digit", year: "numeric" })}` : undefined}
+            <CardHeader art="star" title="Assinatura" description={sub.status === "trialing" && sub.trialEndsAt ? `Teste gratuito até ${formatInTz(sub.trialEndsAt, tz, { day: "2-digit", month: "2-digit", year: "numeric" })}` : undefined}
               action={<Badge variant={ctx.access === "full" ? "success" : ctx.access === "grace" ? "warning" : "danger"}>{{ trialing: "Em teste", active: "Ativa", past_due: "Pagamento pendente", canceled: "Cancelada" }[sub.status]}</Badge>} />
             <div className="px-5 pt-3 pb-5 sm:px-6 sm:pb-6">
               <ul className="flex flex-col gap-2">
@@ -151,7 +152,7 @@ export default async function SettingsPage({ searchParams }: { searchParams: Pro
       {tab === "acesso" && (
         <div className="grid max-w-4xl gap-6 lg:grid-cols-2 lg:items-start">
           <Card>
-            <CardHeader title="Equipe com acesso" description="Convites por e-mail ainda não estão disponíveis" />
+            <CardHeader art="shield" title="Equipe com acesso" description="Convites por e-mail ainda não estão disponíveis" />
             <ul className="divide-y divide-line/70 px-5 pt-2 pb-4 text-sm sm:px-6">
               {members.map((m) => (
                 <li key={m.user_id} className="flex items-center justify-between gap-3 py-2.5">
@@ -163,7 +164,7 @@ export default async function SettingsPage({ searchParams }: { searchParams: Pro
           </Card>
           {auditRows.length > 0 && (
             <Card>
-              <CardHeader title="Atividades recentes" description="Registro de auditoria" />
+              <CardHeader art="notebook" title="Atividades recentes" description="Registro de auditoria" />
               <ul className="divide-y divide-line/70 px-5 pt-2 pb-4 text-[13px] sm:px-6">
                 {auditRows.map((a, i) => (
                   <li key={i} className="py-2.5">

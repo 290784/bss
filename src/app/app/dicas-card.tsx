@@ -100,7 +100,7 @@ export function DicasCard({ dicas }: { dicas: Dica[] }) {
 
   return (
     <Card id="dicas" className="mt-6 scroll-mt-24" data-testid="dicas">
-      <CardHeader title={<span className="inline-flex items-center gap-2"><Lightbulb className="h-5 w-5 text-gold-600" />Dicas da Gê</span>}
+      <CardHeader art="lightbulb" title="Dicas da Gê"
         description="Ideias tiradas da sua agenda para faturar mais, cuidar do estoque e mimar as clientes" />
       <div className="px-5 pt-3 pb-5 sm:px-6 sm:pb-6">
         <div role="tablist" aria-label="Tipo de dica" className="-mx-1 flex gap-1.5 overflow-x-auto px-1 pb-1">

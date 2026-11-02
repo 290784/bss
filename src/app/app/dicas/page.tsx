@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { Users } from "lucide-react";
+
 import { requireAppContext, tenant } from "@/server/context";
 import { can } from "@/domain/permissions";
 import { METRIC_DEFINITIONS } from "@/domain/metrics";
@@ -32,16 +32,16 @@ export default async function DicasPage() {
 
   return (
     <div>
-      <PageHeader title="Dicas" description="Ideias para encher a agenda e chamar de volta quem sumiu. Marque como feita quando resolver." />
+      <PageHeader art="lightbulb" title="Dicas" description="Ideias para encher a agenda e chamar de volta quem sumiu. Marque como feita quando resolver." />
 
       <DicasCard dicas={dicas} />
 
       <Card className="mt-6">
-        <CardHeader title="Clientes com saudade" description="Mais de 60 dias sem vir e sem horário marcado: hora de mandar um oi"
+        <CardHeader art="heart" title="Clientes com saudade" description="Mais de 60 dias sem vir e sem horário marcado: hora de mandar um oi"
           action={<InfoTip text={METRIC_DEFINITIONS.inactive_clients} />} />
         <div className="px-5 pt-3 pb-5 sm:px-6 sm:pb-6">
           {reactivate.length === 0 ? (
-            <EmptyState className="py-6" icon={Users} title="Ninguém sumida por aqui" description="Se alguma cliente ficar mais de 60 dias sem voltar, ela aparece aqui para você chamar." />
+            <EmptyState className="py-6" art="heart" title="Ninguém sumida por aqui" description="Se alguma cliente ficar mais de 60 dias sem voltar, ela aparece aqui para você chamar." />
           ) : (
             <ul className="divide-y divide-line/70">
               {reactivate.map((c) => (

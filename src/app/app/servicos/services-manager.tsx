@@ -1,7 +1,7 @@
 "use client";
 import { useActionState, useEffect, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { ArrowDownRight, ArrowUpRight, Copy, Flame, Globe, Percent, Plus, Scissors } from "lucide-react";
+import { ArrowDownRight, ArrowUpRight, Copy, Flame, Globe, Percent, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Dialog } from "@/components/ui/dialog";
 import { ActionForm, Checkbox, Field, FormMessage, Input, SubmitButton, Textarea } from "@/components/ui/form";
@@ -49,7 +49,7 @@ export function ServicesManager({ services, professionals, readOnly, stats = {} 
         </div>
       )}
       {services.length === 0 ? (
-        <Card><EmptyState icon={Scissors} title="Nenhum serviço por aqui ainda" description="Cadastre seus serviços para começar a marcar horários e liberar o seu link de agendamento." /></Card>
+        <Card><EmptyState art="scissors" title="Nenhum serviço por aqui ainda" description="Cadastre seus serviços para começar a marcar horários e liberar o seu link de agendamento." /></Card>
       ) : (
         <div className="flex flex-col gap-6">
           {[...groups.entries()].map(([cat, list]) => (
