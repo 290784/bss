@@ -88,7 +88,7 @@ export const SEGMENT_HINT: Record<Segment, string> = {
   all: "Todas as clientes ativas.",
   new: "Primeira visita (ou cadastro) nos últimos 30 dias.",
   recurring: "Já vieram 2 vezes ou mais.",
-  birthday: "Fazem aniversário este mês: hora do mimo! 🎂",
+  birthday: "Fazem aniversário este mês.",
   inactive: "Vieram antes, mas estão há mais de 60 dias sem aparecer e sem horário marcado.",
   high_value: "As 20% que mais investiram com você.",
   archived: "Tiradas das listas, com o histórico guardado.",

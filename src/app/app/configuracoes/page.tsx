@@ -83,9 +83,9 @@ export default async function SettingsPage() {
             preview={preview} stats={{ reminders: auto.stats.reminders, confirmed: auto.stats.confirmed, offers: auto.stats.offers, accepted: auto.stats.accepted, extraCents: auto.stats.extra_cents }} />
         </div>
         <div className="flex flex-col gap-6">
-          <Card data-theme="dark" className="bg-royal ring-glass relative overflow-hidden border-transparent p-5 text-white">
+          <Card data-theme="dark" className="relative overflow-hidden border-transparent bg-plum! p-5 text-white">
             <h2 className="text-[15px] font-semibold">Página de agendamento</h2>
-            <p className="mt-1 mb-3 text-xs text-white/65">{org.online_booking_enabled ? "No ar: as clientes já podem marcar pelo seu link. ✨" : "Pausada: o seu link avisa que o agendamento online está fechado por enquanto."}</p>
+            <p className="mt-1 mb-3 text-xs text-white/65">{org.online_booking_enabled ? "No ar: as clientes já podem marcar pelo seu link." : "Pausada: o seu link avisa que o agendamento online está fechado por enquanto."}</p>
             <CopyLink url={`${appUrl}/b/${ctx.org.slug}`} />
           </Card>
 
@@ -122,7 +122,7 @@ export default async function SettingsPage() {
           </Card>
 
           <Card>
-            <CardHeader title="Equipe com acesso" description="Convites por e-mail chegam em breve 💌" />
+            <CardHeader title="Equipe com acesso" description="Convites por e-mail ainda não estão disponíveis" />
             <ul className="divide-y divide-line px-5 pt-2 pb-4 text-sm">
               {members.map((m) => (
                 <li key={m.user_id} className="flex items-center justify-between py-2">

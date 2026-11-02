@@ -98,7 +98,7 @@ try {
     await page.getByText("Horários livres").waitFor();
     await page.locator("dialog[open] button", { hasText: "10:00" }).first().click();
     await page.locator("dialog[open]").getByRole("button", { name: "Marcar horário", exact: true }).click();
-    await page.getByText("Horário marcado! ✨").waitFor();
+    await page.getByText("Horário marcado.").waitFor();
     await page.locator("dialog[open]").getByText("Marcado pela equipe").waitFor();
     await shot(page, "04-agendamento-detalhe");
   });
@@ -108,10 +108,10 @@ try {
     await dlg.getByRole("button", { name: "Registrar pagamento" }).click();
     await dlg.getByLabel("Valor (R$)").fill("10,00");
     await dlg.getByRole("button", { name: "Registrar", exact: true }).click();
-    await page.getByText("Pagamento anotado! 💰").waitFor();
+    await page.getByText("Pagamento anotado.").waitFor();
     await dlg.getByText(/Pagamento de R\$\s?10,00 registrado/).waitFor();
     await dlg.getByRole("button", { name: "Atendimento feito" }).click();
-    await page.getByText("Prontinho, atualizado!").waitFor();
+    await page.getByText("Status atualizado.").waitFor();
     await dlg.getByRole("button", { name: "Fechar" }).click();
   });
 

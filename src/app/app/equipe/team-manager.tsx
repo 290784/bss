@@ -82,7 +82,7 @@ export function TeamManager({ professionals, services, timeOff, timeZone, atLimi
           <h2 className="text-[15px] font-semibold">Profissionais</h2>
           {!readOnly && <Button size="sm" onClick={() => setEditing("new")} disabled={atLimit} title={atLimit ? "Sua equipe chegou ao limite do plano" : undefined}><Plus className="h-4 w-4" />Adicionar</Button>}
         </div>
-        {atLimit && !readOnly && <p className="mb-3 rounded-lg bg-highlight-subtle px-3 py-2 text-[13px] text-highlight-text">Para trazer mais gente para o time, é só mudar de plano. 💜</p>}
+        {atLimit && !readOnly && <p className="mb-3 rounded-lg bg-highlight-subtle px-3 py-2 text-[13px] text-highlight-text">Para trazer mais gente para o time, é só mudar de plano.</p>}
         <div className="grid gap-3 md:grid-cols-2">
           {professionals.map((p) => (
             <Card key={p.id} className={cn("p-4", !p.is_active && "opacity-60")}>

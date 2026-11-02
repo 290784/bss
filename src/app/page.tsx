@@ -1,3 +1,4 @@
+import { Ambient } from "@/components/brand/ambient";
 import type { Viewport } from "next";
 import Link from "next/link";
 import { ArrowRight, BellRing, CalendarDays, Check, Globe, LineChart, Play, Search, Users, Wallet } from "lucide-react";
@@ -47,6 +48,7 @@ export default async function LandingPage() {
   const session = await getSession();
   return (
     <div data-theme="light" data-landing className="bg-app relative min-h-dvh overflow-x-clip font-hero text-ink">
+      <Ambient />
       <header className="neon-linha-b sticky top-0 z-30 border-b border-line/70 bg-canvas/75 backdrop-blur-xl">
         <div className="mx-auto flex h-[72px] max-w-[1240px] items-center justify-between gap-6 px-4 sm:px-6">
           <Logo variant="script" />

@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Cake, ChevronRight, Crown, Download, MessageCircle, Sparkles, Users, Moon } from "lucide-react";
+import { Cake, ChevronRight, Crown, Download, MessageCircle, UserPlus, Users, Moon } from "lucide-react";
 import { requireAppContext, tenant } from "@/server/context";
 import { countSegments, listClients, SEGMENT_HINT, SEGMENTS, SORTS, type ClientRow, type Segment, type Sort } from "@/server/modules/clients";
 import { can } from "@/domain/permissions";
@@ -29,9 +29,9 @@ function ago(d: Date, now: number) {
 function tags(c: ClientRow, now: number, month: string) {
   const t: { label: string; variant: "plum" | "champagne" | "success" | "warning" | "neutral"; icon?: typeof Crown }[] = [];
   if (c.is_vip) t.push({ label: "VIP", variant: "champagne", icon: Crown });
-  if ((c.first_visit && now - c.first_visit.getTime() < 30 * DAY) || (c.visits === 0 && now - c.created_at.getTime() < 30 * DAY)) t.push({ label: "Nova", variant: "success", icon: Sparkles });
+  if ((c.first_visit && now - c.first_visit.getTime() < 30 * DAY) || (c.visits === 0 && now - c.created_at.getTime() < 30 * DAY)) t.push({ label: "Nova", variant: "success", icon: UserPlus });
   if (c.visits >= 1 && c.last_visit && now - c.last_visit.getTime() > 60 * DAY && !c.next_visit) t.push({ label: "Sumida", variant: "warning", icon: Moon });
-  if (c.birth_md?.startsWith(month)) t.push({ label: `🎂 ${c.birth_md.slice(3)}/${month}`, variant: "plum" });
+  if (c.birth_md?.startsWith(month)) t.push({ label: `Aniversário ${c.birth_md.slice(3)}/${month}`, variant: "plum", icon: Cake });
   return t;
 }
 

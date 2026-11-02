@@ -4,7 +4,6 @@ import { notFound } from "next/navigation";
 import { AtSign, CalendarCheck2, MapPin, MessageCircle } from "lucide-react";
 import { normalizePhone } from "@/lib/text";
 import { withSystem } from "@/server/db";
-import { Sparkles } from "@/components/brand/sparkles";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
 import { firstAvailableSlots, getPublicBusiness } from "@/server/modules/public-booking";
 import { addDaysToKey, localDateKey } from "@/lib/time";
@@ -33,12 +32,11 @@ export default async function PublicBookingPage({ params }: Params) {
   const days = Array.from({ length: Math.min(biz.maxAdvanceDays + 1, 30) }, (_, i) => addDaysToKey(today, i));
   return (
     <div className="min-h-dvh">
-      <header data-theme="dark" className="bg-royal relative overflow-hidden px-4 pt-[calc(2.5rem+env(safe-area-inset-top))] pb-20">
+      <header data-theme="dark" className="relative overflow-hidden bg-plum px-4 pt-[calc(2.5rem+env(safe-area-inset-top))] pb-20">
         <ThemeToggle className="absolute top-[calc(0.75rem+env(safe-area-inset-top))] right-[max(0.75rem,env(safe-area-inset-right))] z-10" />
-        <Sparkles />
                 <div className="relative mx-auto max-w-2xl">
-          <p className="flex items-center gap-2 text-[14px] font-semibold text-violet-100"><CalendarCheck2 className="h-4 w-4 text-violet-200" strokeWidth={2.4} />Agendamento online</p>
-          <h1 className="mt-2 font-tight text-[34px] leading-tight font-extrabold tracking-[-0.025em] text-ink sm:text-[40px]">{biz.name}</h1>
+          <p className="flex items-center gap-2 text-[14px] font-semibold text-white/80"><CalendarCheck2 className="h-4 w-4" strokeWidth={2.4} />Agendamento online</p>
+          <h1 className="mt-2 font-serif text-[34px] leading-tight font-semibold tracking-[-0.01em] text-ink sm:text-[40px]">{biz.name}</h1>
           <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-[13px] text-ink/60">
             {biz.address && <span className="inline-flex items-center gap-1"><MapPin className="h-3.5 w-3.5" />{biz.address}</span>}
             {biz.instagram && <a href={`https://instagram.com/${biz.instagram}`} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 hover:text-ink"><AtSign className="h-3.5 w-3.5" />{biz.instagram}</a>}

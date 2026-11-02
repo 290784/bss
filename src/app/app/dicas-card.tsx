@@ -80,7 +80,7 @@ export function DicasCard({ dicas }: { dicas: Dica[] }) {
   const markDone = (d: Dica) => {
     const next = { ...done, [d.id]: Date.now() };
     setDone(next); write(KEY, next);
-    toast("Arrasou! Tirei essa da lista. ✨", "success", {
+    toast("Feito. Tirei da lista.", "success", {
       action: { label: "Desfazer", onClick: () => { setDone((cur) => { const n = { ...cur }; delete n[d.id]; write(KEY, n); return n; }); } },
     });
   };
@@ -120,7 +120,7 @@ export function DicasCard({ dicas }: { dicas: Dica[] }) {
 
         {visible.length === 0 ? (
           <div className="mt-4 rounded-xl bg-sunken px-4 py-6 text-center text-sm text-muted">
-            {showDone ? "Nenhuma dica marcada como feita por aqui." : "Tudo em dia por aqui! 💜 Assim que eu notar algo que pode render mais, aparece aqui."}
+            {showDone ? "Nenhuma dica marcada como feita por aqui." : "Nada pendente agora. Quando aparecer algo que pode render mais, entra aqui."}
           </div>
         ) : (
           <ul className="mt-4 flex flex-col gap-3">
@@ -174,7 +174,7 @@ export function DicasCard({ dicas }: { dicas: Dica[] }) {
                               )}
                               {c.message && (
                                 <Button size="icon" variant="ghost" className="h-9 w-9" aria-label={`Copiar mensagem para ${c.name}`}
-                                  onClick={() => copy(c.message, `Mensagem para ${c.name.split(" ")[0]} copiada! 💌`)}>
+                                  onClick={() => copy(c.message, `Mensagem para ${c.name.split(" ")[0]} copiada.`)}>
                                   <Copy className="h-4 w-4" />
                                 </Button>
                               )}
@@ -185,7 +185,7 @@ export function DicasCard({ dicas }: { dicas: Dica[] }) {
                       </>)}
 
                       <div className="mt-3 flex flex-wrap gap-2">
-                        {d.copy && <Button size="sm" variant="subtle" onClick={() => copy(d.copy!.text, "Texto copiado! É só colar no status. ✨")}><Copy className="h-3.5 w-3.5" />{d.copy.label}</Button>}
+                        {d.copy && <Button size="sm" variant="subtle" onClick={() => copy(d.copy!.text, "Texto copiado. É só colar no status.")}><Copy className="h-3.5 w-3.5" />{d.copy.label}</Button>}
                         {d.action && <Link href={d.action.href} className={buttonClass("secondary", "sm")}>{d.action.label}</Link>}
                         {showDone
                           ? <Button size="sm" variant="ghost" onClick={() => restore(d)}><RotateCcw className="h-3.5 w-3.5" />Trazer de volta</Button>

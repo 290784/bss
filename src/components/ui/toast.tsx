@@ -47,7 +47,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
               onClick={() => { t.action!.onClick(); setToasts((all) => all.filter((x) => x.id !== t.id)); }}>{t.action.label}</button>
           )}
           {/* Quanto tempo falta para o aviso sumir */}
-          <span aria-hidden className="absolute inset-x-0 bottom-0 h-[2px] origin-left bg-violet-300/70" style={{ animation: `toast-time ${t.ms}ms linear forwards` }} />
+          <span aria-hidden className="absolute inset-x-0 bottom-0 h-[2px] origin-left bg-accent/50" style={{ animation: `toast-time ${t.ms}ms linear forwards` }} />
         </div>
       ))}
     </div>

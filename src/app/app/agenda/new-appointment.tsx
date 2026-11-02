@@ -60,7 +60,7 @@ export function NewAppointmentDialog({
     if (!time) return setError("Falta escolher o horário.");
     start(async () => {
       const r = await createAppointmentAction({ professionalId, clientId: client.id, date, time, serviceIds, squeezeIn, status, internalNotes: notes || undefined });
-      if (r?.ok) { toast(r.message ?? "Horário marcado! ✨"); onCreated(r.data!.id); }
+      if (r?.ok) { toast(r.message ?? "Horário marcado."); onCreated(r.data!.id); }
       else if (r) setError(r.message);
     });
   };
@@ -123,7 +123,7 @@ export function NewAppointmentDialog({
               <div className="flex max-h-32 flex-wrap gap-1.5 overflow-y-auto">
                 {slots.times.map((t) => (
                   <button key={t} type="button" onClick={() => setTime(t)}
-                    className={cn("lift h-10 sm:h-8 rounded-lg border px-2.5 text-[13px] tabular", t === time ? "border-violet-300 btn-glow text-white" : "border-line-strong bg-surface hover:border-accent")}>
+                    className={cn("lift h-10 sm:h-8 rounded-lg border px-2.5 text-[13px] tabular", t === time ? "border-transparent btn-glow text-white" : "border-line-strong bg-surface hover:border-accent")}>
                     {t}
                   </button>
                 ))}

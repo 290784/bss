@@ -73,7 +73,7 @@ try {
   ok(true, "enviar pelo cartão registra o envio");
 
   // 3) Botões do topo com 44 px no celular
-  const sizes = await p.evaluate(() => ["Abrir menu", "Usar tema claro", "Notificações"].map((n) => {
+  const sizes = await p.evaluate(() => ["Abrir menu", "Usar tema", "Notificações"].map((n) => {
     const el = [...document.querySelectorAll("button")].find((x) => (x.getAttribute("aria-label") ?? "").startsWith(n));
     const r = el?.getBoundingClientRect(); return r ? Math.min(r.width, r.height) : 0;
   }));
@@ -88,7 +88,7 @@ try {
   await undo.waitFor();
   ok(true, "cancelar mostra o aviso com \"Desfazer\"");
   await undo.tap();
-  await p.getByText("Desfeito! O horário voltou para a agenda.").waitFor();
+  await p.getByText("Desfeito. O horário voltou para a agenda.").waitFor();
   await p.getByRole("dialog").getByText(/Desfeito: Cancelado → Confirmado/).waitFor();
   const [st] = await sql`select status from app.appointments where id = ${created[0].appt}`;
   ok(st.status === "confirmed", "desfazer devolve o agendamento para Confirmado");

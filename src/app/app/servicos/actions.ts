@@ -24,7 +24,7 @@ export async function saveServiceAction(_: ActionState, form: FormData): Promise
     const id = String(form.get("id") ?? "") || undefined;
     await tenant(ctx, (tx) => saveService(tx, { userId: ctx.user.userId, organizationId: ctx.org.id }, parsed.data, id));
     revalidatePath("/app/servicos");
-    return { ok: true, message: id ? "Serviço atualizado! ✨" : "Serviço criado! ✨" };
+    return { ok: true, message: id ? "Serviço atualizado." : "Serviço criado." };
   } catch (err) {
     if (err instanceof DomainError) return { ok: false, message: err.message };
     throw err;
@@ -36,7 +36,7 @@ export async function toggleServiceAction(id: string, active: boolean): Promise<
     const ctx = await actionContext("services.manage");
     await tenant(ctx, (tx) => setServiceActive(tx, { userId: ctx.user.userId, organizationId: ctx.org.id }, id, active));
     revalidatePath("/app/servicos");
-    return { ok: true, message: active ? "Serviço de volta ao cardápio!" : "Serviço pausado. O histórico continua guardado." };
+    return { ok: true, message: active ? "Serviço de volta ao cardápio." : "Serviço pausado. O histórico continua guardado." };
   } catch (err) {
     if (err instanceof DomainError) return { ok: false, message: err.message };
     throw err;
@@ -51,7 +51,7 @@ export async function adjustPricesAction(input: { serviceIds: string[]; percent:
     if (!ids.success) return { ok: false, message: "Algo não ficou certo na escolha dos serviços." };
     const n = await tenant(ctx, (tx) => adjustPrices(tx, { userId: ctx.user.userId, organizationId: ctx.org.id }, { serviceIds: ids.data, percent: Number(input.percent), roundTo }));
     revalidatePath("/app/servicos");
-    return { ok: true, message: n === 1 ? "Preço reajustado! ✨" : `${n} preços reajustados! ✨` };
+    return { ok: true, message: n === 1 ? "Preço reajustado." : `${n} preços reajustados.` };
   } catch (err) {
     if (err instanceof DomainError) return { ok: false, message: err.message };
     throw err;

@@ -133,7 +133,7 @@ export function AgendaView(props: Props) {
     toast(`${d.item.clientName.split(" ")[0]} remarcada para ${d.day === before.date ? "" : `${d.day.slice(8)}/${d.day.slice(5, 7)} `}${time}${d.pro !== before.pro && proName ? ` com ${proName}` : ""}.`, "success", {
       action: { label: "Desfazer", onClick: async () => {
         const u = await rescheduleAction({ appointmentId: d.item.id, professionalId: before.pro, date: before.date, time: before.time, squeezeIn: d.item.squeezeIn });
-        toast(u?.ok ? "Prontinho, voltou para o horário de antes." : (u?.message ?? "Não consegui desfazer. Tenta de novo?"), u?.ok ? "success" : "error");
+        toast(u?.ok ? "Voltou para o horário de antes." : (u?.message ?? "Não consegui desfazer. Tenta de novo?"), u?.ok ? "success" : "error");
         router.refresh();
       } },
     });
@@ -212,7 +212,7 @@ export function AgendaView(props: Props) {
             <button onClick={() => go({ data: today })} className="h-10 border-x border-line px-3 text-sm font-medium hover:bg-sunken" title="Hoje (T)">Hoje</button>
             <button onClick={() => shift(1)} className="grid h-10 w-10 place-items-center text-ink-soft hover:text-ink" aria-label="Próximo" title="Próximo (→)"><ChevronRight className="h-4 w-4" /></button>
           </div>
-          <h1 className="min-w-0 truncate font-tight tracking-[-0.02em] text-[22px] font-extrabold first-letter:uppercase sm:text-2xl">
+          <h1 className="min-w-0 truncate font-serif tracking-[-0.01em] text-[22px] font-semibold first-letter:uppercase sm:text-2xl">
             <span className="hidden sm:inline">{title}</span>
             <span className="sm:hidden">{shortTitle}</span>
           </h1>

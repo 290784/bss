@@ -34,7 +34,7 @@ export function ClientForm({ initial, canInternal, onSaved }: { initial?: Client
         <Field label="E-mail" htmlFor="email" error={fe?.email} optional>
           <Input id="email" name="email" type="email" defaultValue={initial?.email ?? ""} />
         </Field>
-        <Field label="Data de nascimento" htmlFor="birthDate" error={fe?.birthDate} optional hint="Só para mandar um carinho no aniversário, se ela autorizar. 🎂">
+        <Field label="Data de nascimento" htmlFor="birthDate" error={fe?.birthDate} optional hint="Só para mandar um carinho no aniversário, se ela autorizar.">
           <Input id="birthDate" name="birthDate" type="date" defaultValue={initial?.birthDate ?? ""} />
         </Field>
         <Field label="Prefere ser contatada por" htmlFor="contactPreference">

@@ -1,7 +1,7 @@
 "use client";
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { MessageCircle, Sparkles } from "lucide-react";
+import { MessageCircle, PlusCircle } from "lucide-react";
 import { Badge, Card, CardHeader } from "@/components/ui/primitives";
 import { useToast } from "@/components/ui/toast";
 import { cn } from "@/lib/cn";
@@ -38,7 +38,7 @@ export function WhatsAppAutomations({ connected, planHasAutomations, reminder, u
           <Toggle checked={state.reminder} disabled={readOnly || pending} onChange={(v) => save({ reminder: v, upsell: v ? state.upsell : false })}
             title="Lembrete na véspera, com confirmação" text="Sai às 9h do dia anterior. A cliente toca em “Confirmo” e o horário fica confirmado na agenda; “Preciso remarcar” avisa você." />
           <Toggle checked={state.upsell && state.reminder} disabled={readOnly || pending || !state.reminder} onChange={(v) => save({ reminder: state.reminder, upsell: v })}
-            title="Oferecer um serviço extra depois do “Confirmo”" icon={<Sparkles className="h-3.5 w-3.5 text-gold-600" />}
+            title="Oferecer um serviço extra depois do “Confirmo”" icon={<PlusCircle className="h-3.5 w-3.5 text-accent-text" />}
             text="Só um serviço por atendimento, que outras clientes costumam fazer junto e que cabe logo depois, com a mesma profissional. Se ela disser SIM, a Gê reserva, soma o valor e te avisa." />
           <p className="text-xs text-muted">Se a cliente escrever qualquer outra coisa, a automação para e você recebe um aviso para responder. Em Serviços, dá para escolher quais podem ser oferecidos.</p>
           <div className="mt-1">

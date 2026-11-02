@@ -34,10 +34,10 @@ export async function saveClientAction(_: ActionState<{ id: string }>, form: For
       }
       if (id) {
         await updateClient(tx, actor, id, parsed.data, { canEditInternalNotes: can(ctx.role, "clients.view_internal_notes") });
-        return { ok: true as const, message: "Cliente atualizada! 💜", data: { id } };
+        return { ok: true as const, message: "Cliente atualizada.", data: { id } };
       }
       const c = await createClient(tx, actor, { ...parsed.data, internalNotes: can(ctx.role, "clients.view_internal_notes") ? parsed.data.internalNotes : null });
-      return { ok: true as const, message: "Cliente cadastrada! ✨", data: { id: c.id } };
+      return { ok: true as const, message: "Cliente cadastrada.", data: { id: c.id } };
     });
     revalidatePath("/app/clientes");
     return result;
@@ -52,7 +52,7 @@ export async function archiveClientAction(id: string, archived: boolean): Promis
     const ctx = await actionContext("clients.delete");
     await tenant(ctx, (tx) => archiveClient(tx, { userId: ctx.user.userId, organizationId: ctx.org.id }, id, archived));
     revalidatePath("/app/clientes");
-    return { ok: true, message: archived ? "Cliente arquivada." : "Cliente de volta na lista!" };
+    return { ok: true, message: archived ? "Cliente arquivada." : "Cliente de volta na lista." };
   } catch (err) {
     if (err instanceof DomainError) return { ok: false, message: err.message };
     throw err;

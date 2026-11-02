@@ -39,7 +39,7 @@ export async function saveOrganizationAction(_: ActionState, form: FormData): Pr
       await audit(tx, { userId: ctx.user.userId, organizationId: ctx.org.id }, "organization.settings_updated", "organization", ctx.org.id);
     });
     revalidatePath("/app", "layout");
-    return { ok: true, message: "Tudo salvo! ✨" };
+    return { ok: true, message: "Configurações salvas." };
   } catch (err) {
     if (err instanceof DomainError) return { ok: false, message: err.message };
     throw err;
@@ -66,7 +66,7 @@ export async function saveAutomationsAction(input: { reminder: boolean; upsell: 
       await audit(tx, { userId: ctx.user.userId, organizationId: ctx.org.id }, "organization.automations_updated", "organization", ctx.org.id, { reminder, upsell });
     });
     revalidatePath("/app/configuracoes");
-    return { ok: true, message: reminder ? (upsell ? "Lembrete e oferta de extra ligados ✨" : "Lembrete ligado, oferta de extra desligada.") : "Automações desligadas." };
+    return { ok: true, message: reminder ? (upsell ? "Lembrete e oferta de extra ligados." : "Lembrete ligado, oferta de extra desligada.") : "Automações desligadas." };
   } catch (err) {
     if (err instanceof DomainError) return { ok: false, message: err.message };
     throw err;

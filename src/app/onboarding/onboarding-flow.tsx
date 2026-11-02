@@ -1,6 +1,6 @@
 "use client";
 import { useActionState, useEffect, useState, useTransition } from "react";
-import { Check, Scissors, Sparkles, Clock } from "lucide-react";
+import { Check, Scissors, Store, Clock } from "lucide-react";
 import { createBusiness, finishOnboarding, saveOnboardingHours } from "./actions";
 import { Card } from "@/components/ui/primitives";
 import { Button } from "@/components/ui/button";
@@ -16,7 +16,7 @@ export function OnboardingFlow({
   const [step, setStep] = useState(initialStep);
   const [businessType, setBusinessType] = useState(createdBusinessType ?? "salon");
   const steps = [
-    { n: 1, label: "Seu negócio", icon: Sparkles },
+    { n: 1, label: "Seu negócio", icon: Store },
     { n: 2, label: "Horários", icon: Clock },
     { n: 3, label: "Serviços", icon: Scissors },
   ];
@@ -49,7 +49,7 @@ function BusinessStep({ businessTypes, value, onType, onDone }: { businessTypes:
   const fe = state && !state.ok ? state.fieldErrors : undefined;
   return (
     <Card className="p-6 sm:p-8">
-      <h1 className="font-tight tracking-[-0.02em] text-[26px] font-extrabold">Oi! Vamos deixar tudo com a sua cara? ✨</h1>
+      <h1 className="font-serif text-[28px] font-semibold">Vamos montar o seu espaço</h1>
       <p className="mt-1 mb-6 text-sm text-muted">São só três passinhos e dá para mudar tudo depois.</p>
       <ActionForm action={action} className="flex flex-col gap-5">
         <FormMessage state={state} />
@@ -86,7 +86,7 @@ function HoursStep({ onDone }: { onDone: () => void }) {
   });
   return (
     <Card className="p-6 sm:p-8">
-      <h1 className="font-tight tracking-[-0.02em] text-[26px] font-extrabold">Quando você atende?</h1>
+      <h1 className="font-serif text-[28px] font-semibold">Quando você atende?</h1>
       <p className="mt-1 mb-6 text-sm text-muted">Assim a sua agenda e o seu link só mostram horários que você realmente atende.</p>
       {error && <div className="mb-4"><FormMessage state={{ ok: false, message: error }} /></div>}
       <fieldset className="mb-6">
@@ -98,7 +98,7 @@ function HoursStep({ onDone }: { onDone: () => void }) {
               <button key={d} type="button" aria-pressed={on}
                 onClick={() => setDays(on ? days.filter((x) => x !== i) : [...days, i].sort())}
                 className={cn("lift h-10 min-w-12 rounded-[10px] border px-3 text-sm font-medium",
-                  on ? "border-violet-300 btn-glow text-white" : "border-line-strong bg-surface text-ink-soft hover:bg-sunken")}>
+                  on ? "border-transparent btn-glow text-white" : "border-line-strong bg-surface text-ink-soft hover:bg-sunken")}>
                 {d}
               </button>
             );
@@ -139,7 +139,7 @@ function ServicesStep({ presets, onBack }: { presets: Preset[]; onBack: () => vo
   });
   return (
     <Card className="p-6 sm:p-8">
-      <h1 className="font-tight tracking-[-0.02em] text-[26px] font-extrabold">Seus serviços</h1>
+      <h1 className="font-serif text-[28px] font-semibold">Seus serviços</h1>
       <p className="mt-1 mb-6 text-sm text-muted">Separei os serviços mais comuns da sua área. Ajusta preço e duração, ou desmarca o que você não faz: os valores são só um ponto de partida.</p>
       {error && <div className="mb-4"><FormMessage state={{ ok: false, message: error }} /></div>}
       <ul className="divide-y divide-line rounded-xl border border-line">
@@ -164,7 +164,7 @@ function ServicesStep({ presets, onBack }: { presets: Preset[]; onBack: () => vo
       </div>
       <div className="mt-8 flex justify-between">
         <Button variant="ghost" onClick={onBack}>Voltar</Button>
-        <Button size="lg" onClick={submit} disabled={pending || !items.some((i) => i.on)}>{pending ? "Deixando tudo pronto…" : "Bora ver minha agenda! 💜"}</Button>
+        <Button size="lg" onClick={submit} disabled={pending || !items.some((i) => i.on)}>{pending ? "Deixando tudo pronto…" : "Abrir minha agenda"}</Button>
       </div>
     </Card>
   );

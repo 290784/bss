@@ -1,7 +1,6 @@
 import type { ComponentProps, ReactNode } from "react";
 import type { LucideIcon } from "lucide-react";
 import { cn } from "@/lib/cn";
-import { Sparkle } from "@/components/brand/sparkles";
 import { STATUS_LABEL, type AppointmentStatus } from "@/domain/appointment-status";
 
 export function Card({ className, interactive, ...props }: ComponentProps<"div"> & { interactive?: boolean }) {
@@ -24,7 +23,7 @@ export function PageHeader({ title, description, actions }: { title: string; des
   return (
     <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
       <div className="min-w-0">
-        <h1 className="flex items-center gap-2 font-tight text-[28px] leading-tight font-extrabold tracking-[-0.02em] text-ink">{title}<Sparkle size={14} className="motion-safe:[animation:twinkle_3.6s_ease-in-out_infinite]" /></h1>
+        <h1 className="font-serif text-[30px] leading-[1.1] font-semibold tracking-[-0.01em] text-ink">{title}</h1>
         {description && <p className="mt-1 text-sm text-muted">{description}</p>}
       </div>
       {actions && <div className="flex flex-wrap items-center gap-2">{actions}</div>}

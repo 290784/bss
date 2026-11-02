@@ -20,7 +20,7 @@ export async function saveProfessionalAction(input: unknown, id?: string): Promi
     const data = professionalSchema.parse(input);
     await tenant(ctx, (tx) => saveProfessional(tx, actorOf(ctx), ctx.plan, data, id));
     revalidatePath("/app", "layout");
-    return { ok: true, message: id ? "Profissional atualizada! 💜" : "Profissional adicionada! Bem-vinda ao time ✨" };
+    return { ok: true, message: id ? "Profissional atualizada." : "Profissional adicionada à equipe." };
   } catch (err) { return fail(err); }
 }
 
@@ -29,7 +29,7 @@ export async function toggleProfessionalAction(id: string, active: boolean): Pro
     const ctx = await actionContext("team.manage");
     await tenant(ctx, (tx) => setProfessionalActive(tx, actorOf(ctx), ctx.plan, id, active));
     revalidatePath("/app", "layout");
-    return { ok: true, message: active ? "Profissional de volta ao time!" : "Profissional pausada. A agenda e o histórico continuam guardados." };
+    return { ok: true, message: active ? "Profissional de volta à equipe." : "Profissional pausada. A agenda e o histórico continuam guardados." };
   } catch (err) { return fail(err); }
 }
 

@@ -3,7 +3,6 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { BellRing, CalendarPlus, CheckCircle2, Clock, Hourglass, MapPin, MessageCircle, Phone, ShieldCheck, Sparkle, User, XCircle } from "lucide-react";
 import { withSystem } from "@/server/db";
-import { Sparkles } from "@/components/brand/sparkles";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
 import { Card } from "@/components/ui/primitives";
 import { buttonClass } from "@/components/ui/button";
@@ -60,12 +59,11 @@ export default async function ReceiptPage({ params, searchParams }: Params) {
 
   return (
     <div className="min-h-dvh">
-      <header data-theme="dark" className="bg-royal relative overflow-hidden px-4 pt-[calc(2.5rem+env(safe-area-inset-top))] pb-20">
+      <header data-theme="dark" className="relative overflow-hidden bg-plum px-4 pt-[calc(2.5rem+env(safe-area-inset-top))] pb-20">
         <ThemeToggle className="absolute top-[calc(0.75rem+env(safe-area-inset-top))] right-[max(0.75rem,env(safe-area-inset-right))] z-10" />
-        <Sparkles />
         <div className="relative mx-auto max-w-xl">
-          <p className="text-[14px] font-semibold text-violet-100">{r.business.name}</p>
-          <h1 className="mt-2 font-tight text-[30px] leading-tight font-extrabold tracking-[-0.025em] text-ink sm:text-[36px]">
+          <p className="text-[14px] font-semibold text-white/80">{r.business.name}</p>
+          <h1 className="mt-2 font-serif text-[30px] leading-tight font-semibold tracking-[-0.01em] text-ink sm:text-[36px]">
             {novo ? `Pronto, ${r.clientFirstName}!` : `Olá, ${r.clientFirstName}!`}
           </h1>
           <p className="mt-1 text-[15px] text-ink-soft">Aqui está o comprovante completo do seu horário. Guarde este link.</p>

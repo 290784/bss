@@ -17,7 +17,20 @@
   --font-script: var(--font-allura), "Brush Script MT", cursive;
   --font-hero: var(--font-dm-sans), ui-sans-serif, system-ui, sans-serif;
   --font-tight: var(--font-inter-tight), var(--font-dm-sans), ui-sans-serif, system-ui, sans-serif;
+  /*
+   * Títulos do app: Fraunces 600 (serifada calorosa). Escala: 12 legenda · 13 apoio · 15 texto ·
+   * 17 destaque · 22 título de seção · 30 título de tela. Pesos: 400 texto, 500 rótulos, 600 títulos e valores.
+   */
+  --font-serif: var(--font-fraunces), Georgia, "Times New Roman", serif;
 
+  /* Ameixa fixa (blocos de destaque do app, iguais nos dois temas; branco sobre ela 11:1). */
+  --color-plum: #642350;
+  --color-plum-soft: #f3e3ee;
+  /* Gráficos: ameixa, champanhe e neutros — uma cor por papel, nada de arco-íris. */
+  --color-data-1: #7a2d63;
+  --color-data-2: #c99ab9;
+  --color-data-3: #c6a05b;
+  --color-data-4: #a89c8d;
   --color-night: #02060e;
   --color-royal: #9303c5;
   --color-violet-100: #eacffc;
@@ -110,33 +123,37 @@
  * (landing, cabeçalhos com o degradê da marca) mesmo com o tema claro ativo.
  */
 [data-theme="light"] {
-  /* Contraste (sobre --color-surface #fff): ink 16,9:1 · ink-soft 10,4:1 · muted 5,6:1 · accent-text 7,4:1. */
-  --color-canvas: #f8f4fc;
+  /*
+   * "Caderno do salão": papel quente, tinta escura, uma cor de ação (ameixa, de esmalte) e champanhe de apoio.
+   * Contraste sobre --color-surface (#fff): ink 16,5:1 · ink-soft 10,2:1 · muted 6,0:1 · accent-text 9,6:1;
+   * sobre --color-canvas: muted 5,4:1. Branco sobre o botão (#642350): 11:1.
+   */
+  --color-canvas: #f6f3ee;
   --color-surface: #ffffff;
   --color-raised: #ffffff;
-  --color-sunken: #f2ebfa;
-  --color-line: #e7ddf3;
-  --color-line-strong: #d3c3e8;
-  --color-ink: #1d1230;
-  --color-ink-soft: #43355c;
-  --color-muted: #66587e;
-  --color-accent-subtle: #f5ecff;
-  --color-accent-muted: #ead8fd;
-  --color-accent-border: #c99ef3;
-  --color-accent: #960df2;
-  --color-accent-strong: #780ac2;
-  --color-accent-text: #7410b8;
-  --color-highlight-subtle: #f7efff;
-  --color-highlight-border: #d8b4f8;
-  --color-highlight-text: #5a0891;
+  --color-sunken: #efebe4;
+  --color-line: #e5dfd5;
+  --color-line-strong: #cfc6b8;
+  --color-ink: #1e1a17;
+  --color-ink-soft: #463f39;
+  --color-muted: #6b625a;
+  --color-accent-subtle: #f6ecf2;
+  --color-accent-muted: #ecd9e5;
+  --color-accent-border: #c99ab9;
+  --color-accent: #7a2d63;
+  --color-accent-strong: #642350;
+  --color-accent-text: #6f2759;
+  --color-highlight-subtle: #f8f0e1;
+  --color-highlight-border: #e2c99b;
+  --color-highlight-text: #6f4f1c;
   --color-st-pending: #8a5800;
   --color-st-pending-bg: rgb(246 194 107 / 0.26);
   --color-st-confirmed: #1d56b0;
   --color-st-confirmed-bg: rgb(120 165 245 / 0.2);
   --color-st-completed: #0f6e42;
   --color-st-completed-bg: rgb(80 200 140 / 0.18);
-  --color-st-cancelled: #66587e;
-  --color-st-cancelled-bg: rgb(140 120 175 / 0.14);
+  --color-st-cancelled: #6b625a;
+  --color-st-cancelled-bg: rgb(120 110 100 / 0.12);
   --color-st-noshow: #b4233f;
   --color-st-noshow-bg: rgb(255 120 145 / 0.16);
   --color-danger: #b4233f;
@@ -145,40 +162,41 @@
   --color-mkt-shape: #efe4fb;
   --color-slot-3: #d3c3e8;
   --color-danger-border: #f0b8c4;
-  --color-field-hover: #b89be0;
-  --color-skeleton-hi: #e9def6;
-  --color-hover-tint: rgb(60 5 97 / 0.04);
-  --shadow-card: 0 0 0 1px rgb(60 5 97 / 0.06), 0 10px 28px -18px rgb(60 5 97 / 0.35);
-  --shadow-pop: 0 24px 60px -24px rgb(60 5 97 / 0.35), 0 0 0 1px rgb(60 5 97 / 0.08);
+  --color-field-hover: #b3a796;
+  --color-skeleton-hi: #e7e1d8;
+  --color-hover-tint: rgb(30 26 23 / 0.035);
+  --radius-card: 14px;
+  --shadow-card: 0 1px 0 rgb(30 26 23 / 0.04);
+  --shadow-pop: 0 18px 44px -18px rgb(30 26 23 / 0.28), 0 0 0 1px rgb(30 26 23 / 0.06);
   color-scheme: light;
 }
 [data-theme="dark"] {
-  --color-canvas: #150b28;
-  --color-surface: #1d1236;
-  --color-raised: #271843;
-  --color-sunken: #22153f;
-  --color-line: #35255a;
-  --color-line-strong: #4c3678;
-  --color-ink: #f8f0ff;
-  --color-ink-soft: #e4d5f6;
-  --color-muted: #b9a7d9;
-  --color-accent-subtle: #2c1a52;
-  --color-accent-muted: #3b226b;
-  --color-accent-border: #6c3aa8;
-  --color-accent: #ab3df5;
-  --color-accent-strong: #960df2;
-  --color-accent-text: #d59efa;
-  --color-highlight-subtle: #2f1849;
-  --color-highlight-border: #6b2fa3;
-  --color-highlight-text: #eacffc;
+  --color-canvas: #16121a;
+  --color-surface: #1e1922;
+  --color-raised: #26202b;
+  --color-sunken: #221c26;
+  --color-line: #322a37;
+  --color-line-strong: #463c4c;
+  --color-ink: #f4eff3;
+  --color-ink-soft: #ddd3da;
+  --color-muted: #b5aab2;
+  --color-accent-subtle: #2e2230;
+  --color-accent-muted: #3d2c3f;
+  --color-accent-border: #7d4a6e;
+  --color-accent: #c77ab0;
+  --color-accent-strong: #9c4a82;
+  --color-accent-text: #e6b3d5;
+  --color-highlight-subtle: #2c2418;
+  --color-highlight-border: #6e5426;
+  --color-highlight-text: #f0dcb4;
   --color-st-pending: #f6c26b;
   --color-st-pending-bg: rgb(246 194 107 / 0.14);
   --color-st-confirmed: #9fc2ff;
   --color-st-confirmed-bg: rgb(159 194 255 / 0.14);
   --color-st-completed: #6fdba5;
   --color-st-completed-bg: rgb(111 219 165 / 0.13);
-  --color-st-cancelled: #a995c6;
-  --color-st-cancelled-bg: rgb(169 149 198 / 0.12);
+  --color-st-cancelled: #b5aab2;
+  --color-st-cancelled-bg: rgb(181 170 178 / 0.12);
   --color-st-noshow: #ff8fa3;
   --color-st-noshow-bg: rgb(255 143 163 / 0.14);
   --color-danger: #ff8fa3;
@@ -187,11 +205,12 @@
   --color-mkt-shape: #1d1338;
   --color-slot-3: #4c3678;
   --color-danger-border: #5a2a3a;
-  --color-field-hover: #5a4a80;
-  --color-skeleton-hi: #36265c;
+  --color-field-hover: #5c5060;
+  --color-skeleton-hi: #2f2834;
   --color-hover-tint: rgb(255 255 255 / 0.04);
-  --shadow-card: 0 0 0 1px rgb(234 207 252 / 0.05), inset 0 1px 0 rgb(255 255 255 / 0.06), 0 14px 34px -20px rgb(8 2 20 / 0.85);
-  --shadow-pop: 0 24px 60px -20px rgb(0 0 0 / 0.85), 0 0 0 1px rgb(234 207 252 / 0.08), 0 0 40px -10px rgb(150 13 242 / 0.35);
+  --radius-card: 14px;
+  --shadow-card: 0 0 0 1px rgb(255 255 255 / 0.02);
+  --shadow-pop: 0 24px 60px -20px rgb(0 0 0 / 0.8), 0 0 0 1px rgb(255 255 255 / 0.06);
   color-scheme: dark;
 }
 /* Cor do texto acompanha o trecho (a cor herdada viria resolvida do tema de fora). */
@@ -202,6 +221,27 @@
   --color-canvas: #fbf5ec; --color-surface: #fffdf9; --color-raised: #ffffff; --color-sunken: #f6eee2;
   --color-line: #efe2cd; --color-line-strong: #e2cfae;
   --color-ink: #2b2233; --color-ink-soft: #4d4356; --color-muted: #6e6377;
+  /* A landing mantém o violeta e os cantos/sombras da campanha; o app usa a paleta "caderno do salão". */
+  --color-accent-subtle: #f5ecff; --color-accent-muted: #ead8fd; --color-accent-border: #c99ef3;
+  --color-accent: #960df2; --color-accent-strong: #780ac2; --color-accent-text: #7410b8;
+  --color-highlight-subtle: #f7efff; --color-highlight-border: #d8b4f8; --color-highlight-text: #5a0891;
+  --radius-card: 22px;
+  --shadow-card: 0 0 0 1px rgb(60 5 97 / 0.06), 0 10px 28px -18px rgb(60 5 97 / 0.35);
+}
+[data-landing] [data-theme="dark"] {
+  --color-canvas: #150b28; --color-surface: #1d1236; --color-raised: #271843; --color-sunken: #22153f;
+  --color-line: #35255a; --color-line-strong: #4c3678; --color-ink: #f8f0ff; --color-ink-soft: #e4d5f6; --color-muted: #b9a7d9;
+  --color-accent-subtle: #2c1a52; --color-accent-muted: #3b226b; --color-accent-border: #6c3aa8;
+  --color-accent: #ab3df5; --color-accent-strong: #960df2; --color-accent-text: #d59efa;
+}
+/* Landing: mantém o fundo com brilhos da campanha. */
+[data-landing].bg-app {
+  background:
+    radial-gradient(1100px 620px at 105% -8%, rgb(236 92 190 / 0.2), transparent 62%),
+    radial-gradient(900px 560px at -12% 18%, rgb(171 61 245 / 0.22), transparent 60%),
+    radial-gradient(1000px 600px at 50% 115%, rgb(192 110 247 / 0.18), transparent 60%),
+    var(--color-canvas);
+  background-attachment: fixed;
 }
 /* Variante "light:" — vale dentro do tema claro, exceto em trechos forçados escuros. */
 @custom-variant light (&:where([data-theme="light"] *):not(:where([data-theme="dark"] *)));
@@ -214,12 +254,7 @@
     color-scheme: dark;
   }
   body, .bg-app {
-    background:
-      radial-gradient(1100px 620px at 105% -8%, rgb(236 92 190 / 0.2), transparent 62%),
-      radial-gradient(900px 560px at -12% 18%, rgb(171 61 245 / 0.22), transparent 60%),
-      radial-gradient(1000px 600px at 50% 115%, rgb(192 110 247 / 0.18), transparent 60%),
-      var(--color-canvas);
-    background-attachment: fixed;
+    background: var(--color-canvas);
     color: var(--color-ink);
     font-family: var(--font-sans);
         -webkit-font-smoothing: antialiased;
@@ -234,11 +269,11 @@
      largo empurra a página para além da borda. Especificidade zero: qualquer grid-cols-* vence. */
   :where(.grid) { grid-template-columns: minmax(0, 1fr); }
   :focus-visible {
-    outline: 2px solid var(--color-violet-300);
+    outline: 2px solid var(--color-accent-text);
     outline-offset: 2px;
   }
   ::selection {
-    background: rgb(171 61 245 / 0.45);
+    background: var(--color-accent-muted);
   }
   dialog::backdrop {
     background: rgb(2 6 14 / 0.72);
@@ -275,11 +310,13 @@
     -webkit-background-clip: text; background-clip: text; color: transparent;
   }
   /* Botão principal: degradê violeta com brilho */
-  .btn-glow {
+  /* Botão principal do app: a cor de ação, chapada. */
+  .btn-glow { background: var(--color-accent-strong); box-shadow: inset 0 -1px 0 rgb(0 0 0 / 0.18); }
+  .btn-glow:hover { background: var(--color-accent); }
+  [data-landing] [data-theme="dark"] .btn-glow {
     background: linear-gradient(135deg, var(--color-violet-400) 0%, var(--color-violet-500) 45%, var(--color-violet-600) 100%);
     box-shadow: 0 0 0 1px rgb(234 207 252 / 0.25) inset, 0 8px 24px -6px rgb(150 13 242 / 0.6), 0 0 32px -8px rgb(192 110 247 / 0.55);
   }
-  .btn-glow:hover { filter: brightness(1.08) saturate(1.05); }
   /* Landing creme: violeta mais fechado (ameixa), com brilho suave. */
   [data-landing] .btn-glow:not(:where([data-theme="dark"] *)) {
     background: linear-gradient(135deg, #8b3fc6 0%, #6c1fa8 50%, #4f1283 100%);
@@ -289,23 +326,27 @@
    * Interação de cards clicáveis: sobe e brilha ao passar o mouse (só em dispositivos com mouse,
    * para não "grudar" no toque), afunda ao clicar/tocar, anel visível no foco por teclado.
    */
+  /*
+   * Cards clicáveis do app: a borda escurece ao passar o mouse e o card afunda de leve no toque.
+   * Nada sobe nem brilha. Cards informativos não reagem (glow-hover fica neutro).
+   */
   .lift {
     -webkit-tap-highlight-color: transparent;
-    transition: transform 0.28s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.28s ease, background-color 0.28s ease, border-color 0.28s ease;
+    transition: border-color 0.15s ease, background-color 0.15s ease, transform 0.12s ease;
   }
   @media (hover: hover) {
-    .lift:hover {
+    .lift:hover { border-color: var(--color-line-strong); background-color: var(--color-raised); }
+  }
+  .lift:active { transform: scale(0.99); }
+  .lift:focus-visible { outline: 2px solid var(--color-accent-text); outline-offset: 2px; }
+  /* .glow-hover: sem efeito no app. */
+  /* Landing: mantém o "sobe e brilha" da campanha. */
+  @media (hover: hover) {
+    [data-landing] .lift:hover {
       transform: translateY(-3px);
       border-color: rgb(213 158 250 / 0.45);
-      box-shadow: 0 0 0 1px rgb(213 158 250 / 0.3) inset, 0 18px 40px -18px rgb(150 13 242 / 0.75);
+      box-shadow: 0 0 0 1px rgb(150 13 242 / 0.25) inset, 0 18px 40px -20px rgb(120 10 194 / 0.45);
     }
-  }
-  .lift:active { transform: translateY(0) scale(0.975); transition-duration: 0.12s; }
-  .lift:focus-visible { outline: 2px solid var(--color-violet-300); outline-offset: 3px; }
-  /* Cards informativos (não clicáveis): só realçam, sem "pular". */
-  .glow-hover { transition: box-shadow 0.35s ease, border-color 0.35s ease, background-color 0.35s ease; }
-  @media (hover: hover) {
-    .glow-hover:hover { box-shadow: 0 0 0 1px rgb(213 158 250 / 0.28) inset, 0 20px 50px -24px rgb(150 13 242 / 0.7); }
   }
 
   /* Texto cintilante (brilho que percorre o texto) */
@@ -342,19 +383,8 @@
 [data-theme="light"] .text-shimmer:not(:where([data-theme="dark"] *)) {
   background-image: linear-gradient(100deg, var(--color-violet-600) 0%, var(--color-violet-400) 25%, var(--color-violet-700) 50%, var(--color-violet-400) 75%, var(--color-violet-600) 100%);
 }
-@media (hover: hover) {
-  [data-theme="light"] .lift:hover { box-shadow: 0 0 0 1px rgb(150 13 242 / 0.25) inset, 0 18px 40px -20px rgb(120 10 194 / 0.45); }
-  [data-theme="light"] .glow-hover:hover { box-shadow: 0 0 0 1px rgb(150 13 242 / 0.2) inset, 0 18px 44px -24px rgb(120 10 194 / 0.4); }
-}
-[data-theme="light"] body {
-  background:
-    radial-gradient(1100px 620px at 105% -8%, rgb(255 140 210 / 0.22), transparent 62%),
-    radial-gradient(900px 560px at -12% 18%, rgb(213 158 250 / 0.26), transparent 60%),
-    radial-gradient(1000px 600px at 50% 115%, rgb(234 207 252 / 0.4), transparent 60%),
-    var(--color-canvas);
-  background-attachment: fixed;
-}
-[data-theme="light"] ::selection { background: rgb(171 61 245 / 0.25); }
+[data-theme="light"] body { background: var(--color-canvas); }
+[data-theme="light"] ::selection { background: var(--color-accent-muted); }
 [data-theme="light"] dialog::backdrop { background: rgb(29 18 48 / 0.35); }
 
 /*
