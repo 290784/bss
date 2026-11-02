@@ -2,15 +2,17 @@ import type { ComponentProps, ReactNode } from "react";
 import type { LucideIcon } from "lucide-react";
 import { cn } from "@/lib/cn";
 import { STATUS_LABEL, type AppointmentStatus } from "@/domain/appointment-status";
+import { Illustration, type IllustrationName } from "./illustration";
 
 export function Card({ className, interactive, ...props }: ComponentProps<"div"> & { interactive?: boolean }) {
   return <div className={cn("rounded-[var(--radius-card)] border border-line/70 bg-surface shadow-[var(--shadow-card)]", interactive ? "lift" : "glow-hover", className)} {...props} />;
 }
 
-export function CardHeader({ title, description, action, className }: { title: ReactNode; description?: ReactNode; action?: ReactNode; className?: string }) {
+export function CardHeader({ title, description, action, className, art }: { title: ReactNode; description?: ReactNode; action?: ReactNode; className?: string; art?: IllustrationName }) {
   return (
     <div className={cn("flex items-start justify-between gap-3 px-5 pt-5 sm:px-6 sm:pt-6", className)}>
-      <div className="min-w-0">
+      {art && <Illustration name={art} className="-my-1 -ml-1 h-11 w-11" />}
+      <div className="min-w-0 flex-1">
         <h2 className="font-serif text-[18px] leading-snug font-semibold tracking-[-0.005em] text-ink">{title}</h2>
         {description && <p className="mt-1 text-[13px] leading-relaxed text-muted">{description}</p>}
       </div>
@@ -19,12 +21,15 @@ export function CardHeader({ title, description, action, className }: { title: R
   );
 }
 
-export function PageHeader({ title, description, actions }: { title: string; description?: ReactNode; actions?: ReactNode }) {
+export function PageHeader({ title, description, actions, art }: { title: string; description?: ReactNode; actions?: ReactNode; art?: IllustrationName }) {
   return (
     <div className="mb-7 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-      <div className="min-w-0">
+      <div className="flex min-w-0 items-center gap-3 sm:gap-4">
+        {art && <Illustration name={art} className="h-14 w-14 sm:h-16 sm:w-16" />}
+        <div className="min-w-0">
         <h1 className="font-serif text-[28px] leading-[1.1] font-semibold tracking-[-0.01em] text-ink sm:text-[32px]">{title}</h1>
         {description && <p className="mt-1.5 text-sm text-muted">{description}</p>}
+        </div>
       </div>
       {actions && <div className="flex flex-wrap items-center gap-2">{actions}</div>}
     </div>
@@ -62,12 +67,14 @@ export function StatusBadge({ status }: { status: AppointmentStatus }) {
   );
 }
 
-export function EmptyState({ icon: Icon, title, description, action, className }: { icon: LucideIcon; title: string; description?: ReactNode; action?: ReactNode; className?: string }) {
+export function EmptyState({ icon: Icon, art, title, description, action, className }: { icon?: LucideIcon; art?: IllustrationName; title: string; description?: ReactNode; action?: ReactNode; className?: string }) {
   return (
     <div className={cn("flex flex-col items-center justify-center px-6 py-12 text-center", className)}>
-      <div className="mb-4 grid h-14 w-14 place-items-center rounded-full bg-accent-subtle text-accent-text ring-8 ring-accent-subtle/40">
-        <Icon className="h-5 w-5" strokeWidth={1.6} />
-      </div>
+      {art ? <Illustration name={art} className="mb-3 h-20 w-20" /> : Icon && (
+        <div className="mb-4 grid h-14 w-14 place-items-center rounded-full bg-accent-subtle text-accent-text ring-8 ring-accent-subtle/40">
+          <Icon className="h-5 w-5" strokeWidth={1.6} />
+        </div>
+      )}
       <h3 className="font-serif text-[17px] font-semibold text-ink">{title}</h3>
       {description && <p className="mt-1 max-w-sm text-sm text-muted">{description}</p>}
       {action && <div className="mt-5">{action}</div>}
