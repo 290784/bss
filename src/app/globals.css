@@ -325,7 +325,10 @@
   /* Botão principal do app: a cor de ação, chapada. */
   .btn-glow { background: var(--color-accent-strong); box-shadow: inset 0 -1px 0 rgb(0 0 0 / 0.16), var(--shadow-button); transition: background-color 0.2s ease, box-shadow 0.2s ease, transform 0.12s ease; }
   .btn-glow:hover { background: var(--color-accent); }
-  .btn-glow:active { transform: translateY(1px); }
+  @media (hover: hover) {
+    .btn-glow:hover { transform: translateY(-1px); box-shadow: inset 0 -1px 0 rgb(0 0 0 / 0.16), 0 14px 26px -12px rgb(100 35 80 / 0.7); }
+  }
+  .btn-glow:active { transform: translateY(1px) scale(0.97); }
   [data-landing] [data-theme="dark"] .btn-glow {
     background: linear-gradient(135deg, var(--color-violet-400) 0%, var(--color-violet-500) 45%, var(--color-violet-600) 100%);
     box-shadow: 0 0 0 1px rgb(234 207 252 / 0.25) inset, 0 8px 24px -6px rgb(150 13 242 / 0.6), 0 0 32px -8px rgb(192 110 247 / 0.55);
@@ -340,17 +343,32 @@
    * para não "grudar" no toque), afunda ao clicar/tocar, anel visível no foco por teclado.
    */
   /*
-   * Cards clicáveis do app: a borda escurece ao passar o mouse e o card afunda de leve no toque.
-   * Nada sobe nem brilha. Cards informativos não reagem (glow-hover fica neutro).
+   * Cards e botões clicáveis do app: com o mouse, sobem um pouco, a borda fica rosada, a sombra cresce
+   * e a ilustração cresce e inclina (com volta elástica); no toque, afundam e a ilustração "aperta".
+   * Só com mouse o hover vale (não gruda no celular). "Reduzir movimento" desliga tudo (ver abaixo).
    */
   .lift {
     -webkit-tap-highlight-color: transparent;
-    transition: border-color 0.2s ease, background-color 0.2s ease, box-shadow 0.25s ease, transform 0.12s ease;
+    transition: border-color 0.2s ease, background-color 0.2s ease, box-shadow 0.3s ease, transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
   }
   @media (hover: hover) {
-    .lift:hover { border-color: var(--color-accent-muted); box-shadow: var(--shadow-card-hover); }
+    .lift:hover { border-color: var(--color-accent-muted); box-shadow: var(--shadow-card-hover); transform: translateY(-3px); }
   }
-  .lift:active { transform: scale(0.99); }
+  .lift:active { transform: translateY(0) scale(0.97); transition-duration: 0.2s, 0.2s, 0.2s, 0.08s; background-color: var(--color-accent-subtle); }
+  /* Ilustrações dentro de algo clicável reagem junto. */
+  .ge-il { transition: transform 0.45s cubic-bezier(0.34, 1.56, 0.64, 1); }
+  @media (hover: hover) {
+    :is(a, button, .lift):hover .ge-il { transform: scale(1.14) rotate(-6deg); }
+  }
+  :is(a, button, .lift):active .ge-il { transform: scale(0.9) rotate(4deg); transition-duration: 0.1s; }
+  /* Seta que aparece/desliza ao passar o mouse num atalho. */
+  .lift .seta { transition: transform 0.3s ease, opacity 0.3s ease, color 0.2s ease; opacity: 0.45; }
+  @media (hover: hover) {
+    .lift:hover .seta { transform: translateX(4px); opacity: 1; color: var(--color-accent-text); }
+  }
+  /* Toque genérico em botões e pílulas: afunda um pouquinho. */
+  .press { transition: transform 0.12s ease, background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease; -webkit-tap-highlight-color: transparent; }
+  .press:active { transform: scale(0.96); }
   .lift:focus-visible { outline: 2px solid var(--color-accent-text); outline-offset: 2px; }
   /* .glow-hover: sem efeito no app. */
   /* Landing: mantém o "sobe e brilha" da campanha. */
@@ -506,7 +524,7 @@ html[data-atualizando] main [aria-label="Período"] { opacity: 1; pointer-events
   .ambient .tw { animation: none; opacity: 0.7; }
   .ge-traco { animation: none; stroke-dashoffset: 0; }
   *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
-  .lift:hover, .lift:active { transform: none; }
+  .lift:hover, .lift:active, .press:active, .btn-glow:hover, .btn-glow:active, .ge-il, :is(a, button, .lift):is(:hover, :active) .ge-il, .lift .seta { transform: none !important; }
 }
 
 /* Faixa de avisos do painel (o movimento é feito em JS, para poder arrastar). */

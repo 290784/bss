@@ -18,7 +18,7 @@ export function SubTabs({ tabs, current, href, label }: { tabs: SubTab[]; curren
           return (
             <li key={t.id}>
               <Link href={href(t.id)} scroll={false} aria-current={active ? "page" : undefined}
-                className={cn("inline-flex h-10 items-center gap-2 rounded-full px-4 text-[13px] font-medium whitespace-nowrap transition-colors sm:h-9",
+                className={cn("press inline-flex h-10 items-center gap-2 rounded-full px-4 text-[13px] font-medium whitespace-nowrap sm:h-9",
                   active ? "bg-accent-subtle text-accent-text" : "text-muted hover:bg-hover-tint hover:text-ink")}>
                 {t.icon && <t.icon className="h-4 w-4" strokeWidth={1.7} aria-hidden />}
                 {t.label}

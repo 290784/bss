@@ -21,7 +21,7 @@ const sizes: Record<Size, string> = {
 
 export function buttonClass(variant: Variant = "primary", size: Size = "md", className?: string) {
   return cn(
-    "inline-flex shrink-0 items-center justify-center font-medium whitespace-nowrap transition-[color,background-color,border-color,box-shadow] duration-200 select-none",
+    "press inline-flex shrink-0 items-center justify-center font-medium whitespace-nowrap select-none",
     "disabled:pointer-events-none disabled:opacity-50",
     variants[variant], sizes[size], className,
   );

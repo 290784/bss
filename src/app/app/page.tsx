@@ -182,10 +182,11 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
                 <li key={x.href}>
                   <Link href={x.href} className="lift flex h-full items-center gap-3 rounded-2xl border border-line/70 bg-surface p-3">
                     <Illustration name={x.art} className="h-14 w-14 -my-1" />
-                    <span className="min-w-0">
+                    <span className="min-w-0 flex-1">
                       <span className="block text-sm font-medium">{x.label}</span>
                       <span className="hidden truncate text-xs text-muted sm:block">{x.hint}</span>
                     </span>
+                    <ChevronRight className="seta hidden h-4 w-4 shrink-0 text-muted sm:block" aria-hidden />
                   </Link>
                 </li>
               ))}
