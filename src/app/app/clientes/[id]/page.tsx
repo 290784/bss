@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { CalendarDays, CalendarPlus, ChevronLeft, Crown, Cake, Heart, Moon, UserPlus } from "lucide-react";
+import { CalendarDays, CalendarPlus, ChevronLeft, Crown, Cake, Heart, History, Moon, NotebookPen, Sparkles, UserPlus } from "lucide-react";
+import { SubTabs } from "@/components/ui/sub-tabs";
+import { Illustration, type IllustrationName } from "@/components/ui/illustration";
 import { z } from "zod";
 import { requireAppContext, tenant } from "@/server/context";
 import { getClientProfile } from "@/server/modules/clients";
@@ -19,9 +21,17 @@ import { servicesText } from "@/lib/messages";
 
 export const metadata: Metadata = { title: "Ficha da cliente" };
 
-export default async function ClientProfilePage({ params }: { params: Promise<{ id: string }> }) {
+const TABS = [
+  { id: "resumo", label: "Resumo", icon: Sparkles },
+  { id: "historico", label: "Histórico", icon: History },
+  { id: "anotacoes", label: "Anotações e contato", icon: NotebookPen },
+] as const;
+
+export default async function ClientProfilePage({ params, searchParams }: { params: Promise<{ id: string }>; searchParams: Promise<{ aba?: string }> }) {
   const ctx = await requireAppContext("clients.view");
   const { id } = await params;
+  const { aba } = await searchParams;
+  const tab = TABS.some((t) => t.id === aba) ? (aba as (typeof TABS)[number]["id"]) : "resumo";
   if (!z.uuid().safeParse(id).success) notFound();
   const finance = can(ctx.role, "finance.view");
   const internal = can(ctx.role, "clients.view_internal_notes");
@@ -93,7 +103,10 @@ export default async function ClientProfilePage({ params }: { params: Promise<{ 
         </div>
       </div>
 
-      {idealReturn && !stats.nextVisit && !c.archived_at && (
+      <SubTabs label="Partes da ficha" tabs={TABS.map((t) => (t.id === "historico" ? { ...t, count: history.length } : t))} current={tab}
+        href={(t) => (t === "resumo" ? `/app/clientes/${c.id}` : `/app/clientes/${c.id}?aba=${t}`)} />
+
+      {tab === "resumo" && idealReturn && !stats.nextVisit && !c.archived_at && (
         <div className={cn("mb-6 flex flex-col gap-3 rounded-2xl border p-4 sm:flex-row sm:items-center", returnDays! < 0 ? "border-st-pending/30 bg-st-pending-bg" : "border-line bg-surface")}>
           <CalendarDays className={cn("h-5 w-5 shrink-0", returnDays! < 0 ? "text-st-pending" : "text-accent-text")} />
           <div className="flex-1 text-sm">
@@ -106,92 +119,114 @@ export default async function ClientProfilePage({ params }: { params: Promise<{ 
         </div>
       )}
 
-      <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
-        <Stat label="Visitas" value={String(stats.visits)} />
-        <Stat label="Última visita" value={date(stats.lastVisit)} />
-        <Stat label="Próxima visita" value={stats.nextVisit ? formatInTz(stats.nextVisit, tz, { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" }) : "—"} />
-        <Stat label="Frequência média" value={stats.avgIntervalDays ? `volta a cada ${stats.avgIntervalDays} dias` : "—"} />
-        {finance && <Stat label="Total gasto" value={formatMoney(stats.totalSpentCents ?? 0)} hint="Já descontados os estornos" />}
-        {finance && <Stat label="Ticket médio" value={stats.averageTicketCents === null ? "—" : formatMoney(stats.averageTicketCents)} />}
-        <Stat label="Faltas · cancelamentos" value={`${stats.noShows} · ${stats.cancellations}`} />
-        <Stat label="Profissional favorita" value={stats.favoriteProfessional ?? "—"} />
-      </div>
-
-      <div className="mt-6 grid gap-6 lg:grid-cols-[minmax(0,1fr)_340px]">
-        <Card>
-          <CardHeader title="Histórico com você" description={plural(history.length, "registro")} />
-          <div className="px-5 pt-3 pb-5 sm:px-6 sm:pb-6">
-            {history.length === 0 ? (
-              <EmptyState className="py-8" icon={CalendarDays} title="Nenhum atendimento ainda" description="Assim que ela marcar, os horários aparecem aqui." />
+      {tab === "resumo" && (
+        <>
+          <div className="grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-4">
+            <Stat art="calendar" label="Visitas" value={String(stats.visits)} />
+            <Stat art="calendar-check" label="Última visita" value={date(stats.lastVisit)} />
+            <Stat art="calendar-plus" label="Próxima visita" value={stats.nextVisit ? formatInTz(stats.nextVisit, tz, { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" }) : "—"} />
+            <Stat art="clock" label="Frequência média" value={stats.avgIntervalDays ? `a cada ${stats.avgIntervalDays} dias` : "—"} />
+          </div>
+          <div className="mt-6 grid gap-6 lg:grid-cols-[minmax(0,1fr)_340px] lg:items-start">
+            {c.contact_preference !== "none" && !c.archived_at
+              ? <QuickMessages phone={c.phone_normalized} messages={messages} highlight={highlight} />
+              : <Card className="p-5 text-sm text-muted">{c.archived_at ? "Cliente arquivada: as mensagens rápidas ficam desligadas." : "Ela prefere não ser contatada."}</Card>}
+            {services.length > 0 ? (
+              <Card className="p-5 sm:p-6">
+                <h2 className="flex items-center gap-2 font-serif text-[18px] font-semibold"><Heart className="h-4 w-4 text-accent-text" />O que ela mais faz</h2>
+                <ul className="mt-4 flex flex-col gap-3">
+                  {services.map((s) => (
+                    <li key={s.name} className="text-sm">
+                      <div className="flex items-baseline justify-between gap-2">
+                        <span className="truncate font-medium">{s.name}</span>
+                        <span className="shrink-0 text-xs text-muted tabular">{s.n}× · última {formatInTz(s.last, tz, { day: "2-digit", month: "2-digit" })}</span>
+                      </div>
+                      <span className="mt-1.5 block h-1.5 overflow-hidden rounded-full bg-sunken"><span className="block h-full rounded-full bg-data-1" style={{ width: `${(s.n / services[0]!.n) * 100}%` }} /></span>
+                    </li>
+                  ))}
+                </ul>
+              </Card>
             ) : (
-              <ol className="divide-y divide-line">
-                {history.map((h) => (
-                  <li key={h.id}>
-                    <Link href={`/app/agenda?data=${localDateKey(h.starts_at, tz)}&agendamento=${h.id}`} className="-mx-2 flex items-center gap-3 rounded-xl px-2 py-3 transition hover:bg-hover-tint active:scale-[0.99]">
-                      <div className="w-24 shrink-0 text-sm tabular">
-                        <div className="font-medium">{formatInTz(h.starts_at, tz, { day: "2-digit", month: "2-digit", year: "2-digit" })}</div>
-                        <div className="text-xs text-muted">{formatInTz(h.starts_at, tz, { hour: "2-digit", minute: "2-digit" })}</div>
-                      </div>
-                      <div className="min-w-0 flex-1">
-                        <div className="truncate text-sm">{h.services}</div>
-                        <div className="text-xs text-muted">com {h.professional_name}{finance ? ` · ${formatMoney(h.price_cents - h.discount_cents)}` : ""}</div>
-                      </div>
-                      <StatusBadge status={h.status as AppointmentStatus} />
-                    </Link>
-                  </li>
-                ))}
-              </ol>
+              <Card><EmptyState className="py-8" icon={Heart} title="Ainda sem favoritos" description="Depois dos primeiros atendimentos, os serviços que ela mais faz aparecem aqui." /></Card>
             )}
           </div>
-        </Card>
-        <div className="flex flex-col gap-6">
-          {c.contact_preference !== "none" && !c.archived_at && <QuickMessages phone={c.phone_normalized} messages={messages} highlight={highlight} />}
-          {services.length > 0 && (
-            <Card className="p-5">
-              <h2 className="flex items-center gap-2 text-[15px] font-semibold"><Heart className="h-4 w-4 text-accent-text" />O que ela mais faz</h2>
-              <ul className="mt-3 flex flex-col gap-2.5">
-                {services.map((s) => (
-                  <li key={s.name} className="text-sm">
-                    <div className="flex items-baseline justify-between gap-2">
-                      <span className="truncate font-medium">{s.name}</span>
-                      <span className="shrink-0 text-xs text-muted tabular">{s.n}× · última {formatInTz(s.last, tz, { day: "2-digit", month: "2-digit" })}</span>
-                    </div>
-                    <span className="mt-1 block h-1.5 overflow-hidden rounded-full bg-sunken"><span className="block h-full rounded-full bg-data-1" style={{ width: `${(s.n / services[0]!.n) * 100}%` }} /></span>
-                  </li>
-                ))}
-              </ul>
-            </Card>
-          )}
-          <Card className="p-5">
-            <h2 className="text-[15px] font-semibold">Preferências</h2>
-            <p className="mt-2 text-sm whitespace-pre-line text-ink-soft">{c.preferences || <span className="text-muted">Nenhuma preferência anotada ainda.</span>}</p>
+        </>
+      )}
+
+      {tab === "historico" && (
+        <>
+          <div className="grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-4">
+            {finance && <Stat art="wallet" label="Total gasto" value={formatMoney(stats.totalSpentCents ?? 0)} hint="Já descontados os estornos" />}
+            {finance && <Stat art="receipt" label="Ticket médio" value={stats.averageTicketCents === null ? "—" : formatMoney(stats.averageTicketCents)} />}
+            <Stat art="user-x" label="Faltas · cancelamentos" value={`${stats.noShows} · ${stats.cancellations}`} />
+            <Stat art="user-plus" label="Profissional favorita" value={stats.favoriteProfessional ?? "—"} />
+          </div>
+          <Card className="mt-6">
+            <CardHeader title="Histórico com você" description={plural(history.length, "registro")} />
+            <div className="px-5 pt-3 pb-5 sm:px-6 sm:pb-6">
+              {history.length === 0 ? (
+                <EmptyState className="py-8" icon={CalendarDays} title="Nenhum atendimento ainda" description="Assim que ela marcar, os horários aparecem aqui." />
+              ) : (
+                <ol className="divide-y divide-line/70">
+                  {history.map((h) => (
+                    <li key={h.id}>
+                      <Link href={`/app/agenda?data=${localDateKey(h.starts_at, tz)}&agendamento=${h.id}`} className="-mx-2 flex items-center gap-3 rounded-xl px-2 py-3 transition hover:bg-hover-tint active:scale-[0.99]">
+                        <div className="w-20 shrink-0 text-sm tabular sm:w-24">
+                          <div className="font-medium">{formatInTz(h.starts_at, tz, { day: "2-digit", month: "2-digit", year: "2-digit" })}</div>
+                          <div className="text-xs text-muted">{formatInTz(h.starts_at, tz, { hour: "2-digit", minute: "2-digit" })}</div>
+                        </div>
+                        <div className="min-w-0 flex-1">
+                          <div className="truncate text-sm">{h.services}</div>
+                          <div className="text-xs text-muted">com {h.professional_name}{finance ? ` · ${formatMoney(h.price_cents - h.discount_cents)}` : ""}</div>
+                        </div>
+                        <StatusBadge status={h.status as AppointmentStatus} />
+                      </Link>
+                    </li>
+                  ))}
+                </ol>
+              )}
+            </div>
           </Card>
-          {internal && (
-            <Card className="p-5">
-              <h2 className="flex items-center gap-2 text-[15px] font-semibold">Observações internas <Badge>restrito</Badge></h2>
-              <p className="mt-2 text-sm whitespace-pre-line text-ink-soft">{c.internal_notes || <span className="text-muted">Nenhuma observação ainda.</span>}</p>
+        </>
+      )}
+
+      {tab === "anotacoes" && (
+        <div className="grid gap-6 lg:grid-cols-2 lg:items-start">
+          <div className="flex flex-col gap-6">
+            <Card className="p-5 sm:p-6">
+              <h2 className="font-serif text-[18px] font-semibold">Preferências</h2>
+              <p className="mt-2 text-sm whitespace-pre-line text-ink-soft">{c.preferences || <span className="text-muted">Nenhuma preferência anotada ainda. Use “Editar” para anotar.</span>}</p>
             </Card>
-          )}
-          <Card className="p-5 text-sm">
-            <h2 className="text-[15px] font-semibold">Contato e autorizações</h2>
-            <dl className="mt-2 space-y-1.5 text-ink-soft">
-              <div className="flex justify-between"><dt className="text-muted">Cadastro</dt><dd>{date(c.created_at)}</dd></div>
-              <div className="flex justify-between"><dt className="text-muted">Contato preferido</dt><dd>{{ whatsapp: "WhatsApp", email: "E-mail", phone: "Ligação", none: "Prefere não ser contatada" }[c.contact_preference]}</dd></div>
-              <div className="flex justify-between"><dt className="text-muted">Marketing</dt><dd>{c.marketing_consent ? (c.marketing_consent_at ? `Autorizado em ${date(c.marketing_consent_at)}` : "Autorizado") : "Não autorizou"}</dd></div>
-              {c.birth_date && <div className="flex justify-between"><dt className="text-muted">Nascimento</dt><dd>{c.birth_date.split("-").reverse().join("/")}</dd></div>}
+            {internal && (
+              <Card className="p-5 sm:p-6">
+                <h2 className="flex items-center gap-2 font-serif text-[18px] font-semibold">Observações internas <Badge>restrito</Badge></h2>
+                <p className="mt-2 text-sm whitespace-pre-line text-ink-soft">{c.internal_notes || <span className="text-muted">Nenhuma observação ainda.</span>}</p>
+              </Card>
+            )}
+          </div>
+          <Card className="p-5 text-sm sm:p-6">
+            <h2 className="font-serif text-[18px] font-semibold">Contato e autorizações</h2>
+            <dl className="mt-3 space-y-2 text-ink-soft">
+              <div className="flex justify-between gap-3"><dt className="text-muted">Cadastro</dt><dd>{date(c.created_at)}</dd></div>
+              <div className="flex justify-between gap-3"><dt className="text-muted">Contato preferido</dt><dd>{{ whatsapp: "WhatsApp", email: "E-mail", phone: "Ligação", none: "Prefere não ser contatada" }[c.contact_preference]}</dd></div>
+              <div className="flex justify-between gap-3"><dt className="text-muted">Marketing</dt><dd className="text-right">{c.marketing_consent ? (c.marketing_consent_at ? `Autorizado em ${date(c.marketing_consent_at)}` : "Autorizado") : "Não autorizou"}</dd></div>
+              {c.birth_date && <div className="flex justify-between gap-3"><dt className="text-muted">Nascimento</dt><dd>{c.birth_date.split("-").reverse().join("/")}</dd></div>}
             </dl>
           </Card>
         </div>
-      </div>
+      )}
     </div>
   );
 }
 
-function Stat({ label, value, hint }: { label: string; value: string; hint?: string }) {
+function Stat({ label, value, hint, art }: { label: string; value: string; hint?: string; art: IllustrationName }) {
   return (
-    <Card className="p-4">
-      <div className="text-[13px] text-muted">{label}</div>
-      <div className="mt-1 truncate text-lg font-semibold tabular">{value}</div>
+    <Card className="p-4 sm:p-5">
+      <div className="flex items-start justify-between gap-2">
+        <div className="text-[13px] text-muted">{label}</div>
+        <Illustration name={art} className="-mt-1 -mr-1 h-10 w-10 sm:h-12 sm:w-12" />
+      </div>
+      <div className="mt-0.5 truncate text-lg font-semibold tabular sm:text-xl">{value}</div>
       {hint && <div className="text-xs text-muted">{hint}</div>}
     </Card>
   );
