@@ -283,7 +283,8 @@ function describeEvent(e: { type: string; data: Record<string, unknown> }, tz: s
     case "status_changed": return `Status: ${STATUS_LABEL[d.from as AppointmentStatus]} → ${STATUS_LABEL[d.to as AppointmentStatus]}${d.reason ? ` (${d.reason})` : ""}`;
     case "payment_recorded": return `Pagamento de ${formatMoney(Number(d.amountCents))} registrado${d.isDeposit ? " (sinal)" : ""}`;
     case "payment_refunded": return `Estorno de ${formatMoney(Number(d.amountCents))}: ${d.reason}`;
-    case "client_confirmed": return "A cliente confirmou presença pelo comprovante 💜";
+    case "client_confirmed": return d.via === "whatsapp" ? "A cliente confirmou pelo WhatsApp 💜" : "A cliente confirmou presença pelo comprovante 💜";
+    case "upsell_accepted": return `A cliente aceitou ${d.name} pelo WhatsApp (+${formatMoney(Number(d.priceCents))}) ✨`;
     case "confirmation_sent": return "Confirmação enviada pelo WhatsApp";
     case "status_reverted": return `Desfeito: ${STATUS_LABEL[d.from as AppointmentStatus]} → ${STATUS_LABEL[d.to as AppointmentStatus]}`;
     case "service_added": return `Serviço adicionado: ${d.name} (+${formatMoney(Number(d.priceCents))})`;

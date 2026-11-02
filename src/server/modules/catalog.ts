@@ -22,6 +22,7 @@ export const serviceSchema = z.object({
   bufferAfterMinutes: z.coerce.number().int().min(0).max(120).default(0),
   returnIntervalDays: z.coerce.number().int().min(1).max(730).optional(),
   onlineBookable: z.boolean().default(true),
+  offerAsExtra: z.boolean().optional(),
   professionalIds: z.array(z.uuid()).default([]),
 });
 export type ServiceInput = z.infer<typeof serviceSchema>;
@@ -42,15 +43,15 @@ export async function saveService(tx: Tx, actor: Actor, input: ServiceInput, id?
     const r = await tx`
       update app.services set name = ${input.name}, category_id = ${categoryId}, description = ${input.description ?? null},
         price_cents = ${input.price}, duration_minutes = ${input.durationMinutes}, buffer_after_minutes = ${input.bufferAfterMinutes},
-        return_interval_days = ${input.returnIntervalDays ?? null}, online_bookable = ${input.onlineBookable}
+        return_interval_days = ${input.returnIntervalDays ?? null}, online_bookable = ${input.onlineBookable}, offer_as_extra = ${input.offerAsExtra ?? true}
       where organization_id = ${orgId} and id = ${id}`;
     if (r.count === 0) throw new DomainError("Não achei esse serviço.");
   } else {
     const [s] = await tx<{ id: string }[]>`
       insert into app.services (organization_id, category_id, name, description, price_cents, duration_minutes,
-        buffer_after_minutes, return_interval_days, online_bookable)
+        buffer_after_minutes, return_interval_days, online_bookable, offer_as_extra)
       values (${orgId}, ${categoryId}, ${input.name}, ${input.description ?? null}, ${input.price}, ${input.durationMinutes},
-        ${input.bufferAfterMinutes}, ${input.returnIntervalDays ?? null}, ${input.onlineBookable})
+        ${input.bufferAfterMinutes}, ${input.returnIntervalDays ?? null}, ${input.onlineBookable}, ${input.offerAsExtra ?? true})
       returning id`;
     serviceId = s!.id;
   }
@@ -97,13 +98,13 @@ export async function adjustPrices(tx: Tx, actor: Actor, input: { serviceIds: st
 
 export type ServiceRow = {
   id: string; name: string; category: string | null; description: string | null; price_cents: number; duration_minutes: number;
-  buffer_after_minutes: number; return_interval_days: number | null; online_bookable: boolean; is_active: boolean; professional_ids: string[];
+  buffer_after_minutes: number; return_interval_days: number | null; online_bookable: boolean; offer_as_extra: boolean; is_active: boolean; professional_ids: string[];
 };
 
 export async function listServices(tx: Tx, orgId: string, opts: { activeOnly?: boolean } = {}) {
   return tx<ServiceRow[]>`
     select s.id, s.name, c.name as category, s.description, s.price_cents, s.duration_minutes, s.buffer_after_minutes,
-      s.return_interval_days, s.online_bookable, s.is_active,
+      s.return_interval_days, s.online_bookable, s.offer_as_extra, s.is_active,
       coalesce(array_agg(ps.professional_id) filter (where ps.professional_id is not null), '{}') as professional_ids
     from app.services s
     left join app.service_categories c on c.id = s.category_id

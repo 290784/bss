@@ -6,6 +6,7 @@ import { rateLimit } from "@/server/rate-limit";
 import { bookOnline, getPublicBusiness, onlineBookingSchema, publicSlots } from "@/server/modules/public-booking";
 import { normalizePhone } from "@/lib/text";
 import { DomainError } from "@/server/errors";
+import { dispatchSoon } from "@/server/dispatch-soon";
 
 export async function publicSlotsAction(slug: string, serviceId: string, professionalId: string | null, date: string) {
   const ip = await clientIp();
@@ -34,6 +35,7 @@ export async function bookAction(slug: string, input: Record<string, unknown>) {
       const biz = await getPublicBusiness(tx, slug);
       if (!biz) return { ok: false as const, message: "Agendamento online indisponível." };
       const r = await bookOnline(tx, biz, parsed.data);
+      dispatchSoon();
       return { ok: true as const, ...r };
     });
   } catch (err) {

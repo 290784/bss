@@ -209,6 +209,8 @@ function ServiceDialog({ service, copy, professionals, categories, onClose }: { 
           </div>
         </fieldset>
         <Checkbox name="onlineBookable" defaultChecked={service?.online_bookable ?? true} label="Aparece no seu link de agendamento" />
+        <Checkbox name="offerAsExtra" defaultChecked={service?.offer_as_extra ?? true} label="Pode ser oferecido como extra no WhatsApp"
+          description="Depois que a cliente confirma o horário, a Gê pode sugerir este serviço se ele couber logo depois." />
         <div className="flex justify-end pt-2"><SubmitButton pending={pending}>Salvar serviço</SubmitButton></div>
       </ActionForm>
     </Dialog>

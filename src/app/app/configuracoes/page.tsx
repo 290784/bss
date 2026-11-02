@@ -6,7 +6,9 @@ import { PLANS } from "@/domain/plans";
 import { Badge, Card, CardHeader, PageHeader } from "@/components/ui/primitives";
 import { formatInTz } from "@/lib/time";
 import { cn } from "@/lib/cn";
-import { configuredProviders } from "@/server/modules/messaging";
+import { configuredProviders, hasAutomations } from "@/server/modules/messaging";
+import { WhatsAppAutomations } from "./whatsapp-automations";
+import { confirmedMessage, offerMessage, reminderMessage, upsellDoneMessage } from "@/lib/messages";
 import { OrganizationForm } from "./organization-form";
 import { DangerZone } from "./danger-zone";
 import { CopyLink } from "../copy-link";
@@ -19,13 +21,14 @@ const ACTION_LABEL: Record<string, string> = {
   "appointment.cancelled": "Agendamento cancelado", "payment.recorded": "Pagamento registrado", "payment.refunded": "Estorno registrado",
   "client.archived": "Cliente arquivada", "client.restored": "Cliente restaurada", "client.consent_given": "Consentimento de marketing registrado",
   "client.consent_revoked": "Consentimento de marketing revogado", "clients.exported": "Clientes exportadas",
+  "organization.automations_updated": "Automações do WhatsApp alteradas", "service.prices_adjusted": "Preços reajustados",
   "professional.activated": "Profissional reativada", "professional.deactivated": "Profissional desativada", "account.deletion_requested": "Exclusão de conta solicitada",
 };
 
 export default async function SettingsPage() {
   const ctx = await requireAppContext("settings.manage");
   const tz = ctx.org.timezone;
-  const { org, auditRows, members } = await tenant(ctx, async (tx) => {
+  const { org, auditRows, members, auto } = await tenant(ctx, async (tx) => {
     const [org] = await tx<{
       name: string; phone: string | null; instagram: string | null; address: string | null; online_booking_enabled: boolean; online_requires_approval: boolean;
       min_advance_minutes: number; max_advance_days: number; slot_interval_minutes: number; cancellation_notice_hours: number; booking_policy_text: string | null;
@@ -36,12 +39,36 @@ export default async function SettingsPage() {
           select action, created_at, actor_user_id from app.audit_log where organization_id = ${ctx.org.id} order by created_at desc limit 15`
       : [];
     const members = await tx<{ user_id: string; role: Role; status: string }[]>`select user_id, role, status from app.memberships where organization_id = ${ctx.org.id}`;
-    return { org: org!, auditRows, members };
+    const [flags] = await tx<{ whatsapp_reminder_enabled: boolean; whatsapp_upsell_enabled: boolean }[]>`
+      select whatsapp_reminder_enabled, whatsapp_upsell_enabled from app.organizations where id = ${ctx.org.id}`;
+    const [stats] = await tx<{ reminders: number; offers: number; confirmed: number; accepted: number; extra_cents: number }[]>`
+      select
+        (select count(*) from app.message_jobs where organization_id = ${ctx.org.id} and template = 'appointment_reminder' and status = 'sent' and sent_at > now() - interval '30 days')::int as reminders,
+        (select count(*) from app.message_jobs where organization_id = ${ctx.org.id} and template = 'upsell_offer' and status = 'sent' and sent_at > now() - interval '30 days')::int as offers,
+        (select count(*) from app.appointment_events where organization_id = ${ctx.org.id} and type = 'client_confirmed' and data->>'via' = 'whatsapp' and created_at > now() - interval '30 days')::int as confirmed,
+        (select count(*) from app.appointment_events where organization_id = ${ctx.org.id} and type = 'upsell_accepted' and created_at > now() - interval '30 days')::int as accepted,
+        coalesce((select sum((data->>'priceCents')::int) from app.appointment_events where organization_id = ${ctx.org.id} and type = 'upsell_accepted' and created_at > now() - interval '30 days'), 0)::int as extra_cents`;
+    const [pro] = await tx<{ display_name: string }[]>`select display_name from app.professionals where organization_id = ${ctx.org.id} and is_active order by created_at limit 1`;
+    const automations = await hasAutomations(tx, ctx.org.id);
+    return { org: org!, auditRows, members, auto: { flags: flags!, stats: stats!, proName: pro?.display_name ?? "Bia", automations } };
   });
   // Nomes de usuárias: tabela de identidade só é lida no contexto de sistema, filtrando pelos membros desta organização.
   const ids = [...new Set([...members.map((m) => m.user_id), ...auditRows.map((a) => a.actor_user_id).filter(Boolean) as string[]])];
   const names = new Map((ids.length ? await withSystem((tx) => tx<{ id: string; full_name: string; email: string }[]>`select id, full_name, email from app.users where id in ${tx(ids)}`) : []).map((u) => [u.id, u]));
   const providers = configuredProviders();
+  // Exemplo da conversa com os textos reais da automação (nomes de exemplo).
+  const demoStart = new Date(new Date().getTime() + 86_400_000);
+  demoStart.setUTCHours(17, 0, 0, 0);
+  const preview = [
+    { from: "ge" as const, text: reminderMessage({ clientName: "Ana", services: ["Manicure"], startsAt: demoStart, timeZone: tz, professionalName: auto.proName, businessName: org.name }), buttons: ["Confirmo", "Preciso remarcar"] },
+    { from: "cliente" as const, text: "Confirmo" },
+    ...(auto.flags.whatsapp_upsell_enabled
+      ? [{ from: "ge" as const, text: offerMessage({ professionalName: auto.proName, serviceName: "Esmaltação em gel", priceCents: 2500 }), buttons: ["Quero sim", "Agora não"] },
+         { from: "cliente" as const, text: "SIM" },
+         { from: "ge" as const, text: upsellDoneMessage({ items: [{ name: "Manicure", startsAt: demoStart }, { name: "Esmaltação em gel", startsAt: new Date(demoStart.getTime() + 45 * 60_000) }], timeZone: tz, totalCents: 6000 }) },
+         { from: "app" as const, text: "Você recebe: Ana adicionou Esmaltação em gel! +R$ 25,00" }]
+      : [{ from: "ge" as const, text: confirmedMessage() }]),
+  ];
   const appUrl = process.env.APP_URL ?? "http://localhost:3000";
   const sub = ctx.subscription;
 
@@ -51,6 +78,9 @@ export default async function SettingsPage() {
       <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_380px]">
         <div className="flex flex-col gap-6">
           <OrganizationForm org={org} readOnly={ctx.access === "read_only"} />
+          <WhatsAppAutomations connected={providers.some((p) => p.channel === "whatsapp")} planHasAutomations={auto.automations}
+            reminder={auto.flags.whatsapp_reminder_enabled} upsell={auto.flags.whatsapp_upsell_enabled} readOnly={ctx.access === "read_only"}
+            preview={preview} stats={{ reminders: auto.stats.reminders, confirmed: auto.stats.confirmed, offers: auto.stats.offers, accepted: auto.stats.accepted, extraCents: auto.stats.extra_cents }} />
         </div>
         <div className="flex flex-col gap-6">
           <Card data-theme="dark" className="bg-royal ring-glass relative overflow-hidden border-transparent p-5 text-white">

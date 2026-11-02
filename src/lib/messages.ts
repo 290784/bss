@@ -53,3 +53,53 @@ export function confirmationMessage(p: {
     `Te esperamos! 🥰`,
   ].join("\n");
 }
+
+// ---------------------------------------------------------------------------
+// Conversa automática do WhatsApp (lembrete → confirmação → serviço extra)
+// ---------------------------------------------------------------------------
+
+const firstName = (name: string) => name.trim().split(/\s+/)[0] ?? name;
+const money = (cents: number) => `R$ ${(cents / 100).toFixed(2).replace(".", ",").replace(/,00$/, "")}`;
+
+/** Lembrete da véspera (vai com os botões "Confirmo" e "Preciso remarcar"). */
+export function reminderMessage(p: { clientName: string; services: string[]; startsAt: Date; timeZone: string; professionalName: string; businessName: string }) {
+  const today = formatInTz(new Date(), p.timeZone, { year: "numeric", month: "2-digit", day: "2-digit" });
+  const day = formatInTz(p.startsAt, p.timeZone, { year: "numeric", month: "2-digit", day: "2-digit" });
+  const when = day === today ? "hoje" : "amanhã";
+  return `Oi, ${firstName(p.clientName)}! 💜 Passando pra lembrar: ${when} às ${hourText(p.startsAt, p.timeZone)} tem ${servicesText(p.services)} com a ${firstName(p.professionalName)}, no ${p.businessName}. Posso confirmar?`;
+}
+
+/** Depois do "Confirmo": confirma e oferece um serviço que cabe logo depois. */
+export function offerMessage(p: { professionalName: string; serviceName: string; priceCents: number }) {
+  return `Oba, confirmado! 💜 Vi que a ${firstName(p.professionalName)} tem um horário livre logo depois. Quer aproveitar e fazer ${servicesText([p.serviceName])}? Fica +${money(p.priceCents)}. É só responder SIM 😉`;
+}
+
+/** Confirmou e não há oferta (ou a oferta está desligada). */
+export function confirmedMessage() {
+  return "Oba, confirmado! Te esperamos 💜";
+}
+
+/** Aceitou o extra e coube na agenda: os dois horários e o total. */
+export function upsellDoneMessage(p: { items: { name: string; startsAt: Date }[]; timeZone: string; totalCents: number }) {
+  const list = p.items.map((i) => `${servicesText([i.name])} às ${hourText(i.startsAt, p.timeZone)}`);
+  const joined = (list.length > 1 ? `${list.slice(0, -1).join(", ")} e ${list.at(-1)}` : list[0]) ?? "";
+  return `Prontinho! ${joined.charAt(0).toUpperCase()}${joined.slice(1)}, total ${money(p.totalCents)}. Te esperamos 💜`;
+}
+
+/** Aceitou, mas o horário foi ocupado nesse meio tempo. */
+export function upsellTakenMessage(p: { professionalName: string }) {
+  return `Poxa, esse horário acabou de ser ocupado 😕 Quer que a ${firstName(p.professionalName)} te chame pra ver outro?`;
+}
+
+export function declinedMessage() {
+  return "Tudo bem! Te esperamos 💜";
+}
+
+export function rescheduleAckMessage(p: { professionalName: string }) {
+  return `Sem problema! A ${firstName(p.professionalName)} já vai te chamar pra combinar outro horário 💜`;
+}
+
+/** Saiu do roteiro: avisa que uma pessoa vai responder. */
+export function handoffAckMessage(p: { professionalName: string }) {
+  return `Vou avisar a ${firstName(p.professionalName)}, ela já te responde 💜`;
+}
