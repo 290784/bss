@@ -96,7 +96,7 @@ export default async function ClientsPage({ searchParams }: { searchParams: Prom
               {list.map((c) => {
                 const link = wa(c);
                 return (
-                  <li key={c.id} className="flex items-center gap-3 px-4 py-3.5">
+                  <li key={c.id} className="row-link flex items-center gap-3 px-4 py-3.5">
                     <Link href={`/app/clientes/${c.id}`} className="flex min-w-0 flex-1 items-center gap-3">
                       <Avatar name={c.full_name} className="h-10 w-10 text-[13px]" />
                       <span className="min-w-0 flex-1">
@@ -129,7 +129,7 @@ export default async function ClientsPage({ searchParams }: { searchParams: Prom
                 {list.map((c) => {
                   const link = wa(c);
                   return (
-                    <tr key={c.id} className="group transition-colors hover:bg-hover-tint">
+                    <tr key={c.id} className="group transition-colors hover:bg-accent-subtle/70">
                       <td className="px-4 py-3">
                         <Link href={`/app/clientes/${c.id}`} className="flex items-center gap-3">
                           <Avatar name={c.full_name} />

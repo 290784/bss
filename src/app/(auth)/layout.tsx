@@ -4,7 +4,7 @@ import { Illustration } from "@/components/ui/illustration";
 
 export default function AuthLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="grid min-h-dvh lg:grid-cols-[1fr_minmax(0,560px)]">
+    <div data-app className="grid min-h-dvh lg:grid-cols-[1fr_minmax(0,560px)]">
       <aside className="relative m-4 hidden overflow-hidden rounded-[32px] border border-accent-muted/70 auth-panel p-12 lg:flex lg:flex-col lg:justify-between">
         <Logo href="/" className="relative" />
         {/* Composição de ilustrações (decorativa). */}

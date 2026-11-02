@@ -145,7 +145,7 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
               <ul className="flex flex-col divide-y divide-line/70">
                 {activeToday.slice(0, 8).map((a) => (
                   <li key={a.id}>
-                    <Link href={`/app/agenda?data=${todayKey}&agendamento=${a.id}`} className="-mx-2 flex items-center gap-3 rounded-xl px-2 py-3 transition hover:bg-hover-tint active:scale-[0.99]">
+                    <Link href={`/app/agenda?data=${todayKey}&agendamento=${a.id}`} className="row-link -mx-2 flex items-center gap-3 rounded-xl px-2 py-3">
                       <span className="w-11 text-sm font-semibold tabular">{localTime(a.starts_at, tz)}</span>
                       <span className={cn("h-8 w-1 rounded-full", STATUS_STYLE[a.status].dot)} aria-hidden />
                       <span className="min-w-0 flex-1">

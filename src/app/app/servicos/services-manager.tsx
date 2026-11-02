@@ -60,7 +60,7 @@ export function ServicesManager({ services, professionals, readOnly, stats = {} 
                   const st = stats[s.id];
                   const change = st && st.countPrev30 > 0 ? Math.round(((st.count30 - st.countPrev30) / st.countPrev30) * 100) : null;
                   return (
-                    <div key={s.id} className="flex flex-col gap-2 px-5 py-4 transition-colors hover:bg-hover-tint sm:flex-row sm:items-center">
+                    <div key={s.id} className="row-link flex flex-col gap-2 px-5 py-4 sm:flex-row sm:items-center">
                       <button className="min-w-0 flex-1 text-left" onClick={() => !readOnly && setEditing({ service: s })} disabled={readOnly}>
                         <div className="flex flex-wrap items-center gap-2 text-sm font-medium">
                           {s.name}

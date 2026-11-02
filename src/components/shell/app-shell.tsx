@@ -31,7 +31,7 @@ export function AppShell({ items, user, org, memberships, notifications, banner,
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
   return (
-    <div className="min-h-dvh">
+    <div data-app className="min-h-dvh">
       {banner}
       <div className="flex">
         <aside className="sticky top-0 hidden h-dvh w-[260px] shrink-0 flex-col border-r border-line/60 bg-surface/70 px-4 py-6 backdrop-blur-xl lg:flex">
@@ -183,7 +183,7 @@ function Notifications({ items }: { items: ShellProps["notifications"] }) {
             <ul className="max-h-[60vh] divide-y divide-line overflow-y-auto">
               {list.map((n) => (
                 <li key={n.id}>
-                  <Link href={n.link ?? "#"} onClick={() => setOpen(false)} className="block px-5 py-3 transition-colors hover:bg-hover-tint">
+                  <Link href={n.link ?? "#"} onClick={() => setOpen(false)} className="row-link block px-5 py-3">
                     <div className="text-sm font-medium">{n.title}</div>
                     {n.body && <div className="mt-0.5 text-[13px] text-ink-soft">{n.body}</div>}
                     <div className="mt-1 text-xs text-muted">{n.when}</div>
