@@ -20,9 +20,11 @@ const DAYS = ["Domingo", "Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sáb
 type Pro = { id: string; display_name: string; specialty: string | null; color: string; commission_percent: number; accepts_online: boolean; is_active: boolean; service_ids: string[]; hours: { weekday: number; start: string; end: string }[] };
 type TimeOff = { id: string; professional_id: string | null; professional_name: string | null; starts_at: string; ends_at: string; reason: string | null };
 
-export function TeamManager({ professionals, services, timeOff, timeZone, atLimit, readOnly, stats = {}, finance = false, monthLabel = "" }: {
+export type TeamTab = "profissionais" | "folgas" | "resumo";
+
+export function TeamManager({ professionals, services, timeOff, timeZone, atLimit, readOnly, stats = {}, finance = false, monthLabel = "", tab = "profissionais" }: {
   professionals: Pro[]; services: { id: string; name: string }[]; timeOff: TimeOff[]; timeZone: string; atLimit: boolean; readOnly: boolean;
-  stats?: Record<string, TeamStats>; finance?: boolean; monthLabel?: string;
+  stats?: Record<string, TeamStats>; finance?: boolean; monthLabel?: string; tab?: TeamTab;
 }) {
   const [editing, setEditing] = useState<Pro | "new" | null>(null);
   const [hoursFor, setHoursFor] = useState<Pro | null>(null);
@@ -42,13 +44,16 @@ export function TeamManager({ professionals, services, timeOff, timeZone, atLimi
 
   return (
     <div className="flex flex-col gap-6">
-    {finance && activePros.length > 0 && (
+    {tab === "resumo" && !(finance && activePros.length > 0) && (
+      <Card><EmptyState className="py-10" icon={Wallet} title="Resumo indisponível" description={finance ? "Cadastre uma profissional ativa para ver atendimentos, faturamento e comissões do mês." : "Só quem vê o financeiro acessa o resumo de comissões."} /></Card>
+    )}
+    {tab === "resumo" && finance && activePros.length > 0 && (
       <Card>
         <CardHeader title={<span className="inline-flex items-center gap-2"><Wallet className="h-4.5 w-4.5 text-gold-600" />Resumo de {monthLabel}</span>}
           description="Atendimentos concluídos no mês até agora. A comissão usa a do serviço quando ele tem uma, senão a da profissional." />
-        <div className="overflow-x-auto px-5 pt-2 pb-4">
+        <div className="overflow-x-auto px-5 pt-2 pb-4 sm:px-6">
           <table className="w-full min-w-[480px] text-sm">
-            <thead className="text-left text-xs text-muted">
+            <thead className="text-left text-[11px] tracking-[0.08em] text-muted uppercase">
               <tr><th className="py-2 font-medium">Profissional</th><th className="py-2 text-right font-medium">Atendimentos</th><th className="py-2 text-right font-medium">Faturou</th><th className="py-2 text-right font-medium">Comissão</th><th className="py-2 pl-4 font-medium">Agenda da semana</th></tr>
             </thead>
             <tbody className="divide-y divide-line">
@@ -76,16 +81,16 @@ export function TeamManager({ professionals, services, timeOff, timeZone, atLimi
         </div>
       </Card>
     )}
-    <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_380px]">
+    {tab === "profissionais" && (
       <section>
         <div className="mb-3 flex items-center justify-between">
-          <h2 className="text-[15px] font-semibold">Profissionais</h2>
+          <h2 className="font-serif text-[20px] font-semibold">Profissionais</h2>
           {!readOnly && <Button size="sm" onClick={() => setEditing("new")} disabled={atLimit} title={atLimit ? "Sua equipe chegou ao limite do plano" : undefined}><Plus className="h-4 w-4" />Adicionar</Button>}
         </div>
         {atLimit && !readOnly && <p className="mb-3 rounded-lg bg-highlight-subtle px-3 py-2 text-[13px] text-highlight-text">Para trazer mais gente para o time, é só mudar de plano.</p>}
-        <div className="grid gap-3 md:grid-cols-2">
+        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
           {professionals.map((p) => (
-            <Card key={p.id} className={cn("p-4", !p.is_active && "opacity-60")}>
+            <Card key={p.id} className={cn("p-4 sm:p-5", !p.is_active && "opacity-60")}>
               <div className="flex items-start gap-3">
                 <Avatar name={p.display_name} color={p.color} className="h-10 w-10 text-sm" />
                 <div className="min-w-0 flex-1">
@@ -93,12 +98,18 @@ export function TeamManager({ professionals, services, timeOff, timeZone, atLimi
                   <div className="text-[13px] text-muted">{p.specialty || "Sem especialidade"} · {plural(p.service_ids.length, "serviço")}{p.commission_percent ? ` · comissão ${p.commission_percent}%` : ""}</div>
                 </div>
               </div>
-              <ul className="mt-3 grid grid-cols-1 gap-0.5 text-xs text-ink-soft">
-                {[1, 2, 3, 4, 5, 6, 0].map((d) => {
-                  const h = p.hours.filter((x) => x.weekday === d);
-                  return <li key={d} className="flex justify-between"><span className="text-muted">{DAYS[d]}</span><span className="tabular">{h.length ? h.map((x) => `${x.start}–${x.end}`).join(", ") : "folga"}</span></li>;
-                })}
-              </ul>
+              <details className="group mt-3 rounded-xl bg-canvas/60 px-3 py-2 text-xs">
+                <summary className="flex min-h-8 cursor-pointer list-none items-center justify-between font-medium text-ink-soft [&::-webkit-details-marker]:hidden">
+                  <span>Horários da semana · atende {plural(new Set(p.hours.map((x) => x.weekday)).size, "dia")}</span>
+                  <span className="text-muted transition-transform group-open:rotate-180" aria-hidden>⌄</span>
+                </summary>
+                <ul className="mt-1.5 grid grid-cols-1 gap-0.5 pb-1 text-ink-soft">
+                  {[1, 2, 3, 4, 5, 6, 0].map((d) => {
+                    const h = p.hours.filter((x) => x.weekday === d);
+                    return <li key={d} className="flex justify-between"><span className="text-muted">{DAYS[d]}</span><span className="tabular">{h.length ? h.map((x) => `${x.start}–${x.end}`).join(", ") : "folga"}</span></li>;
+                  })}
+                </ul>
+              </details>
               {p.is_active && (
                 <div className="mt-3 flex items-center justify-between gap-3 text-xs text-ink-soft">
                   <span>{plural(stats[p.id]?.completed ?? 0, "atendimento")} no mês</span>
@@ -116,8 +127,10 @@ export function TeamManager({ professionals, services, timeOff, timeZone, atLimi
           ))}
         </div>
       </section>
+    )}
 
-      <Card>
+    {tab === "folgas" && (
+      <Card className="max-w-3xl">
         <CardHeader title="Folgas, férias e feriados" description="Quando alguém (ou o salão todo) não vai atender"
           action={!readOnly ? <Button size="sm" variant="secondary" onClick={() => setBlocking(true)}><Plus className="h-3.5 w-3.5" />Bloquear</Button> : undefined} />
         <div className="px-5 pt-3 pb-5 sm:px-6 sm:pb-6">
@@ -140,6 +153,7 @@ export function TeamManager({ professionals, services, timeOff, timeZone, atLimi
           )}
         </div>
       </Card>
+    )}
 
       {editing && <ProfessionalDialog pro={editing === "new" ? null : editing} services={services} onClose={() => setEditing(null)} onSaved={() => { setEditing(null); router.refresh(); }} />}
       {hoursFor && <HoursDialog pro={hoursFor} onClose={() => setHoursFor(null)} onSaved={() => { setHoursFor(null); router.refresh(); }} />}
@@ -147,7 +161,6 @@ export function TeamManager({ professionals, services, timeOff, timeZone, atLimi
       <ConfirmDialog open={!!removeId} onClose={() => setRemoveId(null)} title="Remover bloqueio?" confirmLabel="Remover" danger
         description="Os horários voltam a ficar livres na agenda e no seu link."
         onConfirm={() => { const id = removeId!; setRemoveId(null); act(removeTimeOffAction(id)); }} />
-    </div>
     </div>
   );
 }

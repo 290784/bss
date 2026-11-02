@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Dialog } from "@/components/ui/dialog";
 import { ActionForm, Checkbox, Field, FormMessage, Input, SubmitButton, Textarea } from "@/components/ui/form";
 import { Badge, Card, EmptyState } from "@/components/ui/primitives";
+import { Illustration, type IllustrationName } from "@/components/ui/illustration";
 import { useToast } from "@/components/ui/toast";
 import { formatMoney } from "@/lib/money";
 import type { ServiceRow, ServiceStats } from "@/server/modules/catalog";
@@ -35,10 +36,10 @@ export function ServicesManager({ services, professionals, readOnly, stats = {} 
     <>
       {services.length > 0 && (
         <div className="mb-6 grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
-          <Card className="p-4 sm:p-5"><div className="text-[13px] text-muted">No cardápio</div><div className="mt-1 text-[22px] font-semibold tracking-[-0.015em] tabular">{active.length}</div><div className="text-xs text-muted">{online} no seu link</div></Card>
-          <Card className="p-4 sm:p-5"><div className="text-[13px] text-muted">Rendeu em 30 dias</div><div className="mt-1 text-[22px] font-semibold tracking-[-0.015em] tabular">{formatMoney(revenue30)}</div><div className="text-xs text-muted">em serviços feitos</div></Card>
-          <Card className={cn("p-4 sm:p-5", noPro > 0 && "border-st-pending/40")}><div className="text-[13px] text-muted">Sem ninguém para fazer</div><div className={cn("mt-1 text-[22px] font-semibold tracking-[-0.015em] tabular", noPro > 0 && "text-st-pending")}>{noPro}</div><div className="text-xs text-muted">{noPro ? "não aparecem para marcar" : "tudo certo"}</div></Card>
-          <Card className="p-4 sm:p-5"><div className="text-[13px] text-muted">Sem tempo de retorno</div><div className="mt-1 text-[22px] font-semibold tracking-[-0.015em] tabular">{noReturn}</div><div className="text-xs text-muted">{noReturn ? "complete para eu avisar quem precisa voltar" : "tudo certo"}</div></Card>
+          <MiniStat art="receipt" label="No cardápio" value={String(active.length)} sub={`${online} no seu link`} />
+          <MiniStat art="coins" label="Rendeu em 30 dias" value={formatMoney(revenue30)} sub="em serviços feitos" />
+          <MiniStat art="user-x" label="Sem ninguém para fazer" value={String(noPro)} sub={noPro ? "não aparecem para marcar" : "tudo certo"} warn={noPro > 0} />
+          <MiniStat art="clock" label="Sem tempo de retorno" value={String(noReturn)} sub={noReturn ? "complete para eu avisar quem precisa voltar" : "tudo certo"} />
         </div>
       )}
       {!readOnly && (
@@ -214,5 +215,18 @@ function ServiceDialog({ service, copy, professionals, categories, onClose }: { 
         <div className="flex justify-end pt-2"><SubmitButton pending={pending}>Salvar serviço</SubmitButton></div>
       </ActionForm>
     </Dialog>
+  );
+}
+
+function MiniStat({ art, label, value, sub, warn }: { art: IllustrationName; label: string; value: string; sub: string; warn?: boolean }) {
+  return (
+    <Card className={cn("p-4 sm:p-5", warn && "border-st-pending/40")}>
+      <div className="flex items-start justify-between gap-2">
+        <div className="text-[13px] text-muted">{label}</div>
+        <Illustration name={art} className="-mt-1 -mr-1 h-10 w-10 sm:h-12 sm:w-12" />
+      </div>
+      <div className={cn("mt-0.5 text-[22px] font-semibold tracking-[-0.015em] tabular", warn && "text-st-pending")}>{value}</div>
+      <div className="text-xs text-muted">{sub}</div>
+    </Card>
   );
 }

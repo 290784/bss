@@ -4,6 +4,8 @@ import { withSystem } from "@/server/db";
 import { can, ROLE_LABEL, type Role } from "@/domain/permissions";
 import { PLANS } from "@/domain/plans";
 import { Badge, Card, CardHeader, PageHeader } from "@/components/ui/primitives";
+import { SubTabs } from "@/components/ui/sub-tabs";
+import { CreditCard, MessageCircle, ShieldCheck, Store, Users } from "lucide-react";
 import { formatInTz } from "@/lib/time";
 import { cn } from "@/lib/cn";
 import { configuredProviders, hasAutomations } from "@/server/modules/messaging";
@@ -25,8 +27,19 @@ const ACTION_LABEL: Record<string, string> = {
   "professional.activated": "Profissional reativada", "professional.deactivated": "Profissional desativada", "account.deletion_requested": "Exclusão de conta solicitada",
 };
 
-export default async function SettingsPage() {
+const TABS = [
+  { id: "negocio", label: "Negócio", icon: Store },
+  { id: "whatsapp", label: "WhatsApp", icon: MessageCircle },
+  { id: "plano", label: "Plano", icon: CreditCard },
+  { id: "acesso", label: "Acesso", icon: Users },
+  { id: "conta", label: "Conta e privacidade", icon: ShieldCheck },
+] as const;
+type TabId = (typeof TABS)[number]["id"];
+
+export default async function SettingsPage({ searchParams }: { searchParams: Promise<{ aba?: string }> }) {
   const ctx = await requireAppContext("settings.manage");
+  const { aba } = await searchParams;
+  const tab: TabId = TABS.some((t) => t.id === aba) ? (aba as TabId) : "negocio";
   const tz = ctx.org.timezone;
   const { org, auditRows, members, auto } = await tenant(ctx, async (tx) => {
     const [org] = await tx<{
@@ -72,23 +85,51 @@ export default async function SettingsPage() {
   const appUrl = process.env.APP_URL ?? "http://localhost:3000";
   const sub = ctx.subscription;
 
+  const linkCard = (
+    <Card data-theme="dark" className="relative overflow-hidden border-transparent bg-plum! p-5 text-white sm:p-6">
+      <h2 className="font-serif text-[18px] font-semibold">Página de agendamento</h2>
+      <p className="mt-1 mb-3 text-xs text-white/65">{org.online_booking_enabled ? "No ar: as clientes já podem marcar pelo seu link." : "Pausada: o seu link avisa que o agendamento online está fechado por enquanto."}</p>
+      <CopyLink url={`${appUrl}/b/${ctx.org.slug}`} />
+    </Card>
+  );
+
   return (
     <div>
-      <PageHeader title="Configurações" description="Tudo do seu negócio num lugar só: dados, regras de agendamento, plano e privacidade." />
-      <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_380px]">
-        <div className="flex flex-col gap-6">
+      <PageHeader title="Configurações" description="Escolha um assunto: dados do negócio, mensagens, plano, acesso da equipe ou privacidade." />
+      <SubTabs label="Assuntos das configurações" tabs={[...TABS]} current={tab} href={(id) => (id === "negocio" ? "/app/configuracoes" : `/app/configuracoes?aba=${id}`)} />
+
+      {tab === "negocio" && (
+        <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_360px] xl:items-start">
           <OrganizationForm org={org} readOnly={ctx.access === "read_only"} />
+          <div className="order-first xl:order-none">{linkCard}</div>
+        </div>
+      )}
+
+      {tab === "whatsapp" && (
+        <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_360px] xl:items-start">
           <WhatsAppAutomations connected={providers.some((p) => p.channel === "whatsapp")} planHasAutomations={auto.automations}
             reminder={auto.flags.whatsapp_reminder_enabled} upsell={auto.flags.whatsapp_upsell_enabled} readOnly={ctx.access === "read_only"}
             preview={preview} stats={{ reminders: auto.stats.reminders, confirmed: auto.stats.confirmed, offers: auto.stats.offers, accepted: auto.stats.accepted, extraCents: auto.stats.extra_cents }} />
-        </div>
-        <div className="flex flex-col gap-6">
-          <Card data-theme="dark" className="relative overflow-hidden border-transparent bg-plum! p-5 text-white sm:p-6">
-            <h2 className="font-serif text-[18px] font-semibold">Página de agendamento</h2>
-            <p className="mt-1 mb-3 text-xs text-white/65">{org.online_booking_enabled ? "No ar: as clientes já podem marcar pelo seu link." : "Pausada: o seu link avisa que o agendamento online está fechado por enquanto."}</p>
-            <CopyLink url={`${appUrl}/b/${ctx.org.slug}`} />
+          <Card>
+            <CardHeader title="Canais de mensagem" description="Para mandar lembretes e confirmações sozinha" />
+            <ul className="px-5 pt-3 pb-5 text-sm sm:px-6 sm:pb-6">
+              {(["whatsapp", "email"] as const).map((ch) => {
+                const connected = providers.some((p) => p.channel === ch);
+                return (
+                  <li key={ch} className="flex items-center justify-between py-1.5">
+                    <span>{ch === "whatsapp" ? "WhatsApp Business" : "E-mail"}</span>
+                    <Badge variant={connected ? "success" : "neutral"}>{connected ? "Conectado" : "Não conectado"}</Badge>
+                  </li>
+                );
+              })}
+              <li className="pt-2 text-xs text-muted">Enquanto nada estiver conectado, as mensagens ficam anotadas como “não enviadas” no agendamento e nada vai para as clientes. Você pode mandar a confirmação pelo seu WhatsApp direto da agenda.</li>
+            </ul>
           </Card>
+        </div>
+      )}
 
+      {tab === "plano" && (
+        <div className="max-w-2xl">
           <Card id="assinatura">
             <CardHeader title="Assinatura" description={sub.status === "trialing" && sub.trialEndsAt ? `Teste gratuito até ${formatInTz(sub.trialEndsAt, tz, { day: "2-digit", month: "2-digit", year: "numeric" })}` : undefined}
               action={<Badge variant={ctx.access === "full" ? "success" : ctx.access === "grace" ? "warning" : "danger"}>{{ trialing: "Em teste", active: "Ativa", past_due: "Pagamento pendente", canceled: "Cancelada" }[sub.status]}</Badge>} />
@@ -104,41 +145,28 @@ export default async function SettingsPage() {
               <p className="mt-3 text-xs text-muted">Os planos pagos ainda estão chegando. Durante o teste você usa tudo de graça e nada é cobrado.</p>
             </div>
           </Card>
+        </div>
+      )}
 
-          <Card>
-            <CardHeader title="Canais de mensagem" description="Para mandar lembretes e confirmações sozinha" />
-            <ul className="px-5 pt-3 pb-5 sm:px-6 sm:pb-6 text-sm">
-              {(["whatsapp", "email"] as const).map((ch) => {
-                const connected = providers.some((p) => p.channel === ch);
-                return (
-                  <li key={ch} className="flex items-center justify-between py-1.5">
-                    <span>{ch === "whatsapp" ? "WhatsApp Business" : "E-mail"}</span>
-                    <Badge variant={connected ? "success" : "neutral"}>{connected ? "Conectado" : "Não conectado"}</Badge>
-                  </li>
-                );
-              })}
-              <li className="pt-2 text-xs text-muted">Enquanto nada estiver conectado, as mensagens ficam anotadas como “não enviadas” no agendamento e nada vai para as clientes. Você pode mandar a confirmação pelo seu WhatsApp direto da agenda.</li>
-            </ul>
-          </Card>
-
+      {tab === "acesso" && (
+        <div className="grid max-w-4xl gap-6 lg:grid-cols-2 lg:items-start">
           <Card>
             <CardHeader title="Equipe com acesso" description="Convites por e-mail ainda não estão disponíveis" />
-            <ul className="divide-y divide-line/70 px-5 pt-2 pb-4 sm:px-6 text-sm">
+            <ul className="divide-y divide-line/70 px-5 pt-2 pb-4 text-sm sm:px-6">
               {members.map((m) => (
-                <li key={m.user_id} className="flex items-center justify-between py-2">
+                <li key={m.user_id} className="flex items-center justify-between gap-3 py-2.5">
                   <span className="min-w-0 truncate">{names.get(m.user_id)?.full_name ?? "—"}<span className="block truncate text-xs text-muted">{names.get(m.user_id)?.email}</span></span>
                   <Badge>{ROLE_LABEL[m.role]}</Badge>
                 </li>
               ))}
             </ul>
           </Card>
-
           {auditRows.length > 0 && (
             <Card>
               <CardHeader title="Atividades recentes" description="Registro de auditoria" />
-              <ul className="divide-y divide-line/70 px-5 pt-2 pb-4 sm:px-6 text-[13px]">
+              <ul className="divide-y divide-line/70 px-5 pt-2 pb-4 text-[13px] sm:px-6">
                 {auditRows.map((a, i) => (
-                  <li key={i} className="py-2">
+                  <li key={i} className="py-2.5">
                     <div>{ACTION_LABEL[a.action] ?? a.action}</div>
                     <div className="text-xs text-muted">{a.actor_user_id ? names.get(a.actor_user_id)?.full_name ?? "—" : "Seu link de agendamento"} · {formatInTz(a.created_at, tz, { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" })}</div>
                   </li>
@@ -146,9 +174,10 @@ export default async function SettingsPage() {
               </ul>
             </Card>
           )}
-          <DangerZone />
         </div>
-      </div>
+      )}
+
+      {tab === "conta" && <div className="max-w-2xl"><DangerZone /></div>}
     </div>
   );
 }
