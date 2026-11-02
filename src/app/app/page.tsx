@@ -97,7 +97,7 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
         <Card className="mb-6 overflow-hidden">
           <div className="grid gap-6 p-5 md:grid-cols-[1fr_auto] md:items-center">
             <div>
-              <h2 className="font-tight tracking-[-0.02em] text-xl font-extrabold">Vamos deixar tudo pronto?</h2>
+              <h2 className="font-serif text-[22px] font-semibold">Vamos deixar tudo pronto?</h2>
               <p className="mt-1 text-sm text-muted">Faltam poucos passos para as clientes começarem a marcar com você. {activation.filter((a) => a.done).length} de {activation.length} prontos.</p>
               <ul className="mt-4 grid gap-2 sm:grid-cols-2">
                 {activation.map((a) => (

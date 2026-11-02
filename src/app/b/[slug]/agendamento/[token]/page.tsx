@@ -65,7 +65,7 @@ export default async function ReceiptPage({ params, searchParams }: Params) {
         <Sparkles />
         <div className="relative mx-auto max-w-xl">
           <p className="text-[14px] font-semibold text-violet-100">{r.business.name}</p>
-          <h1 className="mt-2 font-tight text-[30px] leading-tight font-extrabold tracking-[-0.025em] text-ink sm:text-[36px]">
+          <h1 className="mt-2 font-serif text-[30px] leading-tight font-semibold tracking-[-0.01em] text-ink sm:text-[36px]">
             {novo ? `Pronto, ${r.clientFirstName}!` : `Olá, ${r.clientFirstName}!`}
           </h1>
           <p className="mt-1 text-[15px] text-ink-soft">Aqui está o comprovante completo do seu horário. Guarde este link.</p>

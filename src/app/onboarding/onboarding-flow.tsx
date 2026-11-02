@@ -49,7 +49,7 @@ function BusinessStep({ businessTypes, value, onType, onDone }: { businessTypes:
   const fe = state && !state.ok ? state.fieldErrors : undefined;
   return (
     <Card className="p-6 sm:p-8">
-      <h1 className="font-tight tracking-[-0.02em] text-[26px] font-extrabold">Oi! Vamos deixar tudo com a sua cara? ✨</h1>
+      <h1 className="font-serif text-[28px] font-semibold">Oi! Vamos deixar tudo com a sua cara? ✨</h1>
       <p className="mt-1 mb-6 text-sm text-muted">São só três passinhos e dá para mudar tudo depois.</p>
       <ActionForm action={action} className="flex flex-col gap-5">
         <FormMessage state={state} />
@@ -86,7 +86,7 @@ function HoursStep({ onDone }: { onDone: () => void }) {
   });
   return (
     <Card className="p-6 sm:p-8">
-      <h1 className="font-tight tracking-[-0.02em] text-[26px] font-extrabold">Quando você atende?</h1>
+      <h1 className="font-serif text-[28px] font-semibold">Quando você atende?</h1>
       <p className="mt-1 mb-6 text-sm text-muted">Assim a sua agenda e o seu link só mostram horários que você realmente atende.</p>
       {error && <div className="mb-4"><FormMessage state={{ ok: false, message: error }} /></div>}
       <fieldset className="mb-6">
@@ -139,7 +139,7 @@ function ServicesStep({ presets, onBack }: { presets: Preset[]; onBack: () => vo
   });
   return (
     <Card className="p-6 sm:p-8">
-      <h1 className="font-tight tracking-[-0.02em] text-[26px] font-extrabold">Seus serviços</h1>
+      <h1 className="font-serif text-[28px] font-semibold">Seus serviços</h1>
       <p className="mt-1 mb-6 text-sm text-muted">Separei os serviços mais comuns da sua área. Ajusta preço e duração, ou desmarca o que você não faz: os valores são só um ponto de partida.</p>
       {error && <div className="mb-4"><FormMessage state={{ ok: false, message: error }} /></div>}
       <ul className="divide-y divide-line rounded-xl border border-line">

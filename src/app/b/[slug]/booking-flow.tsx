@@ -95,7 +95,7 @@ export function BookingFlow({ slug, timeZone, days, requiresApproval, cancellati
     return (
       <Card className="p-8 text-center">
         <div className="mx-auto grid h-14 w-14 place-items-center rounded-full bg-st-completed-bg text-st-completed"><Check className="h-7 w-7" /></div>
-        <h2 className="mt-4 font-tight tracking-[-0.02em] text-2xl font-extrabold">Tudo certo!</h2>
+        <h2 className="mt-4 font-serif text-2xl font-semibold">Tudo certo!</h2>
         <p className="mt-2 text-sm text-ink-soft">Abrindo o seu comprovante…</p>
       </Card>
     );

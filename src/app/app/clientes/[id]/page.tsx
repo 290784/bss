@@ -68,7 +68,7 @@ export default async function ClientProfilePage({ params }: { params: Promise<{ 
         <div className="flex min-w-0 items-start gap-4">
           <Avatar name={c.full_name} className="h-14 w-14 text-lg" />
           <div className="min-w-0">
-            <h1 className="font-tight tracking-[-0.02em] text-[26px] leading-tight font-extrabold sm:text-[28px]">{c.full_name}</h1>
+            <h1 className="font-serif tracking-[-0.01em] text-[28px] leading-tight font-semibold sm:text-[30px]">{c.full_name}</h1>
             <div className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-muted">
               {c.phone_normalized && <span className="tabular">{formatPhone(c.phone_normalized)}</span>}
               {c.email && <span>· {c.email}</span>}

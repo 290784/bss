@@ -17,6 +17,11 @@
   --font-script: var(--font-allura), "Brush Script MT", cursive;
   --font-hero: var(--font-dm-sans), ui-sans-serif, system-ui, sans-serif;
   --font-tight: var(--font-inter-tight), var(--font-dm-sans), ui-sans-serif, system-ui, sans-serif;
+  /*
+   * Títulos do app: Fraunces 600 (serifada calorosa). Escala: 12 legenda · 13 apoio · 15 texto ·
+   * 17 destaque · 22 título de seção · 30 título de tela. Pesos: 400 texto, 500 rótulos, 600 títulos e valores.
+   */
+  --font-serif: var(--font-fraunces), Georgia, "Times New Roman", serif;
 
   --color-night: #02060e;
   --color-royal: #9303c5;
