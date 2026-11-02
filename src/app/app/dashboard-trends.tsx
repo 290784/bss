@@ -40,7 +40,7 @@ export function ForecastAndAlerts({ forecast, alerts, finance }: { forecast: For
     <div className={cn("mt-6 grid gap-6", finance && forecast && "xl:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]")}>
       {finance && forecast && (
         <Card>
-          <CardHeader title="Quanto você deve faturar" description="Uma estimativa no ritmo que você está"
+          <CardHeader art="coins" title="Quanto você deve faturar" description="Uma estimativa no ritmo que você está"
             action={<InfoTip text="Este mês: o que entrou até ontem ÷ dias de atendimento que já passaram × dias de atendimento do mês. Próximos meses: o mesmo ritmo por dia, ajustado pela tendência dos últimos 3 meses (no máximo ±10% ao mês) e pelos dias de atendimento de cada mês. É uma estimativa, não uma promessa." />} />
           <div className="px-5 pt-4 pb-5 sm:px-6 sm:pb-6">
             {!forecast.ready ? (
@@ -85,7 +85,7 @@ export function ForecastAndAlerts({ forecast, alerts, finance }: { forecast: For
       )}
 
       <Card id="fica-de-olho" className="scroll-mt-24">
-        <CardHeader title="Fica de olho" description="O que pode render mais (últimos 90 dias)" />
+        <CardHeader art="bell" title="Fica de olho" description="O que pode render mais (últimos 90 dias)" />
         <div className="px-5 pt-3 pb-5 sm:px-6 sm:pb-6">
           {alerts.length === 0 ? (
             <div className="flex items-center gap-3 rounded-xl bg-st-completed-bg px-4 py-3 text-sm text-st-completed">
@@ -120,7 +120,7 @@ export function ServiceGrowth({ data, finance }: { data: TrendsData; finance: bo
     .sort((a, b) => (b.growth ?? 999) - (a.growth ?? 999));
   return (
     <Card className="mt-6">
-      <CardHeader title="O que mais cresce" description="Últimos 90 dias contra os 90 dias antes (até ontem), do que mais subiu ao que mais caiu"
+      <CardHeader art="chart" title="O que mais cresce" description="Últimos 90 dias contra os 90 dias antes (até ontem), do que mais subiu ao que mais caiu"
         action={<InfoTip text="Valor de cada serviço feito nos últimos 90 dias, comparado com os 90 dias antes. O gráfico pequeno mostra os últimos 6 meses (o mês atual, que ainda está rolando, fica mais clarinho)." />} />
       <div className="overflow-x-auto px-5 pt-3 pb-5 sm:px-6 sm:pb-6">
         {rows.length === 0 ? <p className="py-6 text-center text-sm text-muted">Ainda não tem histórico para comparar. Logo aparece!</p> : (

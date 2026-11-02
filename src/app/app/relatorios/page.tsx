@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
-import { BarChart3 } from "lucide-react";
+
 import { requireAppContext, tenant } from "@/server/context";
 import { can } from "@/domain/permissions";
 import { METRIC_DEFINITIONS } from "@/domain/metrics";
@@ -45,11 +45,11 @@ export default async function ReportsPage({ searchParams }: { searchParams: Prom
 
   return (
     <div>
-      <PageHeader title="Relatórios" description={`Como o seu negócio está indo · ${COMPARACAO[period]}`}
+      <PageHeader art="chart" title="Relatórios" description={`Como o seu negócio está indo · ${COMPARACAO[period]}`}
         actions={<PeriodTabs basePath="/app/relatorios" periods={PERIODS.map((p) => ({ id: p, label: PERIOD_LABEL[p] }))} current={period} />} />
 
       {appointments === 0 ? (
-        <Card><EmptyState icon={BarChart3} title="Os relatórios aparecem depois do primeiro atendimento" description="Assim que você marcar horários, os números do mês, o gráfico do dia a dia e as análises aparecem aqui." /></Card>
+        <Card><EmptyState art="chart" title="Os relatórios aparecem depois do primeiro atendimento" description="Assim que você marcar horários, os números do mês, o gráfico do dia a dia e as análises aparecem aqui." /></Card>
       ) : (
         <>
           <section aria-labelledby="numeros">
@@ -69,7 +69,7 @@ export default async function ReportsPage({ searchParams }: { searchParams: Prom
           </section>
 
           <Card className="mt-6">
-            <CardHeader title="Dia a dia" description={`${PERIOD_LABEL[period]} · os números lá em cima: ${COMPARACAO[period]}`} />
+            <CardHeader art="calendar" title="Dia a dia" description={`${PERIOD_LABEL[period]} · os números lá em cima: ${COMPARACAO[period]}`} />
             <div className="px-5 pt-4 pb-5 sm:px-6 sm:pb-6">
               <DashboardChart data={series} includeRevenue={finance} />
             </div>
@@ -80,13 +80,13 @@ export default async function ReportsPage({ searchParams }: { searchParams: Prom
           <ServiceGrowth data={trends} finance={finance} />
 
           <Card className="mt-6">
-            <CardHeader title="Como foram os atendimentos" description={PERIOD_LABEL[period]} />
+            <CardHeader art="calendar-check" title="Como foram os atendimentos" description={PERIOD_LABEL[period]} />
             <div className="px-5 pt-4 pb-5 sm:px-6 sm:pb-6"><StatusBreakdown counts={d.statusCounts} /></div>
           </Card>
 
           {d.byProfessional.length > 1 && (
             <Card className="mt-6">
-              <CardHeader title="Como está cada profissional" description={PERIOD_LABEL[period]} action={<InfoTip text={METRIC_DEFINITIONS.produced_value} />} />
+              <CardHeader art="team" title="Como está cada profissional" description={PERIOD_LABEL[period]} action={<InfoTip text={METRIC_DEFINITIONS.produced_value} />} />
               <div className="overflow-x-auto px-5 pt-3 pb-5 sm:px-6 sm:pb-6">
                 <table className="w-full min-w-[480px] text-sm">
                   <thead className="text-left text-[11px] tracking-[0.08em] text-muted uppercase"><tr><th className="py-2 font-medium">Profissional</th><th className="py-2 text-right font-medium">Concluídos</th><th className="py-2 text-right font-medium">Faltas</th><th className="py-2 text-right font-medium">Horas agendadas</th>{finance && <th className="py-2 text-right font-medium">Produção</th>}</tr></thead>

@@ -25,7 +25,7 @@ export default async function TeamPage({ searchParams }: { searchParams: Promise
   const active = data.professionals.filter((p) => p.is_active).length;
   return (
     <div>
-      <PageHeader title="Equipe e horários" description={`${active} de ${ctx.plan.maxProfessionals} ${ctx.plan.maxProfessionals === 1 ? "profissional ativa" : "profissionais ativas"} no plano ${ctx.plan.name}${ctx.subscription.status === "trialing" ? " (teste)" : ""}.`} />
+      <PageHeader art="calendar-check" title="Equipe e horários" description={`${active} de ${ctx.plan.maxProfessionals} ${ctx.plan.maxProfessionals === 1 ? "profissional ativa" : "profissionais ativas"} no plano ${ctx.plan.name}${ctx.subscription.status === "trialing" ? " (teste)" : ""}.`} />
       <SubTabs label="Partes da equipe" current={tab} href={(id) => (id === "profissionais" ? "/app/equipe" : `/app/equipe?aba=${id}`)}
         tabs={[
           { id: "profissionais", label: "Profissionais", icon: UsersRound, count: data.professionals.length },

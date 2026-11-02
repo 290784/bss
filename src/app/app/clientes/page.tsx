@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Cake, ChevronRight, Crown, Download, MessageCircle, UserPlus, Users, Moon } from "lucide-react";
+import { Cake, ChevronRight, Crown, Download, MessageCircle, UserPlus, Moon } from "lucide-react";
 import { requireAppContext, tenant } from "@/server/context";
 import { countSegments, listClients, SEGMENT_HINT, SEGMENTS, SORTS, type ClientRow, type Segment, type Sort } from "@/server/modules/clients";
 import { can } from "@/domain/permissions";
@@ -58,7 +58,7 @@ export default async function ClientsPage({ searchParams }: { searchParams: Prom
 
   return (
     <div>
-      <PageHeader title="Clientes" description={`${plural(counts.all, "cliente")} com você. Quem vem sempre, quem sumiu e quanto cada uma já deixou no seu caixa.`}
+      <PageHeader art="team" title="Clientes" description={`${plural(counts.all, "cliente")} com você. Quem vem sempre, quem sumiu e quanto cada uma já deixou no seu caixa.`}
         actions={<>
           {canManage && (
             <a href={`/app/clientes/exportar?${qs({})}`} className="inline-flex h-10 items-center gap-2 rounded-[var(--radius-control)] border border-line bg-surface px-4 text-sm font-medium shadow-[var(--shadow-control)] transition-colors hover:border-accent-muted hover:bg-accent-subtle/40">
@@ -87,7 +87,7 @@ export default async function ClientsPage({ searchParams }: { searchParams: Prom
 
       <Card className="overflow-hidden">
         {list.length === 0 ? (
-          <EmptyState icon={Users} title={sp.q ? "Não achei ninguém com esse nome" : segment === "all" ? "Ninguém por aqui ainda" : "Ninguém neste grupo agora"}
+          <EmptyState art="team" title={sp.q ? "Não achei ninguém com esse nome" : segment === "all" ? "Ninguém por aqui ainda" : "Ninguém neste grupo agora"}
             description={sp.q ? "Confere a escrita ou tenta pelo telefone." : segment === "all" ? "As clientes que você cadastrar ou que marcarem pelo seu link aparecem aqui." : "Que bom (ou ainda não deu tempo)! Quando alguém se encaixar, aparece aqui."} />
         ) : (
           <>

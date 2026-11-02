@@ -1,7 +1,8 @@
 "use client";
+import { Illustration } from "@/components/ui/illustration";
 import { useContext, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { Check, CheckCheck, Clock, Globe, MessageCircle, UserX, Zap } from "lucide-react";
+import { Check, CheckCheck, Globe, MessageCircle, UserX, Zap } from "lucide-react";
 import { EmptyState, StatusBadge } from "@/components/ui/primitives";
 import { useToast } from "@/components/ui/toast";
 import { formatMoney } from "@/lib/money";
@@ -53,10 +54,13 @@ export function DaySummary({ items, pros, weekday, tz, toMin }: {
   void tz;
   return (
     <div className="grid gap-3 lg:grid-cols-[auto_minmax(0,1fr)]">
-      <div className="grid grid-cols-3 gap-2 rounded-[var(--radius-card)] border border-line bg-surface p-3">
-        <Num label="Previsto" value={formatMoney(forecast)} />
-        <Num label="Recebido" value={formatMoney(received)} tone="text-st-completed" />
-        <Num label="A receber" value={formatMoney(due)} tone={due > 0 ? "text-st-pending" : undefined} />
+      <div className="flex items-center gap-2 rounded-[var(--radius-card)] border border-line/70 bg-surface p-3 shadow-[var(--shadow-card)]">
+        <Illustration name="wallet" className="hidden h-11 w-11 min-[380px]:block" />
+        <div className="grid flex-1 grid-cols-3 gap-2">
+          <Num label="Previsto" value={formatMoney(forecast)} />
+          <Num label="Recebido" value={formatMoney(received)} tone="text-st-completed" />
+          <Num label="A receber" value={formatMoney(due)} tone={due > 0 ? "text-st-pending" : undefined} />
+        </div>
       </div>
       <div className="flex gap-2 overflow-x-auto pb-1">
         {pros.map((p) => {
@@ -66,7 +70,7 @@ export function DaySummary({ items, pros, weekday, tz, toMin }: {
           const booked = mine.reduce((t, i) => t + Math.max(0, toMin(i.endsAt) - toMin(i.startsAt)), 0);
           const pct = capacity ? Math.min(100, Math.round((booked / capacity) * 100)) : null;
           return (
-            <div key={p.id} className="min-w-[150px] flex-1 rounded-[var(--radius-card)] border border-line bg-surface px-3 py-2.5">
+            <div key={p.id} className="min-w-[150px] flex-1 rounded-[var(--radius-card)] border border-line/70 bg-surface px-3.5 py-2.5 shadow-[var(--shadow-card)]">
               <div className="flex items-center gap-2 text-sm font-medium"><span className="h-2.5 w-2.5 rounded-full" style={{ background: p.color }} />{p.name}</div>
               {pct === null ? <div className="mt-1 text-xs text-muted">Folga</div> : (
                 <>
@@ -123,7 +127,7 @@ export function ListView({ items, pros, tz, canManage, gapsByPro, onOpen, onSlot
   const gaps = gapsByPro.flatMap(({ pro, gaps }) => gaps.map(([s, e]) => ({ pro, s, e }))).sort((a, b) => a.s - b.s);
 
   if (sorted.length === 0 && gaps.length === 0)
-    return <EmptyState icon={Clock} title="Dia livrinho" description="Toque em Agendar para marcar alguém." />;
+    return <EmptyState art="clock" title="Dia livrinho" description="Toque em Agendar para marcar alguém." />;
 
   // Atendimentos e horários livres intercalados por horário.
   type Row = { kind: "appt"; at: number; item: AgendaItemDTO } | { kind: "gap"; at: number; pro: AgendaProfessional; s: number; e: number };

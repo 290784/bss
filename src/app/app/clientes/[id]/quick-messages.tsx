@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { Copy, MessageCircle } from "lucide-react";
 import { Card } from "@/components/ui/primitives";
+import { Illustration } from "@/components/ui/illustration";
 import { Button, buttonClass } from "@/components/ui/button";
 import { useToast } from "@/components/ui/toast";
 import { copyText } from "@/lib/clipboard";
@@ -18,14 +19,19 @@ export function QuickMessages({ phone, messages, highlight }: { phone: string | 
   if (!current) return null;
   const pick = (m: QuickMessage) => { setSel(m.id); setText(m.text); };
   return (
-    <Card className="p-5">
-      <h2 className="text-[15px] font-semibold">Mandar uma mensagem</h2>
-      <p className="mt-0.5 text-xs text-muted">Escolha um modelo, ajuste do seu jeito e envie.</p>
+    <Card className="p-5 sm:p-6">
+      <div className="flex items-start gap-3">
+        <Illustration name="chat" className="-my-1 -ml-1 h-11 w-11" />
+        <div>
+          <h2 className="font-serif text-[18px] font-semibold">Mandar uma mensagem</h2>
+          <p className="mt-0.5 text-xs text-muted">Escolha um modelo, ajuste do seu jeito e envie.</p>
+        </div>
+      </div>
       <div className="mt-3 flex flex-wrap gap-1.5" role="tablist" aria-label="Modelos de mensagem">
         {messages.map((m) => (
           <button key={m.id} type="button" role="tab" aria-selected={m.id === sel} onClick={() => pick(m)}
             className={cn("h-9 rounded-full border px-3 text-[13px] font-medium transition sm:h-8",
-              m.id === sel ? "border-transparent bg-accent text-white" : "border-line bg-surface text-ink-soft hover:text-ink")}>
+              m.id === sel ? "border-accent-muted bg-accent-subtle text-accent-text" : "border-line bg-surface text-ink-soft hover:text-ink")}>
             {m.label}
           </button>
         ))}

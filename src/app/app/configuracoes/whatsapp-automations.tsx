@@ -1,7 +1,7 @@
 "use client";
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { MessageCircle, PlusCircle } from "lucide-react";
+import { PlusCircle } from "lucide-react";
 import { Badge, Card, CardHeader } from "@/components/ui/primitives";
 import { useToast } from "@/components/ui/toast";
 import { cn } from "@/lib/cn";
@@ -28,7 +28,7 @@ export function WhatsAppAutomations({ connected, planHasAutomations, reminder, u
   const money = (c: number) => (c / 100).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
   return (
     <Card id="automacoes" className="scroll-mt-24">
-      <CardHeader title={<span className="inline-flex items-center gap-2"><MessageCircle className="h-4.5 w-4.5 text-st-completed" />Automações do WhatsApp</span>}
+      <CardHeader art="chat" title="Automações do WhatsApp"
         description="Lembrete na véspera, confirmação com um toque e oferta de serviço extra dentro da conversa"
         action={<Badge variant={connected ? "success" : "neutral"}>{connected ? "WhatsApp conectado" : "WhatsApp não conectado"}</Badge>} />
       <div className="grid gap-5 px-5 pt-3 pb-5 sm:px-6 sm:pb-6 lg:grid-cols-[minmax(0,1fr)_300px]">

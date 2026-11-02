@@ -21,7 +21,7 @@ export function OrganizationForm({ org, readOnly }: { org: Org; readOnly: boolea
     <ActionForm action={action} className="flex flex-col gap-6">
       <FormMessage state={state} />
       <Card>
-        <CardHeader title="Dados do negócio" />
+        <CardHeader art="store" title="Dados do negócio" />
         <fieldset disabled={readOnly} className="grid gap-4 p-5 sm:grid-cols-2">
           <Field label="Nome" htmlFor="name" error={fe?.name} className="sm:col-span-2"><Input id="name" name="name" defaultValue={org.name} /></Field>
           <Field label="WhatsApp" htmlFor="phone" optional><Input id="phone" name="phone" type="tel" defaultValue={org.phone ?? ""} /></Field>
@@ -30,7 +30,7 @@ export function OrganizationForm({ org, readOnly }: { org: Org; readOnly: boolea
         </fieldset>
       </Card>
       <Card>
-        <CardHeader title="Regras de agendamento" description="Valem para a sua agenda e para o seu link" />
+        <CardHeader art="calendar-check" title="Regras de agendamento" description="Valem para a sua agenda e para o seu link" />
         <fieldset disabled={readOnly} className="grid gap-4 p-5 sm:grid-cols-2">
           <Checkbox name="onlineBookingEnabled" defaultChecked={org.online_booking_enabled} label="Agendamento pelo link ligado" className="sm:col-span-2" />
           <Checkbox name="onlineRequiresApproval" defaultChecked={org.online_requires_approval} className="sm:col-span-2"
