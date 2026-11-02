@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { BarChart3, CalendarPlus, Check, ChevronRight, Clock, Lightbulb, Link2, UserPlus, type LucideIcon } from "lucide-react";
+import { CalendarPlus, Check, ChevronRight, Clock, Link2, UserPlus } from "lucide-react";
+import { Illustration, type IllustrationName } from "@/components/ui/illustration";
 import { requireAppContext, tenant } from "@/server/context";
 import { can } from "@/domain/permissions";
 import { freeGapsToday, loadDashboard, loadTrends } from "@/server/modules/dashboard";
@@ -73,11 +74,11 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
   const upcoming = activeToday.filter((i) => (i.status === "pending" || i.status === "confirmed") && i.ends_at.getTime() > now);
   const next = upcoming[0];
 
-  const shortcuts: { href: string; label: string; hint: string; icon: LucideIcon; show: boolean }[] = [
-    { href: "/app/agenda", label: "Marcar horário", hint: "Abre a agenda", icon: CalendarPlus, show: canBook },
-    { href: "/app/clientes?nova=1", label: "Nova cliente", hint: "Cadastro rápido", icon: UserPlus, show: canBook && can(ctx.role, "clients.view") },
-    { href: "/app/dicas", label: "Dicas", hint: dicas.length ? plural(dicas.length, "ideia") + " para faturar mais" : "Nada pendente", icon: Lightbulb, show: true },
-    { href: "/app/relatorios", label: "Relatórios", hint: "Todos os números", icon: BarChart3, show: true },
+  const shortcuts: { href: string; label: string; hint: string; art: IllustrationName; show: boolean }[] = [
+    { href: "/app/agenda", label: "Marcar horário", hint: "Abre a agenda", art: "calendar-plus", show: canBook },
+    { href: "/app/clientes?nova=1", label: "Nova cliente", hint: "Cadastro rápido", art: "user-plus", show: canBook && can(ctx.role, "clients.view") },
+    { href: "/app/dicas", label: "Dicas", hint: dicas.length ? plural(dicas.length, "ideia") + " para faturar mais" : "Nada pendente", art: "lightbulb", show: true },
+    { href: "/app/relatorios", label: "Relatórios", hint: "Todos os números", art: "chart", show: true },
   ];
 
   return (
@@ -179,7 +180,7 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
               {shortcuts.filter((x) => x.show).map((x) => (
                 <li key={x.href}>
                   <Link href={x.href} className="lift flex h-full items-center gap-3 rounded-2xl border border-line/70 bg-surface p-3">
-                    <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-accent-subtle text-accent-text" aria-hidden><x.icon className="h-[18px] w-[18px]" strokeWidth={1.6} /></span>
+                    <Illustration name={x.art} className="h-11 w-11" />
                     <span className="min-w-0">
                       <span className="block text-sm font-medium">{x.label}</span>
                       <span className="hidden truncate text-xs text-muted sm:block">{x.hint}</span>

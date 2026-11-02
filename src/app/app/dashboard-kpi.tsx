@@ -1,28 +1,25 @@
-import { ArrowDownRight, ArrowUpRight, CalendarCheck, CalendarDays, Gauge, HandCoins, Receipt, UserPlus, UserX, Wallet, type LucideIcon } from "lucide-react";
+import { ArrowDownRight, ArrowUpRight } from "lucide-react";
+import { Illustration, type IllustrationName } from "@/components/ui/illustration";
 import { METRIC_DEFINITIONS, type MetricKey } from "@/domain/metrics";
 import { Card, InfoTip, STATUS_STYLE } from "@/components/ui/primitives";
 import { STATUS_LABEL } from "@/domain/appointment-status";
 import { cn } from "@/lib/cn";
 
-/** Ícone de cada indicador (traço fino, na pastilha do canto). */
-const KPI_ICON: Partial<Record<MetricKey, LucideIcon>> = {
-  revenue_received: Wallet, scheduled_value: CalendarCheck, appointments_count: CalendarDays, occupancy: Gauge,
-  average_ticket: Receipt, no_show_rate: UserX, new_clients: UserPlus, receivable: HandCoins,
+/** Ilustração de cada indicador (no canto do cartão). */
+const KPI_ART: Partial<Record<MetricKey, IllustrationName>> = {
+  revenue_received: "wallet", scheduled_value: "calendar-check", appointments_count: "calendar", occupancy: "clock",
+  average_ticket: "receipt", no_show_rate: "user-x", new_clients: "user-plus", receivable: "coins",
 };
 
 export function Kpi({ label, value, change, sub, metric, invert, highlight }: { label: string; value: string; change?: number | null; sub?: string; metric: MetricKey; invert?: boolean; highlight?: boolean }) {
   const good = change !== undefined && change !== null && (invert ? change < 0 : change > 0);
   const bad = change !== undefined && change !== null && (invert ? change > 0 : change < 0);
-  const Icon = KPI_ICON[metric];
+  const art = KPI_ART[metric];
   return (
     <Card className={cn("relative overflow-hidden p-4 sm:p-5", highlight && "border-accent-muted bg-[linear-gradient(140deg,var(--color-accent-subtle)_0%,var(--color-surface)_75%)]!")}>
       <div className="flex items-start justify-between gap-2">
         <div className="flex min-w-0 items-center gap-1 text-[13px] text-muted">{label}<InfoTip text={METRIC_DEFINITIONS[metric]} /></div>
-        {Icon && (
-          <span className={cn("grid h-9 w-9 shrink-0 place-items-center rounded-full", highlight ? "bg-plum text-white" : "bg-accent-subtle text-accent-text")} aria-hidden>
-            <Icon className="h-[18px] w-[18px]" strokeWidth={1.6} />
-          </span>
-        )}
+        {art && <Illustration name={art} className="-mt-1 -mr-1 h-11 w-11 sm:h-14 sm:w-14" />}
       </div>
       <div className={cn("mt-1 text-[22px] leading-tight font-semibold tracking-[-0.015em] tabular sm:text-[26px]", highlight && "text-accent-text")}>{value}</div>
       <div className="mt-1 flex min-h-[18px] flex-wrap items-center gap-x-1.5 gap-y-0.5 text-xs">
