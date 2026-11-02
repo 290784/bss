@@ -72,12 +72,12 @@ export function AppShell({ items, user, org, memberships, notifications, banner,
           const Icon = ICONS[it.icon];
           const active = isActive(pathname, it.href);
           return (
-            <Link key={it.href} href={it.href} className={cn("flex flex-col items-center gap-0.5 py-2 text-[11px] font-medium transition-colors", active ? "text-accent-text" : "text-muted")} aria-current={active ? "page" : undefined}>
+            <Link key={it.href} href={it.href} className={cn("press flex flex-col items-center gap-0.5 py-2 text-[11px] font-medium", active ? "text-accent-text" : "text-muted")} aria-current={active ? "page" : undefined}>
               <span className={cn("grid h-8 w-14 place-items-center rounded-full transition-colors", active && "bg-accent-subtle")}><Icon className="h-5 w-5" strokeWidth={active ? 2 : 1.7} /></span>{it.label}
             </Link>
           );
         })}
-        <button onClick={() => setMobileOpen(true)} className="flex flex-col items-center gap-0.5 py-2 text-[11px] font-medium text-muted">
+        <button onClick={() => setMobileOpen(true)} className="press flex flex-col items-center gap-0.5 py-2 text-[11px] font-medium text-muted">
           <span className="grid h-8 w-14 place-items-center rounded-full"><Menu className="h-5 w-5" strokeWidth={1.7} /></span>Mais
         </button>
       </nav>
@@ -111,9 +111,9 @@ function NavLink({ item, active }: { item: NavItem; active: boolean }) {
   const Icon = ICONS[item.icon];
   return (
     <Link href={item.href} aria-current={active ? "page" : undefined}
-      className={cn("flex min-h-11 items-center gap-3 rounded-full px-4 text-sm transition-colors",
+      className={cn("press group flex min-h-11 items-center gap-3 rounded-full px-4 text-sm",
         active ? "bg-accent-subtle font-medium text-accent-text shadow-[inset_0_0_0_1px_var(--color-accent-muted)]" : "text-ink-soft hover:bg-hover-tint hover:text-ink")}>
-      <Icon className="h-[18px] w-[18px]" strokeWidth={active ? 2 : 1.6} />
+      <Icon className="h-[18px] w-[18px] transition-transform duration-300 group-hover:scale-110 group-hover:-rotate-6" strokeWidth={active ? 2 : 1.6} />
       {item.label}
     </Link>
   );

@@ -11,7 +11,7 @@ export function Card({ className, interactive, ...props }: ComponentProps<"div">
 export function CardHeader({ title, description, action, className, art }: { title: ReactNode; description?: ReactNode; action?: ReactNode; className?: string; art?: IllustrationName }) {
   return (
     <div className={cn("flex items-start justify-between gap-3 px-5 pt-5 sm:px-6 sm:pt-6", className)}>
-      {art && <Illustration name={art} className="-my-1 -ml-1 h-11 w-11" />}
+      {art && <Illustration name={art} className="-my-1.5 -ml-1.5 h-12 w-12" />}
       <div className="min-w-0 flex-1">
         <h2 className="font-serif text-[18px] leading-snug font-semibold tracking-[-0.005em] text-ink">{title}</h2>
         {description && <p className="mt-1 text-[13px] leading-relaxed text-muted">{description}</p>}

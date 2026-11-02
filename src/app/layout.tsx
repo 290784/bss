@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Allura, DM_Sans, Fraunces, Inter_Tight } from "next/font/google";
 import "./globals.css";
+import { TouchActive } from "@/components/ui/touch-active";
 import { THEME_BOOT_SCRIPT } from "@/components/theme/theme";
 
 // DM Sans (texto e interface), Fraunces (títulos do app: serifada calorosa, de caderno), Inter Tight (títulos da landing)
@@ -25,7 +26,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="pt-BR" className={`${dmSans.variable} ${interTight.variable} ${fraunces.variable} ${allura.variable}`} suppressHydrationWarning>
       <head><script dangerouslySetInnerHTML={{ __html: THEME_BOOT_SCRIPT }} /></head>
-      <body className="min-h-dvh">{children}</body>
+      <body className="min-h-dvh"><TouchActive />{children}</body>
     </html>
   );
 }
