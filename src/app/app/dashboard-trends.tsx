@@ -26,7 +26,7 @@ function Mini({ values }: { values: number[] }) {
   return (
     <span className="flex h-7 w-20 items-end gap-[3px]" aria-hidden>
       {values.map((v, i) => (
-        <span key={i} className={cn("flex-1 rounded-sm", i === values.length - 1 ? "bg-violet-300/60" : "bg-violet-400")} style={{ height: `${Math.max(6, (v / max) * 100)}%` }} />
+        <span key={i} className={cn("flex-1 rounded-sm", i === values.length - 1 ? "bg-data-2" : "bg-data-1")} style={{ height: `${Math.max(6, (v / max) * 100)}%` }} />
       ))}
     </span>
   );
@@ -44,7 +44,7 @@ export function ForecastAndAlerts({ forecast, alerts, finance }: { forecast: For
             action={<InfoTip text="Este mês: o que entrou até ontem ÷ dias de atendimento que já passaram × dias de atendimento do mês. Próximos meses: o mesmo ritmo por dia, ajustado pela tendência dos últimos 3 meses (no máximo ±10% ao mês) e pelos dias de atendimento de cada mês. É uma estimativa, não uma promessa." />} />
           <div className="px-5 pt-4 pb-5">
             {!forecast.ready ? (
-              <p className="text-sm text-muted">A estimativa aparece depois dos 3 primeiros dias de atendimento do mês.{forecast.scheduledRest > 0 && ` Você já tem ${formatMoney(forecast.scheduledRest)} marcados para o resto do mês!`}</p>
+              <p className="text-sm text-muted">A estimativa aparece depois dos 3 primeiros dias de atendimento do mês.{forecast.scheduledRest > 0 && ` Você já tem ${formatMoney(forecast.scheduledRest)} marcados para o resto do mês.`}</p>
             ) : (
               <>
                 <div className="flex flex-wrap items-end justify-between gap-x-4 gap-y-1">
@@ -60,7 +60,7 @@ export function ForecastAndAlerts({ forecast, alerts, finance }: { forecast: For
                   )}
                 </div>
                 <div className="mt-3 h-2.5 overflow-hidden rounded-full bg-sunken" aria-hidden>
-                  <span className="block h-full rounded-full bg-[linear-gradient(90deg,var(--color-violet-500),var(--color-violet-300))]" style={{ width: `${Math.min(100, (forecast.soFar / Math.max(1, forecast.thisMonth)) * 100)}%` }} />
+                  <span className="block h-full rounded-full bg-data-1" style={{ width: `${Math.min(100, (forecast.soFar / Math.max(1, forecast.thisMonth)) * 100)}%` }} />
                 </div>
                 <p className="mt-2 text-xs text-muted">
                   {formatMoney(forecast.soFar)} no caixa em {forecast.elapsedDays} de {forecast.monthDays} dias de atendimento
@@ -89,7 +89,7 @@ export function ForecastAndAlerts({ forecast, alerts, finance }: { forecast: For
         <div className="px-5 pt-3 pb-5">
           {alerts.length === 0 ? (
             <div className="flex items-center gap-3 rounded-xl bg-st-completed-bg px-4 py-3 text-sm text-st-completed">
-              <CircleCheck className="h-5 w-5 shrink-0" />Tudo indo bem: nenhum serviço caindo, parado ou com muitas faltas. 💜
+              <CircleCheck className="h-5 w-5 shrink-0" />Tudo indo bem: nenhum serviço caindo, parado ou com muitas faltas.
             </div>
           ) : (
             <ul className="flex flex-col gap-2.5">

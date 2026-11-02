@@ -23,7 +23,6 @@ import { ForecastAndAlerts, ServiceGrowth } from "./dashboard-trends";
 import { CopyLink } from "./copy-link";
 import { NextClientCard } from "./next-client";
 import { receiptUrl } from "@/server/modules/receipt";
-import { Sparkles } from "@/components/brand/sparkles";
 import { plural } from "@/lib/text";
 
 export const metadata: Metadata = { title: "Início" };
@@ -85,7 +84,7 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
   return (
     <div>
       <PageHeader
-        title={sp["bem-vinda"] ? `Tudo prontinho, ${ctx.user.fullName.split(" ")[0]}! ✨` : `Oi, ${ctx.user.fullName.split(" ")[0]}! 💜`}
+        title={sp["bem-vinda"] ? `Tudo pronto, ${ctx.user.fullName.split(" ")[0]}` : `Oi, ${ctx.user.fullName.split(" ")[0]}`}
         description={<span className="first-letter:uppercase">{formatInTz(new Date(), tz, { weekday: "long", day: "numeric", month: "long" })} · {plural(activeToday.length, "atendimento")} hoje</span>}
         actions={<>
           <PeriodTabs periods={PERIODS.map((p) => ({ id: p, label: PERIOD_LABEL[p] }))} current={period} />
@@ -110,8 +109,7 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
                 ))}
               </ul>
             </div>
-            <div data-theme="dark" className="bg-royal ring-glass relative overflow-hidden rounded-[22px] p-4 text-white md:w-72">
-              <Sparkles points={[[82, 14, 8, 0.2], [92, 62, 6, 1.6], [60, 82, 5, 2.4]]} />
+            <div data-theme="dark" className="relative overflow-hidden rounded-xl bg-plum p-4 text-white md:w-72">
               <div className="flex items-center gap-2 text-sm font-medium"><Link2 className="h-4 w-4" />Seu link de agendamento</div>
               <p className="mt-1 mb-3 text-xs text-white/65">Coloque na bio do Instagram e mande no WhatsApp: as clientes marcam sozinhas, 24h.</p>
               <CopyLink url={`${appUrl}/b/${ctx.org.slug}`} />
@@ -215,7 +213,7 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
             action={<InfoTip text={METRIC_DEFINITIONS.inactive_clients} />} />
           <div className="px-5 pt-3 pb-5">
             {d.reactivate.length === 0 ? (
-              <EmptyState className="py-6" icon={Users} title="Ninguém sumida por aqui 🎉" description="Se alguma cliente ficar mais de 60 dias sem voltar, ela aparece aqui para você chamar." />
+              <EmptyState className="py-6" icon={Users} title="Ninguém sumida por aqui" description="Se alguma cliente ficar mais de 60 dias sem voltar, ela aparece aqui para você chamar." />
             ) : (
               <ul className="divide-y divide-line">
                 {d.reactivate.map((c) => (
@@ -265,9 +263,8 @@ function Kpi({ label, value, change, sub, metric, invert, highlight }: { label: 
   const good = change !== undefined && change !== null && (invert ? change < 0 : change > 0);
   const bad = change !== undefined && change !== null && (invert ? change > 0 : change < 0);
   return (
-    <Card data-theme={highlight ? "dark" : undefined} className={cn("relative overflow-hidden p-4", highlight && "bg-royal ring-glass border-transparent shadow-[0_20px_50px_-24px_rgb(147_3_197/0.9)]")}>
-      {highlight && <Sparkles points={[[86, 18, 9, 0.3], [70, 70, 6, 1.7], [94, 78, 5, 2.6]]} />}
-      <div className={cn("relative flex items-center gap-1 text-[13px]", highlight ? "text-violet-100" : "text-muted")}>{label}<InfoTip text={METRIC_DEFINITIONS[metric]} /></div>
+    <Card data-theme={highlight ? "dark" : undefined} className={cn("relative overflow-hidden p-4", highlight && "border-transparent bg-plum!")}>
+      <div className={cn("relative flex items-center gap-1 text-[13px]", highlight ? "text-white/80" : "text-muted")}>{label}<InfoTip text={METRIC_DEFINITIONS[metric]} /></div>
       <div className="mt-1.5 text-[22px] leading-tight font-semibold tracking-[-0.01em] tabular sm:text-2xl">{value}</div>
       <div className="mt-1 flex min-h-[18px] flex-wrap items-center gap-x-1.5 gap-y-0.5 text-xs">
         {change !== undefined && (change === null

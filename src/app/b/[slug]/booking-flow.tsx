@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { ArrowLeft, ArrowRight, CalendarCheck, Check, Clock, Flame, Moon, Search, Sparkles, Sun, Sunrise } from "lucide-react";
+import { ArrowLeft, ArrowRight, CalendarCheck, Check, Clock, Flame, Moon, Search, Sun, Sunrise, Users } from "lucide-react";
 import { Card } from "@/components/ui/primitives";
 import { Button } from "@/components/ui/button";
 import { ActionForm, Checkbox, Field, FormMessage, Input, Textarea } from "@/components/ui/form";
@@ -177,7 +177,7 @@ export function BookingFlow({ slug, timeZone, days, requiresApproval, cancellati
           <>
             <h2 className="mb-3 text-lg font-semibold">Com quem?</h2>
             <ul className="grid gap-2 sm:grid-cols-2">
-              <li><button onClick={() => setPro(null)} className="lift flex w-full items-center gap-3 rounded-2xl border border-line bg-surface p-4 text-left"><span className="grid h-10 w-10 place-items-center rounded-full bg-highlight-subtle text-highlight-text"><Sparkles className="h-4 w-4" /></span><span><span className="block font-medium">Sem preferência</span><span className="text-xs text-muted">Mais horários disponíveis</span></span></button></li>
+              <li><button onClick={() => setPro(null)} className="lift flex w-full items-center gap-3 rounded-2xl border border-line bg-surface p-4 text-left"><span className="grid h-10 w-10 place-items-center rounded-full bg-highlight-subtle text-highlight-text"><Users className="h-4 w-4" /></span><span><span className="block font-medium">Sem preferência</span><span className="text-xs text-muted">Mais horários disponíveis</span></span></button></li>
               {prosForService.map((p) => (
                 <li key={p.id}>
                   <button onClick={() => setPro(p.id)} className="lift flex w-full items-center gap-3 rounded-2xl border border-line bg-surface p-4 text-left">
@@ -202,7 +202,7 @@ export function BookingFlow({ slug, timeZone, days, requiresApproval, cancellati
                   <button key={d} onClick={() => { setDate(d); setTime(null); }} aria-pressed={date === d} disabled={!open}
                     aria-label={`${dayLabel(d)}${open ? "" : " (fechado)"}`}
                     className={cn("flex w-14 shrink-0 snap-start flex-col items-center rounded-xl border py-2.5",
-                      !open ? "cursor-not-allowed border-dashed border-line opacity-45" : date === d ? "lift border-violet-300 btn-glow text-white" : "lift border-line hover:border-accent")}>
+                      !open ? "cursor-not-allowed border-dashed border-line opacity-45" : date === d ? "lift border-transparent btn-glow text-white" : "lift border-line hover:border-accent")}>
                     <span className={cn("text-[11px] uppercase", date === d ? "text-accent-muted" : "text-muted")}>{d === days[0] ? "hoje" : WD[localWeekday(d)]}</span>
                     <span className="text-lg font-semibold tabular">{Number(d.slice(8))}</span>
                     {!open && <span className="text-[9px] text-muted">fechado</span>}
@@ -224,7 +224,7 @@ export function BookingFlow({ slug, timeZone, days, requiresApproval, cancellati
                         <h3 className="mb-2 flex items-center gap-1.5 text-[13px] font-medium text-ink-soft"><p.icon className="h-4 w-4 text-accent-text" />{p.label}<span className="text-xs text-muted">· {list.length}</span></h3>
                         <div className="grid grid-cols-4 gap-2 sm:grid-cols-6">
                           {list.map((s) => (
-                            <button key={s.time} onClick={() => { setTime(s.time); setNotice(null); }} className="lift h-11 rounded-lg border border-line bg-surface text-sm font-medium tabular hover:border-violet-300 hover:bg-sunken">{s.time}</button>
+                            <button key={s.time} onClick={() => { setTime(s.time); setNotice(null); }} className="lift h-11 rounded-lg border border-line bg-surface text-sm font-medium tabular hover:border-accent-border hover:bg-sunken">{s.time}</button>
                           ))}
                         </div>
                       </div>

@@ -1,4 +1,4 @@
-import { ArrowDownRight, ArrowUpRight, Globe, Sparkles as SparklesIcon, Store } from "lucide-react";
+import { ArrowDownRight, ArrowUpRight, Globe, PlusCircle as SparklesIcon, Store } from "lucide-react";
 import { Card, CardHeader, InfoTip } from "@/components/ui/primitives";
 import { formatMoney } from "@/lib/money";
 import { cn } from "@/lib/cn";
@@ -6,7 +6,7 @@ import type { InsightsData } from "@/server/modules/dashboard";
 import { plural } from "@/lib/text";
 
 /** Tons da marca para as categorias (do mais forte ao mais claro). */
-const TONS = ["bg-violet-500", "bg-violet-300", "bg-gold-400", "bg-violet-700", "bg-gold-300", "bg-violet-200"];
+const TONS = ["bg-data-1", "bg-data-3", "bg-data-2", "bg-data-4", "bg-gold-300", "bg-line-strong"];
 const MESES = ["jan", "fev", "mar", "abr", "mai", "jun", "jul", "ago", "set", "out", "nov", "dez"];
 
 function Variacao({ change }: { change: number | null }) {
@@ -64,7 +64,7 @@ export function DashboardInsights({ data, periodLabel, compareLabel, finance }: 
                         {finance && <td className="py-2.5 pl-3 text-right whitespace-nowrap tabular">{formatMoney(s.value)}</td>}
                         <td className="hidden py-2.5 pl-4 sm:table-cell">
                           <span className="flex items-center gap-2">
-                            <span className="h-2 flex-1 overflow-hidden rounded-full bg-sunken"><span className="block h-full rounded-full bg-[linear-gradient(90deg,var(--color-violet-500),var(--color-violet-300))]" style={{ width: `${Math.max(2, share * 100)}%` }} /></span>
+                            <span className="h-2 flex-1 overflow-hidden rounded-full bg-sunken"><span className="block h-full rounded-full bg-data-1" style={{ width: `${Math.max(2, share * 100)}%` }} /></span>
                             <span className="w-9 text-right text-xs text-muted tabular">{Math.round(share * 100)}%</span>
                           </span>
                         </td>
@@ -119,7 +119,7 @@ export function DashboardInsights({ data, periodLabel, compareLabel, finance }: 
               </div>
               {finance && (
                 <div className="rounded-xl bg-highlight-subtle p-3">
-                  <div className="flex items-center gap-1 text-xs text-highlight-text"><SparklesIcon className="h-3.5 w-3.5" />A mais no caixa ✨</div>
+                  <div className="flex items-center gap-1 text-xs text-highlight-text"><SparklesIcon className="h-3.5 w-3.5" />A mais no caixa</div>
                   <div className="mt-0.5 text-lg font-semibold tabular">{formatMoney(data.upsell.extraValue)}</div>
                 </div>
               )}
@@ -134,7 +134,7 @@ export function DashboardInsights({ data, periodLabel, compareLabel, finance }: 
           <div className="px-5 pt-4 pb-5">
             {originTotal === 0 ? <p className="text-sm text-muted">Nenhum horário marcado neste período ainda.</p> : <>
               <div className="flex h-3 overflow-hidden rounded-full bg-sunken" aria-hidden>
-                <span className="bg-violet-500" style={{ width: `${(data.origin.online / originTotal) * 100}%` }} />
+                <span className="bg-data-1" style={{ width: `${(data.origin.online / originTotal) * 100}%` }} />
                 <span className="bg-gold-400" style={{ width: `${(data.origin.staff / originTotal) * 100}%` }} />
               </div>
               <ul className="mt-4 flex flex-col gap-3 text-sm">
@@ -163,7 +163,7 @@ export function DashboardInsights({ data, periodLabel, compareLabel, finance }: 
                 return (
                   <div key={m.key} className="flex h-full flex-1 flex-col items-center justify-end gap-1.5" aria-hidden>
                     <span className="text-[11px] text-muted tabular">{finance ? (v >= 100_000 ? `${(v / 100_000).toFixed(1).replace(".", ",")} mil` : formatMoney(v)) : v}</span>
-                    <span className={cn("w-full max-w-14 rounded-t-lg", m.current ? "bg-[repeating-linear-gradient(135deg,var(--color-violet-300)_0_6px,var(--color-violet-200)_6px_12px)]" : "bg-[linear-gradient(180deg,var(--color-violet-400),var(--color-violet-600))]")}
+                    <span className={cn("w-full max-w-14 rounded-t-lg", m.current ? "bg-[repeating-linear-gradient(135deg,var(--color-data-2)_0_6px,var(--color-plum-soft)_6px_12px)]" : "bg-data-1")}
                       style={{ height: `${Math.max(3, (v / maxMonth) * 100)}%` }} />
                     <span className={cn("text-xs", m.current ? "font-medium text-ink" : "text-muted")}>{MESES[Number(m.key.slice(5, 7)) - 1]}</span>
                   </div>

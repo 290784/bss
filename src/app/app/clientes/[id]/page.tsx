@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { CalendarDays, CalendarPlus, ChevronLeft, Crown, Heart, Moon, Sparkles } from "lucide-react";
+import { CalendarDays, CalendarPlus, ChevronLeft, Crown, Cake, Heart, Moon, UserPlus } from "lucide-react";
 import { z } from "zod";
 import { requireAppContext, tenant } from "@/server/context";
 import { getClientProfile } from "@/server/modules/clients";
@@ -51,7 +51,7 @@ export default async function ClientProfilePage({ params }: { params: Promise<{ 
   const fav = services[0]?.name;
 
   const messages: QuickMessage[] = [
-    ...(bdayIn !== null && bdayIn <= 15 ? [{ id: "aniversario", label: "🎂 Aniversário", text: bdayIn === 0
+    ...(bdayIn !== null && bdayIn <= 15 ? [{ id: "aniversario", label: "Aniversário", text: bdayIn === 0
       ? `Feliz aniversário, ${first}! 🎂💜 Que seu dia seja lindo! Pra comemorar, tem um mimo especial te esperando no seu próximo horário aqui. Bora marcar? ${bookingUrl}`
       : `Oi, ${first}! Seu aniversário tá chegando 🎂 e eu separei um presentinho: no seu próximo horário tem um mimo especial te esperando. Quer que eu reserve um horário pra você ficar ainda mais linda pro seu dia? 💜` }] : []),
     { id: "voltar", label: "Chamar para voltar", text: `Oi, ${first}! Tudo bem? 💜 ${stats.lastVisit ? `Já faz um tempinho desde o seu ${fav ? servicesText([fav]) : "último horário"}` : "Tô com uns horários livres essa semana"}, bora caprichar de novo? Me fala o melhor dia que eu separo pra você, ou escolhe direto aqui: ${bookingUrl}` },
@@ -76,12 +76,12 @@ export default async function ClientProfilePage({ params }: { params: Promise<{ 
             </div>
             <div className="mt-2 flex flex-wrap gap-1.5">
               {isVip && <Badge variant="champagne"><Crown className="h-3 w-3" />VIP</Badge>}
-              {isNew && <Badge variant="success"><Sparkles className="h-3 w-3" />Nova</Badge>}
+              {isNew && <Badge variant="success"><UserPlus className="h-3 w-3" />Nova</Badge>}
               {sumida && <Badge variant="warning"><Moon className="h-3 w-3" />Sumida</Badge>}
-              {bdayIn !== null && bdayIn <= 30 && <Badge variant="plum">🎂 {bdayIn === 0 ? "Aniversário hoje!" : bdayIn === 1 ? "Aniversário amanhã" : `Aniversário em ${bdayIn} dias`}</Badge>}
+              {bdayIn !== null && bdayIn <= 30 && <Badge variant="plum"><Cake className="h-3 w-3" />{bdayIn === 0 ? "Aniversário hoje" : bdayIn === 1 ? "Aniversário amanhã" : `Aniversário em ${bdayIn} dias`}</Badge>}
               {c.source === "online" && <Badge variant="plum">Chegou pelo seu link</Badge>}
               {c.archived_at && <Badge>Arquivada</Badge>}
-              {c.marketing_consent ? <Badge variant="success">Topa promoções 💌</Badge> : <Badge>Não quer promoções</Badge>}
+              {c.marketing_consent ? <Badge variant="success">Topa promoções</Badge> : <Badge>Não quer promoções</Badge>}
             </div>
           </div>
         </div>
@@ -156,7 +156,7 @@ export default async function ClientProfilePage({ params }: { params: Promise<{ 
                       <span className="truncate font-medium">{s.name}</span>
                       <span className="shrink-0 text-xs text-muted tabular">{s.n}× · última {formatInTz(s.last, tz, { day: "2-digit", month: "2-digit" })}</span>
                     </div>
-                    <span className="mt-1 block h-1.5 overflow-hidden rounded-full bg-sunken"><span className="block h-full rounded-full bg-[linear-gradient(90deg,var(--color-violet-500),var(--color-violet-300))]" style={{ width: `${(s.n / services[0]!.n) * 100}%` }} /></span>
+                    <span className="mt-1 block h-1.5 overflow-hidden rounded-full bg-sunken"><span className="block h-full rounded-full bg-data-1" style={{ width: `${(s.n / services[0]!.n) * 100}%` }} /></span>
                   </li>
                 ))}
               </ul>

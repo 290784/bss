@@ -23,6 +23,14 @@
    */
   --font-serif: var(--font-fraunces), Georgia, "Times New Roman", serif;
 
+  /* Ameixa fixa (blocos de destaque do app, iguais nos dois temas; branco sobre ela 11:1). */
+  --color-plum: #642350;
+  --color-plum-soft: #f3e3ee;
+  /* Gráficos: ameixa, champanhe e neutros — uma cor por papel, nada de arco-íris. */
+  --color-data-1: #7a2d63;
+  --color-data-2: #c99ab9;
+  --color-data-3: #c6a05b;
+  --color-data-4: #a89c8d;
   --color-night: #02060e;
   --color-royal: #9303c5;
   --color-violet-100: #eacffc;
