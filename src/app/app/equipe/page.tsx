@@ -5,12 +5,16 @@ import { can } from "@/domain/permissions";
 import { formatInTz } from "@/lib/time";
 import { listServices } from "@/server/modules/catalog";
 import { PageHeader } from "@/components/ui/primitives";
-import { TeamManager } from "./team-manager";
+import { SubTabs } from "@/components/ui/sub-tabs";
+import { CalendarOff, UsersRound, Wallet } from "lucide-react";
+import { TeamManager, type TeamTab } from "./team-manager";
 
 export const metadata: Metadata = { title: "Equipe e horários" };
 
-export default async function TeamPage() {
+export default async function TeamPage({ searchParams }: { searchParams: Promise<{ aba?: string }> }) {
   const ctx = await requireAppContext("team.manage");
+  const { aba } = await searchParams;
+  const tab: TeamTab = aba === "folgas" || aba === "resumo" ? aba : "profissionais";
   const data = await tenant(ctx, async (tx) => ({
     professionals: await listProfessionals(tx, ctx.org.id),
     services: await listServices(tx, ctx.org.id, { activeOnly: true }),
@@ -22,7 +26,14 @@ export default async function TeamPage() {
   return (
     <div>
       <PageHeader title="Equipe e horários" description={`${active} de ${ctx.plan.maxProfessionals} ${ctx.plan.maxProfessionals === 1 ? "profissional ativa" : "profissionais ativas"} no plano ${ctx.plan.name}${ctx.subscription.status === "trialing" ? " (teste)" : ""}.`} />
+      <SubTabs label="Partes da equipe" current={tab} href={(id) => (id === "profissionais" ? "/app/equipe" : `/app/equipe?aba=${id}`)}
+        tabs={[
+          { id: "profissionais", label: "Profissionais", icon: UsersRound, count: data.professionals.length },
+          { id: "folgas", label: "Folgas e feriados", icon: CalendarOff, count: data.timeOff.length },
+          ...(finance ? [{ id: "resumo", label: "Resumo do mês", icon: Wallet }] : []),
+        ]} />
       <TeamManager
+        tab={tab}
         readOnly={ctx.access === "read_only"}
         finance={finance}
         monthLabel={formatInTz(new Date(), ctx.org.timezone, { month: "long" })}
