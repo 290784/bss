@@ -2,7 +2,7 @@
 
 /*
  * Identidade BSS mapeada para o Tailwind (mesmos valores de tokens.ts).
- * Champanhe é o padrão; [data-theme="claro"] aplica o marfim (os dois claros, em dourado).
+ * Nude rosé é o padrão; [data-theme="claro"] aplica a versão mais clara (os dois com acento vinho, como as unhas do studio).
  * Componentes usam só estas classes (bg-superficie, text-texto, rounded-card...): nada de hex solto.
  */
 @theme {
@@ -15,50 +15,50 @@
   --radius-card: 24px;
   --radius-botao: 999px;
 
-  --color-fundo: #f6efe2;
-  --color-superficie: #fdf8ef;
-  --color-superficie-alta: #fffbf3;
-  --color-afundado: #f1e7d5;
-  --color-borda: #e8d6b3;
-  --color-borda-forte: #d6bb87;
-  --color-texto: #2e261e;
-  --color-texto-suave: #55493d;
-  --color-texto-apoio: #6e6152;
-  --color-primaria: #b08743;
-  --color-primaria-escura: #8a6426;
-  --color-primaria-texto: #83601f;
-  --color-primaria-suave: #f3e8d2;
-  --color-secundaria: #d4b483;
+  --color-fundo: #f6ece6;
+  --color-superficie: #fdf7f3;
+  --color-superficie-alta: #fffaf7;
+  --color-afundado: #f0e1d9;
+  --color-borda: #e9d2c7;
+  --color-borda-forte: #d7ad9d;
+  --color-texto: #2c1c1e;
+  --color-texto-suave: #573e41;
+  --color-texto-apoio: #6f5558;
+  --color-primaria: #a24d5d;
+  --color-primaria-escura: #7d3344;
+  --color-primaria-texto: #86394a;
+  --color-primaria-suave: #f5e2e2;
+  --color-secundaria: #dba79f;
   --color-sucesso: #2a6440;
   --color-alerta: #8a5800;
   --color-erro: #ad1f3a;
   /* Fixas (sobre o degradê da marca, nos dois temas) */
   --color-sobre-marca: #ffffff;
-  --color-sobre-marca-suave: #fffbf4;
+  --color-sobre-marca-suave: #fff6f3;
 
-  --shadow-card: 0 0 0 1px rgb(176 135 67 / 0.08), 0 10px 28px -18px rgb(120 88 34 / 0.3);
-  --shadow-botao: 0 0 0 1px rgb(255 255 255 / 0.2) inset, 0 8px 22px -10px rgb(138 100 38 / 0.55);
+  --shadow-card: 0 0 0 1px rgb(162 77 93 / 0.08), 0 10px 28px -18px rgb(110 40 55 / 0.3);
+  --shadow-botao: 0 0 0 1px rgb(255 255 255 / 0.2) inset, 0 8px 22px -10px rgb(125 51 68 / 0.55);
 }
 
 [data-theme="claro"] {
-  --color-fundo: #fbf8f2;
+  --color-fundo: #fcf8f6;
   --color-superficie: #ffffff;
   --color-superficie-alta: #ffffff;
-  --color-afundado: #f6f0e4;
-  --color-borda: #efe5d3;
-  --color-borda-forte: #e0cca5;
-  --color-texto: #2e261e;
-  --color-texto-suave: #5a4e42;
-  --color-texto-apoio: #75685a;
-  --color-primaria: #b08743;
-  --color-primaria-escura: #8a6426;
-  --color-primaria-texto: #8a6426;
-  --color-primaria-suave: #f7eedc;
-  --color-secundaria: #d4b483;
+  --color-afundado: #f7eeea;
+  --color-borda: #f1e3dc;
+  --color-borda-forte: #e3c3b6;
+  --color-texto: #2c1c1e;
+  --color-texto-suave: #5d4447;
+  --color-texto-apoio: #765c5f;
+  --color-primaria: #a24d5d;
+  --color-primaria-escura: #7d3344;
+  --color-primaria-texto: #7d3344;
+  --color-primaria-suave: #f8e9e8;
+  --color-secundaria: #dba79f;
   --color-sucesso: #2f6b45;
   --color-alerta: #8a5800;
   --color-erro: #b4233f;
-  --shadow-card: 0 0 0 1px rgb(176 135 67 / 0.05), 0 8px 24px -18px rgb(120 88 34 / 0.22);
+  --shadow-card: 0 0 0 1px rgb(162 77 93 / 0.05), 0 8px 24px -18px rgb(110 40 55 / 0.22);
   color-scheme: light;
 }
 
@@ -71,63 +71,63 @@
     font-size: var(--text-base);
     color: var(--color-texto);
     background:
-      radial-gradient(1000px 600px at 105% -8%, rgb(232 205 150 / 0.35), transparent 62%),
-      radial-gradient(900px 560px at -12% 30%, rgb(255 250 238 / 0.9), transparent 60%),
+      radial-gradient(1000px 600px at 105% -8%, rgb(232 180 175 / 0.35), transparent 62%),
+      radial-gradient(900px 560px at -12% 30%, rgb(255 246 242 / 0.9), transparent 60%),
       var(--color-fundo);
     background-attachment: fixed;
     -webkit-font-smoothing: antialiased;
   }
   [data-theme="claro"] body {
     background:
-      radial-gradient(1000px 600px at 105% -8%, rgb(240 222 184 / 0.35), transparent 62%),
+      radial-gradient(1000px 600px at 105% -8%, rgb(242 214 208 / 0.35), transparent 62%),
       var(--color-fundo);
   }
   /* Serifada elegante (como os títulos do Manual original); font-size-adjust compensa o olho pequeno. */
   h1, h2, h3 { font-family: var(--font-titulo); font-weight: 700; letter-spacing: 0; line-height: 1.12; font-size-adjust: 0.5; font-variant-numeric: lining-nums; text-wrap: balance; }
   :focus-visible { outline: 2px solid var(--color-primaria-texto); outline-offset: 2px; }
-  ::selection { background: rgb(212 180 131 / 0.4); }
+  ::selection { background: rgb(219 167 159 / 0.4); }
   /* Toque: 16 px evita o zoom do Safari ao focar campos. */
   @media (pointer: coarse) { input, select, textarea { font-size: 16px; } }
 }
 
 @layer components {
-  /* Degradê dourado da marca: blocos de cor (agenda, localização, tabela). */
-  .bg-marca { background: linear-gradient(150deg, #c6a05b 0%, #946c2e 38%, #8a6426 70%, #7d5822 100%); }
-  /* Botão principal: dourado com brilho. */
-  .bg-botao { background: linear-gradient(135deg, #c6a05b 0%, #946c2e 55%, #835c22 100%); box-shadow: var(--shadow-botao); }
-  /* Moldura dourada fina (cartões de destaque). */
+  /* Degradê rosé-vinho da marca: blocos de cor (agenda, localização, tabela). */
+  .bg-marca { background: linear-gradient(150deg, #c97b84 0%, #a24d5d 38%, #8e3e4f 70%, #7a3243 100%); }
+  /* Botão principal: rosé-vinho com brilho. */
+  .bg-botao { background: linear-gradient(135deg, #c97b84 0%, #a24d5d 55%, #843a4b 100%); box-shadow: var(--shadow-botao); }
+  /* Moldura rosé fina (cartões de destaque). */
   .moldura { border-color: var(--color-borda-forte); }
-  /* Ícones sociais: dourados no champanhe, brancos com traço dourado no marfim. */
-  .icone-social { background: linear-gradient(135deg, #c6a05b, #946c2e); color: var(--color-sobre-marca); border-color: transparent; }
+  /* Ícones sociais: rosé-vinho no padrão, brancos com traço rosé no claro. */
+  .icone-social { background: linear-gradient(135deg, #c97b84, #a24d5d); color: var(--color-sobre-marca); border-color: transparent; }
   [data-theme="claro"] .icone-social { background: var(--color-superficie); color: var(--color-primaria-texto); border-color: var(--color-borda-forte); }
   .tabular { font-variant-numeric: tabular-nums; }
 
   /* Cartões clicáveis (como no app): sobem com o mouse; afundam ao tocar. */
   .lift { -webkit-tap-highlight-color: transparent; transition: transform .28s cubic-bezier(.2,.8,.2,1), box-shadow .28s ease, border-color .28s ease; }
   @media (hover: hover) {
-    .lift:hover { transform: translateY(-2px); border-color: rgb(176 135 67 / 0.55); box-shadow: 0 16px 32px -20px rgb(120 88 34 / 0.45); }
+    .lift:hover { transform: translateY(-2px); border-color: rgb(162 77 93 / 0.55); box-shadow: 0 16px 32px -20px rgb(110 40 55 / 0.45); }
   }
   .lift:active { transform: translateY(0) scale(0.975); transition-duration: .12s; }
   /* Cartões informativos: só realçam, sem pular. */
   .glow-hover { transition: box-shadow .35s ease, border-color .35s ease; }
   @media (hover: hover) {
-    .glow-hover:hover { box-shadow: 0 0 0 1px rgb(176 135 67 / 0.25) inset, 0 16px 34px -24px rgb(120 88 34 / 0.4); }
+    .glow-hover:hover { box-shadow: 0 0 0 1px rgb(162 77 93 / 0.25) inset, 0 16px 34px -24px rgb(110 40 55 / 0.4); }
   }
-  /* Texto com um brilho dourado que percorre o nome. */
+  /* Texto com um brilho rosé que percorre o nome. */
   .text-shimmer {
-    background: linear-gradient(100deg, #2e261e 0%, #2e261e 38%, #b08743 50%, #2e261e 62%, #2e261e 100%);
+    background: linear-gradient(100deg, #2c1c1e 0%, #2c1c1e 38%, #a24d5d 50%, #2c1c1e 62%, #2c1c1e 100%);
     background-size: 240% 100%; -webkit-background-clip: text; background-clip: text; color: transparent;
     animation: brilho-texto 9s linear infinite;
   }
 }
 
 /*
- * Fundo vivo (igual ao app), em dourado suave: fitas finas, orbes bem difusos e poucas estrelinhas.
+ * Fundo vivo (igual ao app), em rosé suave: fitas finas, orbes bem difusos e poucas estrelinhas.
  * contain: strict + orbes dentro da tela — no iPhone, qualquer coisa além da borda (mesmo numa
  * camada fixa) faz o Safari reduzir a página inteira.
  */
 .ambient { position: fixed; inset: 0; z-index: -1; pointer-events: none; overflow: hidden; contain: strict;
-  --rib-a: #e3c88f; --rib-b: #c6a05b; --rib-c: #fffbf4; --rib-glow: 0.22; --rib-core: 0.5; --spark: #c6a05b; }
+  --rib-a: #e9b8b0; --rib-b: #c97b84; --rib-c: #fff6f3; --rib-glow: 0.22; --rib-core: 0.5; --spark: #c97b84; }
 .ambient svg { position: absolute; inset: 0; width: 100%; height: 100%; }
 .ambient .orb { position: absolute; border-radius: 9999px; filter: blur(70px); opacity: 0.35; animation: flutuar 14s ease-in-out infinite; }
 .ambient .tw { transform-box: fill-box; transform-origin: center; animation: cintilar 4.8s ease-in-out infinite; }
