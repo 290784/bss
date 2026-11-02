@@ -25,7 +25,7 @@ export function ThemeToggle({ className }: { className?: string }) {
   const theme = useSyncExternalStore(subscribe, read, () => "light" as Theme);
   const next: Theme = theme === "light" ? "dark" : "light";
   return (
-    <button type="button" onClick={() => setTheme(next)} className={cn("grid h-11 w-11 shrink-0 place-items-center rounded-lg text-ink-soft transition hover:bg-sunken hover:text-ink lg:h-9 lg:w-9", className)}
+    <button type="button" onClick={() => setTheme(next)} className={cn("grid h-11 w-11 shrink-0 place-items-center rounded-full text-ink-soft transition-colors hover:bg-hover-tint hover:text-ink lg:h-10 lg:w-10", className)}
       aria-label={next === "light" ? "Usar tema claro" : "Usar tema escuro"} title={next === "light" ? "Tema claro" : "Tema escuro"}>
       {theme === "light" ? <Moon className="h-5 w-5" /> : <Sun className="h-5 w-5" />}
     </button>

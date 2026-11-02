@@ -37,13 +37,13 @@ export function ToastProvider({ children }: { children: ReactNode }) {
       {toasts.map((t) => (
         <div key={t.id} role="status"
           className={cn(
-            "pointer-events-auto relative flex max-w-sm items-center gap-2.5 overflow-hidden rounded-xl bg-raised py-1.5 pr-1.5 pl-4 text-left text-sm text-ink ring-1 ring-accent-border shadow-[var(--shadow-pop)] [animation:toast-in_.3s_ease-out]",
+            "pointer-events-auto relative flex max-w-sm items-center gap-2.5 overflow-hidden rounded-2xl bg-raised py-1.5 pr-1.5 pl-4 text-left text-sm text-ink ring-1 ring-accent-muted shadow-[var(--shadow-pop)] [animation:toast-in_.3s_ease-out]",
           )}>
           {t.tone === "success" ? <CheckCircle2 className="h-4 w-4 shrink-0 text-st-completed" /> : <AlertCircle className="h-4 w-4 shrink-0 text-st-noshow" />}
           <button type="button" title="Toque para fechar" className="min-h-10 flex-1 py-1.5 pr-2 text-left"
             onClick={() => setToasts((all) => all.filter((x) => x.id !== t.id))}>{t.message}</button>
           {t.action && (
-            <button type="button" className="h-10 shrink-0 rounded-lg px-3 text-[13px] font-semibold text-accent-text hover:bg-sunken"
+            <button type="button" className="h-10 shrink-0 rounded-full px-3.5 text-[13px] font-semibold text-accent-text hover:bg-hover-tint"
               onClick={() => { t.action!.onClick(); setToasts((all) => all.filter((x) => x.id !== t.id)); }}>{t.action.label}</button>
           )}
           {/* Quanto tempo falta para o aviso sumir */}

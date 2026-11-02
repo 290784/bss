@@ -5,8 +5,8 @@ import { cn } from "@/lib/cn";
 import { Button } from "./button";
 
 const control =
-  "rounded-[10px] border border-line-strong bg-surface px-3 text-[15px] text-ink placeholder:text-muted/70 " +
-  "transition-colors hover:border-field-hover focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent-muted " +
+  "rounded-[var(--radius-control)] border border-line-strong/80 bg-surface px-3.5 text-[15px] text-ink placeholder:text-muted/70 shadow-[var(--shadow-control)] " +
+  "transition-[border-color,box-shadow] duration-200 hover:border-field-hover focus:border-accent focus:outline-none focus:ring-4 focus:ring-accent-muted/70 " +
   "disabled:bg-sunken disabled:text-muted aria-[invalid=true]:border-danger";
 
 export function Input({ className, ...props }: ComponentProps<"input">) {
