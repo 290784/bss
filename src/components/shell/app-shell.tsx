@@ -2,7 +2,7 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useRef, useState, useTransition } from "react";
-import { Bell, CalendarDays, ChevronsUpDown, Home, LogOut, Menu, Scissors, Search, Settings, Users, UsersRound, X, ExternalLink } from "lucide-react";
+import { BarChart3, Bell, CalendarDays, ChevronsUpDown, Home, Lightbulb, LogOut, Menu, Scissors, Search, Settings, Users, UsersRound, X, ExternalLink } from "lucide-react";
 import { Logo } from "@/components/brand/logo";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
 import { Avatar } from "@/components/ui/primitives";
@@ -10,7 +10,7 @@ import { cn } from "@/lib/cn";
 import type { NavItem } from "./nav-items";
 import { markNotificationsRead, switchOrganization } from "@/app/app/shell-actions";
 
-const ICONS = { home: Home, calendar: CalendarDays, users: Users, scissors: Scissors, team: UsersRound, settings: Settings };
+const ICONS = { home: Home, calendar: CalendarDays, users: Users, scissors: Scissors, chart: BarChart3, lightbulb: Lightbulb, team: UsersRound, settings: Settings };
 
 export type ShellProps = {
   items: NavItem[];
