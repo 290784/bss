@@ -61,7 +61,7 @@ export default async function ClientsPage({ searchParams }: { searchParams: Prom
       <PageHeader title="Clientes" description={`${plural(counts.all, "cliente")} com você. Quem vem sempre, quem sumiu e quanto cada uma já deixou no seu caixa.`}
         actions={<>
           {canManage && (
-            <a href={`/app/clientes/exportar?${qs({})}`} className="inline-flex h-10 items-center gap-2 rounded-[10px] border border-line-strong bg-surface px-4 text-sm font-medium hover:bg-sunken">
+            <a href={`/app/clientes/exportar?${qs({})}`} className="inline-flex h-10 items-center gap-2 rounded-[var(--radius-control)] border border-line bg-surface px-4 text-sm font-medium shadow-[var(--shadow-control)] transition-colors hover:border-accent-muted hover:bg-accent-subtle/40">
               <Download className="h-4 w-4" />Exportar
             </a>
           )}
@@ -72,10 +72,10 @@ export default async function ClientsPage({ searchParams }: { searchParams: Prom
         {segs.map(([k, label]) => (
           <Link key={k} href={`/app/clientes?${new URLSearchParams({ ...(sp.q ? { q: sp.q } : {}), ...(sort !== "nome" ? { ordem: sort } : {}), segmento: k })}`}
             aria-current={k === segment ? "page" : undefined} scroll={false}
-            className={cn("inline-flex h-10 shrink-0 items-center gap-1.5 rounded-full border px-3 text-[13px] font-medium transition sm:h-9",
-              k === segment ? "border-transparent btn-glow text-white" : "border-line bg-surface text-ink-soft hover:border-line-strong hover:text-ink")}>
+            className={cn("inline-flex h-10 shrink-0 items-center gap-1.5 rounded-full border px-3.5 text-[13px] font-medium transition-colors sm:h-9",
+              k === segment ? "border-accent-muted bg-accent-subtle text-accent-text" : "border-line/80 bg-surface text-ink-soft shadow-[var(--shadow-control)] hover:border-accent-muted hover:text-ink")}>
             {label}
-            <span className={cn("rounded-full px-1.5 text-[11px] tabular", k === segment ? "bg-white/25" : "bg-sunken")}>{counts[k]}</span>
+            <span className={cn("rounded-full px-1.5 text-[11px] tabular", k === segment ? "bg-surface" : "bg-sunken")}>{counts[k]}</span>
           </Link>
         ))}
       </nav>
@@ -92,11 +92,11 @@ export default async function ClientsPage({ searchParams }: { searchParams: Prom
         ) : (
           <>
             {/* Celular: cartões */}
-            <ul className="divide-y divide-line md:hidden">
+            <ul className="divide-y divide-line/70 md:hidden">
               {list.map((c) => {
                 const link = wa(c);
                 return (
-                  <li key={c.id} className="flex items-center gap-3 px-4 py-3">
+                  <li key={c.id} className="flex items-center gap-3 px-4 py-3.5">
                     <Link href={`/app/clientes/${c.id}`} className="flex min-w-0 flex-1 items-center gap-3">
                       <Avatar name={c.full_name} className="h-10 w-10 text-[13px]" />
                       <span className="min-w-0 flex-1">
@@ -117,20 +117,20 @@ export default async function ClientsPage({ searchParams }: { searchParams: Prom
             </ul>
             {/* Computador: tabela */}
             <table className="hidden w-full text-sm md:table">
-              <thead className="border-b border-line bg-canvas/60 text-left text-xs text-muted">
+              <thead className="border-b border-line/70 bg-canvas/50 text-left text-[11px] tracking-[0.08em] text-muted uppercase">
                 <tr>
-                  <th className="px-4 py-2.5 font-medium">Cliente</th><th className="px-4 py-2.5 font-medium">Contato</th>
-                  <th className="px-4 py-2.5 text-right font-medium">Visitas</th><th className="px-4 py-2.5 font-medium">Última visita</th>
-                  <th className="px-4 py-2.5 font-medium">Próxima</th>{finance && <th className="px-4 py-2.5 text-right font-medium">Total gasto</th>}
+                  <th className="px-4 py-3 font-medium">Cliente</th><th className="px-4 py-3 font-medium">Contato</th>
+                  <th className="px-4 py-3 text-right font-medium">Visitas</th><th className="px-4 py-3 font-medium">Última visita</th>
+                  <th className="px-4 py-3 font-medium">Próxima</th>{finance && <th className="px-4 py-3 text-right font-medium">Total gasto</th>}
                   <th className="w-12 px-2 py-2.5"><span className="sr-only">Ações</span></th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-line">
+              <tbody className="divide-y divide-line/70">
                 {list.map((c) => {
                   const link = wa(c);
                   return (
-                    <tr key={c.id} className="group hover:bg-canvas/70">
-                      <td className="px-4 py-2.5">
+                    <tr key={c.id} className="group transition-colors hover:bg-hover-tint">
+                      <td className="px-4 py-3">
                         <Link href={`/app/clientes/${c.id}`} className="flex items-center gap-3">
                           <Avatar name={c.full_name} />
                           <span className="min-w-0">
@@ -139,12 +139,12 @@ export default async function ClientsPage({ searchParams }: { searchParams: Prom
                           </span>
                         </Link>
                       </td>
-                      <td className="px-4 py-2.5 text-ink-soft tabular">{formatPhone(c.phone_normalized) || c.email || "—"}</td>
-                      <td className="px-4 py-2.5 text-right tabular">{c.visits}</td>
-                      <td className="px-4 py-2.5 text-ink-soft">{c.last_visit ? <span title={formatInTz(c.last_visit, tz, { day: "2-digit", month: "2-digit", year: "numeric" })}>{ago(c.last_visit, now)}</span> : "—"}</td>
-                      <td className="px-4 py-2.5 text-ink-soft tabular">{c.next_visit ? formatInTz(c.next_visit, tz, { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" }) : "—"}</td>
-                      {finance && <td className="px-4 py-2.5 text-right tabular">{formatMoney(c.total_spent_cents)}</td>}
-                      <td className="px-2 py-2.5">
+                      <td className="px-4 py-3 text-ink-soft tabular">{formatPhone(c.phone_normalized) || c.email || "—"}</td>
+                      <td className="px-4 py-3 text-right tabular">{c.visits}</td>
+                      <td className="px-4 py-3 text-ink-soft">{c.last_visit ? <span title={formatInTz(c.last_visit, tz, { day: "2-digit", month: "2-digit", year: "numeric" })}>{ago(c.last_visit, now)}</span> : "—"}</td>
+                      <td className="px-4 py-3 text-ink-soft tabular">{c.next_visit ? formatInTz(c.next_visit, tz, { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" }) : "—"}</td>
+                      {finance && <td className="px-4 py-3 text-right tabular">{formatMoney(c.total_spent_cents)}</td>}
+                      <td className="px-2 py-3">
                         {link ? <a href={link} target="_blank" rel="noreferrer" aria-label={`WhatsApp de ${c.full_name}`} className="grid h-8 w-8 place-items-center rounded-full text-muted hover:bg-accent-subtle hover:text-accent-text"><MessageCircle className="h-4 w-4" /></a>
                           : <Link href={`/app/clientes/${c.id}`} aria-label="Abrir ficha" className="grid h-8 w-8 place-items-center text-muted"><ChevronRight className="h-4 w-4" /></Link>}
                       </td>

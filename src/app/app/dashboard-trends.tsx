@@ -42,7 +42,7 @@ export function ForecastAndAlerts({ forecast, alerts, finance }: { forecast: For
         <Card>
           <CardHeader title="Quanto você deve faturar" description="Uma estimativa no ritmo que você está"
             action={<InfoTip text="Este mês: o que entrou até ontem ÷ dias de atendimento que já passaram × dias de atendimento do mês. Próximos meses: o mesmo ritmo por dia, ajustado pela tendência dos últimos 3 meses (no máximo ±10% ao mês) e pelos dias de atendimento de cada mês. É uma estimativa, não uma promessa." />} />
-          <div className="px-5 pt-4 pb-5">
+          <div className="px-5 pt-4 pb-5 sm:px-6 sm:pb-6">
             {!forecast.ready ? (
               <p className="text-sm text-muted">A estimativa aparece depois dos 3 primeiros dias de atendimento do mês.{forecast.scheduledRest > 0 && ` Você já tem ${formatMoney(forecast.scheduledRest)} marcados para o resto do mês.`}</p>
             ) : (
@@ -86,7 +86,7 @@ export function ForecastAndAlerts({ forecast, alerts, finance }: { forecast: For
 
       <Card id="fica-de-olho" className="scroll-mt-24">
         <CardHeader title="Fica de olho" description="O que pode render mais (últimos 90 dias)" />
-        <div className="px-5 pt-3 pb-5">
+        <div className="px-5 pt-3 pb-5 sm:px-6 sm:pb-6">
           {alerts.length === 0 ? (
             <div className="flex items-center gap-3 rounded-xl bg-st-completed-bg px-4 py-3 text-sm text-st-completed">
               <CircleCheck className="h-5 w-5 shrink-0" />Tudo indo bem: nenhum serviço caindo, parado ou com muitas faltas.
@@ -122,7 +122,7 @@ export function ServiceGrowth({ data, finance }: { data: TrendsData; finance: bo
     <Card className="mt-6">
       <CardHeader title="O que mais cresce" description="Últimos 90 dias contra os 90 dias antes (até ontem), do que mais subiu ao que mais caiu"
         action={<InfoTip text="Valor de cada serviço feito nos últimos 90 dias, comparado com os 90 dias antes. O gráfico pequeno mostra os últimos 6 meses (o mês atual, que ainda está rolando, fica mais clarinho)." />} />
-      <div className="overflow-x-auto px-5 pt-3 pb-5">
+      <div className="overflow-x-auto px-5 pt-3 pb-5 sm:px-6 sm:pb-6">
         {rows.length === 0 ? <p className="py-6 text-center text-sm text-muted">Ainda não tem histórico para comparar. Logo aparece!</p> : (
           <table className="w-full text-sm">
             <thead className="text-left text-xs text-muted">

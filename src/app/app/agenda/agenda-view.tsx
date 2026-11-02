@@ -207,9 +207,9 @@ export function AgendaView(props: Props) {
     <div className="flex flex-col gap-4">
       <div className="flex flex-col gap-3 xl:flex-row xl:items-center xl:justify-between">
         <div className="flex items-center gap-2">
-          <div className="flex items-center rounded-[10px] border border-line-strong bg-surface">
+          <div className="flex items-center overflow-hidden rounded-full border border-line/80 bg-surface shadow-[var(--shadow-control)]">
             <button onClick={() => shift(-1)} className="grid h-10 w-10 place-items-center text-ink-soft hover:text-ink" aria-label="Anterior" title="Anterior (←)"><ChevronLeft className="h-4 w-4" /></button>
-            <button onClick={() => go({ data: today })} className="h-10 border-x border-line px-3 text-sm font-medium hover:bg-sunken" title="Hoje (T)">Hoje</button>
+            <button onClick={() => go({ data: today })} className="h-10 border-x border-line/70 px-3.5 text-sm font-medium transition-colors hover:bg-hover-tint" title="Hoje (T)">Hoje</button>
             <button onClick={() => shift(1)} className="grid h-10 w-10 place-items-center text-ink-soft hover:text-ink" aria-label="Próximo" title="Próximo (→)"><ChevronRight className="h-4 w-4" /></button>
           </div>
           <h1 className="min-w-0 truncate font-serif tracking-[-0.01em] text-[22px] font-semibold first-letter:uppercase sm:text-2xl">
@@ -219,15 +219,15 @@ export function AgendaView(props: Props) {
           <label className="relative ml-1">
             <span className="sr-only">Ir para data</span>
             <input type="date" value={date} onChange={(e) => e.target.value && go({ data: e.target.value })}
-              className="h-10 w-10 cursor-pointer rounded-[10px] border border-line-strong bg-surface text-transparent [&::-webkit-calendar-picker-indicator]:absolute [&::-webkit-calendar-picker-indicator]:inset-0 [&::-webkit-calendar-picker-indicator]:h-full [&::-webkit-calendar-picker-indicator]:w-full [&::-webkit-calendar-picker-indicator]:opacity-0" />
+              className="h-10 w-10 cursor-pointer rounded-full border border-line/80 bg-surface text-transparent shadow-[var(--shadow-control)] [&::-webkit-calendar-picker-indicator]:absolute [&::-webkit-calendar-picker-indicator]:inset-0 [&::-webkit-calendar-picker-indicator]:h-full [&::-webkit-calendar-picker-indicator]:w-full [&::-webkit-calendar-picker-indicator]:opacity-0" />
             <CalendarDays className="pointer-events-none absolute top-1/2 left-1/2 h-4 w-4 -translate-x-1/2 -translate-y-1/2 text-ink-soft" />
           </label>
         </div>
         <div className="flex flex-wrap items-center gap-2">
-          <div role="tablist" aria-label="Visualização" className="flex w-full rounded-[10px] bg-sunken p-1 sm:w-auto">
+          <div role="tablist" aria-label="Visualização" className="flex w-full rounded-full border border-line/70 bg-surface/70 p-1 shadow-[var(--shadow-control)] sm:w-auto">
             {(["lista", "dia", "semana", "mes"] as const).map((v) => (
               <button key={v} role="tab" aria-selected={view === v} onClick={() => go({ visao: v })}
-                className={cn("h-10 flex-1 sm:h-8 sm:flex-none rounded-lg px-3 text-[13px] font-medium capitalize", view === v ? "bg-surface text-ink shadow-sm" : "text-muted hover:text-ink")}>
+                className={cn("h-10 flex-1 sm:h-8 sm:flex-none rounded-full px-3.5 text-[13px] font-medium capitalize transition-colors", view === v ? "bg-accent-subtle text-accent-text" : "text-muted hover:text-ink")}>
                 {v === "mes" ? "Mês" : v}
               </button>
             ))}
@@ -419,14 +419,14 @@ function Column({
         const s = Math.max(toMin(t.startsAt), bounds.start), e = Math.min(toMin(t.endsAt), bounds.end);
         if (e <= s) return null;
         return (
-          <div key={t.id} className="absolute inset-x-1 overflow-hidden rounded-md border border-dashed border-line-strong bg-[repeating-linear-gradient(135deg,transparent,transparent_6px,rgba(111,101,108,0.08)_6px,rgba(111,101,108,0.08)_12px)] px-2 py-1 text-[11px] text-muted"
+          <div key={t.id} className="absolute inset-x-1 overflow-hidden rounded-[10px] border border-dashed border-line-strong bg-[repeating-linear-gradient(135deg,transparent,transparent_6px,rgba(111,101,108,0.08)_6px,rgba(111,101,108,0.08)_12px)] px-2 py-1 text-[11px] text-muted"
             style={{ top: (s - bounds.start) * PX_PER_MIN, height: (e - s) * PX_PER_MIN }}>
             Bloqueado{t.reason ? ` · ${t.reason}` : ""}
           </div>
         );
       })}
       {gaps.map(([gs, ge]) => (
-        <div key={`gap-${gs}`} aria-hidden className="pointer-events-none absolute inset-x-1 flex items-start rounded-md border border-dashed border-accent-border/50 px-2 py-1 text-[11px] text-accent-text/80"
+        <div key={`gap-${gs}`} aria-hidden className="pointer-events-none absolute inset-x-1 flex items-start rounded-[10px] border border-dashed border-accent-border/50 px-2 py-1 text-[11px] text-accent-text/80"
           style={{ top: (gs - bounds.start) * PX_PER_MIN + 1, height: (ge - gs) * PX_PER_MIN - 2 }}>
           Livre · {hhmm(gs)}–{hhmm(ge)}
         </div>
@@ -441,7 +441,7 @@ function Column({
             <button onClick={() => onOpen(item.id)}
               onPointerDown={startDrag ? (e) => startDrag(item, e, { day: dayKey, minute: s, dur: toMin(item.endsAt) - s, grab: (e.clientY - e.currentTarget.getBoundingClientRect().top) / PX_PER_MIN }) : undefined}
               onContextMenu={startDrag ? (e) => e.preventDefault() : undefined}
-              className={cn("absolute inset-0 overflow-hidden rounded-lg border-l-[3px] py-1 pl-2 pr-7 text-left shadow-sm transition duration-200 hover:z-10 hover:shadow-[0_0_0_1px_rgb(213_158_250/0.45),0_10px_24px_-10px_rgb(150_13_242/0.7)] hover:brightness-125 active:scale-[0.97] focus-visible:z-10 [-webkit-tap-highlight-color:transparent]", STATUS_STYLE[item.status].block)}
+              className={cn("absolute inset-0 overflow-hidden rounded-[10px] border-l-[3px] py-1 pl-2 pr-7 text-left shadow-[var(--shadow-control)] transition duration-200 hover:z-10 hover:shadow-[var(--shadow-card-hover)] active:scale-[0.98] focus-visible:z-10 [-webkit-tap-highlight-color:transparent]", STATUS_STYLE[item.status].block)}
               aria-label={`${localTime(new Date(item.startsAt), tz)} ${item.clientName}, ${item.services}, ${STATUS_LABEL[item.status]}`}>
               <div className="flex items-center gap-1 text-[11px] text-ink-soft tabular">
                 {showPro && pro && <span className="h-1.5 w-1.5 shrink-0 rounded-full" style={{ background: pro.color }} />}
@@ -478,7 +478,7 @@ function DayGrid({ date, timeZone, pros, items, timeOff, onSlot, onOpen, drag, s
   const now = useNowMinute(timeZone);
   const wd = localWeekday(date);
   return (
-    <div className="overflow-hidden rounded-[var(--radius-card)] border border-line bg-surface">
+    <div className="overflow-hidden rounded-[var(--radius-card)] border border-line/70 bg-surface shadow-[var(--shadow-card)]">
       <div className="overflow-x-auto">
         <div style={{ minWidth: pros.length > 1 ? pros.length * 180 + 48 : undefined }}>
           <div className="sticky top-0 z-20 flex border-b border-line bg-surface">
@@ -513,7 +513,7 @@ function WeekGrid({ rangeStart, today, timeZone, pros, items, timeOff, onSlot, o
   const now = useNowMinute(timeZone);
   const single = pros.length === 1 ? pros[0]! : null;
   return (
-    <div className="overflow-hidden rounded-[var(--radius-card)] border border-line bg-surface">
+    <div className="overflow-hidden rounded-[var(--radius-card)] border border-line/70 bg-surface shadow-[var(--shadow-card)]">
       <div className="overflow-x-auto">
         <div className="min-w-[860px]">
           <div className="sticky top-0 z-20 flex border-b border-line bg-surface">
@@ -557,7 +557,7 @@ function MonthGrid({ rangeStart, date, today, timeZone, items, pros, onDay }: Pr
     byDay.set(k, [...(byDay.get(k) ?? []), i]);
   }
   return (
-    <div className="overflow-hidden rounded-[var(--radius-card)] border border-line bg-surface">
+    <div className="overflow-hidden rounded-[var(--radius-card)] border border-line/70 bg-surface shadow-[var(--shadow-card)]">
       <div className="grid grid-cols-7 border-b border-line bg-canvas/60">
         {WEEK_LABELS.map((w) => <div key={w} className="px-2 py-2 text-center text-xs font-medium text-muted">{w}</div>)}
       </div>
@@ -573,7 +573,7 @@ function MonthGrid({ rangeStart, date, today, timeZone, items, pros, onDay }: Pr
               {list.slice(0, 3).map((i) => {
                 const pro = pros.find((p) => p.id === i.professionalId);
                 return (
-                  <span key={i.id} className={cn("hidden truncate rounded px-1.5 py-0.5 text-[11px] sm:block", STATUS_STYLE[i.status].badge)}>
+                  <span key={i.id} className={cn("hidden truncate rounded-full px-2 py-0.5 text-[11px] sm:block", STATUS_STYLE[i.status].badge)}>
                     {pro && pros.length > 1 && <span className="mr-1 inline-block h-1.5 w-1.5 rounded-full align-middle" style={{ background: pro.color }} />}
                     {localTime(new Date(i.startsAt), timeZone)} {i.clientName.split(" ")[0]}
                   </span>

@@ -34,11 +34,11 @@ export function ServicesManager({ services, professionals, readOnly, stats = {} 
   return (
     <>
       {services.length > 0 && (
-        <div className="mb-5 grid grid-cols-2 gap-3 lg:grid-cols-4">
-          <Card className="p-4"><div className="text-[13px] text-muted">No cardápio</div><div className="mt-1 text-xl font-semibold tabular">{active.length}</div><div className="text-xs text-muted">{online} no seu link</div></Card>
-          <Card className="p-4"><div className="text-[13px] text-muted">Rendeu em 30 dias</div><div className="mt-1 text-xl font-semibold tabular">{formatMoney(revenue30)}</div><div className="text-xs text-muted">em serviços feitos</div></Card>
-          <Card className={cn("p-4", noPro > 0 && "border-st-pending/40")}><div className="text-[13px] text-muted">Sem ninguém para fazer</div><div className={cn("mt-1 text-xl font-semibold tabular", noPro > 0 && "text-st-pending")}>{noPro}</div><div className="text-xs text-muted">{noPro ? "não aparecem para marcar" : "tudo certo"}</div></Card>
-          <Card className="p-4"><div className="text-[13px] text-muted">Sem tempo de retorno</div><div className="mt-1 text-xl font-semibold tabular">{noReturn}</div><div className="text-xs text-muted">{noReturn ? "complete para eu avisar quem precisa voltar" : "tudo certo"}</div></Card>
+        <div className="mb-6 grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
+          <Card className="p-4 sm:p-5"><div className="text-[13px] text-muted">No cardápio</div><div className="mt-1 text-[22px] font-semibold tracking-[-0.015em] tabular">{active.length}</div><div className="text-xs text-muted">{online} no seu link</div></Card>
+          <Card className="p-4 sm:p-5"><div className="text-[13px] text-muted">Rendeu em 30 dias</div><div className="mt-1 text-[22px] font-semibold tracking-[-0.015em] tabular">{formatMoney(revenue30)}</div><div className="text-xs text-muted">em serviços feitos</div></Card>
+          <Card className={cn("p-4 sm:p-5", noPro > 0 && "border-st-pending/40")}><div className="text-[13px] text-muted">Sem ninguém para fazer</div><div className={cn("mt-1 text-[22px] font-semibold tracking-[-0.015em] tabular", noPro > 0 && "text-st-pending")}>{noPro}</div><div className="text-xs text-muted">{noPro ? "não aparecem para marcar" : "tudo certo"}</div></Card>
+          <Card className="p-4 sm:p-5"><div className="text-[13px] text-muted">Sem tempo de retorno</div><div className="mt-1 text-[22px] font-semibold tracking-[-0.015em] tabular">{noReturn}</div><div className="text-xs text-muted">{noReturn ? "complete para eu avisar quem precisa voltar" : "tudo certo"}</div></Card>
         </div>
       )}
       {!readOnly && (
@@ -53,13 +53,13 @@ export function ServicesManager({ services, professionals, readOnly, stats = {} 
         <div className="flex flex-col gap-6">
           {[...groups.entries()].map(([cat, list]) => (
             <section key={cat}>
-              <h2 className="mb-2 text-[13px] font-semibold tracking-wide text-muted uppercase">{cat}</h2>
-              <Card className="divide-y divide-line">
+              <h2 className="mb-3 flex items-center gap-2.5 font-serif text-[18px] font-semibold text-ink"><span className="h-px w-6 bg-highlight-border" aria-hidden />{cat}</h2>
+              <Card className="divide-y divide-line/70 overflow-hidden">
                 {list.map((s) => {
                   const st = stats[s.id];
                   const change = st && st.countPrev30 > 0 ? Math.round(((st.count30 - st.countPrev30) / st.countPrev30) * 100) : null;
                   return (
-                    <div key={s.id} className="flex flex-col gap-2 px-4 py-3 transition hover:bg-hover-tint sm:flex-row sm:items-center">
+                    <div key={s.id} className="flex flex-col gap-2 px-5 py-4 transition-colors hover:bg-hover-tint sm:flex-row sm:items-center">
                       <button className="min-w-0 flex-1 text-left" onClick={() => !readOnly && setEditing({ service: s })} disabled={readOnly}>
                         <div className="flex flex-wrap items-center gap-2 text-sm font-medium">
                           {s.name}
@@ -136,7 +136,7 @@ function AdjustPricesDialog({ services, onClose }: { services: ServiceRow[]; onC
         </Field>
         <Field label="Arredondar para" htmlFor="round">
           <select id="round" value={roundTo} onChange={(e) => setRoundTo(Number(e.target.value))}
-            className="h-10 w-full rounded-[10px] border border-line-strong bg-surface px-2.5 text-sm focus:border-accent focus:outline-none">
+            className="h-10 w-full rounded-[var(--radius-control)] border border-line-strong/80 bg-surface px-3 text-sm focus:border-accent focus:ring-4 focus:ring-accent-muted/70 focus:outline-none">
             <option value={0}>Não arredondar</option><option value={100}>R$ 1 acima</option><option value={500}>R$ 5 acima</option><option value={1000}>R$ 10 acima</option>
           </select>
         </Field>
@@ -145,7 +145,7 @@ function AdjustPricesDialog({ services, onClose }: { services: ServiceRow[]; onC
         <div className="mt-4 flex flex-wrap gap-1.5">
           {["todas", ...cats].map((c) => (
             <button key={c} type="button" onClick={() => pickCat(c)} aria-pressed={cat === c}
-              className={cn("h-9 rounded-full border px-3 text-[13px] font-medium", cat === c ? "border-transparent bg-accent text-white" : "border-line bg-surface text-ink-soft")}>
+              className={cn("h-9 rounded-full border px-3 text-[13px] font-medium", cat === c ? "border-accent-muted bg-accent-subtle text-accent-text" : "border-line bg-surface text-ink-soft")}>
               {c === "todas" ? "Todos" : c}
             </button>
           ))}

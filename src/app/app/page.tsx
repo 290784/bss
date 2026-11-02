@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { ArrowDownRight, ArrowUpRight, CalendarPlus, Check, Clock, Link2, UserPlus, Users } from "lucide-react";
+import { ArrowDownRight, ArrowUpRight, CalendarCheck, CalendarDays, CalendarPlus, Check, Clock, Gauge, HandCoins, Link2, Receipt, UserPlus, Users, UserX, Wallet, type LucideIcon } from "lucide-react";
 import { requireAppContext, tenant } from "@/server/context";
 import { can } from "@/domain/permissions";
 import { METRIC_DEFINITIONS, type MetricKey } from "@/domain/metrics";
@@ -109,7 +109,7 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
                 ))}
               </ul>
             </div>
-            <div data-theme="dark" className="relative overflow-hidden rounded-xl bg-plum p-4 text-white md:w-72">
+            <div data-theme="dark" className="relative overflow-hidden rounded-2xl bg-plum p-5 text-white md:w-72">
               <div className="flex items-center gap-2 text-sm font-medium"><Link2 className="h-4 w-4" />Seu link de agendamento</div>
               <p className="mt-1 mb-3 text-xs text-white/65">Coloque na bio do Instagram e mande no WhatsApp: as clientes marcam sozinhas, 24h.</p>
               <CopyLink url={`${appUrl}/b/${ctx.org.slug}`} />
@@ -137,7 +137,7 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
           }} />
       )}
 
-      <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+      <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
         {d.revenue && <Kpi highlight label="Recebido" metric="revenue_received" value={formatMoney(d.revenue.value)} change={d.revenue.change} />}
         <Kpi highlight={!d.revenue} label="Previsto na agenda" metric="scheduled_value" value={formatMoney(d.scheduledValue.value)} change={d.scheduledValue.change} />
         <Kpi label="Atendimentos" metric="appointments_count" value={String(d.appointments.value)} change={d.appointments.change} />
@@ -156,13 +156,13 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
       <div className="mt-6 grid gap-6 xl:grid-cols-[minmax(0,1fr)_380px]">
         <Card>
           <CardHeader title="Dia a dia" description={`${PERIOD_LABEL[period]} · os números lá em cima: ${COMPARACAO[period]}`} />
-          <div className="px-5 pt-4 pb-5">
+          <div className="px-5 pt-4 pb-5 sm:px-6 sm:pb-6">
             <DashboardChart data={series} includeRevenue={finance} />
           </div>
         </Card>
         <Card>
           <CardHeader title="Hoje" description={plural(activeToday.length, "atendimento")} action={<Link href="/app/agenda" className="text-[13px] font-medium text-accent-text hover:underline">Ver agenda</Link>} />
-          <div className="px-5 pt-3 pb-5">
+          <div className="px-5 pt-3 pb-5 sm:px-6 sm:pb-6">
             {activeToday.length === 0 ? (
               <EmptyState className="py-6" icon={Clock} title="Dia livre por aqui" description="Que tal mandar seu link para as clientes e encher essa agenda?" />
             ) : (
@@ -183,11 +183,11 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
               </ul>
             )}
             {gaps.length > 0 && (
-              <div className="mt-4 rounded-xl bg-highlight-subtle p-3">
+              <div className="mt-4 rounded-2xl border border-highlight-border/60 bg-highlight-subtle p-3.5">
                 <div className="mb-1.5 text-[13px] font-medium text-highlight-text">Horários livres hoje: dá para encaixar alguém!</div>
                 <ul className="flex flex-wrap gap-1.5">
                   {gaps.slice(0, 6).map((g, i) => (
-                    <li key={i} className="rounded-md bg-surface px-2 py-1 text-xs text-ink-soft tabular">
+                    <li key={i} className="rounded-full bg-surface px-2.5 py-1 text-xs text-ink-soft tabular">
                       {localTime(g.start, tz)}–{localTime(g.end, tz)}{d.byProfessional.length > 1 ? ` · ${g.name}` : ""}
                     </li>
                   ))}
@@ -204,14 +204,14 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
       <div className="mt-6 grid gap-6 lg:grid-cols-2">
         <Card>
           <CardHeader title="Como foram os atendimentos" description={PERIOD_LABEL[period]} />
-          <div className="px-5 pt-4 pb-5">
+          <div className="px-5 pt-4 pb-5 sm:px-6 sm:pb-6">
             <StatusBreakdown counts={d.statusCounts} />
           </div>
         </Card>
         <Card>
           <CardHeader title="Clientes com saudade" description="Mais de 60 dias sem vir e sem horário marcado: hora de mandar um oi"
             action={<InfoTip text={METRIC_DEFINITIONS.inactive_clients} />} />
-          <div className="px-5 pt-3 pb-5">
+          <div className="px-5 pt-3 pb-5 sm:px-6 sm:pb-6">
             {d.reactivate.length === 0 ? (
               <EmptyState className="py-6" icon={Users} title="Ninguém sumida por aqui" description="Se alguma cliente ficar mais de 60 dias sem voltar, ela aparece aqui para você chamar." />
             ) : (
@@ -233,7 +233,7 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
       {d.byProfessional.length > 1 && (
         <Card className="mt-6">
           <CardHeader title="Como está cada profissional" description={PERIOD_LABEL[period]} action={<InfoTip text={METRIC_DEFINITIONS.produced_value} />} />
-          <div className="overflow-x-auto px-5 pt-3 pb-5">
+          <div className="overflow-x-auto px-5 pt-3 pb-5 sm:px-6 sm:pb-6">
             <table className="w-full min-w-[480px] text-sm">
               <thead className="text-left text-xs text-muted"><tr><th className="py-2 font-medium">Profissional</th><th className="py-2 text-right font-medium">Concluídos</th><th className="py-2 text-right font-medium">Faltas</th><th className="py-2 text-right font-medium">Horas agendadas</th>{finance && <th className="py-2 text-right font-medium">Produção</th>}</tr></thead>
               <tbody className="divide-y divide-line">
@@ -259,13 +259,27 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
   );
 }
 
+/** Ícone de cada indicador (traço fino, na pastilha do canto). */
+const KPI_ICON: Partial<Record<MetricKey, LucideIcon>> = {
+  revenue_received: Wallet, scheduled_value: CalendarCheck, appointments_count: CalendarDays, occupancy: Gauge,
+  average_ticket: Receipt, no_show_rate: UserX, new_clients: UserPlus, receivable: HandCoins,
+};
+
 function Kpi({ label, value, change, sub, metric, invert, highlight }: { label: string; value: string; change?: number | null; sub?: string; metric: MetricKey; invert?: boolean; highlight?: boolean }) {
   const good = change !== undefined && change !== null && (invert ? change < 0 : change > 0);
   const bad = change !== undefined && change !== null && (invert ? change > 0 : change < 0);
+  const Icon = KPI_ICON[metric];
   return (
-    <Card data-theme={highlight ? "dark" : undefined} className={cn("relative overflow-hidden p-4", highlight && "border-transparent bg-plum!")}>
-      <div className={cn("relative flex items-center gap-1 text-[13px]", highlight ? "text-white/80" : "text-muted")}>{label}<InfoTip text={METRIC_DEFINITIONS[metric]} /></div>
-      <div className="mt-1.5 text-[22px] leading-tight font-semibold tracking-[-0.01em] tabular sm:text-2xl">{value}</div>
+    <Card className={cn("relative overflow-hidden p-4 sm:p-5", highlight && "border-accent-muted bg-[linear-gradient(140deg,var(--color-accent-subtle)_0%,var(--color-surface)_75%)]!")}>
+      <div className="flex items-start justify-between gap-2">
+        <div className="flex min-w-0 items-center gap-1 text-[13px] text-muted">{label}<InfoTip text={METRIC_DEFINITIONS[metric]} /></div>
+        {Icon && (
+          <span className={cn("grid h-9 w-9 shrink-0 place-items-center rounded-full", highlight ? "bg-plum text-white" : "bg-accent-subtle text-accent-text")} aria-hidden>
+            <Icon className="h-[18px] w-[18px]" strokeWidth={1.6} />
+          </span>
+        )}
+      </div>
+      <div className={cn("mt-1 text-[22px] leading-tight font-semibold tracking-[-0.015em] tabular sm:text-[26px]", highlight && "text-accent-text")}>{value}</div>
       <div className="mt-1 flex min-h-[18px] flex-wrap items-center gap-x-1.5 gap-y-0.5 text-xs">
         {change !== undefined && (change === null
           ? <span className="text-muted">primeira vez por aqui</span>
