@@ -181,7 +181,7 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
               {shortcuts.filter((x) => x.show).map((x) => (
                 <li key={x.href}>
                   <Link href={x.href} className="lift flex h-full items-center gap-3 rounded-2xl border border-line/70 bg-surface p-3">
-                    <Illustration name={x.art} className="h-11 w-11" />
+                    <Illustration name={x.art} className="h-14 w-14 -my-1" />
                     <span className="min-w-0">
                       <span className="block text-sm font-medium">{x.label}</span>
                       <span className="hidden truncate text-xs text-muted sm:block">{x.hint}</span>

@@ -12,27 +12,40 @@ export type IllustrationName =
   | "scissors" | "chat" | "shield" | "store" | "notebook" | "bell" | "link" | "star";
 
 // Cores fixas dos objetos (iguais nos dois temas); o halo acompanha o tema.
-const R1 = "#fff0f6", R2 = "#f6c3d8", R3 = "#e392b6"; // rosé: luz, meio, sombra
-const B1 = "#c473a6", B2 = "#7a2d63"; // ameixa
-const G1 = "#fbefcf", G2 = "#d9b46e", G3 = "#b58a3e"; // champanhe
-const W1 = "#ffffff", W2 = "#f7eef3"; // papel
+const R1 = "#fff4f9", R2 = "#f4b2cd", R3 = "#d4679a"; // rosé: luz, meio, sombra
+const B1 = "#d083b6", B2 = "#6e2459"; // ameixa
+const G1 = "#fff4d8", G2 = "#e2b865", G3 = "#a5772a"; // champanhe
+const W1 = "#ffffff", W2 = "#efdfe8"; // papel
 
 function Defs() {
   return (
     <defs>
-      <radialGradient id="ge-il-halo" cx="50%" cy="45%" r="55%">
-        <stop offset="0%" style={{ stopColor: "var(--color-accent-muted)", stopOpacity: 0.95 }} />
-        <stop offset="60%" style={{ stopColor: "var(--color-accent-subtle)", stopOpacity: 0.85 }} />
-        <stop offset="100%" style={{ stopColor: "var(--color-accent-subtle)", stopOpacity: 0 }} />
-      </radialGradient>
+      {/* Halo e luz: a cor vem do tema (CSS), a máscara só dá o esmaecido (assim não depende de qual SVG definiu o id). */}
+      <radialGradient id="ge-il-fade"><stop offset="0%" stopColor="#fff" /><stop offset="60%" stopColor="#fff" stopOpacity="0.85" /><stop offset="100%" stopColor="#fff" stopOpacity="0" /></radialGradient>
+      <mask id="ge-il-halo-m" maskUnits="userSpaceOnUse" x="0" y="0" width="64" height="68"><rect x="2" y="4" width="60" height="60" fill="url(#ge-il-fade)" /></mask>
+      <mask id="ge-il-glow-m" maskUnits="userSpaceOnUse" x="0" y="0" width="64" height="64"><rect x="6" y="6" width="46" height="46" fill="url(#ge-il-fade)" /></mask>
       <linearGradient id="ge-il-r" x1="0.2" y1="0" x2="0.8" y2="1"><stop offset="0%" stopColor={R1} /><stop offset="45%" stopColor={R2} /><stop offset="100%" stopColor={R3} /></linearGradient>
       <linearGradient id="ge-il-b" x1="0.2" y1="0" x2="0.8" y2="1"><stop offset="0%" stopColor={B1} /><stop offset="100%" stopColor={B2} /></linearGradient>
       <linearGradient id="ge-il-g" x1="0.2" y1="0" x2="0.8" y2="1"><stop offset="0%" stopColor={G1} /><stop offset="55%" stopColor={G2} /><stop offset="100%" stopColor={G3} /></linearGradient>
       <linearGradient id="ge-il-w" x1="0" y1="0" x2="0.4" y2="1"><stop offset="0%" stopColor={W1} /><stop offset="100%" stopColor={W2} /></linearGradient>
       <linearGradient id="ge-il-steel" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stopColor="#f4eef2" /><stop offset="100%" stopColor="#bfaab8" /></linearGradient>
       {/* Sombra macia sob o objeto e brilho desfocado por cima (o "volume"). */}
-      <filter id="ge-il-drop" x="-30%" y="-30%" width="160%" height="170%">
-        <feDropShadow dx="0" dy="2.2" stdDeviation="2.2" floodColor={B2} floodOpacity="0.22" />
+      {/* Volume: sombra interna embaixo, luz interna em cima e sombra projetada. */}
+      <filter id="ge-il-drop" x="-40%" y="-40%" width="180%" height="190%" colorInterpolationFilters="sRGB">
+        <feGaussianBlur in="SourceAlpha" stdDeviation="1.5" result="blur" />
+        <feOffset in="blur" dx="-1.3" dy="-2" result="up" />
+        <feComposite in="SourceAlpha" in2="up" operator="out" result="bottomEdge" />
+        <feFlood floodColor={B2} floodOpacity="0.42" />
+        <feComposite in2="bottomEdge" operator="in" result="shade" />
+        <feOffset in="blur" dx="1.3" dy="2" result="down" />
+        <feComposite in="SourceAlpha" in2="down" operator="out" result="topEdge" />
+        <feFlood floodColor="#fff" floodOpacity="0.85" />
+        <feComposite in2="topEdge" operator="in" result="light" />
+        <feGaussianBlur in="SourceAlpha" stdDeviation="2.8" result="soft" />
+        <feOffset in="soft" dy="3.4" result="softDown" />
+        <feFlood floodColor={B2} floodOpacity="0.32" />
+        <feComposite in2="softDown" operator="in" result="drop" />
+        <feMerge><feMergeNode in="drop" /><feMergeNode in="SourceGraphic" /><feMergeNode in="shade" /><feMergeNode in="light" /></feMerge>
       </filter>
       <filter id="ge-il-blur" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="0.9" /></filter>
     </defs>
@@ -40,7 +53,7 @@ function Defs() {
 }
 
 /** Brilho desfocado (reflexo de luz). */
-const Gloss = ({ d, o = 0.7 }: { d: string; o?: number }) => <path d={d} fill="#fff" opacity={o} filter="url(#ge-il-blur)" />;
+const Gloss = ({ d, o = 0.9 }: { d: string; o?: number }) => <path d={d} fill="#fff" opacity={o} filter="url(#ge-il-blur)" />;
 /** Brilho champanhe de quatro pontas. */
 const Sparkle = ({ x, y, s = 1, fill = "url(#ge-il-g)" }: { x: number; y: number; s?: number; fill?: string }) => (
   <path transform={`translate(${x} ${y}) scale(${s})`} d="M0-5C.6-1.6 1.6-.6 5 0 1.6.6.6 1.6 0 5-.6 1.6-1.6.6-5 0-1.6-.6-.6-1.6 0-5Z" fill={fill} />
@@ -311,9 +324,10 @@ const ART: Record<IllustrationName, ReactNode> = {
 
 export function Illustration({ name, className }: { name: IllustrationName; className?: string }) {
   return (
-    <svg viewBox="0 0 64 64" className={cn("h-12 w-12 shrink-0 overflow-visible", className)} aria-hidden focusable="false">
+    <svg viewBox="0 0 64 64" className={cn("ge-il h-12 w-12 shrink-0 overflow-visible", className)} aria-hidden focusable="false">
       <Defs />
-      <circle cx="32" cy="34" r="30" fill="url(#ge-il-halo)" />
+      <rect x="2" y="4" width="60" height="60" mask="url(#ge-il-halo-m)" style={{ fill: "var(--il-halo-1)" }} />
+      <rect x="6" y="6" width="46" height="46" mask="url(#ge-il-glow-m)" style={{ fill: "#fff", opacity: "var(--il-glow)" }} />
       {ART[name]}
     </svg>
   );

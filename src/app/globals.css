@@ -464,6 +464,12 @@
   [data-theme="light"] .ambient { --rib-glow: 0.22; --rib-core: 0.35; }
 }
 
+/* Ilustrações: halo e brilho por tema. No claro, halo rosado mais vivo, luz branca forte e cores um pouco mais saturadas. */
+:root { --il-halo-1: var(--color-accent-muted); --il-halo-2: var(--color-accent-subtle); --il-glow: 0.25; }
+[data-theme="light"] { --il-halo-1: #f2bcd4; --il-halo-2: #fae8f0; --il-glow: 1; }
+[data-theme="dark"] { --il-halo-1: var(--color-accent-muted); --il-halo-2: var(--color-accent-subtle); --il-glow: 0.16; }
+[data-theme="light"] .ge-il:not(:where([data-theme="dark"] *)) { filter: saturate(1.2) brightness(1.04) drop-shadow(0 5px 12px rgb(212 103 154 / 0.26)); }
+
 /* Painel lateral do login/cadastro: véu ameixa no alto e champanhe embaixo. */
 .auth-panel {
   background:
