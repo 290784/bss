@@ -47,6 +47,9 @@
   --color-gold-400: #c6a05b;
   --color-gold-600: #8a6426;
   --color-gold-700: #6f4f1c;
+  /* Toques dourados do app: filete/realce (gold-line) e brilho fino no alto dos cartões (gold-glint). */
+  --color-gold-line: #d9b46e;
+  --color-gold-glint: rgb(226 190 120 / 0.3);
 
   /* Superfícies */
   --color-canvas: #150b28;
@@ -171,9 +174,11 @@
   --color-skeleton-hi: #e7e1d8;
   --color-hover-tint: rgb(100 35 80 / 0.04);
   /* Cantos e sombras: cartões macios, sombra difusa com um toque de ameixa (nunca preta). */
+  --color-gold-line: #c6a05b;
+  --color-gold-glint: rgb(226 188 112 / 0.6);
   --radius-card: 20px;
-  --shadow-card: 0 1px 2px rgb(100 35 80 / 0.04), 0 12px 32px -18px rgb(100 35 80 / 0.16);
-  --shadow-card-hover: 0 1px 2px rgb(100 35 80 / 0.05), 0 18px 40px -18px rgb(100 35 80 / 0.24);
+  --shadow-card: 0 1px 2px rgb(100 35 80 / 0.04), 0 12px 32px -18px rgb(100 35 80 / 0.16), inset 0 1px 0 var(--color-gold-glint);
+  --shadow-card-hover: 0 1px 2px rgb(100 35 80 / 0.05), 0 18px 40px -18px rgb(100 35 80 / 0.24), inset 0 1px 0 var(--color-gold-glint);
   --shadow-control: 0 1px 2px rgb(100 35 80 / 0.05);
   --shadow-button: 0 8px 18px -10px rgb(100 35 80 / 0.6);
   --shadow-pop: 0 24px 56px -22px rgb(100 35 80 / 0.32), 0 0 0 1px rgb(100 35 80 / 0.06);
@@ -218,8 +223,10 @@
   --color-skeleton-hi: #2f2834;
   --color-hover-tint: rgb(255 255 255 / 0.04);
   --radius-card: 20px;
-  --shadow-card: 0 0 0 1px rgb(255 255 255 / 0.02), 0 14px 34px -20px rgb(0 0 0 / 0.7);
-  --shadow-card-hover: 0 0 0 1px rgb(255 255 255 / 0.05), 0 18px 40px -20px rgb(0 0 0 / 0.8);
+  --color-gold-line: #d9b46e;
+  --color-gold-glint: rgb(226 190 120 / 0.28);
+  --shadow-card: 0 0 0 1px rgb(255 255 255 / 0.02), 0 14px 34px -20px rgb(0 0 0 / 0.7), inset 0 1px 0 var(--color-gold-glint);
+  --shadow-card-hover: 0 0 0 1px rgb(255 255 255 / 0.05), 0 18px 40px -20px rgb(0 0 0 / 0.8), inset 0 1px 0 var(--color-gold-glint);
   --shadow-control: 0 0 0 1px rgb(255 255 255 / 0.02);
   --shadow-button: 0 8px 20px -10px rgb(0 0 0 / 0.7);
   --shadow-pop: 0 24px 60px -20px rgb(0 0 0 / 0.8), 0 0 0 1px rgb(255 255 255 / 0.06);
@@ -323,10 +330,10 @@
   }
   /* Botão principal: degradê violeta com brilho */
   /* Botão principal do app: a cor de ação, chapada. */
-  .btn-glow { background: var(--color-accent-strong); box-shadow: inset 0 -1px 0 rgb(0 0 0 / 0.16), var(--shadow-button); transition: background-color 0.2s ease, box-shadow 0.2s ease, transform 0.12s ease; }
+  .btn-glow { background: var(--color-accent-strong); box-shadow: inset 0 1px 0 rgb(240 214 150 / 0.5), inset 0 -1px 0 rgb(0 0 0 / 0.16), var(--shadow-button); transition: background-color 0.2s ease, box-shadow 0.2s ease, transform 0.12s ease; }
   .btn-glow:hover { background: var(--color-accent); }
   @media (hover: hover) {
-    .btn-glow:hover { transform: translateY(-1px); box-shadow: inset 0 -1px 0 rgb(0 0 0 / 0.16), 0 14px 26px -12px rgb(100 35 80 / 0.7); }
+    .btn-glow:hover { transform: translateY(-1px); box-shadow: inset 0 1px 0 rgb(240 214 150 / 0.6), inset 0 -1px 0 rgb(0 0 0 / 0.16), 0 14px 26px -12px rgb(100 35 80 / 0.7); }
   }
   .btn-glow:active { transform: translateY(1px); }
   [data-landing] [data-theme="dark"] .btn-glow {
@@ -484,9 +491,9 @@
 
 /* Ilustrações: halo e brilho por tema. No claro, halo rosado mais vivo, luz branca forte e cores um pouco mais saturadas. */
 :root { --il-halo-1: var(--color-accent-muted); --il-halo-2: var(--color-accent-subtle); --il-glow: 0.25; }
-:root { --il-r1: #fff4f9; --il-r2: #f4b2cd; --il-r3: #d4679a; --il-b1: #d083b6; --il-b2: #6e2459; --il-g1: #fff4d8; --il-g2: #e2b865; --il-g3: #a5772a; --il-w1: #ffffff; --il-w2: #efdfe8; --il-ground: rgb(0 0 0 / 0.22); }
-[data-theme="light"] { --il-halo-1: #f2bcd4; --il-halo-2: #fae8f0; --il-glow: 1; --il-r1: #fff2f8; --il-r2: #feabcd; --il-r3: #dc5494; --il-b1: #d878b8; --il-b2: #721658; --il-g1: #fff2d0; --il-g2: #ebb74f; --il-g3: #ac7212; --il-w1: #ffffff; --il-w2: #f9e5f0; --il-ground: rgb(212 103 154 / 0.3); }
-[data-theme="dark"] { --il-halo-1: var(--color-accent-muted); --il-halo-2: var(--color-accent-subtle); --il-glow: 0.16; --il-r1: #fff4f9; --il-r2: #f4b2cd; --il-r3: #d4679a; --il-b1: #d083b6; --il-b2: #6e2459; --il-g1: #fff4d8; --il-g2: #e2b865; --il-g3: #a5772a; --il-w1: #ffffff; --il-w2: #efdfe8; --il-ground: rgb(0 0 0 / 0.22); }
+:root { --il-r1: #fff4f9; --il-r2: #f4b2cd; --il-r3: #d4679a; --il-b1: #b8629f;  --il-p1: #9c4a82; --il-p2: #5e1f4a;  --il-g1: #fff4d8; --il-g2: #e2b865; --il-g3: #a5772a; --il-w1: #ffffff; --il-w2: #efdfe8; --il-ground: rgb(0 0 0 / 0.22); }
+[data-theme="light"] { --il-halo-1: #e8bddb; --il-halo-2: #f7e8f1; --il-glow: 1; --il-r1: #fff2f8; --il-r2: #feabcd; --il-r3: #dc5494;     --il-g1: #fff2d0; --il-g2: #ebb74f; --il-g3: #ac7212; --il-w1: #ffffff; --il-w2: #f9e5f0; --il-b1: #9c3f82; --il-b2: #5a1b48; --il-p1: #7a2d63; --il-p2: #3f1032; --il-ground: rgb(122 45 99 / 0.32); }
+[data-theme="dark"] { --il-halo-1: var(--color-accent-muted); --il-halo-2: var(--color-accent-subtle); --il-glow: 0.16; --il-r1: #fff4f9; --il-r2: #f4b2cd; --il-r3: #d4679a; --il-b1: #b8629f;  --il-p1: #9c4a82; --il-p2: #5e1f4a;  --il-g1: #fff4d8; --il-g2: #e2b865; --il-g3: #a5772a; --il-w1: #ffffff; --il-w2: #efdfe8; --il-ground: rgb(0 0 0 / 0.22); }
 
 /*
  * Ilustrações animadas (só quando o aparelho não pede "reduzir movimento"):
@@ -585,3 +592,7 @@ html[data-atualizando] main [aria-label="Período"] { opacity: 1; pointer-events
   [data-app] .glow-hover:hover .ge-il { transform: scale(1.1) rotate(-5deg); }
 }
 }
+
+/* Filete dourado curto (sob títulos de página) e linha dourada que some nas pontas. */
+.gold-rule { display: block; width: 44px; height: 2px; border-radius: 2px; background: linear-gradient(90deg, var(--color-gold-line), transparent); }
+.gold-hair { display: block; height: 1px; background: linear-gradient(90deg, transparent, var(--color-gold-line), transparent); opacity: 0.7; }

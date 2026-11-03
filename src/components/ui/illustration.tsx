@@ -27,6 +27,7 @@ function Defs() {
       <mask id="ge-il-glow-m" maskUnits="userSpaceOnUse" x="0" y="0" width="64" height="64"><rect x="6" y="6" width="46" height="46" fill="url(#ge-il-fade)" /></mask>
       <linearGradient id="ge-il-r" x1="0.2" y1="0" x2="0.8" y2="1"><stop offset="0%" style={{ stopColor: "var(--il-r1)" }} /><stop offset="45%" style={{ stopColor: "var(--il-r2)" }} /><stop offset="100%" style={{ stopColor: "var(--il-r3)" }} /></linearGradient>
       <linearGradient id="ge-il-b" x1="0.2" y1="0" x2="0.8" y2="1"><stop offset="0%" style={{ stopColor: "var(--il-b1)" }} /><stop offset="100%" style={{ stopColor: "var(--il-b2)" }} /></linearGradient>
+      <linearGradient id="ge-il-p" x1="0.2" y1="0" x2="0.8" y2="1"><stop offset="0%" style={{ stopColor: "var(--il-p1)" }} /><stop offset="100%" style={{ stopColor: "var(--il-p2)" }} /></linearGradient>
       <linearGradient id="ge-il-g" x1="0.2" y1="0" x2="0.8" y2="1"><stop offset="0%" style={{ stopColor: "var(--il-g1)" }} /><stop offset="55%" style={{ stopColor: "var(--il-g2)" }} /><stop offset="100%" style={{ stopColor: "var(--il-g3)" }} /></linearGradient>
       <linearGradient id="ge-il-w" x1="0" y1="0" x2="0.4" y2="1"><stop offset="0%" style={{ stopColor: "var(--il-w1)" }} /><stop offset="100%" style={{ stopColor: "var(--il-w2)" }} /></linearGradient>
       <linearGradient id="ge-il-steel" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stopColor="#f4eef2" /><stop offset="100%" stopColor="#bfaab8" /></linearGradient>
@@ -77,14 +78,14 @@ const Cross = () => <path d="M43 42l6 6M49 42l-6 6" stroke="#fff" strokeWidth="2
 const Calendar = ({ children }: { children?: ReactNode }) => (
   <Obj>
     <rect x="12" y="17" width="38" height="34" rx="9" fill="url(#ge-il-w)" />
-    <path d="M12 26a9 9 0 0 1 9-9h20a9 9 0 0 1 9 9v3H12v-3Z" fill="url(#ge-il-r)" />
+    <path d="M12 26a9 9 0 0 1 9-9h20a9 9 0 0 1 9 9v3H12v-3Z" fill="url(#ge-il-b)" />
     <Gloss d="M17 20.5c4-1.6 18-1.6 26 0" o={0.8} />
-    <rect x="20.5" y="12.5" width="4.5" height="9.5" rx="2.25" fill="url(#ge-il-b)" />
-    <rect x="37" y="12.5" width="4.5" height="9.5" rx="2.25" fill="url(#ge-il-b)" />
+    <rect x="20.5" y="12.5" width="4.5" height="9.5" rx="2.25" fill="url(#ge-il-g)" />
+    <rect x="37" y="12.5" width="4.5" height="9.5" rx="2.25" fill="url(#ge-il-g)" />
     {children}
   </Obj>
 );
-const Person = ({ x = 0, fill = "url(#ge-il-r)" }: { x?: number; fill?: string }) => (
+const Person = ({ x = 0, fill = "url(#ge-il-b)" }: { x?: number; fill?: string }) => (
   <g transform={`translate(${x} 0)`}>
     <circle cx="29" cy="24" r="9.5" fill={fill} />
     <path d="M12.5 51c0-9.4 7.4-15.5 16.5-15.5S45.5 41.6 45.5 51H12.5Z" fill={fill} />
@@ -96,11 +97,11 @@ const ART: Record<IllustrationName, ReactNode> = {
   wallet: (
     <>
       <Obj>
-        <path d="M15 22l22.5-7.4a3.2 3.2 0 0 1 4 2.1l1.7 5.3H15Z" fill="url(#ge-il-b)" />
-        <rect x="10" y="21" width="42" height="30" rx="9" fill="url(#ge-il-r)" />
-        <rect x="35" y="30" width="19" height="12.5" rx="6.25" fill="url(#ge-il-b)" />
+        <path d="M15 22l22.5-7.4a3.2 3.2 0 0 1 4 2.1l1.7 5.3H15Z" fill="url(#ge-il-p)" />
+        <rect x="10" y="21" width="42" height="30" rx="9" fill="url(#ge-il-b)" />
+        <rect x="35" y="30" width="19" height="12.5" rx="6.25" fill="url(#ge-il-p)" />
         <circle cx="41.5" cy="36.2" r="2.6" fill="url(#ge-il-g)" />
-        <Heart beat x={23} y={38} s={1.25} />
+        <Heart beat x={23} y={38} s={1.25} fill="url(#ge-il-r)" />
       </Obj>
       <Gloss d="M14 25.5c6-2 18-2.4 26-1.2" />
       <Sparkle x={53} y={14} s={1} />
@@ -139,7 +140,7 @@ const ART: Record<IllustrationName, ReactNode> = {
   clock: (
     <>
       <Obj>
-        <circle cx="32" cy="34" r="19" fill="url(#ge-il-r)" />
+        <circle cx="32" cy="34" r="19" fill="url(#ge-il-b)" />
         <circle cx="32" cy="34" r="13.5" fill="url(#ge-il-w)" />
         <path className="il-hour" d="M32 34l5.2 3" fill="none" stroke={B2} strokeWidth="3.2" strokeLinecap="round" />
         <path className="il-min" d="M32 34V24.6" fill="none" stroke={B2} strokeWidth="3" strokeLinecap="round" />
@@ -153,19 +154,19 @@ const ART: Record<IllustrationName, ReactNode> = {
     <>
       <Obj>
         <path d="M18 13h26a2.5 2.5 0 0 1 2.5 2.5V51l-4.7-3.1-4.7 3.1-4.7-3.1-4.7 3.1-4.7-3.1-4.7 3.1-4.7-3.1V15.5A2.5 2.5 0 0 1 18 13Z" fill="url(#ge-il-w)" />
-        <rect x="21.5" y="20.5" width="19" height="3.6" rx="1.8" fill={R3} />
-        <rect x="21.5" y="27.5" width="12" height="3.6" rx="1.8" fill={R2} />
-        <rect x="21.5" y="34.5" width="15" height="3.6" rx="1.8" fill={R2} />
+        <rect x="21.5" y="20.5" width="19" height="3.6" rx="1.8" fill="url(#ge-il-b)" />
+        <rect x="21.5" y="27.5" width="12" height="3.6" rx="1.8" fill="url(#ge-il-b)" opacity="0.55" />
+        <rect x="21.5" y="34.5" width="15" height="3.6" rx="1.8" fill="url(#ge-il-b)" opacity="0.55" />
       </Obj>
       <Badge fill="url(#ge-il-g)"><Heart x={46} y={45.5} s={0.72} fill="#fff" /></Badge>
     </>
   ),
-  "user-x": (<><Obj><Person /></Obj><Badge fill="url(#ge-il-b)"><Cross /></Badge></>),
+  "user-x": (<><Obj><Person /></Obj><Badge fill="url(#ge-il-p)"><Cross /></Badge></>),
   "user-plus": (<><Obj><Person /></Obj><Badge fill="url(#ge-il-g)"><Plus /></Badge><Sparkle x={48} y={15} s={0.9} /></>),
   team: (
     <>
       <Obj>
-        <g transform="translate(8 -3) scale(0.86)"><Person fill="url(#ge-il-b)" /></g>
+        <g transform="translate(8 -3) scale(0.86)"><Person fill="url(#ge-il-p)" /></g>
         <g transform="translate(-6 2) scale(0.92)"><Person /></g>
       </Obj>
       <Sparkle x={52} y={14} s={0.9} />
@@ -180,9 +181,9 @@ const ART: Record<IllustrationName, ReactNode> = {
             <ellipse cx="24" cy={45 - i * 6} rx="12" ry="4.8" fill="url(#ge-il-g)" />
           </g>
         ))}
-        <circle cx="42" cy="34" r="12" fill="url(#ge-il-r)" />
+        <circle cx="42" cy="34" r="12" fill="url(#ge-il-b)" />
         <circle cx="42" cy="34" r="8.5" fill="none" stroke="#fff" strokeOpacity="0.6" />
-        <Heart x={42} y={35} s={1} />
+        <Heart x={42} y={35} s={1} fill="url(#ge-il-r)" />
       </Obj>
       <Gloss d="M35 28c2-2.6 5.5-3.6 8.5-2.8" />
       <Sparkle x={54} y={17} s={0.9} />
@@ -203,8 +204,8 @@ const ART: Record<IllustrationName, ReactNode> = {
   chart: (
     <>
       <Obj>
-        <rect className="il-bar" style={{ transformOrigin: "17.5px 51px", animationDelay: "0s" }} x="12.5" y="34" width="10" height="17" rx="4" fill="url(#ge-il-r)" />
-        <rect className="il-bar" style={{ transformOrigin: "32px 51px", animationDelay: "0.35s" }} x="27" y="25" width="10" height="26" rx="4" fill="url(#ge-il-b)" />
+        <rect className="il-bar" style={{ transformOrigin: "17.5px 51px", animationDelay: "0s" }} x="12.5" y="34" width="10" height="17" rx="4" fill="url(#ge-il-b)" />
+        <rect className="il-bar" style={{ transformOrigin: "32px 51px", animationDelay: "0.35s" }} x="27" y="25" width="10" height="26" rx="4" fill="url(#ge-il-p)" />
         <rect className="il-bar" style={{ transformOrigin: "46.5px 51px", animationDelay: "0.7s" }} x="41.5" y="16" width="10" height="35" rx="4" fill="url(#ge-il-g)" />
       </Obj>
       <Gloss d="M14.5 37v6M29 28v8M43.5 19v9" o={0.6} />
@@ -214,7 +215,7 @@ const ART: Record<IllustrationName, ReactNode> = {
   ),
   heart: (
     <>
-      <Obj><Heart beat x={32} y={35} s={3.6} fill="url(#ge-il-r)" /></Obj>
+      <Obj><Heart beat x={32} y={35} s={3.6} fill="url(#ge-il-b)" /></Obj>
       <Gloss d="M18.5 25c1.4-4 5.6-5.8 9-4.4" o={0.85} />
       <Sparkle x={51} y={14} s={1.1} />
       <Sparkle x={13} y={46} s={0.6} />
@@ -223,9 +224,9 @@ const ART: Record<IllustrationName, ReactNode> = {
   gift: (
     <>
       <Obj>
-        <rect x="14" y="28" width="36" height="23" rx="5" fill="url(#ge-il-r)" />
-        <rect x="11.5" y="22" width="41" height="9" rx="4" fill="url(#ge-il-r)" />
-        <rect x="29" y="22" width="6" height="29" fill="url(#ge-il-b)" />
+        <rect x="14" y="28" width="36" height="23" rx="5" fill="url(#ge-il-b)" />
+        <rect x="11.5" y="22" width="41" height="9" rx="4" fill="url(#ge-il-p)" />
+        <rect x="29" y="22" width="6" height="29" fill="url(#ge-il-g)" />
         <path d="M32 22c-3-6-11-8-11-3s8 3 11 3Zm0 0c3-6 11-8 11-3s-8 3-11 3Z" fill="url(#ge-il-g)" />
       </Obj>
       <Gloss d="M15 24.5h12" />
@@ -235,9 +236,9 @@ const ART: Record<IllustrationName, ReactNode> = {
   sparkles: (
     <>
       <Obj>
-        <Sparkle x={28} y={34} s={3.4} fill="url(#ge-il-r)" />
+        <Sparkle x={28} y={34} s={3.4} fill="url(#ge-il-b)" />
         <Sparkle x={45} y={19} s={1.8} fill="url(#ge-il-g)" />
-        <Sparkle x={46} y={45} s={1.2} fill="url(#ge-il-b)" />
+        <Sparkle x={46} y={45} s={1.2} fill="url(#ge-il-p)" />
       </Obj>
       <Gloss d="M24.5 27c1-2.4 2-3.6 3.4-4" o={0.8} />
     </>
@@ -246,8 +247,8 @@ const ART: Record<IllustrationName, ReactNode> = {
     <>
       <Obj>
         <path d="M27 31L48 13M37 31L16 13" stroke="url(#ge-il-steel)" strokeWidth="5" strokeLinecap="round" />
-        <circle cx="22" cy="42" r="8" fill="none" stroke="url(#ge-il-r)" strokeWidth="5.5" />
-        <circle cx="42" cy="42" r="8" fill="none" stroke="url(#ge-il-b)" strokeWidth="5.5" />
+        <circle cx="22" cy="42" r="8" fill="none" stroke="url(#ge-il-b)" strokeWidth="5.5" />
+        <circle cx="42" cy="42" r="8" fill="none" stroke="url(#ge-il-p)" strokeWidth="5.5" />
         <circle cx="32" cy="30" r="2.6" fill="url(#ge-il-g)" />
       </Obj>
       <Gloss d="M17 37c1.6-2 3.4-2.8 5.4-2.6" />
@@ -257,18 +258,18 @@ const ART: Record<IllustrationName, ReactNode> = {
   chat: (
     <>
       <Obj>
-        <path d="M14 18a8 8 0 0 1 8-8h22a8 8 0 0 1 8 8v15a8 8 0 0 1-8 8H27l-8 7v-7.4A8 8 0 0 1 14 33V18Z" fill="url(#ge-il-r)" />
+        <path d="M14 18a8 8 0 0 1 8-8h22a8 8 0 0 1 8 8v15a8 8 0 0 1-8 8H27l-8 7v-7.4A8 8 0 0 1 14 33V18Z" fill="url(#ge-il-b)" />
         {[24, 33, 42].map((x) => <circle key={x} cx={x} cy="25.5" r="2.6" fill="#fff" />)}
       </Obj>
       <Gloss d="M18.5 15c5-2 18-2 25 0" />
-      <Obj><Heart beat x={47} y={47} s={1.3} /></Obj>
+      <Obj><Heart beat x={47} y={47} s={1.3} fill="url(#ge-il-r)" /></Obj>
     </>
   ),
   shield: (
     <>
       <Obj>
-        <path d="M32 10l17 6.5v12.8c0 11-7.4 18.6-17 22.2-9.6-3.6-17-11.2-17-22.2V16.5L32 10Z" fill="url(#ge-il-r)" />
-        <path d="M24.5 31l5.3 5.3L40 26" fill="none" stroke={B2} strokeWidth="3.6" strokeLinecap="round" strokeLinejoin="round" />
+        <path d="M32 10l17 6.5v12.8c0 11-7.4 18.6-17 22.2-9.6-3.6-17-11.2-17-22.2V16.5L32 10Z" fill="url(#ge-il-b)" />
+        <path d="M24.5 31l5.3 5.3L40 26" fill="none" stroke="#fff4d8" strokeWidth="3.6" strokeLinecap="round" strokeLinejoin="round" />
       </Obj>
       <Gloss d="M20 19.5c4-2 8-3.4 12-4.4" o={0.85} />
       <Sparkle x={52} y={13} s={0.9} />
@@ -278,9 +279,9 @@ const ART: Record<IllustrationName, ReactNode> = {
     <>
       <Obj>
         <rect x="14" y="28" width="36" height="23" rx="4" fill="url(#ge-il-w)" />
-        <path d="M12 21l4-8h32l4 8v3.5a5 5 0 0 1-10 0 5 5 0 0 1-10 0 5 5 0 0 1-10 0 5 5 0 0 1-10 0V21Z" fill="url(#ge-il-r)" />
+        <path d="M12 21l4-8h32l4 8v3.5a5 5 0 0 1-10 0 5 5 0 0 1-10 0 5 5 0 0 1-10 0 5 5 0 0 1-10 0V21Z" fill="url(#ge-il-b)" />
         <path d="M22 13l-2 11.5M32 13v11.5M42 13l2 11.5" stroke="#fff" strokeWidth="2.2" opacity="0.8" />
-        <rect x="27" y="36" width="10" height="15" rx="2.5" fill="url(#ge-il-b)" />
+        <rect x="27" y="36" width="10" height="15" rx="2.5" fill="url(#ge-il-p)" />
         <Heart x={20.5} y={37} s={0.8} fill={R3} />
       </Obj>
       <Sparkle x={54} y={12} s={0.9} />
@@ -289,10 +290,10 @@ const ART: Record<IllustrationName, ReactNode> = {
   notebook: (
     <>
       <Obj>
-        <rect x="15" y="11" width="31" height="41" rx="6" fill="url(#ge-il-r)" />
+        <rect x="15" y="11" width="31" height="41" rx="6" fill="url(#ge-il-b)" />
         <rect x="21" y="18" width="19" height="3.4" rx="1.7" fill="#fff" opacity="0.85" />
         <rect x="21" y="24.5" width="13" height="3.4" rx="1.7" fill="#fff" opacity="0.7" />
-        <Heart beat x={30.5} y={38} s={1.25} />
+        <Heart beat x={30.5} y={38} s={1.25} fill="url(#ge-il-r)" />
         <path d="M44 51l9-24" stroke="url(#ge-il-g)" strokeWidth="4.5" strokeLinecap="round" />
       </Obj>
       <Gloss d="M18.5 15v32" o={0.5} />
@@ -313,8 +314,8 @@ const ART: Record<IllustrationName, ReactNode> = {
   link: (
     <>
       <Obj>
-        <rect x="9.5" y="25" width="27" height="15" rx="7.5" transform="rotate(-35 23 32.5)" fill="none" stroke="url(#ge-il-r)" strokeWidth="6" />
-        <rect x="27.5" y="25" width="27" height="15" rx="7.5" transform="rotate(-35 41 32.5)" fill="none" stroke="url(#ge-il-b)" strokeWidth="6" />
+        <rect x="9.5" y="25" width="27" height="15" rx="7.5" transform="rotate(-35 23 32.5)" fill="none" stroke="url(#ge-il-b)" strokeWidth="6" />
+        <rect x="27.5" y="25" width="27" height="15" rx="7.5" transform="rotate(-35 41 32.5)" fill="none" stroke="url(#ge-il-p)" strokeWidth="6" />
       </Obj>
       <Sparkle x={52} y={13} s={1} />
     </>

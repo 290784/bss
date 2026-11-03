@@ -227,7 +227,7 @@ export function AgendaView(props: Props) {
           <div role="tablist" aria-label="Visualização" className="flex w-full rounded-full border border-line/70 bg-surface/70 p-1 shadow-[var(--shadow-control)] sm:w-auto">
             {(["lista", "dia", "semana", "mes"] as const).map((v) => (
               <button key={v} role="tab" aria-selected={view === v} onClick={() => go({ visao: v })}
-                className={cn("h-10 flex-1 sm:h-8 sm:flex-none rounded-full px-3.5 text-[13px] font-medium capitalize transition-colors", view === v ? "bg-accent-subtle text-accent-text" : "text-muted hover:text-ink")}>
+                className={cn("h-10 flex-1 sm:h-8 sm:flex-none rounded-full px-3.5 text-[13px] font-medium capitalize transition-colors", view === v ? "bg-accent-subtle text-accent-text ring-1 ring-gold-line/55" : "text-muted hover:text-ink")}>
                 {v === "mes" ? "Mês" : v}
               </button>
             ))}

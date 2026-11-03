@@ -28,7 +28,8 @@ export function PageHeader({ title, description, actions, art }: { title: string
         {art && <Illustration name={art} className="h-14 w-14 sm:h-16 sm:w-16" />}
         <div className="min-w-0">
         <h1 className="font-serif text-[28px] leading-[1.1] font-semibold tracking-[-0.01em] text-ink sm:text-[32px]">{title}</h1>
-        {description && <p className="mt-1.5 text-sm text-muted">{description}</p>}
+        <span aria-hidden className="gold-rule mt-2.5" />
+        {description && <p className="mt-2 text-sm text-muted">{description}</p>}
         </div>
       </div>
       {actions && <div className="flex flex-wrap items-center gap-2">{actions}</div>}
@@ -94,7 +95,7 @@ export function Avatar({ name, color, className }: { name: string; color?: strin
   const ini = ((parts[0]?.[0] ?? "") + (parts.length > 1 ? parts.at(-1)![0] : "")).toUpperCase();
   return (
     <span
-      className={cn("grid h-8 w-8 shrink-0 place-items-center rounded-full text-xs font-semibold ring-2 ring-surface", !color && "bg-accent-muted text-accent-text", className)}
+      className={cn("grid h-8 w-8 shrink-0 place-items-center rounded-full text-xs font-semibold ring-2 ring-surface shadow-[0_0_0_3px_color-mix(in_srgb,var(--color-gold-line)_55%,transparent)]", !color && "bg-accent-muted text-accent-text", className)}
       style={color ? { backgroundColor: color + "1f", color } : undefined}
       aria-hidden
     >

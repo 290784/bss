@@ -9,6 +9,7 @@ export function LegalPage({ title, updated, children }: { title: string; updated
           Documento inicial, sujeito a revisão jurídica antes do lançamento comercial. Não constitui garantia de conformidade legal.
         </div>
         <h1 className="font-tight tracking-[-0.02em] text-4xl font-extrabold">{title}</h1>
+        <span aria-hidden className="gold-rule mt-3" />
         <p className="mt-2 text-sm text-muted">Última atualização: {updated}</p>
         <div className="mt-8 space-y-4 text-[15px] leading-relaxed text-ink-soft [&_h2]:mt-8 [&_h2]:text-lg [&_h2]:font-semibold [&_h2]:text-ink [&_ul]:list-disc [&_ul]:space-y-1 [&_ul]:pl-5">{children}</div>
       </main>

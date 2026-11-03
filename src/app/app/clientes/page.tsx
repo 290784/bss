@@ -73,7 +73,7 @@ export default async function ClientsPage({ searchParams }: { searchParams: Prom
           <Link key={k} href={`/app/clientes?${new URLSearchParams({ ...(sp.q ? { q: sp.q } : {}), ...(sort !== "nome" ? { ordem: sort } : {}), segmento: k })}`}
             aria-current={k === segment ? "page" : undefined} scroll={false}
             className={cn("inline-flex h-10 shrink-0 items-center gap-1.5 rounded-full border px-3.5 text-[13px] font-medium transition-colors sm:h-9",
-              k === segment ? "border-accent-muted bg-accent-subtle text-accent-text" : "border-line/80 bg-surface text-ink-soft shadow-[var(--shadow-control)] hover:border-accent-muted hover:text-ink")}>
+              k === segment ? "border-gold-line/60 bg-accent-subtle text-accent-text" : "border-line/80 bg-surface text-ink-soft shadow-[var(--shadow-control)] hover:border-accent-muted hover:text-ink")}>
             {label}
             <span className={cn("rounded-full px-1.5 text-[11px] tabular", k === segment ? "bg-surface" : "bg-sunken")}>{counts[k]}</span>
           </Link>
@@ -117,7 +117,7 @@ export default async function ClientsPage({ searchParams }: { searchParams: Prom
             </ul>
             {/* Computador: tabela */}
             <table className="hidden w-full text-sm md:table">
-              <thead className="border-b border-line/70 bg-canvas/50 text-left text-[11px] tracking-[0.08em] text-muted uppercase">
+              <thead className="border-b border-gold-line/35 bg-canvas/50 text-left text-[11px] tracking-[0.08em] text-muted uppercase">
                 <tr>
                   <th className="px-4 py-3 font-medium">Cliente</th><th className="px-4 py-3 font-medium">Contato</th>
                   <th className="px-4 py-3 text-right font-medium">Visitas</th><th className="px-4 py-3 font-medium">Última visita</th>

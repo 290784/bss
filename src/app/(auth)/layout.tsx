@@ -26,7 +26,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
       <main className="flex flex-col px-4 py-8 sm:px-10">
         <div className="flex items-center justify-between"><div className="lg:invisible"><Logo /></div><ThemeToggle /></div>
         <div className="mx-auto flex w-full max-w-md flex-1 flex-col justify-center py-10">
-          <div className="rounded-[28px] sm:border sm:border-line/70 sm:bg-surface sm:p-9 sm:shadow-[var(--shadow-card)]">{children}</div>
+          <div className="rounded-[28px] sm:border sm:border-gold-line/40 sm:bg-surface sm:p-9 sm:shadow-[var(--shadow-card)]">{children}</div>
         </div>
       </main>
     </div>

@@ -11,6 +11,7 @@ export default async function SignInPage({ searchParams }: { searchParams: Promi
   return (
     <>
       <h1 className="font-serif text-3xl font-semibold">Bem-vinda de volta</h1>
+      <span aria-hidden className="gold-rule mt-2" />
       <p className="mt-1 mb-8 text-sm text-muted">Entre para ver sua agenda de hoje.</p>
       <SignInForm next={next} />
     </>

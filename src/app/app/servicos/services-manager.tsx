@@ -54,7 +54,7 @@ export function ServicesManager({ services, professionals, readOnly, stats = {} 
         <div className="flex flex-col gap-6">
           {[...groups.entries()].map(([cat, list]) => (
             <section key={cat}>
-              <h2 className="mb-3 flex items-center gap-2.5 font-serif text-[18px] font-semibold text-ink"><span className="h-px w-6 bg-highlight-border" aria-hidden />{cat}</h2>
+              <h2 className="mb-3 flex items-center gap-2.5 font-serif text-[18px] font-semibold text-ink"><span className="gold-rule w-8" aria-hidden />{cat}</h2>
               <Card className="divide-y divide-line/70 overflow-hidden">
                 {list.map((s) => {
                   const st = stats[s.id];
@@ -146,7 +146,7 @@ function AdjustPricesDialog({ services, onClose }: { services: ServiceRow[]; onC
         <div className="mt-4 flex flex-wrap gap-1.5">
           {["todas", ...cats].map((c) => (
             <button key={c} type="button" onClick={() => pickCat(c)} aria-pressed={cat === c}
-              className={cn("h-9 rounded-full border px-3 text-[13px] font-medium", cat === c ? "border-accent-muted bg-accent-subtle text-accent-text" : "border-line bg-surface text-ink-soft")}>
+              className={cn("h-9 rounded-full border px-3 text-[13px] font-medium", cat === c ? "border-gold-line/60 bg-accent-subtle text-accent-text" : "border-line bg-surface text-ink-soft")}>
               {c === "todas" ? "Todos" : c}
             </button>
           ))}

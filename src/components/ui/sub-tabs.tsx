@@ -19,7 +19,7 @@ export function SubTabs({ tabs, current, href, label }: { tabs: SubTab[]; curren
             <li key={t.id}>
               <Link href={href(t.id)} scroll={false} aria-current={active ? "page" : undefined}
                 className={cn("press inline-flex h-10 items-center gap-2 rounded-full px-4 text-[13px] font-medium whitespace-nowrap sm:h-9",
-                  active ? "bg-accent-subtle text-accent-text" : "text-muted hover:bg-hover-tint hover:text-ink")}>
+                  active ? "bg-accent-subtle text-accent-text ring-1 ring-gold-line/55" : "text-muted hover:bg-hover-tint hover:text-ink")}>
                 {t.icon && <t.icon className="h-4 w-4" strokeWidth={1.7} aria-hidden />}
                 {t.label}
                 {t.count !== undefined && <span className={cn("rounded-full px-1.5 text-[11px] tabular", active ? "bg-surface" : "bg-sunken")}>{t.count}</span>}
