@@ -73,7 +73,7 @@ export function AppShell({ items, user, org, memberships, notifications, banner,
           const active = isActive(pathname, it.href);
           return (
             <Link key={it.href} href={it.href} className={cn("press flex flex-col items-center gap-0.5 py-2 text-[11px] font-medium", active ? "text-accent-text" : "text-muted")} aria-current={active ? "page" : undefined}>
-              <span className={cn("grid h-8 w-14 place-items-center rounded-full transition-colors", active && "bg-accent-subtle")}><Icon className="h-5 w-5" strokeWidth={active ? 2 : 1.7} /></span>{it.label}
+              <span className={cn("grid h-8 w-14 place-items-center rounded-full transition-colors", active && "bg-accent-subtle ring-1 ring-gold-line/55")}><Icon className="h-5 w-5" strokeWidth={active ? 2 : 1.7} /></span>{it.label}
             </Link>
           );
         })}
@@ -112,7 +112,7 @@ function NavLink({ item, active }: { item: NavItem; active: boolean }) {
   return (
     <Link href={item.href} aria-current={active ? "page" : undefined}
       className={cn("press group flex min-h-11 items-center gap-3 rounded-full px-4 text-sm",
-        active ? "bg-accent-subtle font-medium text-accent-text shadow-[inset_0_0_0_1px_var(--color-accent-muted)]" : "text-ink-soft hover:bg-hover-tint hover:text-ink")}>
+        active ? "relative bg-accent-subtle font-medium text-accent-text shadow-[inset_0_0_0_1px_color-mix(in_srgb,var(--color-gold-line)_45%,transparent)] before:absolute before:top-1/2 before:left-2 before:h-5 before:w-[3px] before:-translate-y-1/2 before:rounded-full before:bg-gold-line" : "text-ink-soft hover:bg-hover-tint hover:text-ink")}>
       <Icon className="h-[18px] w-[18px] transition-transform duration-300 group-hover:scale-110 group-hover:-rotate-6" strokeWidth={active ? 2 : 1.6} />
       {item.label}
     </Link>
@@ -139,7 +139,7 @@ function OrgSwitcher({ org, memberships }: { org: ShellProps["org"]; memberships
 
 function UserBlock({ user }: { user: ShellProps["user"] }) {
   return (
-    <div className="flex items-center gap-2.5 rounded-2xl border border-line/60 bg-canvas/60 p-2.5">
+    <div className="flex items-center gap-2.5 rounded-2xl border border-gold-line/30 bg-canvas/60 p-2.5">
       <Avatar name={user.name} />
       <div className="min-w-0 flex-1">
         <div className="truncate text-[13px] font-medium">{user.name}</div>

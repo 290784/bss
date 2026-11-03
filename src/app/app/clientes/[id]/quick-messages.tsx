@@ -31,7 +31,7 @@ export function QuickMessages({ phone, messages, highlight }: { phone: string | 
         {messages.map((m) => (
           <button key={m.id} type="button" role="tab" aria-selected={m.id === sel} onClick={() => pick(m)}
             className={cn("h-9 rounded-full border px-3 text-[13px] font-medium transition sm:h-8",
-              m.id === sel ? "border-accent-muted bg-accent-subtle text-accent-text" : "border-line bg-surface text-ink-soft hover:text-ink")}>
+              m.id === sel ? "border-gold-line/60 bg-accent-subtle text-accent-text" : "border-line bg-surface text-ink-soft hover:text-ink")}>
             {m.label}
           </button>
         ))}

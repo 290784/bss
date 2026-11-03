@@ -34,7 +34,7 @@ export function Dialog({
     >
       {open && (
         <div className={cn("flex max-h-[92dvh] flex-col", side === "right" && "sm:h-dvh sm:max-h-dvh")}>
-          <div className="flex items-start justify-between gap-4 border-b border-line/70 px-5 py-4 sm:px-6">
+          <div className="flex items-start justify-between gap-4 border-b border-gold-line/35 px-5 py-4 sm:px-6">
             <div className="min-w-0">
               <h2 className="font-serif text-[19px] leading-snug font-semibold">{title}</h2>
               {description && <div className="mt-0.5 text-[13px] text-muted">{description}</div>}

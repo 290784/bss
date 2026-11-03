@@ -10,6 +10,7 @@ export default async function SignUpPage() {
   return (
     <>
       <h1 className="font-serif text-3xl font-semibold">Crie sua conta</h1>
+      <span aria-hidden className="gold-rule mt-2" />
       <p className="mt-1 mb-8 text-sm text-muted">14 dias grátis com todos os recursos do plano Studio. Sem cartão.</p>
       <SignUpForm />
     </>

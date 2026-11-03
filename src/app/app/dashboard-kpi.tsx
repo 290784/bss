@@ -16,7 +16,7 @@ export function Kpi({ label, value, change, sub, metric, invert, highlight }: { 
   const bad = change !== undefined && change !== null && (invert ? change > 0 : change < 0);
   const art = KPI_ART[metric];
   return (
-    <Card className={cn("relative overflow-hidden p-4 sm:p-5", highlight && "border-accent-muted bg-[linear-gradient(140deg,var(--color-accent-subtle)_0%,var(--color-surface)_75%)]!")}>
+    <Card className={cn("relative overflow-hidden p-4 sm:p-5", highlight && "border-gold-line/60 bg-[linear-gradient(140deg,var(--color-accent-subtle)_0%,var(--color-surface)_75%)]!")}>
       <div className="flex items-start justify-between gap-2">
         <div className="flex min-w-0 items-center gap-1 text-[13px] text-muted">{label}<InfoTip text={METRIC_DEFINITIONS[metric]} /></div>
         {art && <Illustration name={art} className="-mt-1 -mr-1 h-11 w-11 sm:h-14 sm:w-14" />}

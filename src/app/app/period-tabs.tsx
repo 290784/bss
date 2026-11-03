@@ -27,7 +27,7 @@ export function PeriodTabs({ periods, current, basePath = "/app" }: { periods: {
       {periods.map((p) => (
         <button key={p.id} type="button" onClick={() => pick(p.id)} aria-pressed={p.id === active}
           className={cn("press h-10 shrink-0 rounded-full px-3.5 text-[13px] font-medium whitespace-nowrap sm:h-8",
-            p.id === active ? "bg-accent-subtle text-accent-text" : "text-muted hover:text-ink")}>
+            p.id === active ? "bg-accent-subtle text-accent-text ring-1 ring-gold-line/55" : "text-muted hover:text-ink")}>
           {p.label}
           {pending && p.id === active && <span className="ml-1.5 inline-block h-1.5 w-1.5 animate-pulse rounded-full bg-accent align-middle" aria-hidden />}
         </button>

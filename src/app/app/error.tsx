@@ -9,6 +9,7 @@ export default function AppError({ error, retry }: { error: unknown; retry: () =
   return (
     <div role="alert" className="mx-auto max-w-md rounded-card border border-line bg-surface px-5 py-8 text-center">
       <h1 className="font-serif text-[22px] leading-tight font-semibold">Esta tela não carregou</h1>
+      <span aria-hidden className="gold-rule mx-auto mt-2" />
       <p className="mt-2 text-sm text-muted">Pode ter sido a internet. Seus dados estão salvos; tente de novo em alguns segundos.</p>
       <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
         <button onClick={() => retry()} className="btn-glow inline-flex h-11 items-center gap-2 rounded-[10px] px-4 text-sm font-medium text-white">
