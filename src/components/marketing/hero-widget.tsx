@@ -16,11 +16,11 @@ import { useAutoplay, useDragSwipe } from "./carousel";
 type Slide = { key: string; label: string; desc: string; icon: typeof Bell; tile: string; glyph: string; halo: string; render: () => ReactNode };
 
 const SLIDES: Slide[] = [
-  { key: "lembretes", label: "Lembretes", desc: "Confirmação e lembrete 24h antes, sem mandar uma a uma.", icon: Bell, tile: "bg-[#eacffc]", glyph: "text-[#5a0891]", halo: "var(--color-halo-lavender)", render: () => <RemindersCard /> },
-  { key: "online", label: "Agendamento online", desc: "Sua cliente escolhe um horário livre, a qualquer hora.", icon: CalendarCheck2, tile: "bg-[#d59efa]", glyph: "text-[#3c0561]", halo: "var(--color-halo-orange)", render: () => <OnlineCard /> },
-  { key: "receita", label: "Faturamento", desc: "Quanto você recebeu no mês, dia a dia.", icon: BarChart3, tile: "bg-[#c06ef7]", glyph: "text-[#ffffff]", halo: "var(--color-halo-pink)", render: () => <RevenueCard /> },
-  { key: "retorno", label: "Clientes de volta", desc: "Quem voltou e quem precisa de um convite para voltar.", icon: HeartHandshake, tile: "bg-[#ab3df5]", glyph: "text-[#ffffff]", halo: "var(--color-halo-green)", render: () => <ReturnCard /> },
-  { key: "promo", label: "Promoções", desc: "Ofertas para preencher horários vagos.", icon: Tag, tile: "bg-[#960df2]", glyph: "text-[#ffffff]", halo: "var(--color-halo-cyan)", render: () => <PromoCard /> },
+  { key: "lembretes", label: "Lembretes", desc: "Confirmação e lembrete 24h antes, sem mandar uma a uma.", icon: Bell, tile: "bg-[#f4e1ec]", glyph: "text-[#4d1940]", halo: "var(--color-halo-lavender)", render: () => <RemindersCard /> },
+  { key: "online", label: "Agendamento online", desc: "Sua cliente escolhe um horário livre, a qualquer hora.", icon: CalendarCheck2, tile: "bg-[#e5bdd5]", glyph: "text-[#36102c]", halo: "var(--color-halo-orange)", render: () => <OnlineCard /> },
+  { key: "receita", label: "Faturamento", desc: "Quanto você recebeu no mês, dia a dia.", icon: BarChart3, tile: "bg-[#b5619a]", glyph: "text-[#ffffff]", halo: "var(--color-halo-pink)", render: () => <RevenueCard /> },
+  { key: "retorno", label: "Clientes de volta", desc: "Quem voltou e quem precisa de um convite para voltar.", icon: HeartHandshake, tile: "bg-[#9c3f82]", glyph: "text-[#ffffff]", halo: "var(--color-halo-green)", render: () => <ReturnCard /> },
+  { key: "promo", label: "Promoções", desc: "Ofertas para preencher horários vagos.", icon: Tag, tile: "bg-[#7a2d63]", glyph: "text-[#ffffff]", halo: "var(--color-halo-cyan)", render: () => <PromoCard /> },
 ];
 
 /** Tempo de cada card: o suficiente para ler o título e a legenda com calma. */
@@ -148,7 +148,7 @@ function Dock({ active, onSelect, onDrag }: { active: number; onSelect: (i: numb
           const opacity = dist <= 1.5 ? 1 : Math.max(0, 1 - (dist - 1.5) * 0.9);
           return (
             <button key={s.key} onClick={() => onSelect(i)} aria-label={s.label} aria-pressed={i === active} title={s.label} tabIndex={0}
-              className={cn("group absolute top-1/2 grid place-items-center rounded-[22px] bg-[#0c0820] ring-1 ring-white/20 shadow-[0_8px_28px_-8px_rgb(150_13_242/0.7)] hover:ring-violet-200/70 active:brightness-125",
+              className={cn("group absolute top-1/2 grid place-items-center rounded-[22px] bg-[#16101a] ring-1 ring-white/20 shadow-[0_8px_28px_-8px_rgb(100_35_80/0.7)] hover:ring-violet-200/70 active:brightness-125",
                 !dragging && "transition-all duration-700 ease-[cubic-bezier(.2,.8,.2,1)]")}
               style={{ width: size, height: size, opacity, transform: `translate(calc(${pos * STEP}px - 50%), calc(-50% + ${dist * dist * 5}px))`, zIndex: 10 - Math.round(dist) }}>
               <span className={cn("pointer-events-none grid place-items-center rounded-[16px] group-hover:scale-105 group-active:scale-90", !dragging && "transition-all duration-700", s.tile)}
@@ -166,9 +166,9 @@ function Dock({ active, onSelect, onDrag }: { active: number; onSelect: (i: numb
 // ---------------------------------------------------------------------------
 // Cards (ilustrações: barras cinza no lugar de texto, sem dados reais)
 
-const Sk = ({ className }: { className?: string }) => <span className={cn("block rounded-full bg-[#2d2348]", className)} />;
+const Sk = ({ className }: { className?: string }) => <span className={cn("block rounded-full bg-[#3a2d40]", className)} />;
 const Panel = ({ className, children }: { className?: string; children: ReactNode }) => (
-  <div className={cn("glass rounded-[20px] bg-[#120b26]/80 shadow-[0_24px_50px_-20px_rgb(0_0_0/0.8)]", className)}>{children}</div>
+  <div className={cn("glass rounded-[20px] bg-[#18121d]/80 shadow-[0_24px_50px_-20px_rgb(0_0_0/0.8)]", className)}>{children}</div>
 );
 
 function RemindersCard() {
@@ -176,7 +176,7 @@ function RemindersCard() {
     <div className="flex w-[78%] flex-col gap-3">
       <Panel className="relative flex items-center gap-3 p-3">
         <div className="grid h-12 w-12 shrink-0 grid-cols-2 gap-0.5 overflow-hidden rounded-xl">
-          {["#eacffc", "#c06ef7", "#960df2", "#5a0891"].map((c) => <span key={c} style={{ background: c }} />)}
+          {["#f4e1ec", "#b5619a", "#7a2d63", "#4d1940"].map((c) => <span key={c} style={{ background: c }} />)}
         </div>
         <div className="min-w-0 flex-1">
           <div className="text-[15px] font-bold text-ink">3 lembretes hoje</div>
@@ -185,7 +185,7 @@ function RemindersCard() {
         <span className="absolute -top-2 -right-2 grid h-7 w-7 place-items-center rounded-full bg-badge text-xs font-bold text-white">1</span>
       </Panel>
       <Panel className="flex items-center gap-3 p-3 opacity-90">
-        <span className="h-12 w-12 shrink-0 rounded-xl bg-[#1d1535]" />
+        <span className="h-12 w-12 shrink-0 rounded-xl bg-[#241b29]" />
         <div className="flex-1"><Sk className="h-2.5 w-28" /><Sk className="mt-2 h-2 w-16" /></div>
       </Panel>
       <Panel className="flex items-center justify-center p-3 text-2xl font-light text-ink/40">+</Panel>
@@ -203,16 +203,16 @@ function OnlineCard() {
           {days.map((d, i) => <span key={i}>{d}</span>)}
           {Array.from({ length: 14 }, (_, i) => (
             <span key={i} className={cn("grid aspect-square place-items-center rounded-lg text-[11px]",
-              i === 9 ? "btn-glow text-white" : i % 5 === 3 ? "bg-[#1d1535] text-ink/30 line-through" : "bg-[#181130] text-ink/70")}>{i + 3}</span>
+              i === 9 ? "btn-glow text-white" : i % 5 === 3 ? "bg-[#241b29] text-ink/30 line-through" : "bg-[#1e1722] text-ink/70")}>{i + 3}</span>
           ))}
         </div>
         <div className="mt-3 flex gap-1.5">
           {["09:00", "10:30", "14:30"].map((t, i) => (
-            <span key={t} className={cn("rounded-full px-2.5 py-1 text-[11px] font-semibold tabular", i === 2 ? "btn-glow text-white" : "bg-[#1d1535] text-ink/70")}>{t}</span>
+            <span key={t} className={cn("rounded-full px-2.5 py-1 text-[11px] font-semibold tabular", i === 2 ? "btn-glow text-white" : "bg-[#241b29] text-ink/70")}>{t}</span>
           ))}
         </div>
       </Panel>
-      <span className="absolute -top-4 -right-3 rounded-lg bg-sticker px-3 py-1.5 text-[15px] font-extrabold text-violet-800 shadow-[0_0_24px_-4px_rgb(234_207_252/0.9)] [transform:rotate(-16deg)] motion-safe:[animation:mkt-sticker_.5s_cubic-bezier(.3,1.5,.5,1)_.15s_both]">
+      <span className="absolute -top-4 -right-3 rounded-lg bg-sticker px-3 py-1.5 text-[15px] font-extrabold text-violet-800 shadow-[0_0_24px_-4px_rgb(244_225_236/0.9)] [transform:rotate(-16deg)] motion-safe:[animation:mkt-sticker_.5s_cubic-bezier(.3,1.5,.5,1)_.15s_both]">
         Confirmado!
       </span>
     </div>
@@ -225,7 +225,7 @@ function Bars({ values, gradients, cap = true }: { values: number[]; gradients: 
       <span className="absolute inset-x-0 top-[38%] border-t border-dashed border-violet-300/20" aria-hidden />
       {values.map((v, i) => (
         <div key={i} className="flex h-full flex-1 flex-col justify-end">
-          {cap && <span className="mb-1 h-1 rounded-full bg-[#2d2348]" />}
+          {cap && <span className="mb-1 h-1 rounded-full bg-[#3a2d40]" />}
           <span className="block origin-bottom rounded-t-[6px] rounded-b-[3px] motion-safe:[animation:mkt-bar_.7s_cubic-bezier(.2,.8,.2,1)_both]"
             style={{ height: `${v}%`, background: gradients[i % gradients.length], animationDelay: `${0.05 * i}s` }} />
         </div>
@@ -242,7 +242,7 @@ function RevenueCard() {
         <span className="text-ink/30">›</span>
       </div>
       <Bars values={[46, 62, 38, 80, 58, 92]}
-        gradients={["linear-gradient(#eacffc,#ab3df5)", "linear-gradient(#d59efa,#780ac2)", "linear-gradient(#c06ef7,#5a0891)"]} />
+        gradients={["linear-gradient(#f4e1ec,#9c3f82)", "linear-gradient(#e5bdd5,#642350)", "linear-gradient(#b5619a,#4d1940)"]} />
     </Panel>
   );
 }
@@ -260,11 +260,11 @@ function PromoCard() {
   return (
     <div className="relative h-[86%] w-[80%]">
       <Panel className="absolute top-[10%] right-0 flex h-[70%] w-[62%] flex-col items-center justify-center gap-2 bg-white/5 backdrop-blur">
-        <span className="h-10 w-10 rounded-full bg-[#2d2348]" />
+        <span className="h-10 w-10 rounded-full bg-[#3a2d40]" />
         <span className="text-[26px] font-bold text-ink/30">20%</span>
       </Panel>
       <Panel className="absolute top-0 left-0 h-full w-[64%] overflow-hidden">
-        <div className="relative h-[72%] bg-[radial-gradient(circle_at_30%_30%,#eacffc,#ab3df5_50%,#3c0561)]">
+        <div className="relative h-[72%] bg-[radial-gradient(circle_at_30%_30%,#f4e1ec,#9c3f82_50%,#36102c)]">
           <span className="absolute top-3 left-3 grid h-9 w-9 place-items-center rounded-full btn-glow text-[11px] font-bold text-white">B·</span>
           <span className="absolute right-3 bottom-2 text-[28px] font-bold text-white drop-shadow">15%</span>
         </div>

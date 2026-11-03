@@ -15,7 +15,7 @@ export type IllustrationName =
 // originais no escuro. Aqui ficam só as tintas usadas direto em traços e sombras.
 const R2 = "#f4b2cd", R3 = "#d4679a"; // rosé (traço fino)
 const B2 = "#6e2459"; // ameixa
-const G3 = "#a5772a"; // champanhe escuro
+const G3 = "#8a6426"; // ouro escuro (o mesmo do degradê de "Conheça a")
 
 function Defs() {
   return (

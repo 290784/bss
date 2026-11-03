@@ -1,7 +1,8 @@
 import { Ambient } from "@/components/brand/ambient";
 import type { Viewport } from "next";
 import Link from "next/link";
-import { ArrowRight, BellRing, CalendarDays, Check, Globe, LineChart, Play, Search, Users, Wallet } from "lucide-react";
+import { ArrowRight, Check, Play, Search } from "lucide-react";
+import { Illustration, type IllustrationName } from "@/components/ui/illustration";
 import { Logo } from "@/components/brand/logo";
 import { Sparkle, Sparkles } from "@/components/brand/sparkles";
 import { PLANS } from "@/domain/plans";
@@ -21,13 +22,13 @@ const pill = (tone: "dark" | "light") =>
 const NAV = [["#agendamento-online", "Agendamento online"], ["#recursos", "Recursos"], ["#como-funciona", "Como funciona"], ["#planos", "Planos"], ["#perguntas", "Dúvidas"]] as const;
 const sectionTitle = "font-tight text-[36px] leading-[1.12] font-extrabold tracking-[-0.025em] text-ink sm:text-[44px]";
 
-const FEATURES = [
-  { icon: CalendarDays, title: "Agenda que evita conflitos", text: "Visão por dia, semana e mês, por profissional. Considera duração, tempo de limpeza, pausas e bloqueios — e impede dois agendamentos no mesmo horário." },
-  { icon: Globe, title: "Agendamento online 24h", text: "Um link para a bio do Instagram e para o WhatsApp. A cliente vê só horários realmente livres e você decide se confirma na hora ou revisa antes." },
-  { icon: Users, title: "Ficha completa da cliente", text: "Histórico, frequência, última e próxima visita, preferências e consentimentos. Saiba quem está sumida e quem são suas clientes mais fiéis." },
-  { icon: LineChart, title: "Indicadores que fazem sentido", text: "Recebido, agendado, ocupação da agenda, faltas, ticket médio e clientes novas — cada número com a explicação de como é calculado." },
-  { icon: Wallet, title: "Pagamentos sem confusão", text: "Registre sinal, pagamento parcial ou integral. Estornos ficam no histórico e cancelamentos nunca apagam o financeiro." },
-  { icon: BellRing, title: "Lembretes automáticos", text: "Confirmação e lembrete 24h antes, cancelados automaticamente quando a cliente remarca. Integração com WhatsApp oficial em preparação." },
+const FEATURES: { art: IllustrationName; title: string; text: string }[] = [
+  { art: "calendar-check", title: "Agenda que evita conflitos", text: "Visão por dia, semana e mês, por profissional. Considera duração, tempo de limpeza, pausas e bloqueios — e impede dois agendamentos no mesmo horário." },
+  { art: "link", title: "Agendamento online 24h", text: "Um link para a bio do Instagram e para o WhatsApp. A cliente vê só horários realmente livres e você decide se confirma na hora ou revisa antes." },
+  { art: "team", title: "Ficha completa da cliente", text: "Histórico, frequência, última e próxima visita, preferências e consentimentos. Saiba quem está sumida e quem são suas clientes mais fiéis." },
+  { art: "chart", title: "Indicadores que fazem sentido", text: "Recebido, agendado, ocupação da agenda, faltas, ticket médio e clientes novas — cada número com a explicação de como é calculado." },
+  { art: "wallet", title: "Pagamentos sem confusão", text: "Registre sinal, pagamento parcial ou integral. Estornos ficam no histórico e cancelamentos nunca apagam o financeiro." },
+  { art: "bell", title: "Lembretes automáticos", text: "Confirmação e lembrete 24h antes, cancelados automaticamente quando a cliente remarca. Integração com WhatsApp oficial em preparação." },
 ];
 
 const SEGMENTS = ["Cabeleireiras e salões", "Manicures e nail designers", "Lash designers", "Designers de sobrancelhas", "Esteticistas", "Maquiadoras", "Depiladoras", "Massoterapeutas", "Clínicas de estética", "Espaços compartilhados"];
@@ -112,22 +113,22 @@ export default async function LandingPage() {
       </section>
 
       <section id="agendamento-online" className="mx-auto max-w-[1240px] px-4 pt-6 pb-10 sm:px-6">
-        <div data-theme="dark" className="bg-royal ring-glass relative grid items-center gap-10 overflow-hidden rounded-[32px] px-6 py-10 shadow-[0_40px_90px_-40px_rgb(147_3_197/0.7)] sm:px-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,460px)] lg:py-14">
+        <div data-theme="dark" className="bg-royal ring-glass border border-gold-line/40 relative grid items-center gap-10 overflow-hidden rounded-[32px] px-6 py-10 shadow-[0_40px_90px_-40px_rgb(100_35_80/0.7)] sm:px-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,460px)] lg:py-14">
           <Sparkles points={[[6, 12, 8, 0.3], [42, 86, 6, 1.8], [52, 10, 7, 2.9], [96, 40, 9, 1.1], [30, 52, 5, 2.2]]} />
           <div className="relative max-w-[520px]">
-            <p className="flex items-center gap-2 text-[16px] font-semibold text-violet-100"><Search className="h-5 w-5 text-violet-200" strokeWidth={2.6} />Agendamento online</p>
-            <h2 className={cn(sectionTitle, "mt-4")}>Encontre o horário perfeito, <span className="font-script text-[1.3em] font-normal tracking-normal text-violet-200">mais rápido.</span></h2>
+            <p className="flex items-center gap-2 text-[16px] font-semibold text-gold-300"><Search className="h-5 w-5 text-gold-300" strokeWidth={2.6} />Agendamento online</p>
+            <h2 className={cn(sectionTitle, "mt-4")}>Encontre o horário perfeito, <span className="font-script text-[1.3em] font-normal tracking-normal text-gold-300 drop-shadow-[0_0_14px_rgb(201_163_94/0.45)]">mais rápido.</span></h2>
             <p className="mt-5 text-[18px] leading-[1.6] text-ink-soft">
               Sua cliente escolhe o serviço e a profissional e vê só horários realmente livres — respeitando expediente, pausas, tempo de preparação e bloqueios. Você confirma na hora ou revisa antes.
             </p>
-            <Link href="/cadastro" className="mt-7 inline-flex h-11 items-center gap-2 rounded-full bg-white px-5 text-[15px] font-semibold text-violet-800 shadow-[0_0_30px_-6px_rgb(234_207_252/0.8)] transition hover:bg-violet-100">Criar minha página <ArrowRight className="h-4 w-4" /></Link>
+            <Link href="/cadastro" className="mt-7 inline-flex h-11 items-center gap-2 rounded-full bg-white px-5 text-[15px] font-semibold text-violet-800 shadow-[0_0_30px_-6px_rgb(244_225_236/0.8)] transition hover:bg-violet-100">Criar minha página <ArrowRight className="h-4 w-4" /></Link>
           </div>
           <BookingDemo />
         </div>
         <div className="mt-6 grid gap-6 md:grid-cols-2">
           <GlowCard className="glass flex flex-col justify-between gap-8 rounded-[28px] p-8 sm:p-10">
             <div>
-              <p className="flex items-center gap-2 text-[15px] font-semibold text-ink"><BellRing className="h-5 w-5 text-gold-600" strokeWidth={2.4} />Lembretes</p>
+              <p className="flex items-center gap-2 text-[15px] font-semibold text-ink"><Illustration name="bell" className="-my-2 -ml-1 h-12 w-12" />Lembretes</p>
               <h3 className="mt-3 font-tight text-[28px] leading-[1.2] font-extrabold tracking-[-0.02em] text-ink">Menos faltas, sem mandar mensagem uma a uma.</h3>
               <p className="mt-3 text-[16px] leading-[1.6] text-ink-soft">Confirmação e lembrete 24h antes, cancelados automaticamente quando a cliente remarca. Integração com o WhatsApp oficial em preparação.</p>
             </div>
@@ -135,7 +136,7 @@ export default async function LandingPage() {
           </GlowCard>
           <GlowCard className="glass flex flex-col justify-between gap-8 rounded-[28px] p-8 sm:p-10">
             <div>
-              <p className="flex items-center gap-2 text-[15px] font-semibold text-ink"><LineChart className="h-5 w-5 text-gold-600" strokeWidth={2.4} />Indicadores</p>
+              <p className="flex items-center gap-2 text-[15px] font-semibold text-ink"><Illustration name="chart" className="-my-2 -ml-1 h-12 w-12" />Indicadores</p>
               <h3 className="mt-3 font-tight text-[28px] leading-[1.2] font-extrabold tracking-[-0.02em] text-ink">Saiba quanto recebeu — e quem sumiu.</h3>
               <p className="mt-3 text-[16px] leading-[1.6] text-ink-soft">Recebido, ocupação da agenda, faltas e clientes para reativar, cada número com a explicação de como é calculado.</p>
             </div>
@@ -151,10 +152,10 @@ export default async function LandingPage() {
 
       <section id="recursos" className="mx-auto max-w-6xl px-4 py-24">
         {/* O carrossel de recursos (antes no topo) fica aqui, num bloco violeta. */}
-        <div data-theme="dark" className="bg-royal ring-glass relative grid items-center gap-8 overflow-hidden rounded-[32px] px-6 py-10 shadow-[0_40px_90px_-40px_rgb(147_3_197/0.6)] sm:px-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,480px)] lg:py-12">
+        <div data-theme="dark" className="bg-royal ring-glass border border-gold-line/40 relative grid items-center gap-8 overflow-hidden rounded-[32px] px-6 py-10 shadow-[0_40px_90px_-40px_rgb(100_35_80/0.6)] sm:px-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,480px)] lg:py-12">
           <Sparkles points={[[6, 14, 8, 0.3], [44, 88, 6, 1.8], [50, 8, 7, 2.9], [30, 60, 5, 2.2]]} />
           <div className="relative max-w-xl">
-            <h2 className={sectionTitle}>Tudo o que o seu dia a dia pede, <span className="font-script text-[1.3em] font-normal tracking-normal text-violet-200">sem caderninho</span></h2>
+            <h2 className={sectionTitle}>Tudo o que o seu dia a dia pede, <span className="font-script text-[1.3em] font-normal tracking-normal text-gold-300 drop-shadow-[0_0_14px_rgb(201_163_94/0.45)]">sem caderninho</span></h2>
             <p className="mt-4 text-[17px] leading-[1.6] text-ink-soft">Cada recurso existe para resolver um problema concreto: horários perdidos, clientes que não voltam e tempo gasto com tarefas repetitivas.</p>
           </div>
           <HeroWidget />
@@ -162,7 +163,7 @@ export default async function LandingPage() {
         <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {FEATURES.map((f) => (
             <GlowCard key={f.title} className="glass rounded-[24px] p-6">
-              <div className="bg-royal ring-glass grid h-12 w-12 place-items-center rounded-2xl text-violet-100 shadow-[0_0_24px_-6px_rgb(171_61_245/0.7)]"><f.icon className="h-5 w-5" strokeWidth={1.75} /></div>
+              <Illustration name={f.art} className="-mt-1 -ml-1 h-16 w-16" />
               <h3 className="mt-4 text-[17px] font-semibold">{f.title}</h3>
               <p className="mt-2 text-[15px] leading-relaxed text-ink-soft">{f.text}</p>
             </GlowCard>
@@ -182,7 +183,7 @@ export default async function LandingPage() {
               ["Acompanhe e fidelize", "Veja quem está sumida, sua ocupação e quanto recebeu no mês."],
             ].map(([t, d], i) => (
               <li key={t}>
-                <span className="font-script text-6xl leading-none text-violet-200 drop-shadow-[0_0_12px_rgb(213_158_250/0.7)]">{i + 1}</span>
+                <span className="font-script text-6xl leading-none text-gold-300 drop-shadow-[0_0_12px_rgb(201_163_94/0.6)]">{i + 1}</span>
                 <h3 className="mt-3 text-[17px] font-semibold text-white">{t}</h3>
                 <p className="mt-2 text-sm leading-relaxed text-ink-soft">{d}</p>
               </li>
@@ -194,23 +195,24 @@ export default async function LandingPage() {
       <section id="planos" className="mx-auto max-w-6xl px-4 py-24">
         <div className="max-w-2xl">
           <h2 className={sectionTitle}>Planos para cada momento do seu negócio</h2>
+          <span aria-hidden className="gold-rule mt-5" />
           <p className="mt-4 text-ink-soft">Os valores estão sendo definidos. Comece agora com o teste gratuito e avisaremos antes de qualquer cobrança.</p>
         </div>
         <div className="mt-12 grid gap-4 md:grid-cols-2 lg:grid-cols-4">
           {Object.values(PLANS).map((p) => (
-            <GlowCard key={p.id} data-theme={p.id === "studio" ? "dark" : undefined} className={cn("flex flex-col rounded-[24px] p-6", p.id === "studio" ? "bg-royal ring-glass shadow-[0_30px_70px_-30px_rgb(147_3_197/0.9)]" : "glass")}>
+            <GlowCard key={p.id} data-theme={p.id === "studio" ? "dark" : undefined} className={cn("flex flex-col rounded-[24px] p-6", p.id === "studio" ? "bg-royal ring-glass shadow-[0_30px_70px_-30px_rgb(100_35_80/0.9)]" : "glass")}>
               <div className="flex items-center justify-between">
                 <h3 className="font-tight text-2xl font-extrabold tracking-[-0.02em]">{p.name}</h3>
-                {p.id === "studio" && <span className="inline-flex items-center gap-1 rounded-full bg-white/15 px-2 py-0.5 text-xs font-medium text-violet-100"><Sparkle size={9} />Incluído no teste</span>}
+                {p.id === "studio" && <span className="inline-flex items-center gap-1 rounded-full bg-white/15 px-2 py-0.5 text-xs font-medium text-gold-300"><Sparkle size={9} />Incluído no teste</span>}
               </div>
               <p className="mt-1 text-sm text-muted">{p.tagline}</p>
               <p className="mt-5 text-sm font-medium text-ink-soft">Preço em definição</p>
               <ul className="mt-5 flex flex-col gap-2 text-sm text-ink-soft">
-                <li className="flex gap-2"><Check className={cn("h-4 w-4 shrink-0", p.id === "studio" ? "text-violet-200" : "text-gold-600")} />{p.maxProfessionals === 1 ? "1 profissional" : `Até ${p.maxProfessionals} profissionais`}</li>
-                <li className="flex gap-2"><Check className={cn("h-4 w-4 shrink-0", p.id === "studio" ? "text-violet-200" : "text-gold-600")} />{p.maxUnits === 1 ? "1 unidade" : `Até ${p.maxUnits} unidades`}</li>
-                <li className="flex gap-2"><Check className={cn("h-4 w-4 shrink-0", p.id === "studio" ? "text-violet-200" : "text-gold-600")} />Agenda, clientes e agendamento online</li>
-                {p.features.includes("automations") && <li className="flex gap-2"><Check className={cn("h-4 w-4 shrink-0", p.id === "studio" ? "text-violet-200" : "text-gold-600")} />Automações de relacionamento</li>}
-                {p.features.includes("reports_advanced") && <li className="flex gap-2"><Check className={cn("h-4 w-4 shrink-0", p.id === "studio" ? "text-violet-200" : "text-gold-600")} />Relatórios por profissional</li>}
+                <li className="flex gap-2"><Check className={cn("h-4 w-4 shrink-0", p.id === "studio" ? "text-gold-300" : "text-gold-600")} />{p.maxProfessionals === 1 ? "1 profissional" : `Até ${p.maxProfessionals} profissionais`}</li>
+                <li className="flex gap-2"><Check className={cn("h-4 w-4 shrink-0", p.id === "studio" ? "text-gold-300" : "text-gold-600")} />{p.maxUnits === 1 ? "1 unidade" : `Até ${p.maxUnits} unidades`}</li>
+                <li className="flex gap-2"><Check className={cn("h-4 w-4 shrink-0", p.id === "studio" ? "text-gold-300" : "text-gold-600")} />Agenda, clientes e agendamento online</li>
+                {p.features.includes("automations") && <li className="flex gap-2"><Check className={cn("h-4 w-4 shrink-0", p.id === "studio" ? "text-gold-300" : "text-gold-600")} />Automações de relacionamento</li>}
+                {p.features.includes("reports_advanced") && <li className="flex gap-2"><Check className={cn("h-4 w-4 shrink-0", p.id === "studio" ? "text-gold-300" : "text-gold-600")} />Relatórios por profissional</li>}
               </ul>
             </GlowCard>
           ))}
@@ -219,7 +221,10 @@ export default async function LandingPage() {
 
       <section id="perguntas" className="neon-linha-t border-t border-line py-24">
         <div className="mx-auto grid max-w-6xl gap-12 px-4 lg:grid-cols-[1fr_1.4fr]">
-          <h2 className={sectionTitle}>Perguntas frequentes</h2>
+          <div>
+            <h2 className={sectionTitle}>Perguntas frequentes</h2>
+            <span aria-hidden className="gold-rule mt-5" />
+          </div>
           <div className="neon-divide divide-y divide-line">
             {FAQ.map((f) => (
               <details key={f.q} className="group py-5">
@@ -234,11 +239,11 @@ export default async function LandingPage() {
       </section>
 
       <section className="mx-auto max-w-6xl px-4 py-24">
-        <div data-theme="dark" className="bg-royal ring-glass relative overflow-hidden rounded-[36px] px-6 py-16 text-center shadow-[0_40px_100px_-40px_rgb(147_3_197/0.9)]">
+        <div data-theme="dark" className="bg-royal ring-glass border border-gold-line/40 relative overflow-hidden rounded-[36px] px-6 py-16 text-center shadow-[0_40px_100px_-40px_rgb(100_35_80/0.9)]">
           <Sparkles />
-          <p className="relative font-script text-[44px] leading-none text-violet-100 drop-shadow-[0_0_14px_rgb(234_207_252/0.6)]">comece a brilhar</p>
+          <p className="relative font-script text-[44px] leading-none text-gold-300 drop-shadow-[0_0_14px_rgb(201_163_94/0.55)]">comece a brilhar</p>
           <h2 className={cn(sectionTitle, "relative mx-auto mt-4 max-w-2xl")}>Sua agenda organizada ainda esta semana</h2>
-          <Link href="/cadastro" className="relative mt-9 inline-flex h-[54px] items-center gap-2 rounded-full bg-white px-7 text-[17px] font-semibold text-violet-800 shadow-[0_0_40px_-6px_rgb(234_207_252/0.9)] transition hover:bg-violet-100">
+          <Link href="/cadastro" className="relative mt-9 inline-flex h-[54px] items-center gap-2 rounded-full bg-white px-7 text-[17px] font-semibold text-violet-800 shadow-[0_0_40px_-6px_rgb(244_225_236/0.9)] transition hover:bg-violet-100">
             Criar conta grátis <ArrowRight className="h-4 w-4" />
           </Link>
         </div>
