@@ -20,7 +20,7 @@ const pill = (tone: "dark" | "light") =>
   cn("inline-flex h-10 items-center rounded-full px-4 whitespace-nowrap sm:px-5 text-[15px] font-medium transition",
     tone === "dark" ? "btn-glow text-white" : "neon-lilas border border-line-strong bg-surface/80 text-ink hover:bg-surface");
 const NAV = [["#agendamento-online", "Agendamento online"], ["#recursos", "Recursos"], ["#como-funciona", "Como funciona"], ["#planos", "Planos"], ["#perguntas", "Dúvidas"]] as const;
-const sectionTitle = "font-tight text-[36px] leading-[1.12] font-extrabold tracking-[-0.025em] text-ink sm:text-[44px]";
+const sectionTitle = "font-serif text-[34px] leading-[1.15] font-semibold tracking-[-0.01em] text-ink sm:text-[44px]";
 
 const FEATURES: { art: IllustrationName; title: string; text: string }[] = [
   { art: "calendar-check", title: "Agenda que evita conflitos", text: "Visão por dia, semana e mês, por profissional. Considera duração, tempo de limpeza, pausas e bloqueios — e impede dois agendamentos no mesmo horário." },
@@ -75,7 +75,7 @@ export default async function LandingPage() {
             <p className="inline-flex items-center gap-2 rounded-full border border-gold-300 bg-surface/80 px-3.5 py-1.5 text-[13px] text-ink-soft shadow-[0_6px_18px_-12px_rgb(138_100_38/0.5)]">
               <Sparkle size={12} color="text-gold-400" /> Teste grátis por 14 dias · sem cartão de crédito
             </p>
-            <h1 className="mt-6 font-hero text-[44px] leading-[1.06] font-bold tracking-[-0.025em] text-ink sm:text-[60px] lg:text-[66px]">
+            <h1 className="mt-6 font-serif text-[42px] leading-[1.1] font-semibold tracking-[-0.015em] text-ink sm:text-[58px] lg:text-[64px]">
               Agenda cheia,
               <br />
               cabeça leve.
@@ -129,7 +129,7 @@ export default async function LandingPage() {
           <GlowCard className="glass flex flex-col justify-between gap-8 rounded-[28px] p-8 sm:p-10">
             <div>
               <p className="flex items-center gap-2 text-[15px] font-semibold text-ink"><Illustration name="bell" className="-my-2 -ml-1 h-12 w-12" />Lembretes</p>
-              <h3 className="mt-3 font-tight text-[28px] leading-[1.2] font-extrabold tracking-[-0.02em] text-ink">Menos faltas, sem mandar mensagem uma a uma.</h3>
+              <h3 className="mt-3 font-serif text-[26px] leading-[1.2] font-semibold tracking-[-0.005em] text-ink">Menos faltas, sem mandar mensagem uma a uma.</h3>
               <p className="mt-3 text-[16px] leading-[1.6] text-ink-soft">Confirmação e lembrete 24h antes, cancelados automaticamente quando a cliente remarca. Integração com o WhatsApp oficial em preparação.</p>
             </div>
             <ChatDemo />
@@ -137,7 +137,7 @@ export default async function LandingPage() {
           <GlowCard className="glass flex flex-col justify-between gap-8 rounded-[28px] p-8 sm:p-10">
             <div>
               <p className="flex items-center gap-2 text-[15px] font-semibold text-ink"><Illustration name="chart" className="-my-2 -ml-1 h-12 w-12" />Indicadores</p>
-              <h3 className="mt-3 font-tight text-[28px] leading-[1.2] font-extrabold tracking-[-0.02em] text-ink">Saiba quanto recebeu — e quem sumiu.</h3>
+              <h3 className="mt-3 font-serif text-[26px] leading-[1.2] font-semibold tracking-[-0.005em] text-ink">Saiba quanto recebeu — e quem sumiu.</h3>
               <p className="mt-3 text-[16px] leading-[1.6] text-ink-soft">Recebido, ocupação da agenda, faltas e clientes para reativar, cada número com a explicação de como é calculado.</p>
             </div>
             <div className="flex h-24 items-end gap-2" aria-hidden>
@@ -202,7 +202,7 @@ export default async function LandingPage() {
           {Object.values(PLANS).map((p) => (
             <GlowCard key={p.id} data-theme={p.id === "studio" ? "dark" : undefined} className={cn("flex flex-col rounded-[24px] p-6", p.id === "studio" ? "bg-royal ring-glass shadow-[0_30px_70px_-30px_rgb(100_35_80/0.9)]" : "glass")}>
               <div className="flex items-center justify-between">
-                <h3 className="font-tight text-2xl font-extrabold tracking-[-0.02em]">{p.name}</h3>
+                <h3 className="font-serif text-2xl font-semibold">{p.name}</h3>
                 {p.id === "studio" && <span className="inline-flex items-center gap-1 rounded-full bg-white/15 px-2 py-0.5 text-xs font-medium text-gold-300"><Sparkle size={9} />Incluído no teste</span>}
               </div>
               <p className="mt-1 text-sm text-muted">{p.tagline}</p>

@@ -12,16 +12,16 @@
    * Escala de violetas da marca: #eacffc #d59efa #c06ef7 #ab3df5 #960df2 #780ac2 #5a0891 #3c0561.
    * Contraste (sobre --color-surface): ink 17,4:1 · ink-soft 12,7:1 · muted 7,2:1 · accent-text 9,3:1; branco sobre o botão (#960df2) 5,8:1.
    */
-  --font-sans: var(--font-dm-sans), ui-sans-serif, system-ui, sans-serif;
-  --font-display: var(--font-inter-tight), var(--font-dm-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-nunito), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-playfair), Georgia, "Times New Roman", serif;
   --font-script: var(--font-allura), "Brush Script MT", cursive;
-  --font-hero: var(--font-dm-sans), ui-sans-serif, system-ui, sans-serif;
-  --font-tight: var(--font-inter-tight), var(--font-dm-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-hero: var(--font-nunito), ui-sans-serif, system-ui, sans-serif;
+  --font-tight: var(--font-playfair), Georgia, "Times New Roman", serif;
   /*
-   * Títulos do app: Fraunces 600 (serifada calorosa). Escala: 12 legenda · 13 apoio · 15 texto ·
+   * Títulos do app e da landing: Playfair Display 600 (serifada elegante); texto e dados em Nunito. Escala: 12 legenda · 13 apoio · 15 texto ·
    * 17 destaque · 22 título de seção · 30 título de tela. Pesos: 400 texto, 500 rótulos, 600 títulos e valores.
    */
-  --font-serif: var(--font-fraunces), Georgia, "Times New Roman", serif;
+  --font-serif: var(--font-playfair), Georgia, "Times New Roman", serif;
 
   /* Ameixa fixa (blocos de destaque do app, iguais nos dois temas; branco sobre ela 11:1). */
   --color-plum: #642350;
@@ -281,6 +281,8 @@
   /* Grade de uma coluna (celular): os itens podem encolher até a tela; sem isso um card com conteúdo
      largo empurra a página para além da borda. Especificidade zero: qualquer grid-cols-* vence. */
   :where(.grid) { grid-template-columns: minmax(0, 1fr); }
+  /* Títulos em serifada: números alinhados na linha (a Playfair usa números "de texto" por padrão). */
+  h1, h2, h3, .font-serif { font-variant-numeric: lining-nums; }
   :focus-visible {
     outline: 2px solid var(--color-accent-text);
     outline-offset: 2px;

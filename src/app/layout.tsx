@@ -1,14 +1,13 @@
 import type { Metadata, Viewport } from "next";
-import { Allura, DM_Sans, Fraunces, Inter_Tight } from "next/font/google";
+import { Allura, Nunito, Playfair_Display } from "next/font/google";
 import "./globals.css";
 import { TouchActive } from "@/components/ui/touch-active";
 import { THEME_BOOT_SCRIPT } from "@/components/theme/theme";
 
-// DM Sans (texto e interface), Fraunces (títulos do app: serifada calorosa, de caderno), Inter Tight (títulos da landing)
-// e Allura (cursiva do nome "Gê").
-const dmSans = DM_Sans({ subsets: ["latin"], variable: "--font-dm-sans", display: "swap" });
-const interTight = Inter_Tight({ subsets: ["latin"], weight: ["700", "800"], variable: "--font-inter-tight", display: "swap" });
-const fraunces = Fraunces({ subsets: ["latin"], weight: ["500", "600"], variable: "--font-fraunces", display: "swap" });
+// Nunito (texto e interface: arredondada, macia e legível), Playfair Display (títulos do app e da landing:
+// serifada elegante, de revista) e Allura (cursiva do nome "Gê"). As duas primeiras são variáveis (todos os pesos).
+const nunito = Nunito({ subsets: ["latin"], variable: "--font-nunito", display: "swap" });
+const playfair = Playfair_Display({ subsets: ["latin"], variable: "--font-playfair", display: "swap" });
 const allura = Allura({ subsets: ["latin"], weight: "400", variable: "--font-allura", display: "swap" });
 
 export const metadata: Metadata = {
@@ -24,7 +23,7 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="pt-BR" className={`${dmSans.variable} ${interTight.variable} ${fraunces.variable} ${allura.variable}`} suppressHydrationWarning>
+    <html lang="pt-BR" className={`${nunito.variable} ${playfair.variable} ${allura.variable}`} suppressHydrationWarning>
       <head><script dangerouslySetInnerHTML={{ __html: THEME_BOOT_SCRIPT }} /></head>
       <body className="min-h-dvh"><TouchActive />{children}</body>
     </html>
