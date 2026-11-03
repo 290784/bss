@@ -484,9 +484,34 @@
 
 /* Ilustrações: halo e brilho por tema. No claro, halo rosado mais vivo, luz branca forte e cores um pouco mais saturadas. */
 :root { --il-halo-1: var(--color-accent-muted); --il-halo-2: var(--color-accent-subtle); --il-glow: 0.25; }
-[data-theme="light"] { --il-halo-1: #f2bcd4; --il-halo-2: #fae8f0; --il-glow: 1; }
-[data-theme="dark"] { --il-halo-1: var(--color-accent-muted); --il-halo-2: var(--color-accent-subtle); --il-glow: 0.16; }
-[data-theme="light"] .ge-il:not(:where([data-theme="dark"] *)) { filter: saturate(1.2) brightness(1.04) drop-shadow(0 5px 12px rgb(212 103 154 / 0.26)); }
+:root { --il-r1: #fff4f9; --il-r2: #f4b2cd; --il-r3: #d4679a; --il-b1: #d083b6; --il-b2: #6e2459; --il-g1: #fff4d8; --il-g2: #e2b865; --il-g3: #a5772a; --il-w1: #ffffff; --il-w2: #efdfe8; --il-ground: rgb(0 0 0 / 0.22); }
+[data-theme="light"] { --il-halo-1: #f2bcd4; --il-halo-2: #fae8f0; --il-glow: 1; --il-r1: #fff2f8; --il-r2: #feabcd; --il-r3: #dc5494; --il-b1: #d878b8; --il-b2: #721658; --il-g1: #fff2d0; --il-g2: #ebb74f; --il-g3: #ac7212; --il-w1: #ffffff; --il-w2: #f9e5f0; --il-ground: rgb(212 103 154 / 0.3); }
+[data-theme="dark"] { --il-halo-1: var(--color-accent-muted); --il-halo-2: var(--color-accent-subtle); --il-glow: 0.16; --il-r1: #fff4f9; --il-r2: #f4b2cd; --il-r3: #d4679a; --il-b1: #d083b6; --il-b2: #6e2459; --il-g1: #fff4d8; --il-g2: #e2b865; --il-g3: #a5772a; --il-w1: #ffffff; --il-w2: #efdfe8; --il-ground: rgb(0 0 0 / 0.22); }
+
+/*
+ * Ilustrações animadas (só quando o aparelho não pede "reduzir movimento"):
+ * - flutuam devagar (a própria <svg> se move pela propriedade "translate", barata para o navegador);
+ * - os brilhos champanhe piscam e giram;
+ * - o relógio anda, o sino balança de tempos em tempos, o coração bate e as barras do gráfico respiram.
+ * Cada ilustração tem atraso próprio, então não se mexem todas juntas.
+ */
+@media (prefers-reduced-motion: no-preference) {
+  .ge-il { animation: il-float 5.5s ease-in-out infinite; }
+  .il-spark { transform-box: fill-box; transform-origin: center; animation: il-twinkle 3.2s ease-in-out infinite; }
+  .il-beat { transform-box: fill-box; transform-origin: center; animation: il-beat 2.4s ease-in-out infinite; }
+  .il-min { transform-origin: 32px 34px; animation: il-spin 9s linear infinite; }
+  .il-hour { transform-origin: 32px 34px; animation: il-spin 108s linear infinite; }
+  .il-ring { transform-origin: 32px 12px; animation: il-ring 5s ease-in-out infinite; }
+  .il-clapper { transform-box: fill-box; transform-origin: center; animation: il-clap 5s ease-in-out infinite; }
+  .il-bar { transform-box: fill-box; animation: il-bar 3.6s ease-in-out infinite; }
+}
+@keyframes il-float { 0%, 100% { translate: 0 0; } 50% { translate: 0 -2.5px; } }
+@keyframes il-twinkle { 0%, 100% { opacity: 0.55; scale: 0.7; rotate: 0deg; } 50% { opacity: 1; scale: 1.2; rotate: 45deg; } }
+@keyframes il-beat { 0%, 60%, 100% { scale: 1; } 15% { scale: 1.14; } 30% { scale: 0.97; } 42% { scale: 1.08; } }
+@keyframes il-spin { to { rotate: 360deg; } }
+@keyframes il-ring { 0%, 55%, 100% { rotate: 0deg; } 6% { rotate: 11deg; } 12% { rotate: -9deg; } 18% { rotate: 6deg; } 24% { rotate: -3deg; } 30% { rotate: 0deg; } }
+@keyframes il-clap { 0%, 55%, 100% { translate: 0 0; } 6% { translate: -1.4px 0; } 12% { translate: 1.2px 0; } 18% { translate: -0.8px 0; } 30% { translate: 0 0; } }
+@keyframes il-bar { 0%, 100% { scale: 1 1; } 50% { scale: 1 0.82; } }
 
 /* Painel lateral do login/cadastro: véu ameixa no alto e champanhe embaixo. */
 .auth-panel {
