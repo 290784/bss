@@ -11,23 +11,24 @@ export type IllustrationName =
   | "user-x" | "user-plus" | "team" | "coins" | "lightbulb" | "chart" | "heart" | "gift" | "sparkles"
   | "scissors" | "chat" | "shield" | "store" | "notebook" | "bell" | "link" | "star";
 
-// Cores fixas dos objetos (iguais nos dois temas); o halo acompanha o tema.
-const R1 = "#fff4f9", R2 = "#f4b2cd", R3 = "#d4679a"; // rosé: luz, meio, sombra
-const B1 = "#d083b6", B2 = "#6e2459"; // ameixa
-const G1 = "#fff4d8", G2 = "#e2b865", G3 = "#a5772a"; // champanhe
-const W1 = "#ffffff", W2 = "#efdfe8"; // papel
+// Cores dos objetos: os degradês leem variáveis CSS por tema (--il-*, em globals.css): mais vivas no claro,
+// originais no escuro. Aqui ficam só as tintas usadas direto em traços e sombras.
+const R2 = "#f4b2cd", R3 = "#d4679a"; // rosé (traço fino)
+const B2 = "#6e2459"; // ameixa
+const G3 = "#a5772a"; // champanhe escuro
 
 function Defs() {
   return (
     <defs>
       {/* Halo e luz: a cor vem do tema (CSS), a máscara só dá o esmaecido (assim não depende de qual SVG definiu o id). */}
       <radialGradient id="ge-il-fade"><stop offset="0%" stopColor="#fff" /><stop offset="60%" stopColor="#fff" stopOpacity="0.85" /><stop offset="100%" stopColor="#fff" stopOpacity="0" /></radialGradient>
+      <radialGradient id="ge-il-ground-g"><stop offset="0%" style={{ stopColor: "var(--il-ground)" }} /><stop offset="100%" style={{ stopColor: "var(--il-ground)", stopOpacity: 0 }} /></radialGradient>
       <mask id="ge-il-halo-m" maskUnits="userSpaceOnUse" x="0" y="0" width="64" height="68"><rect x="2" y="4" width="60" height="60" fill="url(#ge-il-fade)" /></mask>
       <mask id="ge-il-glow-m" maskUnits="userSpaceOnUse" x="0" y="0" width="64" height="64"><rect x="6" y="6" width="46" height="46" fill="url(#ge-il-fade)" /></mask>
-      <linearGradient id="ge-il-r" x1="0.2" y1="0" x2="0.8" y2="1"><stop offset="0%" stopColor={R1} /><stop offset="45%" stopColor={R2} /><stop offset="100%" stopColor={R3} /></linearGradient>
-      <linearGradient id="ge-il-b" x1="0.2" y1="0" x2="0.8" y2="1"><stop offset="0%" stopColor={B1} /><stop offset="100%" stopColor={B2} /></linearGradient>
-      <linearGradient id="ge-il-g" x1="0.2" y1="0" x2="0.8" y2="1"><stop offset="0%" stopColor={G1} /><stop offset="55%" stopColor={G2} /><stop offset="100%" stopColor={G3} /></linearGradient>
-      <linearGradient id="ge-il-w" x1="0" y1="0" x2="0.4" y2="1"><stop offset="0%" stopColor={W1} /><stop offset="100%" stopColor={W2} /></linearGradient>
+      <linearGradient id="ge-il-r" x1="0.2" y1="0" x2="0.8" y2="1"><stop offset="0%" style={{ stopColor: "var(--il-r1)" }} /><stop offset="45%" style={{ stopColor: "var(--il-r2)" }} /><stop offset="100%" style={{ stopColor: "var(--il-r3)" }} /></linearGradient>
+      <linearGradient id="ge-il-b" x1="0.2" y1="0" x2="0.8" y2="1"><stop offset="0%" style={{ stopColor: "var(--il-b1)" }} /><stop offset="100%" style={{ stopColor: "var(--il-b2)" }} /></linearGradient>
+      <linearGradient id="ge-il-g" x1="0.2" y1="0" x2="0.8" y2="1"><stop offset="0%" style={{ stopColor: "var(--il-g1)" }} /><stop offset="55%" style={{ stopColor: "var(--il-g2)" }} /><stop offset="100%" style={{ stopColor: "var(--il-g3)" }} /></linearGradient>
+      <linearGradient id="ge-il-w" x1="0" y1="0" x2="0.4" y2="1"><stop offset="0%" style={{ stopColor: "var(--il-w1)" }} /><stop offset="100%" style={{ stopColor: "var(--il-w2)" }} /></linearGradient>
       <linearGradient id="ge-il-steel" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stopColor="#f4eef2" /><stop offset="100%" stopColor="#bfaab8" /></linearGradient>
       {/* Sombra macia sob o objeto e brilho desfocado por cima (o "volume"). */}
       {/* Volume: sombra interna embaixo, luz interna em cima e sombra projetada. */}
@@ -56,11 +57,13 @@ function Defs() {
 const Gloss = ({ d, o = 0.9 }: { d: string; o?: number }) => <path d={d} fill="#fff" opacity={o} filter="url(#ge-il-blur)" />;
 /** Brilho champanhe de quatro pontas. */
 const Sparkle = ({ x, y, s = 1, fill = "url(#ge-il-g)" }: { x: number; y: number; s?: number; fill?: string }) => (
-  <path transform={`translate(${x} ${y}) scale(${s})`} d="M0-5C.6-1.6 1.6-.6 5 0 1.6.6.6 1.6 0 5-.6 1.6-1.6.6-5 0-1.6-.6-.6-1.6 0-5Z" fill={fill} />
+  <g transform={`translate(${x} ${y}) scale(${s})`}>
+    <path className="il-spark" style={{ animationDelay: `${((x * 7 + y * 3) % 20) / 10}s` }} d="M0-5C.6-1.6 1.6-.6 5 0 1.6.6.6 1.6 0 5-.6 1.6-1.6.6-5 0-1.6-.6-.6-1.6 0-5Z" fill={fill} />
+  </g>
 );
 const HEART = "M0 4C-3.8 1.3-5.6-.7-5.6-2.9-5.6-4.7-4.3-6-2.7-6-1.6-6-.6-5.4 0-4.5.6-5.4 1.6-6 2.7-6 4.3-6 5.6-4.7 5.6-2.9 5.6-.7 3.8 1.3 0 4Z";
-const Heart = ({ x, y, s = 1, fill = "url(#ge-il-b)" }: { x: number; y: number; s?: number; fill?: string }) => (
-  <path transform={`translate(${x} ${y}) scale(${s})`} d={HEART} fill={fill} />
+const Heart = ({ x, y, s = 1, fill = "url(#ge-il-b)", beat = false }: { x: number; y: number; s?: number; fill?: string; beat?: boolean }) => (
+  <g transform={`translate(${x} ${y}) scale(${s})`}><path className={beat ? "il-beat" : undefined} d={HEART} fill={fill} /></g>
 );
 /** Objeto com sombra macia. */
 const Obj = ({ children }: { children: ReactNode }) => <g filter="url(#ge-il-drop)">{children}</g>;
@@ -97,7 +100,7 @@ const ART: Record<IllustrationName, ReactNode> = {
         <rect x="10" y="21" width="42" height="30" rx="9" fill="url(#ge-il-r)" />
         <rect x="35" y="30" width="19" height="12.5" rx="6.25" fill="url(#ge-il-b)" />
         <circle cx="41.5" cy="36.2" r="2.6" fill="url(#ge-il-g)" />
-        <Heart x={23} y={38} s={1.25} />
+        <Heart beat x={23} y={38} s={1.25} />
       </Obj>
       <Gloss d="M14 25.5c6-2 18-2.4 26-1.2" />
       <Sparkle x={53} y={14} s={1} />
@@ -138,7 +141,8 @@ const ART: Record<IllustrationName, ReactNode> = {
       <Obj>
         <circle cx="32" cy="34" r="19" fill="url(#ge-il-r)" />
         <circle cx="32" cy="34" r="13.5" fill="url(#ge-il-w)" />
-        <path d="M32 25.5v8.5l6 4" fill="none" stroke={B2} strokeWidth="3.2" strokeLinecap="round" strokeLinejoin="round" />
+        <path className="il-hour" d="M32 34l5.2 3" fill="none" stroke={B2} strokeWidth="3.2" strokeLinecap="round" />
+        <path className="il-min" d="M32 34V24.6" fill="none" stroke={B2} strokeWidth="3" strokeLinecap="round" />
         <circle cx="32" cy="34" r="2.2" fill="url(#ge-il-g)" />
       </Obj>
       <Gloss d="M19 26c2.6-5 8-8 13.5-7.6" />
@@ -199,9 +203,9 @@ const ART: Record<IllustrationName, ReactNode> = {
   chart: (
     <>
       <Obj>
-        <rect x="12.5" y="34" width="10" height="17" rx="4" fill="url(#ge-il-r)" />
-        <rect x="27" y="25" width="10" height="26" rx="4" fill="url(#ge-il-b)" />
-        <rect x="41.5" y="16" width="10" height="35" rx="4" fill="url(#ge-il-g)" />
+        <rect className="il-bar" style={{ transformOrigin: "17.5px 51px", animationDelay: "0s" }} x="12.5" y="34" width="10" height="17" rx="4" fill="url(#ge-il-r)" />
+        <rect className="il-bar" style={{ transformOrigin: "32px 51px", animationDelay: "0.35s" }} x="27" y="25" width="10" height="26" rx="4" fill="url(#ge-il-b)" />
+        <rect className="il-bar" style={{ transformOrigin: "46.5px 51px", animationDelay: "0.7s" }} x="41.5" y="16" width="10" height="35" rx="4" fill="url(#ge-il-g)" />
       </Obj>
       <Gloss d="M14.5 37v6M29 28v8M43.5 19v9" o={0.6} />
       <path d="M14 28l13-9 9 4 12-10" fill="none" stroke={B2} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" opacity="0.5" />
@@ -210,7 +214,7 @@ const ART: Record<IllustrationName, ReactNode> = {
   ),
   heart: (
     <>
-      <Obj><Heart x={32} y={35} s={3.6} fill="url(#ge-il-r)" /></Obj>
+      <Obj><Heart beat x={32} y={35} s={3.6} fill="url(#ge-il-r)" /></Obj>
       <Gloss d="M18.5 25c1.4-4 5.6-5.8 9-4.4" o={0.85} />
       <Sparkle x={51} y={14} s={1.1} />
       <Sparkle x={13} y={46} s={0.6} />
@@ -257,7 +261,7 @@ const ART: Record<IllustrationName, ReactNode> = {
         {[24, 33, 42].map((x) => <circle key={x} cx={x} cy="25.5" r="2.6" fill="#fff" />)}
       </Obj>
       <Gloss d="M18.5 15c5-2 18-2 25 0" />
-      <Obj><Heart x={47} y={47} s={1.3} /></Obj>
+      <Obj><Heart beat x={47} y={47} s={1.3} /></Obj>
     </>
   ),
   shield: (
@@ -288,7 +292,7 @@ const ART: Record<IllustrationName, ReactNode> = {
         <rect x="15" y="11" width="31" height="41" rx="6" fill="url(#ge-il-r)" />
         <rect x="21" y="18" width="19" height="3.4" rx="1.7" fill="#fff" opacity="0.85" />
         <rect x="21" y="24.5" width="13" height="3.4" rx="1.7" fill="#fff" opacity="0.7" />
-        <Heart x={30.5} y={38} s={1.25} />
+        <Heart beat x={30.5} y={38} s={1.25} />
         <path d="M44 51l9-24" stroke="url(#ge-il-g)" strokeWidth="4.5" strokeLinecap="round" />
       </Obj>
       <Gloss d="M18.5 15v32" o={0.5} />
@@ -297,8 +301,10 @@ const ART: Record<IllustrationName, ReactNode> = {
   bell: (
     <>
       <Obj>
-        <path d="M32 12a3 3 0 0 1 3 3v1.3c6.4 1.4 10.5 6.8 10.5 13.6v7.6l3.5 5.2H15l3.5-5.2v-7.6c0-6.8 4.1-12.2 10.5-13.6V15a3 3 0 0 1 3-3Z" fill="url(#ge-il-g)" />
-        <circle cx="32" cy="47.5" r="4.4" fill="url(#ge-il-b)" />
+        <g className="il-ring">
+          <path d="M32 12a3 3 0 0 1 3 3v1.3c6.4 1.4 10.5 6.8 10.5 13.6v7.6l3.5 5.2H15l3.5-5.2v-7.6c0-6.8 4.1-12.2 10.5-13.6V15a3 3 0 0 1 3-3Z" fill="url(#ge-il-g)" />
+          <circle className="il-clapper" cx="32" cy="47.5" r="4.4" fill="url(#ge-il-b)" />
+        </g>
       </Obj>
       <Gloss d="M23.5 25c1.4-3.4 4.4-5.4 7.6-5.6" o={0.85} />
       <Sparkle x={51} y={15} s={1} />
@@ -322,11 +328,15 @@ const ART: Record<IllustrationName, ReactNode> = {
   ),
 };
 
+/** Atraso do flutuar, fixo por nome: ilustrações vizinhas não se mexem em sincronia. */
+const floatDelay = (name: string) => `-${([...name].reduce((t, c) => t + c.charCodeAt(0), 0) % 50) / 10}s`;
+
 export function Illustration({ name, className }: { name: IllustrationName; className?: string }) {
   return (
-    <svg viewBox="0 0 64 64" className={cn("ge-il h-12 w-12 shrink-0 overflow-visible", className)} aria-hidden focusable="false">
+    <svg viewBox="0 0 64 64" style={{ animationDelay: floatDelay(name) }} className={cn("ge-il h-12 w-12 shrink-0 overflow-visible", className)} aria-hidden focusable="false">
       <Defs />
       <rect x="2" y="4" width="60" height="60" mask="url(#ge-il-halo-m)" style={{ fill: "var(--il-halo-1)" }} />
+      <ellipse cx="32" cy="55.5" rx="17" ry="4" fill="url(#ge-il-ground-g)" />
       <rect x="6" y="6" width="46" height="46" mask="url(#ge-il-glow-m)" style={{ fill: "#fff", opacity: "var(--il-glow)" }} />
       {ART[name]}
     </svg>
