@@ -21,7 +21,7 @@ export function GlowCard({ className, children, ...props }: ComponentProps<"div"
     <div ref={ref} onPointerMove={move} onPointerDown={move} onPointerLeave={leave} onPointerUp={(e) => { if (e.pointerType !== "mouse") leave(); }}
       className={cn("glow-hover relative isolate overflow-hidden [-webkit-tap-highlight-color:transparent]", className)} {...props}>
       <span aria-hidden className="pointer-events-none absolute inset-0 -z-10 transition-opacity duration-300"
-        style={{ opacity: "var(--go, 0)", background: "radial-gradient(260px circle at var(--gx, 50%) var(--gy, 50%), rgb(192 110 247 / 0.22), transparent 70%)" }} />
+        style={{ opacity: "var(--go, 0)", background: "radial-gradient(260px circle at var(--gx, 50%) var(--gy, 50%), rgb(201 163 94 / 0.22), transparent 70%)" }} />
       {children}
     </div>
   );
