@@ -73,6 +73,19 @@ describe("segredos criptografados", () => {
     vi.stubEnv("WHATSAPP_ENCRYPTION_KEY", "outra-chave-bem-longa-9999999");
     expect(() => decryptSecret(a)).toThrow();
   });
+  it("formato novo (v2) com sal por segredo; segredos gravados no formato antigo (v1) continuam legíveis", async () => {
+    vi.stubEnv("WHATSAPP_ENCRYPTION_KEY", KEY);
+    const novo = encryptSecret("token-secreto");
+    expect(novo.startsWith("v2:")).toBe(true);
+    expect(decryptSecret(novo)).toBe("token-secreto");
+    // gravado pela versão anterior: SHA-256 direto do texto
+    const { createCipheriv, createHash, randomBytes } = await import("node:crypto");
+    const iv = randomBytes(12), c = createCipheriv("aes-256-gcm", createHash("sha256").update(KEY).digest(), iv);
+    const enc = Buffer.concat([c.update("token-antigo", "utf8"), c.final()]);
+    const v1 = ["v1", iv.toString("base64"), c.getAuthTag().toString("base64"), enc.toString("base64")].join(":");
+    expect(decryptSecret(v1)).toBe("token-antigo");
+    expect(() => decryptSecret("v3:a:b:c")).toThrow(/formato desconhecido/);
+  });
   it("sem chave configurada não guarda nada", () => {
     vi.stubEnv("WHATSAPP_ENCRYPTION_KEY", "");
     expect(() => encryptSecret("x")).toThrow(/WHATSAPP_ENCRYPTION_KEY/);
@@ -146,11 +159,16 @@ describe("pedido de conexão e acesso da equipe da Gê", () => {
     expect(await ref.sql`select 1 from app.whatsapp_requests where organization_id = ${C.id}`).toHaveLength(0);
   });
 
-  it("só e-mails de PLATFORM_ADMIN_EMAILS são equipe (sem a variável, ninguém)", () => {
-    expect(isPlatformAdmin("a@x.com", {})).toBe(false);
-    expect(isPlatformAdmin("a@x.com", { PLATFORM_ADMIN_EMAILS: "" })).toBe(false);
-    expect(isPlatformAdmin(" A@X.com ", { PLATFORM_ADMIN_EMAILS: "b@x.com, a@x.com" })).toBe(true);
-    expect(isPlatformAdmin("c@x.com", { PLATFORM_ADMIN_EMAILS: "b@x.com, a@x.com" })).toBe(false);
+  it("administrador: por código de conta quando existir; e-mail só como alternativa (sem as variáveis, ninguém)", () => {
+    const eu = { email: "a@x.com", userId: "AAAA-1111" };
+    expect(isPlatformAdmin(eu, {})).toBe(false);
+    expect(isPlatformAdmin(eu, { PLATFORM_ADMIN_EMAILS: "" })).toBe(false);
+    expect(isPlatformAdmin({ ...eu, email: " A@X.com " }, { PLATFORM_ADMIN_EMAILS: "b@x.com, a@x.com" })).toBe(true);
+    expect(isPlatformAdmin({ ...eu, email: "c@x.com" }, { PLATFORM_ADMIN_EMAILS: "b@x.com, a@x.com" })).toBe(false);
+    // com códigos definidos, o e-mail deixa de valer: quem se cadastrar com o e-mail do administrador não entra
+    const env = { PLATFORM_ADMIN_USER_IDS: "aaaa-1111, bbbb-2222", PLATFORM_ADMIN_EMAILS: "a@x.com" };
+    expect(isPlatformAdmin(eu, env)).toBe(true);
+    expect(isPlatformAdmin({ email: "a@x.com", userId: "CCCC-3333" }, env)).toBe(false);
   });
 });
 

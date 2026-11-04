@@ -7,7 +7,7 @@ import { ConfirmDialog } from "@/components/ui/dialog";
 import { useToast } from "@/components/ui/toast";
 import { requestAccountDeletionAction } from "./actions";
 
-export function DangerZone() {
+export function DangerZone({ userId }: { userId: string }) {
   const [open, setOpen] = useState(false);
   const [, start] = useTransition();
   const toast = useToast();
@@ -16,6 +16,7 @@ export function DangerZone() {
       <CardHeader art="shield" title="Privacidade e dados" />
       <div className="flex flex-col gap-3 px-5 pt-3 pb-5 sm:px-6 sm:pb-6 text-sm text-ink-soft">
         <p>Exporte a lista de clientes em CSV pela página <Link className="text-accent-text underline" href="/app/clientes">Clientes</Link>. Exportar tudo (agenda e financeiro) vem aí.</p>
+        <p className="text-xs text-muted">Código da sua conta (o suporte pode pedir): <code className="rounded bg-sunken px-1.5 py-0.5 font-mono text-[11px] text-ink-soft select-all">{userId}</code></p>
         <div><Button variant="danger" size="sm" onClick={() => setOpen(true)}>Solicitar exclusão da minha conta</Button></div>
       </div>
       <ConfirmDialog open={open} onClose={() => setOpen(false)} danger title="Solicitar exclusão da conta?" confirmLabel="Enviar solicitação"
