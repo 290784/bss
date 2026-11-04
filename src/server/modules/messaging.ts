@@ -4,6 +4,7 @@ import { confirmationMessage, hourText, onDay, reminderMessage } from "@/lib/mes
 import { addDaysToKey, localDateKey, zonedDateTime } from "@/lib/time";
 import { effectivePlan, type PlanId } from "@/domain/plans";
 import { metaCloudProvider } from "@/server/modules/whatsapp-meta";
+import { providersByOrg } from "@/server/modules/whatsapp-connection";
 
 /**
  * Motor de mensagens (outbox).
@@ -186,8 +187,18 @@ export async function dispatchDueMessages(sql: Sql, providers: MessageProvider[]
     left join app.professionals p on p.id = a.professional_id`);
 
   const result = { sent: 0, failed: 0, skipped: 0 };
+  // WhatsApp: cada estabelecimento envia pelo próprio número; sem conexão própria, vale o número da plataforma (se houver).
+  const own = await providersByOrg(sql, [...new Set(claimed.filter((j) => j.channel === "whatsapp").map((j) => j.organization_id))]);
   for (const job of claimed) {
-    const provider = providers.find((p) => p.channel === job.channel);
+    const mine = job.channel === "whatsapp" ? own.get(job.organization_id) : undefined;
+    if (mine instanceof Error) {
+      result.failed++;
+      const exhausted = job.attempts >= job.max_attempts;
+      await sql`update app.message_jobs set status = ${exhausted ? "failed" : "pending"}, next_attempt_at = now() + make_interval(mins => ${2 ** (job.attempts - 1)}),
+                last_error = ${`WhatsApp deste estabelecimento: ${mine.message}`.slice(0, 300)}, updated_at = now() where id = ${job.id}`;
+      continue;
+    }
+    const provider = mine ?? providers.find((p) => p.channel === job.channel);
     const to = job.channel === "whatsapp" ? job.to_phone : job.to_email;
     if (!provider || !to) {
       result.skipped++;

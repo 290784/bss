@@ -10,6 +10,8 @@ import { CreditCard, MessageCircle, ShieldCheck, Store, Users } from "lucide-rea
 import { formatInTz } from "@/lib/time";
 import { cn } from "@/lib/cn";
 import { configuredProviders, hasAutomations } from "@/server/modules/messaging";
+import { encryptionConfigured } from "@/server/secrets";
+import { WhatsAppConnect } from "./whatsapp-connect";
 import { WhatsAppAutomations } from "./whatsapp-automations";
 import { confirmedMessage, offerMessage, reminderMessage, upsellDoneMessage } from "@/lib/messages";
 import { OrganizationForm } from "./organization-form";
@@ -42,7 +44,7 @@ export default async function SettingsPage({ searchParams }: { searchParams: Pro
   const { aba } = await searchParams;
   const tab: TabId = TABS.some((t) => t.id === aba) ? (aba as TabId) : "negocio";
   const tz = ctx.org.timezone;
-  const { org, auditRows, members, auto } = await tenant(ctx, async (tx) => {
+  const { org, auditRows, members, wa, auto } = await tenant(ctx, async (tx) => {
     const [org] = await tx<{
       name: string; phone: string | null; instagram: string | null; address: string | null; online_booking_enabled: boolean; online_requires_approval: boolean;
       min_advance_minutes: number; max_advance_days: number; slot_interval_minutes: number; cancellation_notice_hours: number; booking_policy_text: string | null;
@@ -64,7 +66,10 @@ export default async function SettingsPage({ searchParams }: { searchParams: Pro
         coalesce((select sum((data->>'priceCents')::int) from app.appointment_events where organization_id = ${ctx.org.id} and type = 'upsell_accepted' and created_at > now() - interval '30 days'), 0)::int as extra_cents`;
     const [pro] = await tx<{ display_name: string }[]>`select display_name from app.professionals where organization_id = ${ctx.org.id} and is_active order by created_at limit 1`;
     const automations = await hasAutomations(tx, ctx.org.id);
-    return { org: org!, auditRows, members, auto: { flags: flags!, stats: stats!, proName: pro?.display_name ?? "Bia", automations } };
+    // Só colunas sem segredo (o papel do aplicativo não enxerga token nem segredo do app).
+    const [wa] = await tx<{ display_phone: string | null; verified_name: string | null; verify_token: string; templates: Record<string, string> }[]>`
+      select display_phone, verified_name, verify_token, templates from app.whatsapp_connections where organization_id = ${ctx.org.id}`;
+    return { org: org!, auditRows, members, wa: wa ?? null, auto: { flags: flags!, stats: stats!, proName: pro?.display_name ?? "Bia", automations } };
   });
   // Nomes de usuárias: tabela de identidade só é lida no contexto de sistema, filtrando pelos membros desta organização.
   const ids = [...new Set([...members.map((m) => m.user_id), ...auditRows.map((a) => a.actor_user_id).filter(Boolean) as string[]])];
@@ -108,14 +113,18 @@ export default async function SettingsPage({ searchParams }: { searchParams: Pro
 
       {tab === "whatsapp" && (
         <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_360px] xl:items-start">
-          <WhatsAppAutomations connected={providers.some((p) => p.channel === "whatsapp")} planHasAutomations={auto.automations}
+          <WhatsAppAutomations connected={!!wa || providers.some((p) => p.channel === "whatsapp")} planHasAutomations={auto.automations}
             reminder={auto.flags.whatsapp_reminder_enabled} upsell={auto.flags.whatsapp_upsell_enabled} readOnly={ctx.access === "read_only"}
             preview={preview} stats={{ reminders: auto.stats.reminders, confirmed: auto.stats.confirmed, offers: auto.stats.offers, accepted: auto.stats.accepted, extraCents: auto.stats.extra_cents }} />
+          <div className="flex flex-col gap-6">
+          <WhatsAppConnect enabled={encryptionConfigured()} readOnly={ctx.access === "read_only"} platformFallback={providers.some((p) => p.channel === "whatsapp")}
+            webhookUrl={`${appUrl}/api/whatsapp/webhook`}
+            connection={wa ? { displayPhone: wa.display_phone, verifiedName: wa.verified_name, verifyToken: wa.verify_token, templates: wa.templates, own: true } : null} />
           <Card>
             <CardHeader art="chat" title="Canais de mensagem" description="Para mandar lembretes e confirmações sozinha" />
             <ul className="px-5 pt-3 pb-5 text-sm sm:px-6 sm:pb-6">
               {(["whatsapp", "email"] as const).map((ch) => {
-                const connected = providers.some((p) => p.channel === ch);
+                const connected = ch === "whatsapp" ? !!wa || providers.some((p) => p.channel === ch) : providers.some((p) => p.channel === ch);
                 return (
                   <li key={ch} className="flex items-center justify-between py-1.5">
                     <span>{ch === "whatsapp" ? "WhatsApp Business" : "E-mail"}</span>
@@ -126,6 +135,7 @@ export default async function SettingsPage({ searchParams }: { searchParams: Pro
               <li className="pt-2 text-xs text-muted">Enquanto nada estiver conectado, as mensagens ficam anotadas como “não enviadas” no agendamento e nada vai para as clientes. Você pode mandar a confirmação pelo seu WhatsApp direto da agenda.</li>
             </ul>
           </Card>
+          </div>
         </div>
       )}
 

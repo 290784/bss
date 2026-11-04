@@ -4,9 +4,8 @@ import { configuredProviders, dispatchDueMessages } from "@/server/modules/messa
 
 /**
  * Entrega as mensagens que ficaram na fila nesta ação (ex.: confirmação de um horário recém-marcado)
- * logo depois da resposta, sem esperar a rotina diária. Sem WhatsApp conectado, não faz nada.
+ * logo depois da resposta, sem esperar a rotina diária. Sem conexão (própria ou da plataforma), a mensagem é anotada como não enviada.
  */
 export function dispatchSoon() {
-  if (configuredProviders().length === 0) return;
   after(async () => { await dispatchDueMessages(getSql(), configuredProviders()).catch(() => {}); });
 }

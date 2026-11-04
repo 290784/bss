@@ -250,14 +250,13 @@ describe("envio imediato ao marcar (dispatchSoon)", () => {
     return { phone, apptId: a.id };
   }
 
-  it("sem WhatsApp conectado não faz nada (a confirmação espera a rotina e fica “não enviada”)", async () => {
+  it("sem nenhum WhatsApp conectado (nem o do estabelecimento, nem o da plataforma) a confirmação fica “não enviada”", async () => {
     for (const k of Object.keys(META)) vi.stubEnv(k, "");
     const m = await marcarSemDespachar();
-    dispatchSoon();
+    dispatchSoon(); // cada estabelecimento pode ter o próprio número: quem decide é a fila, não uma checagem global
     await esperarDepois();
-    expect(ref.depois).toHaveLength(0);
-    const [job] = await ref.sql`select status from app.message_jobs where appointment_id = ${m.apptId} and template = 'appointment_confirmation'`;
-    expect(job!.status).toBe("pending");
+    const [job] = await ref.sql`select status, last_error from app.message_jobs where appointment_id = ${m.apptId} and template = 'appointment_confirmation'`;
+    expect(job).toMatchObject({ status: "skipped", last_error: "Canal não conectado" });
   });
 
   it("com WhatsApp conectado, a confirmação do horário recém-marcado sai logo, sem esperar a rotina", async () => {
