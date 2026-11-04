@@ -5,7 +5,7 @@ import { actionContext, tenant } from "@/server/context";
 import { withSystem } from "@/server/db";
 import { audit } from "@/server/modules/audit";
 import { DomainError, type ActionState } from "@/server/errors";
-import { connectWhatsApp, disconnectWhatsApp } from "@/server/modules/whatsapp-connection";
+import { disconnectWhatsApp, requestWhatsApp } from "@/server/modules/whatsapp-connection";
 
 const orgSchema = z.object({
   name: z.string().trim().min(2, "Qual é o nome do seu negócio?").max(120),
@@ -74,26 +74,22 @@ export async function saveAutomationsAction(input: { reminder: boolean; upsell: 
   }
 }
 
-const waSchema = z.object({
-  phoneNumberId: z.string().trim().regex(/^\d{8,24}$/, "O ID do número tem só dígitos (aparece na Meta, em WhatsApp > Configuração da API)."),
-  wabaId: z.string().trim().regex(/^\d{8,24}$/, "O ID da conta do WhatsApp Business tem só dígitos.").optional().or(z.literal("")),
-  token: z.string().trim().min(20, "Cole o token de acesso completo.").max(1000),
-  appSecret: z.string().trim().max(200).optional(),
+const requestSchema = z.object({
+  phone: z.string().trim().refine((v) => v.replace(/\D/g, "").length >= 10 && v.replace(/\D/g, "").length <= 13, "Qual é o número do WhatsApp do negócio? Com DDD."),
 });
 
-/** Conecta o número de WhatsApp do próprio estabelecimento (API oficial da Meta). */
-export async function connectWhatsAppAction(_: ActionState, form: FormData): Promise<ActionState> {
+/** O salão pede para conectar o WhatsApp: um toque, e a equipe da Gê configura junto com ele. */
+export async function requestWhatsAppAction(_: ActionState, form: FormData): Promise<ActionState> {
   try {
     const ctx = await actionContext("settings.manage");
-    const parsed = waSchema.safeParse(Object.fromEntries(form));
-    if (!parsed.success) return { ok: false, message: "Dá uma olhadinha nos campos destacados.", fieldErrors: z.flattenError(parsed.error).fieldErrors };
-    const r = await withSystem(async (tx) => {
-      const out = await connectWhatsApp(tx, ctx.org.id, parsed.data);
-      await audit(tx, { userId: ctx.user.userId, organizationId: ctx.org.id }, "organization.whatsapp_connected", "organization", ctx.org.id, { phone: out.displayPhone });
-      return out;
+    const parsed = requestSchema.safeParse(Object.fromEntries(form));
+    if (!parsed.success) return { ok: false, message: "Dá uma olhadinha no número.", fieldErrors: z.flattenError(parsed.error).fieldErrors };
+    await tenant(ctx, async (tx) => {
+      await requestWhatsApp(tx, ctx.org.id, ctx.user.userId, parsed.data.phone);
+      await audit(tx, { userId: ctx.user.userId, organizationId: ctx.org.id }, "organization.whatsapp_requested", "organization", ctx.org.id);
     });
     revalidatePath("/app/configuracoes");
-    return { ok: true, message: `WhatsApp conectado${r.displayPhone ? `: ${r.displayPhone}` : ""}.` };
+    return { ok: true, message: "Pedido enviado! A equipe da Gê vai falar com você para deixar tudo pronto." };
   } catch (err) {
     if (err instanceof DomainError) return { ok: false, message: err.message };
     throw err;
