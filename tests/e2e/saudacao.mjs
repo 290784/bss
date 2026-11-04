@@ -68,10 +68,10 @@ try {
   await p2.reload();
   ok((await titulo(p2)) === amanha, "e ela também fica a mesma o dia todo");
 
-  // Depois de 20 segundos o título volta para "Oii, nome" (relógio simulado: não espera de verdade).
+  // Depois de 10 segundos o título volta para "Oii, nome" (relógio simulado: não espera de verdade).
   // O tempo vem direto do código, para o teste acompanhar se ele mudar.
   const VISIVEL = Number(/GREETING_VISIBLE_MS = ([\d_]+)/.exec(readFileSync("src/app/app/greeting-title.tsx", "utf8"))[1].replaceAll("_", ""));
-  ok(VISIVEL === 20_000, "a saudação fica 20 segundos");
+  ok(VISIVEL === 10_000, "a saudação fica 10 segundos");
   const [{ full_name: nome }] = await sql`select full_name from app.users where id = ${u.uid}`;
   const primeiro = nome.split(" ")[0];
   const ctxRelogio = await b.newContext({ viewport: { width: 1366, height: 900 } });
@@ -82,17 +82,17 @@ try {
   await rel.getByRole("button", { name: "Entrar" }).click(); await rel.waitForURL(/\/app/);
   const frase = await titulo(rel);
   ok(FRASES.includes(frase), "ao abrir o painel, aparece a saudação do dia");
-  await rel.clock.runFor(VISIVEL - 10_000);
-  ok((await titulo(rel)) === frase, "com 10 segundos ainda é a saudação");
-  // Aos 20 s começa a apagar, letra por letra (efeito de máquina de escrever): no meio, sobra só o começo da frase.
-  await rel.clock.runFor(10_000 + 450);
+  await rel.clock.runFor(VISIVEL - 3_000);
+  ok((await titulo(rel)) === frase, "faltando 3 segundos ainda é a saudação");
+  // Aos 10 s começa a apagar, letra por letra (efeito de máquina de escrever): no meio, sobra só o começo da frase.
+  await rel.clock.runFor(3_000 + 650);
   const parcial = await titulo(rel);
   ok(parcial.length < frase.length && frase.startsWith(parcial), `as letras vão sendo apagadas (“${parcial}”)`);
   ok(await rel.locator("h1 .tw-caret").count() === 1, "aparece o cursor piscando durante a troca");
   // Acompanha o resto da troca de 40 em 40 ms (relógio simulado) e confere a sequência inteira.
   const final = `Oii, ${primeiro}`;
   const vistos = [parcial];
-  for (let t = 0; t < 7_000; t += 40) { await rel.clock.runFor(40); vistos.push(await titulo(rel)); }
+  for (let t = 0; t < 10_000; t += 40) { await rel.clock.runFor(40); vistos.push(await titulo(rel)); }
   const primeiraDigitada = vistos.findIndex((x) => x.length > 0 && final.startsWith(x));
   const apagando = vistos.slice(0, primeiraDigitada), digitando = vistos.slice(primeiraDigitada);
   ok(apagando.every((x) => frase.startsWith(x)) && apagando.every((x, i) => i === 0 || x.length <= apagando[i - 1].length), "apaga da direita para a esquerda, só diminuindo");
