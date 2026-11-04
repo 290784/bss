@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import { cn } from "@/lib/cn";
 
 /** Quanto tempo a saudação do dia fica no título antes de voltar para "Oii, nome". */
-export const GREETING_VISIBLE_MS = 60_000;
+export const GREETING_VISIBLE_MS = 20_000;
 /** Digitar o nome: um pouco mais devagar que apagar, para dar o ritmo de máquina de escrever. */
 const TYPE_MS = 75;
 /** Apagar a saudação leva cerca de 1,4 s, seja qual for o tamanho da frase. */
@@ -12,7 +12,7 @@ const PAUSE_MS = 280;
 const CARET_LINGER_MS = 1200;
 
 /**
- * Título do painel: a saudação do dia aparece quando ela abre a página e, depois de 1 minuto, as letras
+ * Título do painel: a saudação do dia aparece quando ela abre a página e, depois de 20 segundos, as letras
  * são apagadas uma a uma e "Oii, nome" é digitado, como numa máquina de escrever (com cursor piscando).
  * Cada vez que o painel é aberto, a contagem recomeça. A frase em si (a do dia, gravada no banco) vem pronta
  * do servidor. Com "reduzir movimento" ligado, a troca é direta, sem animação.
