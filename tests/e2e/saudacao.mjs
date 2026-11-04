@@ -1,4 +1,5 @@
 import { createRequire } from "node:module";
+import { readFileSync } from "node:fs";
 const require = createRequire(import.meta.url);
 const { chromium } = require("playwright");
 const postgres = require("postgres");
@@ -67,7 +68,10 @@ try {
   await p2.reload();
   ok((await titulo(p2)) === amanha, "e ela também fica a mesma o dia todo");
 
-  // Depois de 1 minuto o título volta para "Oii, nome" (relógio simulado: não espera de verdade).
+  // Depois de 20 segundos o título volta para "Oii, nome" (relógio simulado: não espera de verdade).
+  // O tempo vem direto do código, para o teste acompanhar se ele mudar.
+  const VISIVEL = Number(/GREETING_VISIBLE_MS = ([\d_]+)/.exec(readFileSync("src/app/app/greeting-title.tsx", "utf8"))[1].replaceAll("_", ""));
+  ok(VISIVEL === 20_000, "a saudação fica 20 segundos");
   const [{ full_name: nome }] = await sql`select full_name from app.users where id = ${u.uid}`;
   const primeiro = nome.split(" ")[0];
   const ctxRelogio = await b.newContext({ viewport: { width: 1366, height: 900 } });
@@ -78,10 +82,10 @@ try {
   await rel.getByRole("button", { name: "Entrar" }).click(); await rel.waitForURL(/\/app/);
   const frase = await titulo(rel);
   ok(FRASES.includes(frase), "ao abrir o painel, aparece a saudação do dia");
-  await rel.clock.runFor(30_000);
-  ok((await titulo(rel)) === frase, "com 30 segundos ainda é a saudação");
-  // Aos 60 s começa a apagar, letra por letra (efeito de máquina de escrever): no meio, sobra só o começo da frase.
-  await rel.clock.runFor(30_000 + 450);
+  await rel.clock.runFor(VISIVEL - 10_000);
+  ok((await titulo(rel)) === frase, "com 10 segundos ainda é a saudação");
+  // Aos 20 s começa a apagar, letra por letra (efeito de máquina de escrever): no meio, sobra só o começo da frase.
+  await rel.clock.runFor(10_000 + 450);
   const parcial = await titulo(rel);
   ok(parcial.length < frase.length && frase.startsWith(parcial), `as letras vão sendo apagadas (“${parcial}”)`);
   ok(await rel.locator("h1 .tw-caret").count() === 1, "aparece o cursor piscando durante a troca");
@@ -110,7 +114,7 @@ try {
   await c.getByLabel("E-mail").fill(EMAIL); await c.getByLabel("Senha").fill(SENHA);
   await c.getByRole("button", { name: "Entrar" }).click(); await c.waitForURL(/\/app/);
   ok(FRASES.includes(await titulo(c)), "com reduzir movimento: começa com a saudação");
-  await c.clock.runFor(60_100);
+  await c.clock.runFor(VISIVEL + 100);
   ok((await titulo(c)) === `Oii, ${primeiro}` && await c.locator("h1 .tw-caret").count() === 0, "com reduzir movimento: troca direta, sem animação");
 
   ok(errs.length === 0, "sem erros de página" + (errs.length ? ": " + errs.join(" | ") : ""));
