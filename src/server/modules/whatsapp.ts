@@ -24,7 +24,13 @@ import {
  */
 
 export type Intent = "confirm" | "reschedule" | "yes" | "no" | "other";
-export type InboundMessage = { providerMessageId: string; from: string; text?: string | null; buttonId?: string | null };
+export type InboundMessage = {
+  providerMessageId: string; from: string; text?: string | null; buttonId?: string | null;
+  /** Número da Meta em que a mensagem chegou (vem no webhook). */
+  phoneNumberId?: string;
+  /** Estabelecimento dono desse número: a conversa só é procurada nele (cada um tem o próprio WhatsApp). */
+  organizationId?: string;
+};
 
 const strip = (s: string) => s.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().trim();
 
@@ -120,6 +126,7 @@ export async function handleInbound(sql: Sql, msg: InboundMessage, now = new Dat
       join app.professionals p on p.id = a.professional_id
       join app.organizations o on o.id = w.organization_id
       where w.phone_normalized in ${tx(phones)} and w.expires_at > ${now}
+        and (${msg.organizationId ?? null}::uuid is null or w.organization_id = ${msg.organizationId ?? null}::uuid)
       order by w.updated_at desc limit 1
       for update of w`;
     const outcome = await (async (): Promise<InboundOutcome> => {

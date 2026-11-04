@@ -5,6 +5,7 @@ import { actionContext, tenant } from "@/server/context";
 import { withSystem } from "@/server/db";
 import { audit } from "@/server/modules/audit";
 import { DomainError, type ActionState } from "@/server/errors";
+import { connectWhatsApp, disconnectWhatsApp } from "@/server/modules/whatsapp-connection";
 
 const orgSchema = z.object({
   name: z.string().trim().min(2, "Qual é o nome do seu negócio?").max(120),
@@ -67,6 +68,47 @@ export async function saveAutomationsAction(input: { reminder: boolean; upsell: 
     });
     revalidatePath("/app/configuracoes");
     return { ok: true, message: reminder ? (upsell ? "Lembrete e oferta de extra ligados." : "Lembrete ligado, oferta de extra desligada.") : "Automações desligadas." };
+  } catch (err) {
+    if (err instanceof DomainError) return { ok: false, message: err.message };
+    throw err;
+  }
+}
+
+const waSchema = z.object({
+  phoneNumberId: z.string().trim().regex(/^\d{8,24}$/, "O ID do número tem só dígitos (aparece na Meta, em WhatsApp > Configuração da API)."),
+  wabaId: z.string().trim().regex(/^\d{8,24}$/, "O ID da conta do WhatsApp Business tem só dígitos.").optional().or(z.literal("")),
+  token: z.string().trim().min(20, "Cole o token de acesso completo.").max(1000),
+  appSecret: z.string().trim().max(200).optional(),
+});
+
+/** Conecta o número de WhatsApp do próprio estabelecimento (API oficial da Meta). */
+export async function connectWhatsAppAction(_: ActionState, form: FormData): Promise<ActionState> {
+  try {
+    const ctx = await actionContext("settings.manage");
+    const parsed = waSchema.safeParse(Object.fromEntries(form));
+    if (!parsed.success) return { ok: false, message: "Dá uma olhadinha nos campos destacados.", fieldErrors: z.flattenError(parsed.error).fieldErrors };
+    const r = await withSystem(async (tx) => {
+      const out = await connectWhatsApp(tx, ctx.org.id, parsed.data);
+      await audit(tx, { userId: ctx.user.userId, organizationId: ctx.org.id }, "organization.whatsapp_connected", "organization", ctx.org.id, { phone: out.displayPhone });
+      return out;
+    });
+    revalidatePath("/app/configuracoes");
+    return { ok: true, message: `WhatsApp conectado${r.displayPhone ? `: ${r.displayPhone}` : ""}.` };
+  } catch (err) {
+    if (err instanceof DomainError) return { ok: false, message: err.message };
+    throw err;
+  }
+}
+
+export async function disconnectWhatsAppAction(): Promise<ActionState> {
+  try {
+    const ctx = await actionContext("settings.manage");
+    await withSystem(async (tx) => {
+      await disconnectWhatsApp(tx, ctx.org.id);
+      await audit(tx, { userId: ctx.user.userId, organizationId: ctx.org.id }, "organization.whatsapp_disconnected", "organization", ctx.org.id);
+    });
+    revalidatePath("/app/configuracoes");
+    return { ok: true, message: "WhatsApp desconectado. Nada mais será enviado por ele." };
   } catch (err) {
     if (err instanceof DomainError) return { ok: false, message: err.message };
     throw err;

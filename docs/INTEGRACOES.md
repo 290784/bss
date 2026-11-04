@@ -22,24 +22,51 @@ Fluxo em `src/server/modules/whatsapp.ts` (conversa) e `src/server/modules/messa
 4. As respostas vão na janela de 24h aberta pela cliente (mensagem livre, a mais barata). Idempotente pelo id da
    mensagem da Meta (`app.whatsapp_inbound`). Celulares com e sem o 9 são reconhecidos.
 
-### Para ligar (Cloud API da Meta, sem intermediário)
-1. Conta Meta Business verificada + app no Meta for Developers com o produto WhatsApp e um número.
-2. Variáveis de ambiente no servidor (Vercel → Settings → Environment Variables):
-   - `WHATSAPP_TOKEN` (token permanente do usuário de sistema), `WHATSAPP_PHONE_NUMBER_ID`
-   - `WHATSAPP_APP_SECRET` (assinatura do webhook), `WHATSAPP_VERIFY_TOKEN` (texto aleatório que você escolhe)
-   - opcional `WHATSAPP_TEMPLATE_LANG` (padrão `pt_BR`)
-3. Webhook no app da Meta: URL `https://<seu-domínio>/api/whatsapp/webhook`, token de verificação =
-   `WHATSAPP_VERIFY_TOKEN`, assinar o campo **messages**.
-4. Criar e aprovar os modelos (categoria **Utilidade**, idioma Português (BR)), com as variáveis nesta ordem
-   (`META_TEMPLATES` em `src/server/modules/whatsapp-meta.ts`):
-   - `ge_confirmacao`: "Oi, {{1}}! Seu horário de {{2}} está marcado para {{3}}, com {{4}}. Endereço e confirmação de presença: {{5}}"
-   - `ge_lembrete`: "Oi, {{1}}! Passando pra lembrar: {{2}} tem {{3}} com {{4}}, no {{5}}. Posso confirmar?"
-     com 2 botões de resposta rápida: **Confirmo** e **Preciso remarcar**
-   - `ge_cancelamento`: "Oi, {{1}}. Seu horário de {{2}} {{3}} no {{4}} foi cancelado. Se quiser remarcar, é só responder aqui."
-   Não colocar oferta/promoção nos modelos: a Meta reclassifica como Marketing (≈9× mais caro). A oferta vai
-   na conversa, depois do "Confirmo".
-5. Despacho da fila: `GET /api/cron/mensagens` com `Authorization: Bearer $CRON_SECRET` (workflow
-   `.github/workflows/mensagens.yml` a cada 5 min; o cron do `vercel.json` roda às 9h05 de Brasília como reserva).
+### Um WhatsApp por estabelecimento (Cloud API da Meta, sem intermediário)
+Cada estabelecimento conecta o **próprio número** em Configurações → WhatsApp → “Seu número de WhatsApp”.
+As mensagens saem pelo número dele e as respostas das clientes chegam só nele.
+
+**Na plataforma (uma vez), variáveis na Vercel:**
+- `WHATSAPP_ENCRYPTION_KEY`: texto longo e aleatório (≥ 16 caracteres) que criptografa os tokens no banco
+  (AES-256-GCM). **Guarde com cuidado: se mudar, as conexões existentes ficam ilegíveis** e cada estabelecimento
+  precisa reconectar. Sem ela, a tela avisa que a conexão não está habilitada.
+- `CRON_SECRET` (despacho da fila).
+- Opcionais, só para um número padrão da plataforma (usado por quem ainda não conectou o próprio):
+  `WHATSAPP_TOKEN`, `WHATSAPP_PHONE_NUMBER_ID`, `WHATSAPP_APP_SECRET`, `WHATSAPP_VERIFY_TOKEN`, `WHATSAPP_TEMPLATE_LANG`.
+
+**Em cada estabelecimento (guiado pela própria tela):**
+1. App “Empresa” no Meta for Developers com o produto WhatsApp e o número do negócio
+   (o número não pode estar ativo no app do WhatsApp do celular).
+2. Colar na Gê: **ID do número**, **ID da conta (WABA)** (opcional, mas é o que permite criar os modelos sozinha),
+   **token permanente** de usuário do sistema e, se quiser conferir a assinatura das respostas com o app dele, o
+   **segredo do app**.
+3. A Gê confere o número e o token na Meta e **cria os 3 modelos** na conta dele (`META_TEMPLATE_BODIES`, categoria
+   Utilidade, pt_BR). A Meta analisa em poucas horas a 2 dias; a tela mostra a situação de cada um.
+4. Webhook no app da Meta: endereço único `https://<seu-domínio>/api/whatsapp/webhook` e o **texto de verificação
+   mostrado na tela** (um por estabelecimento); assinar o campo **messages**.
+
+**Como funciona por dentro:**
+- Tabela `app.whatsapp_connections` (um registro por estabelecimento). `token_enc` e `app_secret_enc` ficam fora do
+  alcance do papel do aplicativo (grant por coluna); só o servidor abre.
+- Envio: `dispatchDueMessages` usa a conexão do estabelecimento da mensagem; sem conexão, o número da plataforma (se
+  houver); sem nenhum, a mensagem fica `skipped` com “Canal não conectado”. Conexão ilegível vira erro só daquele
+  estabelecimento, com nova tentativa.
+- Webhook: cada mensagem traz `metadata.phone_number_id`, que diz de qual estabelecimento ela é. A assinatura é
+  conferida com o segredo do app daquele estabelecimento (se tiver) ou `WHATSAPP_APP_SECRET`, então um não consegue
+  falar pelo outro. A conversa é procurada só dentro do estabelecimento do número.
+- Um mesmo número de WhatsApp só pode estar em um estabelecimento.
+- Mensagens que já tinham ficado `skipped` antes de conectar não são reenviadas.
+
+**Futuro:** “Cadastro incorporado” (Embedded Signup) da Meta troca o passo 1–3 por um botão “Conectar com o
+Facebook”; exige que a Gê seja Provedor de Tecnologia aprovado pela Meta.
+
+Modelos (para conferência; variáveis nesta ordem, ver `META_TEMPLATES`):
+- `ge_confirmacao`, `ge_lembrete`, `ge_cancelamento`: textos em `META_TEMPLATE_BODIES`.
+  Não colocar oferta/promoção nos modelos: a Meta reclassifica como Marketing (≈9× mais caro). A oferta vai na
+  conversa, depois do “Confirmo”.
+- Despacho da fila: `GET /api/cron/mensagens` com `Authorization: Bearer $CRON_SECRET` (a cada 5 min no plano
+  Pro da Vercel; no plano gratuito, o cron do `vercel.json` roda uma vez ao dia e o envio imediato fica por conta
+  do `dispatchSoon`).
 
 ### Custos (tabela em reais da Meta citada para 2026 — confirmar no painel da Meta)
 - Modelo de utilidade (confirmação, lembrete): ~R$ 0,035 por mensagem entregue.
