@@ -14,6 +14,7 @@ import { metaCloudProvider } from "@/server/modules/whatsapp-meta";
  *   `processing` antes de chamar o provedor: duas execuções simultâneas nunca enviam o
  *   mesmo job. A chave de idempotência também é repassada ao provedor.
  * - Sem provedor configurado, o job vira `skipped` com o motivo — nunca "enviado".
+ * - Envio travado em `processing` por mais de 15 min (processo morreu) volta para a fila; assim nada fica parado para sempre.
  */
 
 export type Channel = "whatsapp" | "email";
@@ -149,7 +150,17 @@ type ClaimedJob = {
   professional_name: string | null; appt_status: string | null;
 };
 
+/** Um envio "em andamento" há mais que isso é considerado travado (o processo morreu no meio) e volta para a fila. */
+const STUCK_AFTER_MINUTES = 15;
+
 export async function dispatchDueMessages(sql: Sql, providers: MessageProvider[], limit = 50) {
+  // Retoma o que travou: o despachante marca "processing" antes de enviar; se o servidor reiniciou ou estourou o tempo
+  // nesse intervalo, a mensagem ficaria parada para sempre. Quem já gastou todas as tentativas vira "falhou".
+  await sql`
+    update app.message_jobs set updated_at = now(),
+      status = case when attempts >= max_attempts then 'failed'::app.message_status else 'pending'::app.message_status end,
+      last_error = 'Envio interrompido no meio (servidor reiniciou ou demorou demais)'
+    where status = 'processing' and updated_at < now() - make_interval(mins => ${STUCK_AFTER_MINUTES})`;
   const claimed = await sql.begin(async (tx) => tx<ClaimedJob[]>`
     with due as (
       select id from app.message_jobs

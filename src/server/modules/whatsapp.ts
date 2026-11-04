@@ -39,13 +39,23 @@ export function classifyReply(text: string | null | undefined, buttonId?: string
   if (buttonId === "offer_no") return "no";
   const t = strip(text ?? "").replace(/[!.,]+$/g, "");
   if (!t) return "other";
+  // Negação do pedido ("não preciso remarcar", "não vou cancelar", "sem imprevistos", "não vou faltar") NÃO é pedido de
+  // remarcação. Se vier com um "confirmo/ok", conta como confirmação; senão vai para a profissional.
+  if (NEGATED_CANCEL.test(t)) return /\b(confirm\w*|combinado|ok|okay|blz|beleza)\b/.test(t) ? "confirm" : "other";
   if (/(remarc|desmarc|cancel|nao (vou|posso|consigo|da)|outro (dia|horario)|imprevisto)/.test(t)) return "reschedule";
   if (t.split(/\s+/).length > 6) return "other";
   if (/^(nao|n|nao quero|agora nao|hoje nao|dessa vez nao|dispenso|nao obrigad[ao]|obrigad[ao] mas nao)\b/.test(t)) return "no";
-  if (/^(sim|s|ss|quero|pode|pode sim|bora|claro|aceito|isso|fechado|com certeza|opa|uhum|👍|✅|❤️|💜)\b/u.test(t) || /^(👍|✅|💜|❤️)/u.test(text ?? "")) return "yes";
-  if (/^(confirmo|confirmado|confirmada|confirmar|ok|okay|blz|beleza|combinado|estarei|vou sim|vou|ta|ta bom|certo)\b/.test(t)) return "confirm";
-  return "other";
+  const positive: Intent | null =
+    /^(sim|s|ss|quero|pode|pode sim|bora|claro|aceito|isso|fechado|com certeza|opa|uhum|👍|✅|❤️|💜)\b/u.test(t) || /^(👍|✅|💜|❤️)/u.test(text ?? "") ? "yes"
+    : /^(confirmo|confirmado|confirmada|confirmar|ok|okay|blz|beleza|combinado|estarei|vou sim|vou|ta|ta bom|certo)\b/.test(t) ? "confirm"
+    : null;
+  // "Sim, mas chego atrasada": a ressalva é para a profissional ler, não um "sim" automático.
+  if (positive && RESSALVA.test(t)) return "other";
+  return positive ?? "other";
 }
+
+const NEGATED_CANCEL = /\b(nao|sem|nenhum)\s+(?:(?:vou|vai|preciso|precisa|quero|pretendo|tenho|tem|devo|vamos)\s+)*(?:(?:precisar|ter que|ter|de)\s+)*(?:remarc|desmarc|cancel|faltar|falta|imprevisto)/;
+const RESSALVA = /\b(mas|porem|so que|desde que|exceto|menos|alem disso|dependendo)\b/;
 
 /** Os dois formatos de celular do Brasil (com e sem o 9 depois do DDD) para achar a cliente. */
 export function phoneVariants(raw: string) {
