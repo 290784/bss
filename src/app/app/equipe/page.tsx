@@ -4,7 +4,7 @@ import { listProfessionals, listTimeOff, teamStats } from "@/server/modules/team
 import { can } from "@/domain/permissions";
 import { formatInTz } from "@/lib/time";
 import { listServices } from "@/server/modules/catalog";
-import { PageHeader } from "@/components/ui/primitives";
+import { Accent, B, PageHeader } from "@/components/ui/primitives";
 import { SubTabs } from "@/components/ui/sub-tabs";
 import { CalendarOff, UsersRound, Wallet } from "lucide-react";
 import { TeamManager, type TeamTab } from "./team-manager";
@@ -25,7 +25,7 @@ export default async function TeamPage({ searchParams }: { searchParams: Promise
   const active = data.professionals.filter((p) => p.is_active).length;
   return (
     <div>
-      <PageHeader art="calendar-check" title="Equipe e horários" description={`${active} de ${ctx.plan.maxProfessionals} ${ctx.plan.maxProfessionals === 1 ? "profissional ativa" : "profissionais ativas"} no plano ${ctx.plan.name}${ctx.subscription.status === "trialing" ? " (teste)" : ""}.`} />
+      <PageHeader art="calendar-check" title="Equipe e horários" description={<><Accent>{active} de {ctx.plan.maxProfessionals} {ctx.plan.maxProfessionals === 1 ? "profissional ativa" : "profissionais ativas"}</Accent> no plano <B>{ctx.plan.name}</B>{ctx.subscription.status === "trialing" ? " (teste)" : ""}.</>} />
       <SubTabs label="Partes da equipe" current={tab} href={(id) => (id === "profissionais" ? "/app/equipe" : `/app/equipe?aba=${id}`)}
         tabs={[
           { id: "profissionais", label: "Profissionais", icon: UsersRound, count: data.professionals.length },

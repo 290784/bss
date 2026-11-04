@@ -7,7 +7,7 @@ import { can } from "@/domain/permissions";
 import { METRIC_DEFINITIONS } from "@/domain/metrics";
 import { loadDashboard } from "@/server/modules/dashboard";
 import { loadDicas } from "@/server/modules/dicas";
-import { Card, CardHeader, EmptyState, InfoTip, PageHeader } from "@/components/ui/primitives";
+import { B, Card, CardHeader, EmptyState, InfoTip, PageHeader } from "@/components/ui/primitives";
 import { formatInTz } from "@/lib/time";
 import { plural } from "@/lib/text";
 import { DicasCard } from "../dicas-card";
@@ -32,7 +32,7 @@ export default async function DicasPage() {
 
   return (
     <div>
-      <PageHeader art="lightbulb" title="Dicas" description="Ideias para encher a agenda e chamar de volta quem sumiu. Marque como feita quando resolver." />
+      <PageHeader art="lightbulb" title="Dicas" description={<>Ideias para <B>encher a agenda</B> e <B>chamar de volta</B> quem sumiu. Marque como feita quando resolver.</>} />
 
       <DicasCard dicas={dicas} />
 

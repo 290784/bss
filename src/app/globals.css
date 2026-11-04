@@ -48,6 +48,8 @@
   --color-gold-400: #c6a05b;
   --color-gold-600: #8a6426;
   --color-gold-700: #6f4f1c;
+  /* Dourado para TEXTO (rótulos): escuro sobre fundo claro (6:1), claro sobre os blocos de ameixa. */
+  --color-gold-ink: #e3c88f;
   /* Toques dourados do app: filete/realce (gold-line) e brilho fino no alto dos cartões (gold-glint). */
   --color-gold-line: #c9a35e;
   --color-gold-glint: rgb(201 163 94 / 0.32);
@@ -176,6 +178,7 @@
   --color-hover-tint: rgb(100 35 80 / 0.04);
   /* Cantos e sombras: cartões macios, sombra difusa com um toque de ameixa (nunca preta). */
   --color-gold-line: #b28e52;
+  --color-gold-ink: #7d5a1f;
   --color-gold-glint: rgb(201 163 94 / 0.55);
   --radius-card: 20px;
   --shadow-card: 0 1px 2px rgb(100 35 80 / 0.04), 0 12px 32px -18px rgb(100 35 80 / 0.16), inset 0 1px 0 var(--color-gold-glint);
@@ -185,6 +188,8 @@
   --shadow-pop: 0 24px 56px -22px rgb(100 35 80 / 0.32), 0 0 0 1px rgb(100 35 80 / 0.06);
   color-scheme: light;
 }
+/* O app é só claro. Este conjunto de cores escuras NÃO é mais uma opção da usuária: serve apenas para os blocos de ameixa
+   (data-theme="dark" em botões, cartões e cabeçalhos), onde o texto precisa ser claro sobre fundo escuro. */
 [data-theme="dark"] {
   --color-canvas: #16121a;
   --color-surface: #1e1922;
@@ -264,7 +269,7 @@
     /* Nada pode alargar a página no celular (o Safari reduziria tudo para caber). "clip" não quebra o cabeçalho fixo. */
     overflow-x: clip;
     -webkit-text-size-adjust: 100%;
-    color-scheme: dark;
+    color-scheme: light;
   }
   body, .bg-app {
     background: var(--color-canvas);
@@ -299,6 +304,11 @@
 
 @layer components {
   .tabular { font-variant-numeric: tabular-nums; }
+  /*
+   * Hierarquia dos textos: títulos em serifada (Playfair); RÓTULO (.eyebrow: pequeno, caixa alta, negrito, dourado) para o
+   * nome de cada informação; DESTAQUE no meio do texto em negrito (tinta ou ameixa); números sempre em negrito.
+   */
+  .eyebrow { font-size: 11px; line-height: 1.3; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--color-gold-ink); }
 
   /* Gê: degradê "Royal Violet" (noite → violeta real) */
   /* Ameixa → violeta real → magenta: mais suave e feminino que o quase-preto original. */
@@ -413,12 +423,6 @@
   background:
     radial-gradient(1100px 560px at 88% -12%, rgb(246 236 242 / 0.95), transparent 62%),
     radial-gradient(900px 520px at -12% 28%, rgb(248 240 225 / 0.7), transparent 60%),
-    var(--color-canvas);
-  background-attachment: fixed;
-}
-[data-theme="dark"] body {
-  background:
-    radial-gradient(1100px 560px at 88% -12%, rgb(156 74 130 / 0.14), transparent 62%),
     var(--color-canvas);
   background-attachment: fixed;
 }

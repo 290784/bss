@@ -4,7 +4,6 @@ import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useRef, useState, useTransition } from "react";
 import { BarChart3, Bell, CalendarDays, ChevronsUpDown, Home, Lightbulb, LogOut, Menu, Scissors, Search, Settings, Users, UsersRound, X, ExternalLink } from "lucide-react";
 import { Logo } from "@/components/brand/logo";
-import { ThemeToggle } from "@/components/theme/theme-toggle";
 import { Avatar } from "@/components/ui/primitives";
 import { Illustration } from "@/components/ui/illustration";
 import { cn } from "@/lib/cn";
@@ -59,7 +58,6 @@ export function AppShell({ items, user, org, memberships, notifications, banner,
               <input name="q" placeholder="Buscar cliente por nome, telefone ou e-mail" aria-label="Buscar clientes"
                 className="h-10 w-full rounded-full border border-line/80 bg-surface pr-4 pl-10 text-sm shadow-[var(--shadow-control)] transition-[border-color,box-shadow] placeholder:text-muted focus:border-accent focus:ring-4 focus:ring-accent-muted/70 focus:outline-none" />
             </form>
-            <ThemeToggle />
             <Notifications key={notifications.map((n) => n.id + n.read).join()} items={notifications} />
           </header>
           <main className="mx-auto w-full max-w-[1400px] flex-1 px-4 pt-6 pb-[calc(7rem+env(safe-area-inset-bottom))] sm:px-6 lg:px-8 lg:pt-8 lg:pb-14">{children}</main>

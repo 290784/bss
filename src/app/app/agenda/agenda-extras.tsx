@@ -89,8 +89,8 @@ export function DaySummary({ items, pros, weekday, tz, toMin }: {
 function Num({ label, value, tone }: { label: string; value: string; tone?: string }) {
   return (
     <div className="min-w-0 px-1">
-      <div className="text-xs text-muted">{label}</div>
-      <div className={cn("truncate text-[15px] font-semibold tabular sm:text-base", tone)}>{value}</div>
+      <div className="eyebrow">{label}</div>
+      <div className={cn("mt-0.5 truncate text-[15px] font-bold tabular sm:text-base", tone)}>{value}</div>
     </div>
   );
 }
@@ -170,7 +170,7 @@ export function ListView({ items, pros, tz, canManage, gapsByPro, onOpen, onSlot
               <span className="w-12 shrink-0 text-sm font-semibold tabular">{start}<span className="block text-xs font-normal text-muted">{end}</span></span>
               <span className="h-10 w-1 shrink-0 rounded-full" style={{ background: pro?.color }} aria-hidden />
               <span className="min-w-0 flex-1">
-                <span className="flex items-center gap-1.5 truncate font-medium">{i.clientName}
+                <span className="flex items-center gap-1.5 truncate font-semibold">{i.clientName}
                   {i.source === "online" && <Globe className="h-3.5 w-3.5 text-muted" aria-label="Agendado online" />}
                   {i.squeezeIn && <Zap className="h-3.5 w-3.5 text-muted" aria-label="Encaixe" />}
                   {i.clientConfirmedAt && <CheckCheck className="h-3.5 w-3.5 text-st-confirmed" aria-label="A cliente confirmou" />}

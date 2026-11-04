@@ -3,7 +3,7 @@ import { requireAppContext, tenant } from "@/server/context";
 import { listServices, serviceStats } from "@/server/modules/catalog";
 import { can } from "@/domain/permissions";
 import { listProfessionals } from "@/server/modules/team";
-import { PageHeader } from "@/components/ui/primitives";
+import { B, PageHeader } from "@/components/ui/primitives";
 import { ServicesManager } from "./services-manager";
 
 export const metadata: Metadata = { title: "Serviços" };
@@ -17,7 +17,7 @@ export default async function ServicesPage() {
   }));
   return (
     <div>
-      <PageHeader art="scissors" title="Serviços" description="Seu cardápio de serviços: preço, duração, tempinho de preparo e quem faz cada um." />
+      <PageHeader art="scissors" title="Serviços" description={<><B>Seu cardápio de serviços:</B> preço, duração, tempinho de preparo e quem faz cada um.</>} />
       <ServicesManager stats={can(ctx.role, "finance.view") ? stats : Object.fromEntries(Object.entries(stats).map(([k, v]) => [k, { ...v, revenue30: 0 }]))} readOnly={ctx.access === "read_only"} services={services} professionals={professionals.map((p) => ({ id: p.id, name: p.display_name }))} />
     </div>
   );

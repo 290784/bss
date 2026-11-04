@@ -2,7 +2,6 @@ import type { Metadata, Viewport } from "next";
 import { Allura, Nunito, Playfair_Display } from "next/font/google";
 import "./globals.css";
 import { TouchActive } from "@/components/ui/touch-active";
-import { THEME_BOOT_SCRIPT } from "@/components/theme/theme";
 
 // Nunito (texto e interface: arredondada, macia e legível), Playfair Display (títulos do app e da landing:
 // serifada elegante, de revista) e Allura (cursiva do nome "Gê"). As duas primeiras são variáveis (todos os pesos).
@@ -23,8 +22,7 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="pt-BR" className={`${nunito.variable} ${playfair.variable} ${allura.variable}`} suppressHydrationWarning>
-      <head><script dangerouslySetInnerHTML={{ __html: THEME_BOOT_SCRIPT }} /></head>
+    <html lang="pt-BR" data-theme="light" className={`${nunito.variable} ${playfair.variable} ${allura.variable}`} suppressHydrationWarning>
       <body className="min-h-dvh"><TouchActive />{children}</body>
     </html>
   );

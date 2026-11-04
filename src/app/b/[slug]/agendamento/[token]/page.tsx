@@ -3,7 +3,6 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { BellRing, CalendarPlus, CheckCircle2, Clock, Hourglass, MapPin, MessageCircle, Phone, ShieldCheck, Sparkle, User, XCircle } from "lucide-react";
 import { withSystem } from "@/server/db";
-import { ThemeToggle } from "@/components/theme/theme-toggle";
 import { Card } from "@/components/ui/primitives";
 import { buttonClass } from "@/components/ui/button";
 import { formatMoney } from "@/lib/money";
@@ -60,7 +59,6 @@ export default async function ReceiptPage({ params, searchParams }: Params) {
   return (
     <div className="min-h-dvh">
       <header data-theme="dark" className="relative overflow-hidden border-b-2 border-gold-line bg-plum px-4 pt-[calc(2.5rem+env(safe-area-inset-top))] pb-20">
-        <ThemeToggle className="absolute top-[calc(0.75rem+env(safe-area-inset-top))] right-[max(0.75rem,env(safe-area-inset-right))] z-10" />
         <div className="relative mx-auto max-w-xl">
           <p className="text-[14px] font-semibold text-white/80">{r.business.name}</p>
           <h1 className="mt-2 font-serif text-[30px] leading-tight font-semibold tracking-[-0.01em] text-ink sm:text-[36px]">

@@ -1,5 +1,4 @@
 import { Logo } from "@/components/brand/logo";
-import { ThemeToggle } from "@/components/theme/theme-toggle";
 import { Illustration } from "@/components/ui/illustration";
 
 export default function AuthLayout({ children }: { children: React.ReactNode }) {
@@ -24,7 +23,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
         <p className="relative text-xs text-muted">Teste grátis por 14 dias. Sem cartão de crédito.</p>
       </aside>
       <main className="flex flex-col px-4 py-8 sm:px-10">
-        <div className="flex items-center justify-between"><div className="lg:invisible"><Logo /></div><ThemeToggle /></div>
+        <div className="flex items-center justify-between"><div className="lg:invisible"><Logo /></div></div>
         <div className="mx-auto flex w-full max-w-md flex-1 flex-col justify-center py-10">
           <div className="rounded-[28px] sm:border sm:border-gold-line/40 sm:bg-surface sm:p-9 sm:shadow-[var(--shadow-card)]">{children}</div>
         </div>

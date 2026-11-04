@@ -73,7 +73,7 @@ try {
   ok(true, "enviar pelo cartão registra o envio");
 
   // 3) Botões do topo com 44 px no celular
-  const sizes = await p.evaluate(() => ["Abrir menu", "Usar tema", "Notificações"].map((n) => {
+  const sizes = await p.evaluate(() => ["Abrir menu", "Notificações"].map((n) => {
     const el = [...document.querySelectorAll("button")].find((x) => (x.getAttribute("aria-label") ?? "").startsWith(n));
     const r = el?.getBoundingClientRect(); return r ? Math.min(r.width, r.height) : 0;
   }));

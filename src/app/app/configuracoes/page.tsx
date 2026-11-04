@@ -3,7 +3,7 @@ import { requireAppContext, tenant } from "@/server/context";
 import { withSystem } from "@/server/db";
 import { can, ROLE_LABEL, type Role } from "@/domain/permissions";
 import { PLANS } from "@/domain/plans";
-import { Badge, Card, CardHeader, PageHeader } from "@/components/ui/primitives";
+import { B, Badge, Card, CardHeader, PageHeader } from "@/components/ui/primitives";
 import { SubTabs } from "@/components/ui/sub-tabs";
 import { Illustration } from "@/components/ui/illustration";
 import { CreditCard, MessageCircle, ShieldCheck, Store, Users } from "lucide-react";
@@ -96,7 +96,7 @@ export default async function SettingsPage({ searchParams }: { searchParams: Pro
 
   return (
     <div>
-      <PageHeader art="store" title="Configurações" description="Escolha um assunto: dados do negócio, mensagens, plano, acesso da equipe ou privacidade." />
+      <PageHeader art="store" title="Configurações" description={<>Escolha um assunto: <B>dados do negócio</B>, <B>mensagens</B>, <B>plano</B>, <B>acesso da equipe</B> ou <B>privacidade</B>.</>} />
       <SubTabs label="Assuntos das configurações" tabs={[...TABS]} current={tab} href={(id) => (id === "negocio" ? "/app/configuracoes" : `/app/configuracoes?aba=${id}`)} />
 
       {tab === "negocio" && (

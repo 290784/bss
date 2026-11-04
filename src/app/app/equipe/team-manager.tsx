@@ -53,8 +53,8 @@ export function TeamManager({ professionals, services, timeOff, timeZone, atLimi
           description="Atendimentos concluídos no mês até agora. A comissão usa a do serviço quando ele tem uma, senão a da profissional." />
         <div className="overflow-x-auto px-5 pt-2 pb-4 sm:px-6">
           <table className="w-full min-w-[480px] text-sm">
-            <thead className="text-left text-[11px] tracking-[0.08em] text-muted uppercase">
-              <tr><th className="py-2 font-medium">Profissional</th><th className="py-2 text-right font-medium">Atendimentos</th><th className="py-2 text-right font-medium">Faturou</th><th className="py-2 text-right font-medium">Comissão</th><th className="py-2 pl-4 font-medium">Agenda da semana</th></tr>
+            <thead className="text-left text-[11px] tracking-[0.12em] text-gold-ink uppercase">
+              <tr><th className="py-2 font-bold">Profissional</th><th className="py-2 text-right font-bold">Atendimentos</th><th className="py-2 text-right font-medium">Faturou</th><th className="py-2 text-right font-medium">Comissão</th><th className="py-2 pl-4 font-medium">Agenda da semana</th></tr>
             </thead>
             <tbody className="divide-y divide-line">
               {activePros.map((p) => {
@@ -94,7 +94,7 @@ export function TeamManager({ professionals, services, timeOff, timeZone, atLimi
               <div className="flex items-start gap-3">
                 <Avatar name={p.display_name} color={p.color} className="h-10 w-10 text-sm" />
                 <div className="min-w-0 flex-1">
-                  <div className="flex items-center gap-2 font-medium">{p.display_name}{!p.is_active && <Badge>Inativa</Badge>}</div>
+                  <div className="flex items-center gap-2 font-semibold">{p.display_name}{!p.is_active && <Badge>Inativa</Badge>}</div>
                   <div className="text-[13px] text-muted">{p.specialty || "Sem especialidade"} · {plural(p.service_ids.length, "serviço")}{p.commission_percent ? ` · comissão ${p.commission_percent}%` : ""}</div>
                 </div>
               </div>

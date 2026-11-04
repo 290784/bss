@@ -7,7 +7,7 @@ import { requireAppContext, tenant } from "@/server/context";
 import { can } from "@/domain/permissions";
 import { freeGapsToday, loadDashboard, loadTrends } from "@/server/modules/dashboard";
 import { listAgenda } from "@/server/modules/appointments";
-import { Card, CardHeader, EmptyState, PageHeader, StatusBadge, STATUS_STYLE } from "@/components/ui/primitives";
+import { Accent, B, Card, CardHeader, EmptyState, PageHeader, StatusBadge, STATUS_STYLE } from "@/components/ui/primitives";
 import { ButtonLink } from "@/components/ui/button";
 import { formatMoney } from "@/lib/money";
 import { addDaysToKey, formatInTz, localDateKey, localTime, zonedDateTime } from "@/lib/time";
@@ -94,7 +94,7 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
       <PageHeader
         art="sparkles"
         title={sp["bem-vinda"] ? `Tudo pronto, ${firstName}` : greeting ? <GreetingTitle greeting={greeting} name={firstName} /> : `Oii, ${firstName}`}
-        description={<span className="first-letter:uppercase">{formatInTz(new Date(), tz, { weekday: "long", day: "numeric", month: "long" })} · {plural(activeToday.length, "atendimento")} hoje</span>}
+        description={<span className="first-letter:uppercase"><B>{formatInTz(new Date(), tz, { weekday: "long", day: "numeric", month: "long" })}</B> · <Accent>{plural(activeToday.length, "atendimento")}</Accent> hoje</span>}
         actions={canBook && <ButtonLink href="/app/agenda" size="md"><CalendarPlus className="h-4 w-4" />Agendar</ButtonLink>}
       />
 
@@ -157,7 +157,7 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
                       <span className="w-11 text-sm font-semibold tabular">{localTime(a.starts_at, tz)}</span>
                       <span className={cn("h-8 w-1 rounded-full", STATUS_STYLE[a.status].dot)} aria-hidden />
                       <span className="min-w-0 flex-1">
-                        <span className="block truncate text-sm font-medium">{a.client_name}</span>
+                        <span className="block truncate text-sm font-semibold">{a.client_name}</span>
                         <span className="block truncate text-xs text-muted">{a.services}</span>
                       </span>
                       <StatusBadge status={a.status} />
@@ -169,7 +169,7 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
             {activeToday.length > 8 && <Link href="/app/agenda" className="mt-2 inline-block text-[13px] font-medium text-accent-text hover:underline">Ver os outros {activeToday.length - 8} na agenda</Link>}
             {gaps.length > 0 && (
               <div className="mt-4 rounded-2xl border border-highlight-border/60 bg-highlight-subtle p-3.5">
-                <div className="mb-1.5 text-[13px] font-medium text-highlight-text">Horários livres hoje: dá para encaixar alguém</div>
+                <div className="mb-1.5 text-[13px] font-semibold text-highlight-text">Horários livres hoje: <b className="font-extrabold">dá para encaixar alguém</b></div>
                 <ul className="flex flex-wrap gap-1.5">
                   {gaps.slice(0, 6).map((g, i) => (
                     <li key={i} className="rounded-full bg-surface px-2.5 py-1 text-xs text-ink-soft tabular">

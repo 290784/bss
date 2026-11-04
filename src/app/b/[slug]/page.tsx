@@ -4,7 +4,6 @@ import { notFound } from "next/navigation";
 import { AtSign, CalendarCheck2, MapPin, MessageCircle } from "lucide-react";
 import { normalizePhone } from "@/lib/text";
 import { withSystem } from "@/server/db";
-import { ThemeToggle } from "@/components/theme/theme-toggle";
 import { firstAvailableSlots, getPublicBusiness } from "@/server/modules/public-booking";
 import { addDaysToKey, localDateKey } from "@/lib/time";
 import { BookingFlow } from "./booking-flow";
@@ -33,7 +32,6 @@ export default async function PublicBookingPage({ params }: Params) {
   return (
     <div className="min-h-dvh">
       <header data-theme="dark" className="relative overflow-hidden border-b-2 border-gold-line bg-plum px-4 pt-[calc(2.5rem+env(safe-area-inset-top))] pb-20">
-        <ThemeToggle className="absolute top-[calc(0.75rem+env(safe-area-inset-top))] right-[max(0.75rem,env(safe-area-inset-right))] z-10" />
                 <div className="relative mx-auto max-w-2xl">
           <p className="flex items-center gap-2 text-[14px] font-semibold text-white/80"><CalendarCheck2 className="h-4 w-4" strokeWidth={2.4} />Agendamento online</p>
           <h1 className="mt-2 font-serif text-[34px] leading-tight font-semibold tracking-[-0.01em] text-ink sm:text-[40px]">{biz.name}</h1>

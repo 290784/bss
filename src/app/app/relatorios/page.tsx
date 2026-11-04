@@ -5,7 +5,7 @@ import { requireAppContext, tenant } from "@/server/context";
 import { can } from "@/domain/permissions";
 import { METRIC_DEFINITIONS } from "@/domain/metrics";
 import { COMPARACAO, loadDashboard, loadForecast, loadInsights, loadTrends, PERIOD_LABEL, type PeriodId } from "@/server/modules/dashboard";
-import { Card, CardHeader, EmptyState, InfoTip, PageHeader } from "@/components/ui/primitives";
+import { B, Card, CardHeader, EmptyState, InfoTip, PageHeader } from "@/components/ui/primitives";
 import { formatMoney } from "@/lib/money";
 import { DashboardChart } from "../dashboard-chart";
 import { PeriodTabs } from "../period-tabs";
@@ -45,7 +45,7 @@ export default async function ReportsPage({ searchParams }: { searchParams: Prom
 
   return (
     <div>
-      <PageHeader art="chart" title="Relatórios" description={`Como o seu negócio está indo · ${COMPARACAO[period]}`}
+      <PageHeader art="chart" title="Relatórios" description={<><B>Como o seu negócio está indo</B> · {COMPARACAO[period]}</>}
         actions={<PeriodTabs basePath="/app/relatorios" periods={PERIODS.map((p) => ({ id: p, label: PERIOD_LABEL[p] }))} current={period} />} />
 
       {appointments === 0 ? (
@@ -89,7 +89,7 @@ export default async function ReportsPage({ searchParams }: { searchParams: Prom
               <CardHeader art="team" title="Como está cada profissional" description={PERIOD_LABEL[period]} action={<InfoTip text={METRIC_DEFINITIONS.produced_value} />} />
               <div className="overflow-x-auto px-5 pt-3 pb-5 sm:px-6 sm:pb-6">
                 <table className="w-full min-w-[480px] text-sm">
-                  <thead className="text-left text-[11px] tracking-[0.08em] text-muted uppercase"><tr><th className="py-2 font-medium">Profissional</th><th className="py-2 text-right font-medium">Concluídos</th><th className="py-2 text-right font-medium">Faltas</th><th className="py-2 text-right font-medium">Horas agendadas</th>{finance && <th className="py-2 text-right font-medium">Produção</th>}</tr></thead>
+                  <thead className="text-left text-[11px] tracking-[0.12em] text-gold-ink uppercase"><tr><th className="py-2 font-bold">Profissional</th><th className="py-2 text-right font-bold">Concluídos</th><th className="py-2 text-right font-bold">Faltas</th><th className="py-2 text-right font-bold">Horas agendadas</th>{finance && <th className="py-2 text-right font-bold">Produção</th>}</tr></thead>
                   <tbody className="divide-y divide-line/70">
                     {d.byProfessional.map((p) => (
                       <tr key={p.id}>
