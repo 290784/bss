@@ -19,6 +19,7 @@ import { NextClientCard } from "./next-client";
 import { Kpi } from "./dashboard-kpi";
 import { receiptUrl } from "@/server/modules/receipt";
 import { plural } from "@/lib/text";
+import { dailyGreeting } from "@/server/modules/greetings";
 
 export const metadata: Metadata = { title: "Início" };
 
@@ -43,6 +44,10 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
   const todayKey = localDateKey(new Date(), tz);
   const canBook = ctx.access !== "read_only";
 
+  // Saudação do dia (uma por usuária, no fuso da empresa). Se o banco falhar, o painel segue com o "Oi, nome" de sempre.
+  const greetingPromise: Promise<string | null> = sp["bem-vinda"] ? Promise.resolve(null)
+    : tenant(ctx, (tx) => dailyGreeting(tx, { organizationId: ctx.org.id, userId: ctx.user.userId, timeZone: tz })).then((g) => g.text).catch(() => null);
+
   const appUrl = process.env.APP_URL ?? "http://localhost:3000";
   const bookingUrl = `${appUrl}/b/${ctx.org.slug}`;
   const { d, trends, todayItems, gaps, setup, dicas } = await tenant(ctx, async (tx) => {
@@ -61,6 +66,7 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
     return { d, trends, todayItems, gaps, setup: setup!, dicas };
   });
 
+  const greeting = await greetingPromise;
   const activation = [
     { done: setup.services > 0, label: "Cadastre seus serviços", href: "/app/servicos" },
     { done: setup.hours > 0, label: "Defina seus horários", href: "/app/equipe" },
@@ -85,7 +91,8 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
     <div>
       <PageHeader
         art="sparkles"
-        title={sp["bem-vinda"] ? `Tudo pronto, ${ctx.user.fullName.split(" ")[0]}` : `Oi, ${ctx.user.fullName.split(" ")[0]}`}
+        title={sp["bem-vinda"] ? `Tudo pronto, ${ctx.user.fullName.split(" ")[0]}` : (greeting ?? `Oi, ${ctx.user.fullName.split(" ")[0]}`)}
+        long={!sp["bem-vinda"] && greeting !== null}
         description={<span className="first-letter:uppercase">{formatInTz(new Date(), tz, { weekday: "long", day: "numeric", month: "long" })} · {plural(activeToday.length, "atendimento")} hoje</span>}
         actions={canBook && <ButtonLink href="/app/agenda" size="md"><CalendarPlus className="h-4 w-4" />Agendar</ButtonLink>}
       />
