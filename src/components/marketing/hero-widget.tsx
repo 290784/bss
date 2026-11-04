@@ -16,7 +16,7 @@ import { useAutoplay, useDragSwipe } from "./carousel";
 type Slide = { key: string; label: string; desc: string; icon: typeof Bell; tile: string; glyph: string; halo: string; render: () => ReactNode };
 
 const SLIDES: Slide[] = [
-  { key: "lembretes", label: "Lembretes", desc: "Confirmação e lembrete 24h antes, sem mandar uma a uma.", icon: Bell, tile: "bg-[#f4e1ec]", glyph: "text-[#4d1940]", halo: "var(--color-halo-lavender)", render: () => <RemindersCard /> },
+  { key: "lembretes", label: "Lembretes", desc: "Lembrete na véspera, com confirmação em um toque.", icon: Bell, tile: "bg-[#f4e1ec]", glyph: "text-[#4d1940]", halo: "var(--color-halo-lavender)", render: () => <RemindersCard /> },
   { key: "online", label: "Agendamento online", desc: "Sua cliente escolhe um horário livre, a qualquer hora.", icon: CalendarCheck2, tile: "bg-[#e5bdd5]", glyph: "text-[#36102c]", halo: "var(--color-halo-orange)", render: () => <OnlineCard /> },
   { key: "receita", label: "Faturamento", desc: "Quanto você recebeu no mês, dia a dia.", icon: BarChart3, tile: "bg-[#b5619a]", glyph: "text-[#ffffff]", halo: "var(--color-halo-pink)", render: () => <RevenueCard /> },
   { key: "retorno", label: "Clientes de volta", desc: "Quem voltou e quem precisa de um convite para voltar.", icon: HeartHandshake, tile: "bg-[#9c3f82]", glyph: "text-[#ffffff]", halo: "var(--color-halo-green)", render: () => <ReturnCard /> },
