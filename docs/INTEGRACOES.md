@@ -23,8 +23,14 @@ Fluxo em `src/server/modules/whatsapp.ts` (conversa) e `src/server/modules/messa
    mensagem da Meta (`app.whatsapp_inbound`). Celulares com e sem o 9 são reconhecidos.
 
 ### Um WhatsApp por estabelecimento (Cloud API da Meta, sem intermediário)
-Cada estabelecimento conecta o **próprio número** em Configurações → WhatsApp → “Seu número de WhatsApp”.
-As mensagens saem pelo número dele e as respostas das clientes chegam só nele.
+Cada estabelecimento usa o **próprio número**. O cliente não mexe na Meta: em Configurações → WhatsApp ele só toca em
+“Quero conectar meu WhatsApp” (informa o número) e a **equipe da Gê configura numa chamada rápida**:
+1. O pedido aparece em `/admin/whatsapp` (acesso só para os e-mails em `PLATFORM_ADMIN_EMAILS`, separados por vírgula;
+   para os demais a página é 404).
+2. Na chamada, cole ali o ID do número, o ID da conta (WABA), o token e (opcional) o segredo do app. A Gê confere com a
+   Meta, cria os modelos e remove o pedido. Na mesma página aparecem o endereço do webhook e o texto de verificação.
+3. Mensagens enviadas e respostas passam a usar o número do cliente (detalhes abaixo).
+Variável nova: `PLATFORM_ADMIN_EMAILS`.
 
 **Na plataforma (uma vez), variáveis na Vercel:**
 - `WHATSAPP_ENCRYPTION_KEY`: texto longo e aleatório (≥ 16 caracteres) que criptografa os tokens no banco

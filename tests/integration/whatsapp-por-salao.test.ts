@@ -10,7 +10,8 @@ import * as webhook from "@/app/api/whatsapp/webhook/route";
 import { asTenant, createOrg, freshDatabase, futureDate } from "../support/db";
 import { createAppointment } from "@/server/modules/appointments";
 import { dispatchDueMessages, type OutgoingMessage } from "@/server/modules/messaging";
-import { connectWhatsApp, disconnectWhatsApp, loadConnection } from "@/server/modules/whatsapp-connection";
+import { isPlatformAdmin } from "@/server/admin";
+import { connectWhatsApp, disconnectWhatsApp, loadConnection, requestWhatsApp } from "@/server/modules/whatsapp-connection";
 import { decryptSecret, encryptSecret } from "@/server/secrets";
 import { DomainError } from "@/server/errors";
 
@@ -123,6 +124,33 @@ describe("conectar o WhatsApp do estabelecimento", () => {
     await expect(asTenant(ref.sql, A.ownerId, A.orgId, (tx) => tx`select token_enc from app.whatsapp_connections`)).rejects.toThrow(/permission denied/);
     // e um estabelecimento não enxerga a conexão do outro
     await expect(asTenant(ref.sql, B.ownerId, B.orgId, (tx) => tx`select display_phone from app.whatsapp_connections`)).resolves.toHaveLength(0);
+  });
+});
+
+describe("pedido de conexão e acesso da equipe da Gê", () => {
+  it("o salão pede com um toque; pedir de novo só atualiza; um salão não vê o pedido do outro", async () => {
+    const C = await createOrg(ref.sql, "Studio Pedido");
+    await asTenant(ref.sql, C.ownerId, C.orgId, (tx) => requestWhatsApp(tx, C.orgId, C.ownerId, "(11) 91111-2222"));
+    await asTenant(ref.sql, C.ownerId, C.orgId, (tx) => requestWhatsApp(tx, C.orgId, C.ownerId, "(11) 93333-4444"));
+    const meu = await asTenant(ref.sql, C.ownerId, C.orgId, (tx) => tx`select phone from app.whatsapp_requests`);
+    expect(meu).toEqual([{ phone: "(11) 93333-4444" }]);
+    expect(await asTenant(ref.sql, A.ownerId, A.orgId, (tx) => tx`select phone from app.whatsapp_requests`)).toHaveLength(0);
+    // não dá para pedir em nome de outro estabelecimento
+    await expect(asTenant(ref.sql, A.ownerId, A.orgId, (tx) => requestWhatsApp(tx, C.orgId, A.ownerId, "1"))).rejects.toThrow();
+  });
+
+  it("quando a equipe conecta, o pedido some", async () => {
+    const C = (await ref.sql<{ id: string }[]>`select organization_id as id from app.whatsapp_requests limit 1`)[0]!;
+    stubMeta({ "1500": "token-c-bem-longo-123456" });
+    await connectWhatsApp(ref.sql, C.id, { phoneNumberId: "1500", token: "token-c-bem-longo-123456" });
+    expect(await ref.sql`select 1 from app.whatsapp_requests where organization_id = ${C.id}`).toHaveLength(0);
+  });
+
+  it("só e-mails de PLATFORM_ADMIN_EMAILS são equipe (sem a variável, ninguém)", () => {
+    expect(isPlatformAdmin("a@x.com", {})).toBe(false);
+    expect(isPlatformAdmin("a@x.com", { PLATFORM_ADMIN_EMAILS: "" })).toBe(false);
+    expect(isPlatformAdmin(" A@X.com ", { PLATFORM_ADMIN_EMAILS: "b@x.com, a@x.com" })).toBe(true);
+    expect(isPlatformAdmin("c@x.com", { PLATFORM_ADMIN_EMAILS: "b@x.com, a@x.com" })).toBe(false);
   });
 });
 

@@ -44,7 +44,7 @@ export default async function SettingsPage({ searchParams }: { searchParams: Pro
   const { aba } = await searchParams;
   const tab: TabId = TABS.some((t) => t.id === aba) ? (aba as TabId) : "negocio";
   const tz = ctx.org.timezone;
-  const { org, auditRows, members, wa, auto } = await tenant(ctx, async (tx) => {
+  const { org, auditRows, members, wa, wreq, auto } = await tenant(ctx, async (tx) => {
     const [org] = await tx<{
       name: string; phone: string | null; instagram: string | null; address: string | null; online_booking_enabled: boolean; online_requires_approval: boolean;
       min_advance_minutes: number; max_advance_days: number; slot_interval_minutes: number; cancellation_notice_hours: number; booking_policy_text: string | null;
@@ -69,7 +69,8 @@ export default async function SettingsPage({ searchParams }: { searchParams: Pro
     // Só colunas sem segredo (o papel do aplicativo não enxerga token nem segredo do app).
     const [wa] = await tx<{ display_phone: string | null; verified_name: string | null; verify_token: string; templates: Record<string, string> }[]>`
       select display_phone, verified_name, verify_token, templates from app.whatsapp_connections where organization_id = ${ctx.org.id}`;
-    return { org: org!, auditRows, members, wa: wa ?? null, auto: { flags: flags!, stats: stats!, proName: pro?.display_name ?? "Bia", automations } };
+    const [wreq] = await tx<{ phone: string; requested_at: Date }[]>`select phone, requested_at from app.whatsapp_requests where organization_id = ${ctx.org.id}`;
+    return { org: org!, auditRows, members, wa: wa ?? null, wreq: wreq ?? null, auto: { flags: flags!, stats: stats!, proName: pro?.display_name ?? "Bia", automations } };
   });
   // Nomes de usuárias: tabela de identidade só é lida no contexto de sistema, filtrando pelos membros desta organização.
   const ids = [...new Set([...members.map((m) => m.user_id), ...auditRows.map((a) => a.actor_user_id).filter(Boolean) as string[]])];
@@ -118,8 +119,8 @@ export default async function SettingsPage({ searchParams }: { searchParams: Pro
             preview={preview} stats={{ reminders: auto.stats.reminders, confirmed: auto.stats.confirmed, offers: auto.stats.offers, accepted: auto.stats.accepted, extraCents: auto.stats.extra_cents }} />
           <div className="flex flex-col gap-6">
           <WhatsAppConnect enabled={encryptionConfigured()} readOnly={ctx.access === "read_only"} platformFallback={providers.some((p) => p.channel === "whatsapp")}
-            webhookUrl={`${appUrl}/api/whatsapp/webhook`}
-            connection={wa ? { displayPhone: wa.display_phone, verifiedName: wa.verified_name, verifyToken: wa.verify_token, templates: wa.templates, own: true } : null} />
+            defaultPhone={org.phone ?? ""} request={wreq ? { phone: wreq.phone, at: wreq.requested_at.toISOString() } : null}
+            connection={wa ? { displayPhone: wa.display_phone, verifiedName: wa.verified_name, templates: wa.templates } : null} />
           <Card>
             <CardHeader art="chat" title="Canais de mensagem" description="Para mandar lembretes e confirmações sozinha" />
             <ul className="px-5 pt-3 pb-5 text-sm sm:px-6 sm:pb-6">

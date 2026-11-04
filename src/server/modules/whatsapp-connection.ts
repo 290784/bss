@@ -52,7 +52,15 @@ export async function connectWhatsApp(sql: Sql | Tx, organizationId: string, inp
     if (pgErrorCode(e) === PG_UNIQUE_VIOLATION) throw new DomainError("Esse número de WhatsApp já está conectado a outro estabelecimento.");
     throw e;
   }
+  await sql`delete from app.whatsapp_requests where organization_id = ${organizationId}`; // pedido atendido
   return { displayPhone: info.displayPhone, verifiedName: info.verifiedName, templates };
+}
+
+/** O salão pede para conectar o WhatsApp (a equipe da Gê configura com ele). Pedir de novo só atualiza o número. */
+export async function requestWhatsApp(tx: Tx, organizationId: string, userId: string, phone: string) {
+  await tx`
+    insert into app.whatsapp_requests (organization_id, phone, requested_by) values (${organizationId}, ${phone}, ${userId})
+    on conflict (organization_id) do update set phone = excluded.phone, requested_by = excluded.requested_by, requested_at = now()`;
 }
 
 export async function disconnectWhatsApp(sql: Sql | Tx, organizationId: string) {
