@@ -31,7 +31,7 @@ export function Field({
   const msg = Array.isArray(error) ? error[0] : error;
   return (
     <div className={cn("flex flex-col gap-1.5", className)}>
-      <label htmlFor={htmlFor} className="text-[13px] font-medium text-ink-soft">
+      <label htmlFor={htmlFor} className="text-[13px] font-semibold text-ink">
         {label}
         {optional && <span className="ml-1 font-normal text-muted">(opcional)</span>}
       </label>

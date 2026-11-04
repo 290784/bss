@@ -62,7 +62,7 @@ export function ServicesManager({ services, professionals, readOnly, stats = {} 
                   return (
                     <div key={s.id} className="row-link flex flex-col gap-2 px-5 py-4 sm:flex-row sm:items-center">
                       <button className="min-w-0 flex-1 text-left" onClick={() => !readOnly && setEditing({ service: s })} disabled={readOnly}>
-                        <div className="flex flex-wrap items-center gap-2 text-sm font-medium">
+                        <div className="flex flex-wrap items-center gap-2 text-sm font-semibold">
                           {s.name}
                           {s.id === topId && <Badge variant="champagne"><Flame className="h-3 w-3" />Mais vendido</Badge>}
                           {s.online_bookable && s.is_active && <Badge variant="plum"><Globe className="h-3 w-3" />Online</Badge>}
@@ -85,7 +85,7 @@ export function ServicesManager({ services, professionals, readOnly, stats = {} 
                         )}
                       </button>
                       <div className="flex items-center gap-1.5">
-                        <span className="mr-1 text-sm font-semibold tabular">{formatMoney(s.price_cents)}</span>
+                        <span className="mr-1 text-sm font-bold tabular">{formatMoney(s.price_cents)}</span>
                         {!readOnly && (
                           <>
                             <Button size="icon" variant="ghost" className="h-9 w-9" aria-label={`Duplicar ${s.name}`} title="Duplicar" onClick={() => setEditing({ service: s, copy: true })}><Copy className="h-4 w-4" /></Button>
@@ -222,10 +222,10 @@ function MiniStat({ art, label, value, sub, warn }: { art: IllustrationName; lab
   return (
     <Card className={cn("p-4 sm:p-5", warn && "border-st-pending/40")}>
       <div className="flex items-start justify-between gap-2">
-        <div className="text-[13px] text-muted">{label}</div>
+        <div className="eyebrow">{label}</div>
         <Illustration name={art} className="-mt-1 -mr-1 h-10 w-10 sm:h-12 sm:w-12" />
       </div>
-      <div className={cn("mt-0.5 text-[22px] font-semibold tracking-[-0.015em] tabular", warn && "text-st-pending")}>{value}</div>
+      <div className={cn("mt-1 text-[22px] font-bold tracking-[-0.015em] tabular", warn && "text-st-pending")}>{value}</div>
       <div className="text-xs text-muted">{sub}</div>
     </Card>
   );

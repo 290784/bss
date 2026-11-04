@@ -73,7 +73,7 @@ export default async function LandingPage() {
         <div className="relative mx-auto grid max-w-[1240px] items-center gap-12 px-4 pt-10 pb-36 sm:px-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,520px)] lg:gap-16 lg:pt-16 lg:pb-44">
           <div className="max-w-[640px]">
             <p className="inline-flex items-center gap-2 rounded-full border border-gold-300 bg-surface/80 px-3.5 py-1.5 text-[13px] text-ink-soft shadow-[0_6px_18px_-12px_rgb(138_100_38/0.5)]">
-              <Sparkle size={12} color="text-gold-400" /> Teste grátis por 14 dias · sem cartão de crédito
+              <Sparkle size={12} color="text-gold-400" /> <b className="font-bold text-ink">Teste grátis por 14 dias</b> · sem cartão de crédito
             </p>
             <h1 className="mt-6 font-serif text-[42px] leading-[1.1] font-semibold tracking-[-0.015em] text-ink sm:text-[58px] lg:text-[64px]">
               Agenda cheia,
@@ -87,7 +87,7 @@ export default async function LandingPage() {
               </span>
             </h1>
             <p className="mt-6 max-w-[34em] text-[18px] leading-[1.6] text-ink-soft sm:text-[19px]">
-              Agenda inteligente, agendamento online 24h, lembretes e indicadores claros. Atenda mais, perca menos horários e veja suas clientes voltando — com um sistema feito para beleza e estética.
+              <b className="font-semibold text-ink">Agenda inteligente</b>, <b className="font-semibold text-ink">agendamento online 24h</b>, lembretes e indicadores claros. <b className="font-semibold text-accent-text">Atenda mais, perca menos horários</b> e veja suas clientes voltando — com um sistema feito para <b className="font-semibold text-ink">beleza e estética</b>.
             </p>
             <div className="mt-9 flex flex-wrap items-center gap-5">
               <Link href="/cadastro" className="btn-glow inline-flex h-[54px] items-center gap-2 rounded-full px-7 text-[17px] font-medium text-white">
@@ -116,10 +116,10 @@ export default async function LandingPage() {
         <div data-theme="dark" className="bg-royal ring-glass border border-gold-line/40 relative grid items-center gap-10 overflow-hidden rounded-[32px] px-6 py-10 shadow-[0_40px_90px_-40px_rgb(100_35_80/0.7)] sm:px-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,460px)] lg:py-14">
           <Sparkles points={[[6, 12, 8, 0.3], [42, 86, 6, 1.8], [52, 10, 7, 2.9], [96, 40, 9, 1.1], [30, 52, 5, 2.2]]} />
           <div className="relative max-w-[520px]">
-            <p className="flex items-center gap-2 text-[16px] font-semibold text-gold-300"><Search className="h-5 w-5 text-gold-300" strokeWidth={2.6} />Agendamento online</p>
+            <p className="eyebrow flex items-center gap-2 text-[13px]"><Search className="h-5 w-5" strokeWidth={2.6} />Agendamento online</p>
             <h2 className={cn(sectionTitle, "mt-4")}>Encontre o horário perfeito, <span className="font-script text-[1.3em] font-normal tracking-normal text-gold-300 drop-shadow-[0_0_14px_rgb(201_163_94/0.45)]">mais rápido.</span></h2>
             <p className="mt-5 text-[18px] leading-[1.6] text-ink-soft">
-              Sua cliente escolhe o serviço e a profissional e vê só horários realmente livres — respeitando expediente, pausas, tempo de preparação e bloqueios. Você confirma na hora ou revisa antes.
+              Sua cliente escolhe o serviço e a profissional e vê <b className="font-bold text-white">só horários realmente livres</b> — respeitando expediente, pausas, tempo de preparação e bloqueios. <b className="font-bold text-gold-300">Você confirma na hora ou revisa antes.</b>
             </p>
             <Link href="/cadastro" className="mt-7 inline-flex h-11 items-center gap-2 rounded-full bg-white px-5 text-[15px] font-semibold text-violet-800 shadow-[0_0_30px_-6px_rgb(244_225_236/0.8)] transition hover:bg-violet-100">Criar minha página <ArrowRight className="h-4 w-4" /></Link>
           </div>
@@ -128,17 +128,17 @@ export default async function LandingPage() {
         <div className="mt-6 grid gap-6 md:grid-cols-2">
           <GlowCard className="glass flex flex-col justify-between gap-8 rounded-[28px] p-8 sm:p-10">
             <div>
-              <p className="flex items-center gap-2 text-[15px] font-semibold text-ink"><Illustration name="bell" className="-my-2 -ml-1 h-12 w-12" />Lembretes</p>
+              <p className="eyebrow flex items-center gap-2 text-[13px]"><Illustration name="bell" className="-my-2 -ml-1 h-12 w-12" />Lembretes</p>
               <h3 className="mt-3 font-serif text-[26px] leading-[1.2] font-semibold tracking-[-0.005em] text-ink">Menos faltas, sem mandar mensagem uma a uma.</h3>
-              <p className="mt-3 text-[16px] leading-[1.6] text-ink-soft">Confirmação e lembrete 24h antes, cancelados automaticamente quando a cliente remarca. Integração com o WhatsApp oficial em preparação.</p>
+              <p className="mt-3 text-[16px] leading-[1.6] text-ink-soft"><b className="font-semibold text-ink">Confirmação e lembrete 24h antes</b>, cancelados automaticamente quando a cliente remarca. Integração com o WhatsApp oficial em preparação.</p>
             </div>
             <ChatDemo />
           </GlowCard>
           <GlowCard className="glass flex flex-col justify-between gap-8 rounded-[28px] p-8 sm:p-10">
             <div>
-              <p className="flex items-center gap-2 text-[15px] font-semibold text-ink"><Illustration name="chart" className="-my-2 -ml-1 h-12 w-12" />Indicadores</p>
+              <p className="eyebrow flex items-center gap-2 text-[13px]"><Illustration name="chart" className="-my-2 -ml-1 h-12 w-12" />Indicadores</p>
               <h3 className="mt-3 font-serif text-[26px] leading-[1.2] font-semibold tracking-[-0.005em] text-ink">Saiba quanto recebeu — e quem sumiu.</h3>
-              <p className="mt-3 text-[16px] leading-[1.6] text-ink-soft">Recebido, ocupação da agenda, faltas e clientes para reativar, cada número com a explicação de como é calculado.</p>
+              <p className="mt-3 text-[16px] leading-[1.6] text-ink-soft"><b className="font-semibold text-ink">Recebido, ocupação da agenda, faltas e clientes para reativar</b>, cada número com a explicação de como é calculado.</p>
             </div>
             <div className="flex h-24 items-end gap-2" aria-hidden>
               {[38, 52, 44, 66, 58, 80, 72, 94].map((h, i) => (
@@ -156,7 +156,7 @@ export default async function LandingPage() {
           <Sparkles points={[[6, 14, 8, 0.3], [44, 88, 6, 1.8], [50, 8, 7, 2.9], [30, 60, 5, 2.2]]} />
           <div className="relative max-w-xl">
             <h2 className={sectionTitle}>Tudo o que o seu dia a dia pede, <span className="font-script text-[1.3em] font-normal tracking-normal text-gold-300 drop-shadow-[0_0_14px_rgb(201_163_94/0.45)]">sem caderninho</span></h2>
-            <p className="mt-4 text-[17px] leading-[1.6] text-ink-soft">Cada recurso existe para resolver um problema concreto: horários perdidos, clientes que não voltam e tempo gasto com tarefas repetitivas.</p>
+            <p className="mt-4 text-[17px] leading-[1.6] text-ink-soft">Cada recurso existe para resolver um problema concreto: <b className="font-bold text-white">horários perdidos</b>, <b className="font-bold text-white">clientes que não voltam</b> e <b className="font-bold text-white">tempo gasto com tarefas repetitivas</b>.</p>
           </div>
           <HeroWidget />
         </div>
@@ -164,7 +164,7 @@ export default async function LandingPage() {
           {FEATURES.map((f) => (
             <GlowCard key={f.title} className="glass rounded-[24px] p-6">
               <Illustration name={f.art} className="-mt-1 -ml-1 h-16 w-16" />
-              <h3 className="mt-4 text-[17px] font-semibold">{f.title}</h3>
+              <h3 className="mt-4 text-[17px] font-bold">{f.title}</h3>
               <p className="mt-2 text-[15px] leading-relaxed text-ink-soft">{f.text}</p>
             </GlowCard>
           ))}
@@ -184,7 +184,7 @@ export default async function LandingPage() {
             ].map(([t, d], i) => (
               <li key={t}>
                 <span className="font-script text-6xl leading-none text-gold-300 drop-shadow-[0_0_12px_rgb(201_163_94/0.6)]">{i + 1}</span>
-                <h3 className="mt-3 text-[17px] font-semibold text-white">{t}</h3>
+                <h3 className="mt-3 text-[17px] font-bold text-white">{t}</h3>
                 <p className="mt-2 text-sm leading-relaxed text-ink-soft">{d}</p>
               </li>
             ))}
@@ -196,7 +196,7 @@ export default async function LandingPage() {
         <div className="max-w-2xl">
           <h2 className={sectionTitle}>Planos para cada momento do seu negócio</h2>
           <span aria-hidden className="gold-rule mt-5" />
-          <p className="mt-4 text-ink-soft">Os valores estão sendo definidos. Comece agora com o teste gratuito e avisaremos antes de qualquer cobrança.</p>
+          <p className="mt-4 text-ink-soft">Os valores estão sendo definidos. <b className="font-semibold text-ink">Comece agora com o teste gratuito</b> e avisaremos antes de qualquer cobrança.</p>
         </div>
         <div className="mt-12 grid gap-4 md:grid-cols-2 lg:grid-cols-4">
           {Object.values(PLANS).map((p) => (
@@ -205,8 +205,8 @@ export default async function LandingPage() {
                 <h3 className="font-serif text-2xl font-semibold">{p.name}</h3>
                 {p.id === "studio" && <span className="inline-flex items-center gap-1 rounded-full bg-white/15 px-2 py-0.5 text-xs font-medium text-gold-300"><Sparkle size={9} />Incluído no teste</span>}
               </div>
-              <p className="mt-1 text-sm text-muted">{p.tagline}</p>
-              <p className="mt-5 text-sm font-medium text-ink-soft">Preço em definição</p>
+              <p className="mt-1 text-sm font-medium text-ink-soft">{p.tagline}</p>
+              <p className="eyebrow mt-5">Preço em definição</p>
               <ul className="mt-5 flex flex-col gap-2 text-sm text-ink-soft">
                 <li className="flex gap-2"><Check className={cn("h-4 w-4 shrink-0", p.id === "studio" ? "text-gold-300" : "text-gold-600")} />{p.maxProfessionals === 1 ? "1 profissional" : `Até ${p.maxProfessionals} profissionais`}</li>
                 <li className="flex gap-2"><Check className={cn("h-4 w-4 shrink-0", p.id === "studio" ? "text-gold-300" : "text-gold-600")} />{p.maxUnits === 1 ? "1 unidade" : `Até ${p.maxUnits} unidades`}</li>
@@ -228,7 +228,7 @@ export default async function LandingPage() {
           <div className="neon-divide divide-y divide-line">
             {FAQ.map((f) => (
               <details key={f.q} className="group py-5">
-                <summary className="flex cursor-pointer list-none items-center justify-between gap-4 text-[16px] font-medium">
+                <summary className="flex cursor-pointer list-none items-center justify-between gap-4 text-[16px] font-semibold">
                   {f.q}<span className="text-xl text-muted transition-transform group-open:rotate-45">+</span>
                 </summary>
                 <p className="mt-3 text-[15px] leading-relaxed text-ink-soft">{f.a}</p>

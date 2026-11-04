@@ -4,6 +4,11 @@ import { cn } from "@/lib/cn";
 import { STATUS_LABEL, type AppointmentStatus } from "@/domain/appointment-status";
 import { Illustration, type IllustrationName } from "./illustration";
 
+/** Destaque no meio de um texto: negrito na cor de tinta. */
+export const B = ({ children }: { children: ReactNode }) => <b className="font-semibold text-ink">{children}</b>;
+/** Destaque em ameixa (números e a informação principal da frase). */
+export const Accent = ({ children }: { children: ReactNode }) => <b className="font-semibold text-accent-text">{children}</b>;
+
 export function Card({ className, interactive, ...props }: ComponentProps<"div"> & { interactive?: boolean }) {
   return <div className={cn("rounded-[var(--radius-card)] border border-line/70 bg-surface shadow-[var(--shadow-card)]", interactive ? "lift" : "glow-hover", className)} {...props} />;
 }

@@ -4,7 +4,7 @@ import { Cake, ChevronRight, Crown, Download, MessageCircle, UserPlus, Moon } fr
 import { requireAppContext, tenant } from "@/server/context";
 import { countSegments, listClients, SEGMENT_HINT, SEGMENTS, SORTS, type ClientRow, type Segment, type Sort } from "@/server/modules/clients";
 import { can } from "@/domain/permissions";
-import { Avatar, Badge, Card, EmptyState, PageHeader } from "@/components/ui/primitives";
+import { Accent, Avatar, B, Badge, Card, EmptyState, PageHeader } from "@/components/ui/primitives";
 import { formatMoney } from "@/lib/money";
 import { formatPhone, plural } from "@/lib/text";
 import { formatInTz, localDateKey } from "@/lib/time";
@@ -58,7 +58,7 @@ export default async function ClientsPage({ searchParams }: { searchParams: Prom
 
   return (
     <div>
-      <PageHeader art="team" title="Clientes" description={`${plural(counts.all, "cliente")} com você. Quem vem sempre, quem sumiu e quanto cada uma já deixou no seu caixa.`}
+      <PageHeader art="team" title="Clientes" description={<><Accent>{plural(counts.all, "cliente")}</Accent> com você. Quem <B>vem sempre</B>, quem <B>sumiu</B> e quanto cada uma <B>já deixou no seu caixa</B>.</>}
         actions={<>
           {canManage && (
             <a href={`/app/clientes/exportar?${qs({})}`} className="inline-flex h-10 items-center gap-2 rounded-[var(--radius-control)] border border-line bg-surface px-4 text-sm font-medium shadow-[var(--shadow-control)] transition-colors hover:border-accent-muted hover:bg-accent-subtle/40">
@@ -100,7 +100,7 @@ export default async function ClientsPage({ searchParams }: { searchParams: Prom
                     <Link href={`/app/clientes/${c.id}`} className="flex min-w-0 flex-1 items-center gap-3">
                       <Avatar name={c.full_name} className="h-10 w-10 text-[13px]" />
                       <span className="min-w-0 flex-1">
-                        <span className="block truncate font-medium">{c.full_name}</span>
+                        <span className="block truncate font-semibold">{c.full_name}</span>
                         <span className="block truncate text-xs text-muted">
                           {c.visits ? `${plural(c.visits, "visita")} · última ${ago(c.last_visit!, now)}` : "Ainda não veio"}
                           {finance && c.total_spent_cents > 0 ? ` · ${formatMoney(c.total_spent_cents)}` : ""}
@@ -117,11 +117,11 @@ export default async function ClientsPage({ searchParams }: { searchParams: Prom
             </ul>
             {/* Computador: tabela */}
             <table className="hidden w-full text-sm md:table">
-              <thead className="border-b border-gold-line/35 bg-canvas/50 text-left text-[11px] tracking-[0.08em] text-muted uppercase">
+              <thead className="border-b border-gold-line/35 bg-canvas/50 text-left text-[11px] tracking-[0.12em] text-gold-ink uppercase">
                 <tr>
-                  <th className="px-4 py-3 font-medium">Cliente</th><th className="px-4 py-3 font-medium">Contato</th>
-                  <th className="px-4 py-3 text-right font-medium">Visitas</th><th className="px-4 py-3 font-medium">Última visita</th>
-                  <th className="px-4 py-3 font-medium">Próxima</th>{finance && <th className="px-4 py-3 text-right font-medium">Total gasto</th>}
+                  <th className="px-4 py-3 font-bold">Cliente</th><th className="px-4 py-3 font-bold">Contato</th>
+                  <th className="px-4 py-3 text-right font-bold">Visitas</th><th className="px-4 py-3 font-bold">Última visita</th>
+                  <th className="px-4 py-3 font-bold">Próxima</th>{finance && <th className="px-4 py-3 text-right font-bold">Total gasto</th>}
                   <th className="w-12 px-2 py-2.5"><span className="sr-only">Ações</span></th>
                 </tr>
               </thead>
@@ -134,7 +134,7 @@ export default async function ClientsPage({ searchParams }: { searchParams: Prom
                         <Link href={`/app/clientes/${c.id}`} className="flex items-center gap-3">
                           <Avatar name={c.full_name} />
                           <span className="min-w-0">
-                            <span className="block font-medium text-ink group-hover:text-accent-text">{c.full_name}</span>
+                            <span className="block font-semibold text-ink group-hover:text-accent-text">{c.full_name}</span>
                             {tags(c, now, month).length > 0 && <span className="mt-0.5 flex flex-wrap gap-1">{tags(c, now, month).map((t) => <Badge key={t.label} variant={t.variant}>{t.icon && <t.icon className="h-3 w-3" />}{t.label}</Badge>)}</span>}
                           </span>
                         </Link>

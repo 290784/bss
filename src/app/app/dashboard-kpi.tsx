@@ -18,15 +18,15 @@ export function Kpi({ label, value, change, sub, metric, invert, highlight }: { 
   return (
     <Card className={cn("relative overflow-hidden p-4 sm:p-5", highlight && "border-gold-line/60 bg-[linear-gradient(140deg,var(--color-accent-subtle)_0%,var(--color-surface)_75%)]!")}>
       <div className="flex items-start justify-between gap-2">
-        <div className="flex min-w-0 items-center gap-1 text-[13px] text-muted">{label}<InfoTip text={METRIC_DEFINITIONS[metric]} /></div>
+        <div className="eyebrow flex min-w-0 items-center gap-1">{label}<InfoTip text={METRIC_DEFINITIONS[metric]} /></div>
         {art && <Illustration name={art} className="-mt-1 -mr-1 h-11 w-11 sm:h-14 sm:w-14" />}
       </div>
-      <div className={cn("mt-1 text-[22px] leading-tight font-semibold tracking-[-0.015em] tabular sm:text-[26px]", highlight && "text-accent-text")}>{value}</div>
+      <div className={cn("mt-1.5 text-[22px] leading-tight font-bold tracking-[-0.015em] tabular sm:text-[26px]", highlight && "text-accent-text")}>{value}</div>
       <div className="mt-1 flex min-h-[18px] flex-wrap items-center gap-x-1.5 gap-y-0.5 text-xs">
         {change !== undefined && (change === null
           ? <span className="text-muted">primeira vez por aqui</span>
           : change === 0 ? <span className="text-muted">igualzinho ao anterior</span>
-          : <span className={cn("inline-flex items-center gap-0.5 font-medium", good && "text-st-completed", bad && "text-st-noshow")}>
+          : <span className={cn("inline-flex items-center gap-0.5 font-semibold", good && "text-st-completed", bad && "text-st-noshow")}>
               {change > 0 ? <ArrowUpRight className="h-3.5 w-3.5" /> : <ArrowDownRight className="h-3.5 w-3.5" />}{Math.abs(Math.round(change))}% vs. anterior
             </span>)}
         {sub && <span className="text-muted">{sub}</span>}

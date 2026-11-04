@@ -163,7 +163,7 @@ export function DicasCard({ dicas }: { dicas: Dica[] }) {
                           {d.clients.map((c) => (
                             <li key={c.name} className="flex items-center gap-2 px-3 py-2">
                               <span className="min-w-0 flex-1">
-                                <span className="block truncate text-[13px] font-medium">{c.name}</span>
+                                <span className="block truncate text-[13px] font-semibold">{c.name}</span>
                                 <span className="block truncate text-xs text-muted">{c.note}</span>
                               </span>
                               {c.message && c.phone && (

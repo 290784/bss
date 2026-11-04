@@ -121,7 +121,7 @@ export default async function ClientProfilePage({ params, searchParams }: { para
 
       {tab === "resumo" && (
         <>
-          <div className="grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-4">
+          <div className="grid grid-cols-1 gap-3 min-[380px]:grid-cols-2 sm:gap-4 md:grid-cols-4">
             <Stat art="calendar" label="Visitas" value={String(stats.visits)} />
             <Stat art="calendar-check" label="Última visita" value={date(stats.lastVisit)} />
             <Stat art="calendar-plus" label="Próxima visita" value={stats.nextVisit ? formatInTz(stats.nextVisit, tz, { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" }) : "—"} />
@@ -138,7 +138,7 @@ export default async function ClientProfilePage({ params, searchParams }: { para
                   {services.map((s) => (
                     <li key={s.name} className="text-sm">
                       <div className="flex items-baseline justify-between gap-2">
-                        <span className="truncate font-medium">{s.name}</span>
+                        <span className="truncate font-semibold">{s.name}</span>
                         <span className="shrink-0 text-xs text-muted tabular">{s.n}× · última {formatInTz(s.last, tz, { day: "2-digit", month: "2-digit" })}</span>
                       </div>
                       <span className="mt-1.5 block h-1.5 overflow-hidden rounded-full bg-sunken"><span className="block h-full rounded-full bg-data-1" style={{ width: `${(s.n / services[0]!.n) * 100}%` }} /></span>
@@ -155,7 +155,7 @@ export default async function ClientProfilePage({ params, searchParams }: { para
 
       {tab === "historico" && (
         <>
-          <div className="grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-4">
+          <div className="grid grid-cols-1 gap-3 min-[380px]:grid-cols-2 sm:gap-4 md:grid-cols-4">
             {finance && <Stat art="wallet" label="Total gasto" value={formatMoney(stats.totalSpentCents ?? 0)} hint="Já descontados os estornos" />}
             {finance && <Stat art="receipt" label="Ticket médio" value={stats.averageTicketCents === null ? "—" : formatMoney(stats.averageTicketCents)} />}
             <Stat art="user-x" label="Faltas · cancelamentos" value={`${stats.noShows} · ${stats.cancellations}`} />
@@ -223,10 +223,10 @@ function Stat({ label, value, hint, art }: { label: string; value: string; hint?
   return (
     <Card className="p-4 sm:p-5">
       <div className="flex items-start justify-between gap-2">
-        <div className="text-[13px] text-muted">{label}</div>
+        <div className="eyebrow">{label}</div>
         <Illustration name={art} className="-mt-1 -mr-1 h-10 w-10 sm:h-12 sm:w-12" />
       </div>
-      <div className="mt-0.5 truncate text-lg font-semibold tabular sm:text-xl">{value}</div>
+      <div className="mt-1 truncate text-lg font-bold tabular sm:text-xl">{value}</div>
       {hint && <div className="text-xs text-muted">{hint}</div>}
     </Card>
   );
