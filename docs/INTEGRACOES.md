@@ -25,16 +25,18 @@ Fluxo em `src/server/modules/whatsapp.ts` (conversa) e `src/server/modules/messa
 ### Um WhatsApp por estabelecimento (Cloud API da Meta, sem intermediário)
 Cada estabelecimento usa o **próprio número**. O cliente não mexe na Meta: em Configurações → WhatsApp ele só toca em
 “Quero conectar meu WhatsApp” (informa o número) e a **equipe da Gê configura numa chamada rápida**:
-1. O pedido aparece em `/admin/whatsapp` (acesso só para os e-mails em `PLATFORM_ADMIN_EMAILS`, separados por vírgula;
-   para os demais a página é 404).
+1. O pedido aparece em `/admin/whatsapp`. Acesso só para os **códigos de conta** em `PLATFORM_ADMIN_USER_IDS`
+   (separados por vírgula; o código aparece em Configurações → Conta e privacidade; para os demais a página é 404).
+   `PLATFORM_ADMIN_EMAILS` ainda funciona só enquanto `PLATFORM_ADMIN_USER_IDS` não existe, e é menos seguro: o cadastro
+   não confirma o e-mail, então quem se cadastrasse antes com o e-mail do administrador entraria.
 2. Na chamada, cole ali o ID do número, o ID da conta (WABA), o token e (opcional) o segredo do app. A Gê confere com a
    Meta, cria os modelos e remove o pedido. Na mesma página aparecem o endereço do webhook e o texto de verificação.
 3. Mensagens enviadas e respostas passam a usar o número do cliente (detalhes abaixo).
-Variável nova: `PLATFORM_ADMIN_EMAILS`.
+Variáveis novas: `PLATFORM_ADMIN_USER_IDS` (ou, provisoriamente, `PLATFORM_ADMIN_EMAILS`) e `WHATSAPP_ENCRYPTION_KEY`.
 
 **Na plataforma (uma vez), variáveis na Vercel:**
 - `WHATSAPP_ENCRYPTION_KEY`: texto longo e aleatório (≥ 16 caracteres) que criptografa os tokens no banco
-  (AES-256-GCM). **Guarde com cuidado: se mudar, as conexões existentes ficam ilegíveis** e cada estabelecimento
+  (AES-256-GCM, chave derivada com scrypt e sal por segredo; segredos antigos no formato v1 continuam legíveis). **Guarde com cuidado: se mudar, as conexões existentes ficam ilegíveis** e cada estabelecimento
   precisa reconectar. Sem ela, a tela avisa que a conexão não está habilitada.
 - `CRON_SECRET` (despacho da fila).
 - Opcionais, só para um número padrão da plataforma (usado por quem ainda não conectou o próprio):

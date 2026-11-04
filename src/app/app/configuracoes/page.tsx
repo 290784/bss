@@ -189,7 +189,7 @@ export default async function SettingsPage({ searchParams }: { searchParams: Pro
         </div>
       )}
 
-      {tab === "conta" && <div className="max-w-2xl"><DangerZone /></div>}
+      {tab === "conta" && <div className="max-w-2xl"><DangerZone userId={ctx.user.userId} /></div>}
     </div>
   );
 }
