@@ -67,6 +67,52 @@ try {
   await p2.reload();
   ok((await titulo(p2)) === amanha, "e ela também fica a mesma o dia todo");
 
+  // Depois de 1 minuto o título volta para "Oii, nome" (relógio simulado: não espera de verdade).
+  const [{ full_name: nome }] = await sql`select full_name from app.users where id = ${u.uid}`;
+  const primeiro = nome.split(" ")[0];
+  const ctxRelogio = await b.newContext({ viewport: { width: 1366, height: 900 } });
+  const rel = await ctxRelogio.newPage(); rel.on("pageerror", (e) => errs.push(e.message));
+  await rel.clock.install();
+  await rel.goto(BASE + "/entrar");
+  await rel.getByLabel("E-mail").fill(EMAIL); await rel.getByLabel("Senha").fill(SENHA);
+  await rel.getByRole("button", { name: "Entrar" }).click(); await rel.waitForURL(/\/app/);
+  const frase = await titulo(rel);
+  ok(FRASES.includes(frase), "ao abrir o painel, aparece a saudação do dia");
+  await rel.clock.runFor(30_000);
+  ok((await titulo(rel)) === frase, "com 30 segundos ainda é a saudação");
+  // Aos 60 s começa a apagar, letra por letra (efeito de máquina de escrever): no meio, sobra só o começo da frase.
+  await rel.clock.runFor(30_000 + 450);
+  const parcial = await titulo(rel);
+  ok(parcial.length < frase.length && frase.startsWith(parcial), `as letras vão sendo apagadas (“${parcial}”)`);
+  ok(await rel.locator("h1 .tw-caret").count() === 1, "aparece o cursor piscando durante a troca");
+  // Acompanha o resto da troca de 40 em 40 ms (relógio simulado) e confere a sequência inteira.
+  const final = `Oii, ${primeiro}`;
+  const vistos = [parcial];
+  for (let t = 0; t < 7_000; t += 40) { await rel.clock.runFor(40); vistos.push(await titulo(rel)); }
+  const primeiraDigitada = vistos.findIndex((x) => x.length > 0 && final.startsWith(x));
+  const apagando = vistos.slice(0, primeiraDigitada), digitando = vistos.slice(primeiraDigitada);
+  ok(apagando.every((x) => frase.startsWith(x)) && apagando.every((x, i) => i === 0 || x.length <= apagando[i - 1].length), "apaga da direita para a esquerda, só diminuindo");
+  ok(apagando.includes(""), "a saudação some por completo antes de começar o nome");
+  ok(digitando.every((x, i) => final.startsWith(x) && (i === 0 || x.length >= digitando[i - 1].length)), "depois o nome é digitado letra por letra, só crescendo");
+  ok(digitando.some((x) => x.length > 0 && x.length < final.length), "dá para ver o nome ainda pela metade (não aparece de uma vez)");
+  ok(vistos.at(-1) === final, `no fim volta para “${final}”`);
+  ok(await rel.locator("h1 .tw-caret").count() === 0, "o cursor some depois de digitar");
+  const tamanho = (pg) => pg.getByRole("heading", { level: 1 }).first().evaluate((e) => parseFloat(getComputedStyle(e.firstElementChild ?? e).fontSize));
+  const depois = await tamanho(rel);
+  await rel.goto(BASE + "/app/servicos");
+  ok(depois === (await tamanho(rel)), "o “Oii, nome” tem o mesmo tamanho dos títulos das outras páginas");
+
+  // Com "reduzir movimento" ligado, volta para “Oii, nome” de uma vez, sem animação.
+  const calmo = await b.newContext({ viewport: { width: 1366, height: 900 }, reducedMotion: "reduce" });
+  const c = await calmo.newPage(); c.on("pageerror", (e) => errs.push(e.message));
+  await c.clock.install();
+  await c.goto(BASE + "/entrar");
+  await c.getByLabel("E-mail").fill(EMAIL); await c.getByLabel("Senha").fill(SENHA);
+  await c.getByRole("button", { name: "Entrar" }).click(); await c.waitForURL(/\/app/);
+  ok(FRASES.includes(await titulo(c)), "com reduzir movimento: começa com a saudação");
+  await c.clock.runFor(60_100);
+  ok((await titulo(c)) === `Oii, ${primeiro}` && await c.locator("h1 .tw-caret").count() === 0, "com reduzir movimento: troca direta, sem animação");
+
   ok(errs.length === 0, "sem erros de página" + (errs.length ? ": " + errs.join(" | ") : ""));
 } finally {
   await b.close(); await sql.end();
