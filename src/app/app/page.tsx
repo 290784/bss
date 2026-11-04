@@ -20,6 +20,7 @@ import { Kpi } from "./dashboard-kpi";
 import { receiptUrl } from "@/server/modules/receipt";
 import { plural } from "@/lib/text";
 import { dailyGreeting } from "@/server/modules/greetings";
+import { GreetingTitle } from "./greeting-title";
 
 export const metadata: Metadata = { title: "Início" };
 
@@ -67,6 +68,7 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
   });
 
   const greeting = await greetingPromise;
+  const firstName = ctx.user.fullName.split(" ")[0]!;
   const activation = [
     { done: setup.services > 0, label: "Cadastre seus serviços", href: "/app/servicos" },
     { done: setup.hours > 0, label: "Defina seus horários", href: "/app/equipe" },
@@ -91,8 +93,7 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
     <div>
       <PageHeader
         art="sparkles"
-        title={sp["bem-vinda"] ? `Tudo pronto, ${ctx.user.fullName.split(" ")[0]}` : (greeting ?? `Oi, ${ctx.user.fullName.split(" ")[0]}`)}
-        long={!sp["bem-vinda"] && greeting !== null}
+        title={sp["bem-vinda"] ? `Tudo pronto, ${firstName}` : greeting ? <GreetingTitle greeting={greeting} name={firstName} /> : `Oii, ${firstName}`}
         description={<span className="first-letter:uppercase">{formatInTz(new Date(), tz, { weekday: "long", day: "numeric", month: "long" })} · {plural(activeToday.length, "atendimento")} hoje</span>}
         actions={canBook && <ButtonLink href="/app/agenda" size="md"><CalendarPlus className="h-4 w-4" />Agendar</ButtonLink>}
       />

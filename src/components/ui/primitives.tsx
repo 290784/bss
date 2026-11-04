@@ -21,14 +21,13 @@ export function CardHeader({ title, description, action, className, art }: { tit
   );
 }
 
-/** `long`: título em forma de frase (ex.: a saudação do painel): letra um pouco menor para quebrar bem em duas linhas. */
-export function PageHeader({ title, description, actions, art, long }: { title: string; description?: ReactNode; actions?: ReactNode; art?: IllustrationName; long?: boolean }) {
+export function PageHeader({ title, description, actions, art }: { title: ReactNode; description?: ReactNode; actions?: ReactNode; art?: IllustrationName }) {
   return (
     <div className="mb-7 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
       <div className="flex min-w-0 items-center gap-3 sm:gap-4">
         {art && <Illustration name={art} className="h-14 w-14 sm:h-16 sm:w-16" />}
         <div className="min-w-0">
-        <h1 className={cn("font-serif font-semibold tracking-[-0.01em] text-ink", long ? "max-w-[22em] text-[24px] leading-[1.2] text-balance sm:text-[30px]" : "text-[28px] leading-[1.1] sm:text-[32px]")}>{title}</h1>
+        <h1 className="font-serif text-[28px] leading-[1.1] font-semibold tracking-[-0.01em] text-ink sm:text-[32px]">{title}</h1>
         <span aria-hidden className="gold-rule mt-2.5" />
         {description && <p className="mt-2 text-sm text-muted">{description}</p>}
         </div>

@@ -535,6 +535,9 @@ html[data-atualizando] main [aria-label="Período"] { opacity: 1; pointer-events
 @keyframes mkt-chevron { 0%, 100% { opacity: 0.35; transform: translateY(0); } 50% { opacity: 1; transform: translateY(3px); } }
 @keyframes mkt-caret { 50% { opacity: 0; } }
 @keyframes chat-dot { 0%, 60%, 100% { transform: translateY(0); opacity: 0.5; } 30% { transform: translateY(-3px); opacity: 1; } }
+/* Cursor da máquina de escrever no título do painel (saudação → "Oii, nome"). */
+.tw-caret { display: inline-block; width: 2px; height: 0.85em; margin-left: 3px; vertical-align: -0.08em; border-radius: 1px; background: var(--color-gold-line); animation: tw-blink 0.9s steps(1) infinite; }
+@keyframes tw-blink { 50% { opacity: 0; } }
 @keyframes toast-in { from { opacity: 0; transform: translateY(8px) scale(0.98); } }
 @keyframes sheet-in { from { transform: translateX(100%); } }
 @keyframes sheet-up { from { transform: translateY(100%); } }
