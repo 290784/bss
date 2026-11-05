@@ -10,6 +10,7 @@ import { formatPhone, plural } from "@/lib/text";
 import { formatInTz, localDateKey } from "@/lib/time";
 import { cn } from "@/lib/cn";
 import { NewClientButton } from "./new-client-button";
+import { ImportClientsButton } from "./import-clients-button";
 import { ClientListControls } from "./list-controls";
 
 export const metadata: Metadata = { title: "Clientes" };
@@ -65,6 +66,7 @@ export default async function ClientsPage({ searchParams }: { searchParams: Prom
               <Download className="h-4 w-4" />Exportar
             </a>
           )}
+          {canManage && ctx.access !== "read_only" && <ImportClientsButton />}
           {canManage && ctx.access !== "read_only" && <NewClientButton autoOpen={sp.nova === "1"} canInternal={can(ctx.role, "clients.view_internal_notes")} />}
         </>} />
 
