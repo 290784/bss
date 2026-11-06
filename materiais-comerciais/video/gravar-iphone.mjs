@@ -1,5 +1,5 @@
 // Grava o app como se estivesse sendo usado num iPhone 17 Pro Max (tela de 440 x 956 pontos).
-// É o app de verdade, conduzido com toques e deslizes de dedo; o aparelho, a barra de status e as legendas
+// É o app de verdade, conduzido com toques e deslizes (sem marcador na tela); o aparelho, a barra de status e as legendas
 // são desenhados em volta na montagem (vídeo vertical 1080 x 1920, ideal para Reels e TikTok).
 //
 // Uso: VITRINE_PASSWORD=... node materiais-comerciais/video/gravar-iphone.mjs   (app rodando; precisa do ffmpeg)
@@ -27,21 +27,12 @@ const IPHONE = {
   userAgent: "Mozilla/5.0 (iPhone; CPU iPhone OS 26_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.0 Mobile/15E148 Safari/604.1",
 };
 
-// ---------- Dedo na tela: círculo que acompanha o toque, e esconde o indicador do modo de desenvolvimento ----------
+// ---------- Esconde só o indicador do modo de desenvolvimento do Next (nenhum círculo de dedo na tela) ----------
 const OVERLAY = () => {
   const montar = () => {
-    if (document.getElementById("gv-dedo")) return;
     const st = document.createElement("style");
-    st.textContent = `#gv-dedo{position:fixed;left:-80px;top:-80px;width:54px;height:54px;margin:-27px 0 0 -27px;border-radius:50%;z-index:2147483647;pointer-events:none;
-      background:rgba(255,255,255,.55);border:3px solid rgba(100,35,80,.55);box-shadow:0 4px 16px rgba(0,0,0,.25);opacity:0;transform:scale(.7);transition:opacity .12s,transform .12s}
-      #gv-dedo.on{opacity:1;transform:scale(1)} nextjs-portal,[data-nextjs-toast],[data-nextjs-dev-tools-button]{display:none!important}`;
+    st.textContent = "nextjs-portal,[data-nextjs-toast],[data-nextjs-dev-tools-button]{display:none!important}";
     document.head.appendChild(st);
-    const d = document.createElement("div"); d.id = "gv-dedo"; document.body.appendChild(d);
-    const pos = (e) => { const t = e.touches?.[0] ?? e.changedTouches?.[0]; if (t) { d.style.left = t.clientX + "px"; d.style.top = t.clientY + "px"; } };
-    addEventListener("touchstart", (e) => { pos(e); d.classList.add("on"); }, { capture: true, passive: true });
-    addEventListener("touchmove", pos, { capture: true, passive: true });
-    addEventListener("touchend", () => d.classList.remove("on"), { capture: true, passive: true });
-    addEventListener("touchcancel", () => d.classList.remove("on"), { capture: true, passive: true });
   };
   if (document.readyState === "loading") addEventListener("DOMContentLoaded", montar); else montar();
 };
@@ -62,6 +53,17 @@ async function deslizar(p, { de = 640, ate = 240, x = 220, passos = 22, ms = 650
   await toqueCru("touchStart", x, de);
   for (let i = 1; i <= passos; i++) { await toqueCru("touchMove", x, de + ((ate - de) * i) / passos); await pausa(ms / passos); }
   await toqueCru("touchEnd", x, ate); await pausa(450);
+}
+// Rola com o dedo até o elemento ficar a `topo` px do alto da tela (enquadra a seção, sem cortar no meio)
+async function levar(p, seletor, topo = 96) {
+  for (let i = 0; i < 4; i++) {
+    const delta = await p.evaluate(([sel, t]) => { const e = typeof sel === "string" && sel.startsWith("text=") ? [...document.querySelectorAll("h1,h2,h3,p,span")].find((x) => x.textContent.trim().startsWith(sel.slice(5))) : document.querySelector(sel); return e ? Math.round(e.getBoundingClientRect().top - t) : 0; }, [seletor, topo]);
+    if (Math.abs(delta) < 12) break;
+    const d = Math.max(-520, Math.min(520, delta));
+    const de = d > 0 ? 760 : 240;
+    await deslizar(p, { de, ate: de - d, ms: 700 });
+  }
+  await pausa(500);
 }
 async function digitar(p, alvo, texto, atraso = 70) { await tocar(p, alvo, { depois: 250 }); await p.keyboard.type(texto, { delay: atraso }); await pausa(300); }
 
@@ -84,11 +86,12 @@ const passo = async (nome, fn) => { try { await fn(); } catch (e) { console.log(
 // 1. Página de vendas
 await passo("landing", async () => {
   await p.goto(BASE + "/"); await pausa(1500);
-  legenda("A Gê no celular: a agenda de quem trabalha com beleza"); await pausa(3500);
-  await deslizar(p, { ate: 330, ms: 800 }); await pausa(900);
-  legenda("A cliente marca sozinha, só em horários livres"); await deslizar(p, { ate: 300, ms: 800 }); await pausa(3500);
-  await deslizar(p, { ate: 280, ms: 800 }); await pausa(1200);
-  legenda("Lembrete com confirmação pelo WhatsApp do salão"); await deslizar(p, { ate: 300, ms: 800 }); await pausa(3500);
+  legenda("A Gê no celular: a agenda de quem trabalha com beleza"); await pausa(4000);
+  await levar(p, "text=Sua cliente marca sozinha", 110);
+  legenda("A cliente marca sozinha, só em horários livres"); await pausa(4000);
+  await levar(p, "text=Menos faltas", 110);
+  legenda("Lembrete com confirmação pelo WhatsApp do salão"); await pausa(4000);
+  await levar(p, "text=Saiba quanto recebeu", 110); await pausa(2500);
 });
 // 2. Entrar
 await passo("login", async () => {
@@ -97,7 +100,7 @@ await passo("login", async () => {
   await digitar(p, p.getByLabel("E-mail"), EMAIL, 55);
   await digitar(p, p.getByLabel("Senha"), SENHA, 55);
   await tocar(p, p.getByRole("button", { name: "Entrar" }));
-  await p.waitForURL(/\/app/, { timeout: 60000 }); await p.waitForSelector("h1"); await pausa(800);
+  await p.waitForURL(/\/app/, { timeout: 60000 }); await p.waitForSelector("text=/atendimentos? hoje/", { timeout: 30000 }).catch(() => {}); await pausa(1500);
 });
 // 3. Início
 await passo("inicio", async () => {
@@ -126,8 +129,7 @@ await passo("whatsapp", async () => {
   await p.keyboard.press("Escape"); await pausa(300);
   await p.goto(BASE + "/app/configuracoes?aba=whatsapp"); await p.waitForSelector("#conectar-whatsapp"); await pausa(1200);
   legenda("WhatsApp pelo número do próprio salão: você pede e a equipe da Gê configura com você");
-  await p.locator("#conectar-whatsapp").scrollIntoViewIfNeeded(); await pausa(4500);
-  await deslizar(p, { de: 650, ate: 300, ms: 800 }); await pausa(3000);
+  await levar(p, "#conectar-whatsapp", 230); await pausa(5000);
 });
 // 5. Clientes e importação
 await passo("clientes", async () => {

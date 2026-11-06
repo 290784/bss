@@ -46,8 +46,8 @@ Cada cena tem uma **legenda** (já aparece no vídeo) e uma **fala** (para narra
 3. Para mudar uma legenda ou o ritmo de uma cena, edite o `gravar.mjs` (cada cena é um bloco `cena(...)` com as legendas e as pausas).
 Precisa do Playwright e do ffmpeg instalados.
 
-## Versão vertical, no iPhone 17 Pro Max (cerca de 2 minutos e 10 segundos)
-Para Reels e TikTok (1080 × 1920). É o app de verdade com a tela do iPhone 17 Pro Max (440 × 956 pontos), conduzido com **toques e deslizes de dedo** (o círculo na tela é o dedo). A moldura do aparelho, a ilha dinâmica e a barra de status são desenhadas em volta. É uma emulação do tamanho e do toque do iPhone, não o Safari de um aparelho físico.
+## Versão vertical, no iPhone 17 Pro Max (cerca de 2 minutos e 30 segundos)
+Para Reels e TikTok (1080 × 1920). É o app de verdade com a tela do iPhone 17 Pro Max (440 × 956 pontos), conduzido com toques e deslizes de dedo (sem marcador na tela). A moldura do aparelho, a ilha dinâmica e a barra de status são desenhadas em volta. É uma emulação do tamanho e do toque do iPhone, não o Safari de um aparelho físico.
 
 | Cena | Na tela | Legenda |
 | --- | --- | --- |
