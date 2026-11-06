@@ -45,3 +45,18 @@ Cada cena tem uma **legenda** (já aparece no vídeo) e uma **fala** (para narra
 2. O vídeo sai em `materiais-comerciais/video/saida/ge-apresentacao.mp4` (a pasta fica fora do git).
 3. Para mudar uma legenda ou o ritmo de uma cena, edite o `gravar.mjs` (cada cena é um bloco `cena(...)` com as legendas e as pausas).
 Precisa do Playwright e do ffmpeg instalados.
+
+## Versão vertical, no iPhone 17 Pro Max (cerca de 2 minutos e 10 segundos)
+Para Reels e TikTok (1080 × 1920). É o app de verdade com a tela do iPhone 17 Pro Max (440 × 956 pontos), conduzido com **toques e deslizes de dedo** (o círculo na tela é o dedo). A moldura do aparelho, a ilha dinâmica e a barra de status são desenhadas em volta. É uma emulação do tamanho e do toque do iPhone, não o Safari de um aparelho físico.
+
+| Cena | Na tela | Legenda |
+| --- | --- | --- |
+| Página de vendas | Rola pelo topo, a demonstração de agendamento e o carrossel de recursos | A Gê no celular: a agenda de quem trabalha com beleza; A cliente marca sozinha, só em horários livres; Lembrete com confirmação pelo WhatsApp do salão |
+| Entrar | Digita e-mail e senha | A dona do salão entra no painel |
+| Início | Saudação do dia e resumo | Todo dia uma saudação nova e o resumo do dia; Quanto entrou, quanto está previsto e quem sumiu |
+| Agenda | Lista do dia e um atendimento aberto | Agenda do dia, sem conflito de horário; Um toque abre o atendimento: serviços, valor e pagamento |
+| Menu e WhatsApp | Menu "Mais" e a tela do WhatsApp | No menu, as configurações do salão; WhatsApp pelo número do próprio salão: você pede e a equipe da Gê configura com você |
+| Clientes | Lista e importação de planilha com prévia | Clientes: histórico e quem não volta há tempo; Trouxe sua lista de outro sistema? Importe a planilha; A Gê mostra quem entra e o que tem erro, antes de gravar |
+| Do outro lado | A cliente abre o link do salão e escolhe o serviço e o horário | Do outro lado, a cliente abre o link do salão; Escolhe o serviço e vê só os horários livres; Escolhe o horário e o salão recebe o pedido |
+
+Para refazer: `VITRINE_PASSWORD=<senha da conta de demonstração> node materiais-comerciais/video/gravar-iphone.mjs`. O vídeo sai em `materiais-comerciais/video/saida-iphone/ge-iphone.mp4` (fora do git).

@@ -11,7 +11,7 @@ Regra: nenhuma tarefa vira [CONCLUÍDO] sem evidência verificada. Níveis de ve
 - Previsão de lançamento oficial: 01/02/2027 (primeira cobrança)
 - Foco geográfico: Rio de Janeiro (capital). Suporte: Pedro Chaves (horários a definir)
 - Objetivo atual: fechar o mínimo cobrável (WhatsApp real, cobrança, e-mail, importação) e começar as entrevistas de validação
-- Progresso geral: **25% (11 de 44 tarefas verificadas como concluídas)**
+- Progresso geral: **27% (12 de 45 tarefas verificadas como concluídas)**
 - Última atualização: 06/11/2026
 
 ## Dashboard de progresso
@@ -19,11 +19,11 @@ Regra: nenhuma tarefa vira [CONCLUÍDO] sem evidência verificada. Níveis de ve
 | --- | --- | --- | --- | --- | --- |
 | Produto | 4 | 5 | 2 | 2 | 1 |
 | Validação | 3 | 5 | 1 | 0 | 0 |
-| Marketing | 4 | 5 | 0 | 0 | 0 |
+| Marketing | 5 | 5 | 0 | 0 | 0 |
 | Comercial | 0 | 2 | 1 | 0 | 1 |
 | Financeiro | 0 | 1 | 0 | 0 | 3 |
 | Legal | 0 | 4 | 0 | 0 | 0 |
-| **Total** | **11** | **22** | **4** | **2** | **5** |
+| **Total** | **12** | **22** | **4** | **2** | **5** |
 
 ## Diagnóstico real do produto (auditoria de 05/11/2026)
 | Área | Implementado | Testado | Em produção | Validado em ambiente real |
@@ -53,6 +53,7 @@ Achados da auditoria (com evidência):
 | P-07 | Produto | Importação de clientes por planilha (CSV) | Alta | [CONCLUÍDO] | PR 73 mesclado em 06/11/2026; deploy `bss` e `studio-manoella-lopes` com sucesso no commit 013a0d5 (o build aplica as migrações e compila a rota). Testes: `tests/unit/client-import.test.ts` (19) e `tests/integration/importar-clientes.test.ts` (9); fluxo rodado no navegador em desenvolvimento. Não pude abrir o app em produção daqui (rede bloqueada); falta validar com uma planilha real | 06/11/2026 |
 | M-07 | Marketing | [SUGESTÃO] Peças visuais dos primeiros conteúdos: foto de perfil, carrossel do dia 2, post do dia 12, Stories do dia 11 e capas de Reels dos dias 1 e 4 | Média | [CONCLUÍDO] | 16 imagens PNG em `materiais-comerciais/visual/png/` geradas e conferidas visualmente (tamanhos 1080×1080, 1080×1350 e 1080×1920; script `gerar.mjs` checa estouro de borda); fontes e HTML editáveis na mesma pasta. Nada publicado | 06/11/2026 |
 | M-09 | Marketing | [SUGESTÃO] Vídeo de apresentação do produto (2 min 25 s) gravado a partir do próprio app | Média | [CONCLUÍDO] | `materiais-comerciais/video/gravar.mjs` gerou `ge-apresentacao.mp4` (1280×720, 145 s, 7 MB); quadros revisados um a um (página de vendas, painel, importação, WhatsApp, celular da cliente, cartão final). Roteiro e falas em `materiais-comerciais/video/ROTEIRO.md`. O MP4 não está no git (arquivo gerado; refaz com o script) | 06/11/2026 |
+| M-10 | Marketing | [SUGESTÃO] Vídeo vertical do app usado num iPhone 17 Pro Max (2 min 9 s, 1080×1920) | Média | [CONCLUÍDO] | `materiais-comerciais/video/gravar-iphone.mjs` gerou `ge-iphone.mp4` (1080×1920, 129 s, 11 MB): app real em tela de 440×956 pt, toques e deslizes de dedo, moldura com ilha dinâmica e barra de status, legendas no topo; quadros revisados (landing, login, início, agenda com atendimento aberto, menu, WhatsApp, importação, celular da cliente). O MP4 não está no git | 06/11/2026 |
 | V-01 | Validação | Roteiro de entrevistas | Alta | [CONCLUÍDO] | `materiais-comerciais/ROTEIRO-ENTREVISTAS.md` (55 linhas) | 05/11/2026 |
 | V-02 | Validação | Questionário de dores (8 perguntas) | Alta | [CONCLUÍDO] | `materiais-comerciais/QUESTIONARIO-DORES.md` (8 perguntas, tabela conferida) | 05/11/2026 |
 | V-03 | Validação | Planilha de prospecção e placar semanal | Média | [CONCLUÍDO] | `materiais-comerciais/PLANILHA-PROSPECCAO.csv` (19 colunas) e `PLACAR-SEMANAL.csv` (10 colunas) lidos por script | 05/11/2026 |
@@ -126,3 +127,4 @@ Tarefa que eu executo sozinha na próxima sessão: **P-10, campo "como conheceu"
 | 06/11/2026 | Reunir os materiais comerciais em uma pasta | Pasta `materiais-comerciais/` criada: os 7 arquivos do kit movidos de `docs/lancamento/` (histórico preservado com `git mv`) e 2 novos exportados da estratégia (calendário de 30 dias e mensagens por canal e funil). Referências do tracker atualizadas | `materiais-comerciais/*`, `LAUNCH_TRACKER.md` | O documento de estratégia continua só no Claude (link no tracker); os preços e ofertas dos materiais dependem de C-01 |
 | 06/11/2026 | Parte visual (pedido do dono): M-07 | 16 peças geradas e conferidas; progresso 23% (10 de 43; duas tarefas novas marcadas [SUGESTÃO]) | `materiais-comerciais/visual/*`, `materiais-comerciais/README.md`, `LAUNCH_TRACKER.md` | Dados de exemplo nas imagens (nomes, R$ 150); "15 vagas no beta" só vale se o beta existir; publicar depende de aprovação (M-04) |
 | 06/11/2026 | Vídeo de apresentação (pedido do dono): M-09 | Gravado com o app real (mesmas fontes, animações e interações); 145 s; progresso 25% (11 de 44). Duas correções no caminho: indicador de desenvolvimento do Next escondido e rotas aquecidas antes de gravar | `materiais-comerciais/video/gravar.mjs`, `ROTEIRO.md`, `exemplo-clientes.csv`, `LAUNCH_TRACKER.md` | Sem áudio (a fala sugerida está no roteiro); a cena do WhatsApp mostra o pedido de conexão, não conversa real (P-05 pendente); sem preços na tela (C-01) |
+| 06/11/2026 | Vídeo no iPhone 17 Pro Max (pedido do dono): M-10 | Gravado com o app real emulando o aparelho (440×956 pt, toques de dedo); 129 s, vertical; progresso 27% (12 de 45). Corrigido no caminho: toque no atendimento da agenda no celular e montagem das legendas (de 7 minutos para menos de 1) | `materiais-comerciais/video/gravar-iphone.mjs`, `materiais-comerciais/video/ROTEIRO.md`, `LAUNCH_TRACKER.md` | É emulação do tamanho e do toque do iPhone no Chromium, não o Safari real; sem áudio; sem preços na tela (C-01); WhatsApp ainda não validado (P-05) |
