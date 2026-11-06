@@ -1,6 +1,6 @@
-# Kit de validação e abordagem
+# Materiais comerciais da Gê
 
-Materiais da fase de pré-lançamento, derivados da estratégia de lançamento da Gê. O acompanhamento oficial está em [`LAUNCH_TRACKER.md`](../../LAUNCH_TRACKER.md).
+Tudo o que já foi criado para validar, abordar e comunicar, derivado da estratégia de lançamento da Gê. O acompanhamento oficial está em [`LAUNCH_TRACKER.md`](../LAUNCH_TRACKER.md).
 
 | Arquivo | Para que serve |
 | --- | --- |
@@ -10,5 +10,7 @@ Materiais da fase de pré-lançamento, derivados da estratégia de lançamento d
 | `PLANILHA-PROSPECCAO.csv` | Modelo para registrar cada contato (abrir no Google Sheets ou Excel) |
 | `GUIA-LISTA-RIO.md` | Como montar a lista de 100 perfis no Rio de Janeiro, por região, com busca e cuidados de LGPD |
 | `PLACAR-SEMANAL.csv` | Placar de segunda-feira com os números da semana |
+| `CALENDARIO-CONTEUDO-30-DIAS.md` | 30 dias de Reels, carrosséis, Stories e posts, com gancho, ideia, CTA e objetivo, mais exemplos prontos |
+| `MENSAGENS-POR-CANAL-E-FUNIL.md` | Textos por canal (Instagram, WhatsApp, anúncio, landing) e por etapa do funil |
 
 Nada daqui é enviado ou publicado automaticamente. Enviar mensagens reais ou publicar o questionário exige aprovação.
