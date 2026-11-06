@@ -11,7 +11,7 @@ Tudo o que já foi criado para validar, abordar e comunicar, derivado da estrat�
 | `GUIA-LISTA-RIO.md` | Como montar a lista de 100 perfis no Rio de Janeiro, por região, com busca e cuidados de LGPD |
 | `PLACAR-SEMANAL.csv` | Placar de segunda-feira com os números da semana |
 | `CALENDARIO-CONTEUDO-30-DIAS.md` | 30 dias de Reels, carrosséis, Stories e posts, com gancho, ideia, CTA e objetivo, mais exemplos prontos |
-| `visual/` | Peças visuais prontas (16 imagens PNG: foto de perfil, carrossel, post, Stories e capas de Reels), com a fonte para editar e o `LEIA-ME.md` |
+| `visual/` | Peças visuais prontas (16 imagens PNG: foto de perfil, carrossel, post, Stories e capas de Reels). Abra `visual/visualizar.html` para ver tudo em uma galeria; há também a fonte para editar e o `LEIA-ME.md` |
 | `MENSAGENS-POR-CANAL-E-FUNIL.md` | Textos por canal (Instagram, WhatsApp, anúncio, landing) e por etapa do funil |
 
 Nada daqui é enviado ou publicado automaticamente. Enviar mensagens reais ou publicar o questionário exige aprovação.
