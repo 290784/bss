@@ -8,6 +8,7 @@ Materiais da fase de pré-lançamento, derivados da estratégia de lançamento d
 | `MENSAGENS-ABORDAGEM.md` | Mensagens de primeira abordagem, retornos e respostas a objeções |
 | `QUESTIONARIO-DORES.md` | 8 perguntas para formulário, com leitura dos resultados |
 | `PLANILHA-PROSPECCAO.csv` | Modelo para registrar cada contato (abrir no Google Sheets ou Excel) |
+| `GUIA-LISTA-RIO.md` | Como montar a lista de 100 perfis no Rio de Janeiro, por região, com busca e cuidados de LGPD |
 | `PLACAR-SEMANAL.csv` | Placar de segunda-feira com os números da semana |
 
 Nada daqui é enviado ou publicado automaticamente. Enviar mensagens reais ou publicar o questionário exige aprovação.

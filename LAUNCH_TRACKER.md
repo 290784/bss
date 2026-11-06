@@ -9,6 +9,7 @@ Regra: nenhuma tarefa vira [CONCLUÍDO] sem evidência verificada. Níveis de ve
 - Previsão de pré-lançamento: 16/11/2026 a 15/12/2026
 - Previsão de beta: 16/12/2026 a 31/01/2027
 - Previsão de lançamento oficial: 01/02/2027 (primeira cobrança)
+- Foco geográfico: Rio de Janeiro (capital). Suporte: Pedro Chaves (horários a definir)
 - Objetivo atual: fechar o mínimo cobrável (WhatsApp real, cobrança, e-mail, importação) e começar as entrevistas de validação
 - Progresso geral: **20% (8 de 41 tarefas verificadas como concluídas)**
 - Última atualização: 05/11/2026 (sessão CONTINUAR LANÇAMENTO 1)
@@ -19,10 +20,10 @@ Regra: nenhuma tarefa vira [CONCLUÍDO] sem evidência verificada. Níveis de ve
 | Produto | 3 | 5 | 3 | 2 | 1 |
 | Validação | 3 | 5 | 1 | 0 | 0 |
 | Marketing | 2 | 4 | 0 | 0 | 0 |
-| Comercial | 0 | 3 | 0 | 0 | 1 |
+| Comercial | 0 | 2 | 1 | 0 | 1 |
 | Financeiro | 0 | 1 | 0 | 0 | 3 |
 | Legal | 0 | 4 | 0 | 0 | 0 |
-| **Total** | **8** | **22** | **4** | **2** | **5** |
+| **Total** | **8** | **21** | **5** | **2** | **5** |
 
 ## Diagnóstico real do produto (auditoria de 05/11/2026)
 | Área | Implementado | Testado | Em produção | Validado em ambiente real |
@@ -61,6 +62,7 @@ Achados da auditoria (com evidência):
 | P-11 | Produto | Checklist de ativação e alertas de baixo uso | Média | [EM ANDAMENTO] | P-12 | Dicas e eventos de onboarding existem; não há alerta de baixo uso nem lista de contas em risco | Definir o evento de ativação no banco e a lista diária de contas em risco |
 | P-07 | Produto | Importação de clientes por planilha (CSV) | Alta | [EM ANDAMENTO] | P-10 não é necessária | Implementado e testado: `src/domain/client-import.ts`, `src/server/modules/client-import.ts`, tela em Clientes, rota do modelo; `tests/unit/client-import.test.ts` (19) e `tests/integration/importar-clientes.test.ts` (9) passam; fluxo rodado no navegador (prévia, gravação e segunda importação sem duplicar). Regras: entram sem consentimento de marketing; quem já existe não é alterada; telefone, e-mail ou data inválidos entram como aviso | Mesclar o PR, confirmar o deploy e então marcar [CONCLUÍDO]. Validação real: testar com a planilha de um beta |
 | P-14 | Produto | Exportação completa de dados (LGPD) | Média | [EM ANDAMENTO] | L-03 | Exportação CSV de clientes existe (`/app/clientes/exportar`); solicitação de exclusão anotada; falta exportar agenda e financeiro | Incluir agenda e pagamentos na exportação |
+| C-04 | Comercial | Definir quem atende o suporte e em quais horários | Média | [EM ANDAMENTO] | nenhuma | Resposta de 05/11/2026: o suporte será **Pedro Chaves**. Horários ainda não informados | Você informar os dias e horários de atendimento |
 | V-06 | Validação | Conta de demonstração em produção | Alta | [EM ANDAMENTO] | P-04 | Script `seed-vitrine` e módulo `vitrine` existem; a variável de criação está desativada, e a existência da conta em produção não foi verificada | Você confirmar o login da conta de demonstração em produção, ou eu preparar a recriação com aprovação |
 
 ## Tarefas pendentes
@@ -71,8 +73,8 @@ Achados da auditoria (com evidência):
 | P-10 | Produto | Campo "como conheceu" e código por canal no cadastro | Média | [PENDENTE] | nenhuma | Busca em `src` sem resultado | Adicionar campo e evento de funil |
 | P-12 | Produto | Consultas do painel do fundador (KPIs) | Média | [PENDENTE] | P-10 | 7 eventos de funil registrados | Criar consultas e planilha de acompanhamento |
 | P-13 | Produto | Backup do banco e monitoramento de erros | Alta | [PENDENTE] | F-03 | Banco é Neon via Vercel; plano e backup não verificados | Você informar o plano do Neon; eu propor monitoramento |
-| V-04 | Validação | Lista de 100 lash e nail designers da cidade | Alta | [PENDENTE] | informar a cidade | Planilha modelo pronta | Você informar a cidade; montar a lista |
-| V-05 | Validação | 20 entrevistas (mínimo 12) | Alta | [PENDENTE] | V-01, V-04, M-01 e sua aprovação para enviar | Kit pronto | Enviar 20 mensagens por dia após aprovação |
+| V-04 | Validação | Lista de 100 lash e nail designers do Rio de Janeiro | Alta | [PENDENTE] | nenhuma (cidade definida em 05/11/2026) | Planilha modelo e `docs/lancamento/GUIA-LISTA-RIO.md` prontos; a lista em si não existe | Você (ou quem indicar) montar os 100 perfis seguindo o guia; eu não acesso o Instagram daqui |
+| V-05 | Validação | 20 entrevistas (mínimo 12) | Alta | [PENDENTE] | V-04 e sua aprovação para enviar (V-01 e M-01 prontos) | Kit pronto | Enviar 20 mensagens por dia após aprovação |
 | V-07 | Validação | Landing com botão "Quero testar" e lista de espera de 3 campos | Alta | [PENDENTE] | P-10 | A landing tem "Começar grátis" (cadastro), sem lista de espera | Criar formulário de lista de espera |
 | V-08 | Validação | Teste de preço (Van Westendorp e ofertas de R$ 49, R$ 69, R$ 89) | Média | [PENDENTE] | C-01, V-05 | Perguntas no roteiro | Executar nas demonstrações |
 | V-09 | Validação | Recrutar 15 profissionais para o beta | Alta | [PENDENTE] | V-05, P-05 | Nenhuma | Convidar as entrevistadas que toparem |
@@ -82,7 +84,6 @@ Achados da auditoria (com evidência):
 | M-06 | Marketing | Lista de 10 escolas e educadoras de cílios e unhas para parceria | Média | [PENDENTE] | V-04 | Nenhuma | Montar a lista |
 | C-02 | Comercial | Página de preços e oferta de fundadora | Alta | [PENDENTE] | C-01 | Planos no código ainda mostram "preço em definição" | Atualizar a página depois da decisão |
 | C-03 | Comercial | Roteiro da demonstração de 15 min e da chamada de configuração de 20 min | Média | [PENDENTE] [SUGESTÃO] | nenhuma | Citados na estratégia, sem roteiro escrito | Redigir os dois roteiros |
-| C-04 | Comercial | Definir quem atende o suporte e em quais horários | Média | [PENDENTE] | nenhuma | Pergunta ainda aberta no documento de estratégia | Você responder |
 | F-04 | Financeiro | Planilha de acompanhamento (MRR, CAC, caixa) | Média | [PENDENTE] | P-12 | Nenhuma | Criar modelo a partir da seção 12 |
 | L-01 | Legal | Consultar o INPI sobre o nome "Gê" | Alta | [PENDENTE] | nenhuma | Nenhuma | Você ou um advogado consultarem |
 | L-02 | Legal | Abrir a empresa e definir o enquadramento fiscal com contador | Alta | [PENDENTE] | nenhuma | Nenhuma | Você falar com um contador; necessário para verificar a conta na Meta e emitir nota |
@@ -106,7 +107,7 @@ Achados da auditoria (com evidência):
 
 ## Próximas 3 ações prioritárias
 1. **P-04 e depois P-05: colocar o WhatsApp para funcionar de verdade.** Sem isso, a promessa principal da Gê não existe. Você aprova P-04; depois eu preparo o passo a passo da Meta para P-05.
-2. **V-04 e V-05: começar as entrevistas.** Informe a cidade; eu monto a lista e você aprova o envio das primeiras 20 mensagens.
+2. **V-04 e V-05: começar as entrevistas no Rio.** Monte os 100 perfis com o `GUIA-LISTA-RIO.md` e aprove o envio das primeiras 20 mensagens.
 3. **F-01 e F-02: escolher cobrança e e-mail.** São os últimos bloqueadores técnicos antes de cobrar.
 
 Tarefa que eu executo sozinha na próxima sessão: **P-10, campo "como conheceu" e código por canal** (destrava V-07, a lista de espera, e P-12, os KPIs).
@@ -117,3 +118,4 @@ Tarefa que eu executo sozinha na próxima sessão: **P-10, campo "como conheceu"
 | 05/11/2026 | Auditoria inicial do repositório, da Vercel e do GitHub | Diagnóstico acima; 41 tarefas mapeadas; progresso 20% | `LAUNCH_TRACKER.md` | Agendador do GitHub sem efeito (P-06); variáveis do WhatsApp por salão e do `/admin` ausentes na Vercel (P-04) |
 | 05/11/2026 | V-01, V-02, V-03, M-01: kit de validação e abordagem | Concluídas; arquivos criados e conferidos (colunas do CSV, linhas dos documentos) | `docs/lancamento/README.md`, `ROTEIRO-ENTREVISTAS.md`, `MENSAGENS-ABORDAGEM.md`, `QUESTIONARIO-DORES.md`, `PLANILHA-PROSPECCAO.csv`, `PLACAR-SEMANAL.csv` | Envio real de mensagens e publicação do questionário dependem de aprovação |
 | 05/11/2026 | P-07: importação de clientes por planilha | Implementada e testada; aguardando merge para virar [CONCLUÍDO]. Verificação do estado: P-04 e P-06 continuam abertos (sem as variáveis na Vercel; log do agendador ainda diz "CRON_SECRET não configurado" às 22:26 UTC) | `src/domain/client-import.ts`, `src/server/modules/client-import.ts`, `src/app/app/clientes/importar-actions.ts`, `src/app/app/clientes/import-clients-button.tsx`, `src/app/app/clientes/importar/modelo/route.ts`, `src/app/app/clientes/page.tsx`, 2 arquivos de teste | O papel do aplicativo não escreve em `product_events`: o evento `clients.imported` é gravado pelo sistema na ação |
+| 05/11/2026 | Respostas do dono: cidade Rio de Janeiro; suporte Pedro Chaves | V-04 destravada (guia pronto); C-04 em andamento (faltam horários) | `docs/lancamento/GUIA-LISTA-RIO.md`, `docs/lancamento/README.md`, `LAUNCH_TRACKER.md` | A lista real exige acesso ao Instagram, que não tenho aqui |
