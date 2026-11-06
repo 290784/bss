@@ -150,3 +150,68 @@ for (const p of pecas) {
 }
 await navegador.close();
 console.log(`${pecas.length} peças geradas em ${PNG}`);
+
+// ---------- Visualizador (um único HTML, com tudo embutido: abre com duplo clique, sem internet) ----------
+import { readFileSync } from "node:fs";
+const b64 = (arq, tipo) => `data:${tipo};base64,${readFileSync(arq).toString("base64")}`;
+const GRUPOS = [
+  { titulo: "Foto de perfil", nota: "Instagram e TikTok recortam em círculo; o “Gê” já fica no meio.", tam: "1080 × 1080", prefixo: "01-" },
+  { titulo: "Carrossel do dia 2: 5 jeitos de reduzir falta", nota: "7 telas: capa, os 5 jeitos e o fechamento. Poste na ordem.", tam: "1080 × 1350", prefixo: "carrossel-" },
+  { titulo: "Post do dia 12", nota: "“Cobrar o que vale é profissionalismo.”", tam: "1080 × 1350", prefixo: "post-" },
+  { titulo: "Stories do dia 11: convite para o beta", nota: "Sequência de 5. “15 vagas” só vale se o beta existir; R$ 150 e 3 faltas são exemplo.", tam: "1080 × 1920", prefixo: "stories-" },
+  { titulo: "Capas de Reels", nota: "Dia 1 e dia 4. O título fica no miolo, longe das bordas.", tam: "1080 × 1920", prefixo: "reels-" },
+];
+const arquivos = readdirSync(PNG).filter((f) => f.endsWith(".png")).sort((a, b) => a.localeCompare(b, "pt", { numeric: true }));
+const secoes = GRUPOS.map((g) => {
+  const itens = arquivos.filter((f) => f.startsWith(g.prefixo)).map((f) => ({ nome: f, src: b64(join(PNG, f), "image/png") }));
+  const vertical = g.tam.endsWith("1920");
+  return `<section><h2>${g.titulo}</h2><p class="nota">${g.nota} <span class="tam">${g.tam}</span></p>
+  <div class="faixa ${vertical ? "vert" : ""}">${itens.map((i) => `<figure><button type="button" class="abrir" data-src="${i.nome}" aria-label="Ampliar ${i.nome}"><img src="${i.src}" alt="${i.nome.replace(".png", "").replace(/-/g, " ")}" loading="lazy"></button><figcaption><span>${i.nome.replace(".png", "")}</span><a class="baixar" href="#" download="${i.nome}">Baixar</a></figcaption></figure>`).join("")}</div></section>`;
+}).join("\n");
+const fonte = (arq, tipo) => b64(join(AQUI, "fontes", arq), tipo);
+const visualizador = `<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Gê · peças visuais</title>
+<style>
+@font-face{font-family:"Playfair Display";src:url(${fonte("PlayfairDisplay-latin-variavel.woff2", "font/woff2")}) format("woff2");font-weight:400 900}
+@font-face{font-family:"Nunito";src:url(${fonte("Nunito-latin-variavel.woff2", "font/woff2")}) format("woff2");font-weight:200 1000}
+@font-face{font-family:"Allura";src:url(${fonte("Allura-latin.woff2", "font/woff2")}) format("woff2")}
+:root{--creme:#f6f3ee;--ameixa:#642350;--dourado:#b28e52;--tinta:#1e1a17;--suave:#52463f;--fio:rgba(178,142,82,.5)}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Nunito,system-ui,sans-serif;background:var(--creme);color:var(--tinta);-webkit-font-smoothing:antialiased}
+header{padding:40px 24px 8px;max-width:1240px;margin:0 auto}
+.logo{font-family:Allura,cursive;font-size:64px;line-height:1;color:var(--ameixa)}
+header h1{font-family:"Playfair Display",serif;font-size:34px;margin-top:6px}
+header p{color:var(--suave);margin-top:8px;max-width:720px;line-height:1.5}
+main{max-width:1240px;margin:0 auto;padding:8px 24px 64px}
+section{margin-top:44px}
+h2{font-family:"Playfair Display",serif;font-size:26px;font-weight:700}
+.nota{color:var(--suave);margin:6px 0 16px;line-height:1.5}.tam{display:inline-block;margin-left:6px;padding:2px 10px;border:1px solid var(--fio);border-radius:999px;font-size:13px;font-weight:700;color:var(--ameixa);background:#fff}
+.faixa{display:flex;gap:18px;overflow-x:auto;padding:4px 2px 16px;scroll-snap-type:x proximity}
+figure{flex:0 0 auto;width:260px;scroll-snap-align:start}
+.faixa.vert figure{width:200px}
+.abrir{display:block;width:100%;border:0;padding:0;background:none;cursor:zoom-in;border-radius:14px;overflow:hidden;box-shadow:0 18px 40px -26px rgba(100,35,80,.55);outline-offset:3px}
+.abrir:focus-visible{outline:3px solid var(--ameixa)}
+img{display:block;width:100%;height:auto}
+figcaption{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:10px;font-size:13px;color:var(--suave)}
+.baixar{color:var(--ameixa);font-weight:800;text-decoration:underline;white-space:nowrap}
+.lb{position:fixed;inset:0;background:rgba(30,26,23,.88);display:none;align-items:center;justify-content:center;z-index:10;padding:24px}
+.lb.on{display:flex}.lb img{max-height:92vh;max-width:min(92vw,720px);width:auto;border-radius:12px}
+.lb button{position:absolute;border:0;background:#fff;color:var(--ameixa);font-size:28px;font-weight:800;width:52px;height:52px;border-radius:50%;cursor:pointer}
+.lb .x{top:18px;right:18px}.lb .p{left:14px;top:50%}.lb .n{right:14px;top:50%}
+footer{max-width:1240px;margin:0 auto;padding:0 24px 40px;color:var(--suave);font-size:14px;line-height:1.6}
+@media(max-width:600px){figure{width:210px}.faixa.vert figure{width:170px}header h1{font-size:28px}}
+</style></head><body>
+<header><div class="logo">Gê</div><h1>Peças visuais para Instagram e TikTok</h1>
+<p>Toque em uma imagem para ampliar; use as setas do teclado ou os botões para passar. “Baixar” salva a imagem no tamanho original. Nada daqui foi publicado: publicar depende da sua aprovação.</p></header>
+<main>${secoes}</main>
+<footer>Textos do calendário de 30 dias. Nomes e valores nas imagens são exemplos. Para mudar um texto, edite <code>gerar.mjs</code> e rode de novo (veja o LEIA-ME).</footer>
+<div class="lb" id="lb" role="dialog" aria-modal="true" aria-label="Imagem ampliada"><button class="x" aria-label="Fechar">&times;</button><button class="p" aria-label="Anterior">&lsaquo;</button><img alt=""><button class="n" aria-label="Próxima">&rsaquo;</button></div>
+<script>
+const imgs=[...document.querySelectorAll(".abrir img")],lb=document.getElementById("lb"),big=lb.querySelector("img");let i=0;
+const show=n=>{i=(n+imgs.length)%imgs.length;big.src=imgs[i].src;big.alt=imgs[i].alt;lb.classList.add("on")};
+imgs.forEach((im,k)=>{im.parentElement.addEventListener("click",()=>show(k));im.closest("figure").querySelector(".baixar").href=im.src});
+lb.querySelector(".x").onclick=()=>lb.classList.remove("on");lb.querySelector(".p").onclick=()=>show(i-1);lb.querySelector(".n").onclick=()=>show(i+1);
+lb.addEventListener("click",e=>{if(e.target===lb)lb.classList.remove("on")});
+addEventListener("keydown",e=>{if(!lb.classList.contains("on"))return;if(e.key==="Escape")lb.classList.remove("on");if(e.key==="ArrowLeft")show(i-1);if(e.key==="ArrowRight")show(i+1)});
+</script></body></html>`;
+writeFileSync(join(AQUI, "visualizar.html"), visualizador);
+console.log("Visualizador: materiais-comerciais/visual/visualizar.html");

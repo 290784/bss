@@ -2,6 +2,9 @@
 
 Primeiro conjunto de imagens para Instagram e TikTok, feito com a identidade do site: fundo creme e ameixa, dourado nos destaques, títulos em Playfair Display, texto em Nunito e a assinatura "Gê" em Allura. Os textos vêm do calendário de 30 dias (`../CALENDARIO-CONTEUDO-30-DIAS.md`). **Nada foi publicado:** publicar exige a sua aprovação (tarefa M-04).
 
+## Ver tudo de uma vez
+Abra **`visualizar.html`** com duplo clique (funciona sem internet; está tudo dentro do arquivo). É uma galeria: toque ou clique para ampliar, use as setas para passar e o botão "Baixar" para salvar cada imagem. O arquivo é refeito toda vez que você roda o `gerar.mjs`.
+
 ## O que tem na pasta `png/`
 | Arquivo | Tamanho | Uso |
 | --- | --- | --- |
