@@ -11,18 +11,18 @@ Regra: nenhuma tarefa vira [CONCLUÍDO] sem evidência verificada. Níveis de ve
 - Previsão de lançamento oficial: 01/02/2027 (primeira cobrança)
 - Objetivo atual: fechar o mínimo cobrável (WhatsApp real, cobrança, e-mail, importação) e começar as entrevistas de validação
 - Progresso geral: **20% (8 de 41 tarefas verificadas como concluídas)**
-- Última atualização: 05/11/2026
+- Última atualização: 05/11/2026 (sessão CONTINUAR LANÇAMENTO 1)
 
 ## Dashboard de progresso
 | Área | Concluídas | Pendentes | Em andamento | Bloqueadas | Aguardando minha aprovação |
 | --- | --- | --- | --- | --- | --- |
-| Produto | 3 | 6 | 2 | 2 | 1 |
+| Produto | 3 | 5 | 3 | 2 | 1 |
 | Validação | 3 | 5 | 1 | 0 | 0 |
 | Marketing | 2 | 4 | 0 | 0 | 0 |
 | Comercial | 0 | 3 | 0 | 0 | 1 |
 | Financeiro | 0 | 1 | 0 | 0 | 3 |
 | Legal | 0 | 4 | 0 | 0 | 0 |
-| **Total** | **8** | **23** | **3** | **2** | **5** |
+| **Total** | **8** | **22** | **4** | **2** | **5** |
 
 ## Diagnóstico real do produto (auditoria de 05/11/2026)
 | Área | Implementado | Testado | Em produção | Validado em ambiente real |
@@ -33,13 +33,13 @@ Regra: nenhuma tarefa vira [CONCLUÍDO] sem evidência verificada. Níveis de ve
 | Agendador de mensagens | sim | sim | cron diário da Vercel configurado; o agendador do GitHub **roda e não faz nada** | não |
 | Cobrança da assinatura | tabela e bloqueio gradual | parcial | não há integração com provedor | não |
 | E-mail, verificação, recuperação de senha | não | não | não | não |
-| Importação de clientes | não | não | não | não |
+| Importação de clientes por planilha (CSV) | sim (PR aberto) | sim (28 testes novos; 347 no total passam; fluxo completo rodado no navegador) | após o merge | não |
 | Termos e privacidade | páginas existem | não se aplica | sim | sem revisão jurídica |
 
 Achados da auditoria (com evidência):
 1. **Agendador do GitHub sem efeito.** As execuções agendadas terminam em sucesso, mas o log mostra "CRON_SECRET não configurado neste repositório; nada a fazer" (execução de 05/11/2026 16:52 UTC). Só o cron diário da Vercel e o disparo imediato após cada ação despacham mensagens.
 2. **Variáveis ausentes na Vercel (produção).** Lista de nomes lida em 05/11/2026: existem `APP_URL`, `DEFAULT_TIMEZONE`, `CRON_SECRET`, as variáveis do banco Neon e `VITRINE_SEED_TOKEN` (desativada, vazia). Não existem `WHATSAPP_ENCRYPTION_KEY`, `PLATFORM_ADMIN_USER_IDS` nem `WHATSAPP_*` da plataforma. Efeito: o card de conexão de WhatsApp mostra "Em breve" para os clientes e ninguém acessa `/admin`.
-3. Nada de cobrança, e-mail, recuperação de senha nem importação de clientes no código (busca em `src` e `package.json`).
+3. Nada de cobrança, e-mail nem recuperação de senha no código (busca em `src` e `package.json`). A importação de clientes foi construída em 05/11/2026 (P-07).
 4. Não há campo "como conheceu" nem código por canal (busca em `src`).
 5. Eventos de funil registrados no produto: `signup.completed`, `onboarding.business_created`, `onboarding.completed`, `booking.online_created`, `booking.client_confirmed`, `whatsapp.upsell_offered`, `whatsapp.upsell_accepted`.
 
@@ -59,13 +59,13 @@ Achados da auditoria (com evidência):
 | ID | Área | Descrição | Prioridade | Status | Dependências | Evidência | Próxima ação |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | P-11 | Produto | Checklist de ativação e alertas de baixo uso | Média | [EM ANDAMENTO] | P-12 | Dicas e eventos de onboarding existem; não há alerta de baixo uso nem lista de contas em risco | Definir o evento de ativação no banco e a lista diária de contas em risco |
+| P-07 | Produto | Importação de clientes por planilha (CSV) | Alta | [EM ANDAMENTO] | P-10 não é necessária | Implementado e testado: `src/domain/client-import.ts`, `src/server/modules/client-import.ts`, tela em Clientes, rota do modelo; `tests/unit/client-import.test.ts` (19) e `tests/integration/importar-clientes.test.ts` (9) passam; fluxo rodado no navegador (prévia, gravação e segunda importação sem duplicar). Regras: entram sem consentimento de marketing; quem já existe não é alterada; telefone, e-mail ou data inválidos entram como aviso | Mesclar o PR, confirmar o deploy e então marcar [CONCLUÍDO]. Validação real: testar com a planilha de um beta |
 | P-14 | Produto | Exportação completa de dados (LGPD) | Média | [EM ANDAMENTO] | L-03 | Exportação CSV de clientes existe (`/app/clientes/exportar`); solicitação de exclusão anotada; falta exportar agenda e financeiro | Incluir agenda e pagamentos na exportação |
 | V-06 | Validação | Conta de demonstração em produção | Alta | [EM ANDAMENTO] | P-04 | Script `seed-vitrine` e módulo `vitrine` existem; a variável de criação está desativada, e a existência da conta em produção não foi verificada | Você confirmar o login da conta de demonstração em produção, ou eu preparar a recriação com aprovação |
 
 ## Tarefas pendentes
 | ID | Área | Descrição | Prioridade | Status | Dependências | Evidência | Próxima ação |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| P-07 | Produto | Importação de clientes por planilha (CSV) | Alta | [PENDENTE] | nenhuma | Sem código de importação em `src` | **Eu executo na próxima sessão**: tela, validação, deduplicação por telefone, testes |
 | P-08 | Produto | E-mail transacional, verificação de e-mail e recuperação de senha | Alta | [PENDENTE] | F-02 | Sem biblioteca nem rota de e-mail | Depois da escolha do provedor |
 | P-09 | Produto | Cobrança recorrente da assinatura (Pix e cartão) | Alta | [PENDENTE] | F-01 | Sem integração com provedor | Depois da escolha do provedor |
 | P-10 | Produto | Campo "como conheceu" e código por canal no cadastro | Média | [PENDENTE] | nenhuma | Busca em `src` sem resultado | Adicionar campo e evento de funil |
@@ -109,10 +109,11 @@ Achados da auditoria (com evidência):
 2. **V-04 e V-05: começar as entrevistas.** Informe a cidade; eu monto a lista e você aprova o envio das primeiras 20 mensagens.
 3. **F-01 e F-02: escolher cobrança e e-mail.** São os últimos bloqueadores técnicos antes de cobrar.
 
-Tarefa que eu executo sozinha na próxima sessão: **P-07, importação de clientes por planilha.**
+Tarefa que eu executo sozinha na próxima sessão: **P-10, campo "como conheceu" e código por canal** (destrava V-07, a lista de espera, e P-12, os KPIs).
 
 ## Histórico de execução
 | Data | Tarefa | Resultado | Arquivos alterados | Pendências encontradas |
 | --- | --- | --- | --- | --- |
 | 05/11/2026 | Auditoria inicial do repositório, da Vercel e do GitHub | Diagnóstico acima; 41 tarefas mapeadas; progresso 20% | `LAUNCH_TRACKER.md` | Agendador do GitHub sem efeito (P-06); variáveis do WhatsApp por salão e do `/admin` ausentes na Vercel (P-04) |
 | 05/11/2026 | V-01, V-02, V-03, M-01: kit de validação e abordagem | Concluídas; arquivos criados e conferidos (colunas do CSV, linhas dos documentos) | `docs/lancamento/README.md`, `ROTEIRO-ENTREVISTAS.md`, `MENSAGENS-ABORDAGEM.md`, `QUESTIONARIO-DORES.md`, `PLANILHA-PROSPECCAO.csv`, `PLACAR-SEMANAL.csv` | Envio real de mensagens e publicação do questionário dependem de aprovação |
+| 05/11/2026 | P-07: importação de clientes por planilha | Implementada e testada; aguardando merge para virar [CONCLUÍDO]. Verificação do estado: P-04 e P-06 continuam abertos (sem as variáveis na Vercel; log do agendador ainda diz "CRON_SECRET não configurado" às 22:26 UTC) | `src/domain/client-import.ts`, `src/server/modules/client-import.ts`, `src/app/app/clientes/importar-actions.ts`, `src/app/app/clientes/import-clients-button.tsx`, `src/app/app/clientes/importar/modelo/route.ts`, `src/app/app/clientes/page.tsx`, 2 arquivos de teste | O papel do aplicativo não escreve em `product_events`: o evento `clients.imported` é gravado pelo sistema na ação |
