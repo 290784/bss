@@ -11,19 +11,19 @@ Regra: nenhuma tarefa vira [CONCLUÍDO] sem evidência verificada. Níveis de ve
 - Previsão de lançamento oficial: 01/02/2027 (primeira cobrança)
 - Foco geográfico: Rio de Janeiro (capital). Suporte: Pedro Chaves (horários a definir)
 - Objetivo atual: fechar o mínimo cobrável (WhatsApp real, cobrança, e-mail, importação) e começar as entrevistas de validação
-- Progresso geral: **20% (8 de 41 tarefas verificadas como concluídas)**
-- Última atualização: 05/11/2026 (sessão CONTINUAR LANÇAMENTO 1)
+- Progresso geral: **22% (9 de 41 tarefas verificadas como concluídas)**
+- Última atualização: 06/11/2026
 
 ## Dashboard de progresso
 | Área | Concluídas | Pendentes | Em andamento | Bloqueadas | Aguardando minha aprovação |
 | --- | --- | --- | --- | --- | --- |
-| Produto | 3 | 5 | 3 | 2 | 1 |
+| Produto | 4 | 5 | 2 | 2 | 1 |
 | Validação | 3 | 5 | 1 | 0 | 0 |
 | Marketing | 2 | 4 | 0 | 0 | 0 |
 | Comercial | 0 | 2 | 1 | 0 | 1 |
 | Financeiro | 0 | 1 | 0 | 0 | 3 |
 | Legal | 0 | 4 | 0 | 0 | 0 |
-| **Total** | **8** | **21** | **5** | **2** | **5** |
+| **Total** | **9** | **21** | **4** | **2** | **5** |
 
 ## Diagnóstico real do produto (auditoria de 05/11/2026)
 | Área | Implementado | Testado | Em produção | Validado em ambiente real |
@@ -34,7 +34,7 @@ Regra: nenhuma tarefa vira [CONCLUÍDO] sem evidência verificada. Níveis de ve
 | Agendador de mensagens | sim | sim | cron diário da Vercel configurado; o agendador do GitHub **roda e não faz nada** | não |
 | Cobrança da assinatura | tabela e bloqueio gradual | parcial | não há integração com provedor | não |
 | E-mail, verificação, recuperação de senha | não | não | não | não |
-| Importação de clientes por planilha (CSV) | sim (PR aberto) | sim (28 testes novos; 347 no total passam; fluxo completo rodado no navegador) | após o merge | não |
+| Importação de clientes por planilha (CSV) | sim | sim (28 testes novos; 347 no total passam; fluxo completo rodado no navegador) | sim (deploy do merge 013a0d5 com sucesso) | não (falta usar uma planilha real de um beta) |
 | Termos e privacidade | páginas existem | não se aplica | sim | sem revisão jurídica |
 
 Achados da auditoria (com evidência):
@@ -50,6 +50,7 @@ Achados da auditoria (com evidência):
 | P-01 | Produto | Agenda sem conflito, agendamento online, CRM leve, pagamentos manuais e indicadores | Alta | [CONCLUÍDO] | Testado: `npx vitest run` 21 arquivos, 319 testes passam (05/11/2026); em produção: deploy `bss` com sucesso. Não validado com cliente real | 05/11/2026 |
 | P-02 | Produto | Motor de mensagens e conversa por WhatsApp (código) | Alta | [CONCLUÍDO] | Testes `automacoes-*`, `whatsapp.test.ts` passam com a Meta simulada. Validação real em P-05 | 05/11/2026 |
 | P-03 | Produto | WhatsApp por salão: conexão assistida, token criptografado, área `/admin/whatsapp` | Alta | [CONCLUÍDO] | PRs 66, 67 e 70 mesclados; deploy com sucesso; `whatsapp-por-salao.test.ts` passa. Faltam variáveis de produção (P-04) | 05/11/2026 |
+| P-07 | Produto | Importação de clientes por planilha (CSV) | Alta | [CONCLUÍDO] | PR 73 mesclado em 06/11/2026; deploy `bss` e `studio-manoella-lopes` com sucesso no commit 013a0d5 (o build aplica as migrações e compila a rota). Testes: `tests/unit/client-import.test.ts` (19) e `tests/integration/importar-clientes.test.ts` (9); fluxo rodado no navegador em desenvolvimento. Não pude abrir o app em produção daqui (rede bloqueada); falta validar com uma planilha real | 06/11/2026 |
 | V-01 | Validação | Roteiro de entrevistas | Alta | [CONCLUÍDO] | `docs/lancamento/ROTEIRO-ENTREVISTAS.md` (55 linhas) | 05/11/2026 |
 | V-02 | Validação | Questionário de dores (8 perguntas) | Alta | [CONCLUÍDO] | `docs/lancamento/QUESTIONARIO-DORES.md` (8 perguntas, tabela conferida) | 05/11/2026 |
 | V-03 | Validação | Planilha de prospecção e placar semanal | Média | [CONCLUÍDO] | `docs/lancamento/PLANILHA-PROSPECCAO.csv` (19 colunas) e `PLACAR-SEMANAL.csv` (10 colunas) lidos por script | 05/11/2026 |
@@ -60,7 +61,6 @@ Achados da auditoria (com evidência):
 | ID | Área | Descrição | Prioridade | Status | Dependências | Evidência | Próxima ação |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | P-11 | Produto | Checklist de ativação e alertas de baixo uso | Média | [EM ANDAMENTO] | P-12 | Dicas e eventos de onboarding existem; não há alerta de baixo uso nem lista de contas em risco | Definir o evento de ativação no banco e a lista diária de contas em risco |
-| P-07 | Produto | Importação de clientes por planilha (CSV) | Alta | [EM ANDAMENTO] | P-10 não é necessária | Implementado e testado: `src/domain/client-import.ts`, `src/server/modules/client-import.ts`, tela em Clientes, rota do modelo; `tests/unit/client-import.test.ts` (19) e `tests/integration/importar-clientes.test.ts` (9) passam; fluxo rodado no navegador (prévia, gravação e segunda importação sem duplicar). Regras: entram sem consentimento de marketing; quem já existe não é alterada; telefone, e-mail ou data inválidos entram como aviso | Mesclar o PR, confirmar o deploy e então marcar [CONCLUÍDO]. Validação real: testar com a planilha de um beta |
 | P-14 | Produto | Exportação completa de dados (LGPD) | Média | [EM ANDAMENTO] | L-03 | Exportação CSV de clientes existe (`/app/clientes/exportar`); solicitação de exclusão anotada; falta exportar agenda e financeiro | Incluir agenda e pagamentos na exportação |
 | C-04 | Comercial | Definir quem atende o suporte e em quais horários | Média | [EM ANDAMENTO] | nenhuma | Resposta de 05/11/2026: o suporte será **Pedro Chaves**. Horários ainda não informados | Você informar os dias e horários de atendimento |
 | V-06 | Validação | Conta de demonstração em produção | Alta | [EM ANDAMENTO] | P-04 | Script `seed-vitrine` e módulo `vitrine` existem; a variável de criação está desativada, e a existência da conta em produção não foi verificada | Você confirmar o login da conta de demonstração em produção, ou eu preparar a recriação com aprovação |
@@ -119,3 +119,4 @@ Tarefa que eu executo sozinha na próxima sessão: **P-10, campo "como conheceu"
 | 05/11/2026 | V-01, V-02, V-03, M-01: kit de validação e abordagem | Concluídas; arquivos criados e conferidos (colunas do CSV, linhas dos documentos) | `docs/lancamento/README.md`, `ROTEIRO-ENTREVISTAS.md`, `MENSAGENS-ABORDAGEM.md`, `QUESTIONARIO-DORES.md`, `PLANILHA-PROSPECCAO.csv`, `PLACAR-SEMANAL.csv` | Envio real de mensagens e publicação do questionário dependem de aprovação |
 | 05/11/2026 | P-07: importação de clientes por planilha | Implementada e testada; aguardando merge para virar [CONCLUÍDO]. Verificação do estado: P-04 e P-06 continuam abertos (sem as variáveis na Vercel; log do agendador ainda diz "CRON_SECRET não configurado" às 22:26 UTC) | `src/domain/client-import.ts`, `src/server/modules/client-import.ts`, `src/app/app/clientes/importar-actions.ts`, `src/app/app/clientes/import-clients-button.tsx`, `src/app/app/clientes/importar/modelo/route.ts`, `src/app/app/clientes/page.tsx`, 2 arquivos de teste | O papel do aplicativo não escreve em `product_events`: o evento `clients.imported` é gravado pelo sistema na ação |
 | 05/11/2026 | Respostas do dono: cidade Rio de Janeiro; suporte Pedro Chaves | V-04 destravada (guia pronto); C-04 em andamento (faltam horários) | `docs/lancamento/GUIA-LISTA-RIO.md`, `docs/lancamento/README.md`, `LAUNCH_TRACKER.md` | A lista real exige acesso ao Instagram, que não tenho aqui |
+| 06/11/2026 | Verificação do merge dos PRs 73 e 74 | PR 73 (importação) na `main` e com deploy ok: P-07 concluída. O PR 74 foi mesclado na branch do PR 73 depois do merge deste, então **não chegou na `main`**; as mudanças (guia do Rio, Pedro Chaves, C-04) voltam neste PR | `LAUNCH_TRACKER.md`, `docs/lancamento/GUIA-LISTA-RIO.md`, `docs/lancamento/README.md` | Lição: mesclar PRs empilhados na ordem e conferir se o segundo chegou na `main` |
