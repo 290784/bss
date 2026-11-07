@@ -9,6 +9,7 @@ import { DemoBanner } from "@/components/ui/primitives";
 import { EMAIL_VITRINE } from "@/server/modules/vitrine";
 import { ToastProvider } from "@/components/ui/toast";
 import Link from "next/link";
+import { InstallApp } from "@/components/install-app";
 
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
   const ctx = await requireAppContext();
@@ -37,7 +38,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
           id: n.id, title: n.title, body: n.body, link: n.link, read: n.read_at !== null,
           when: formatDistanceToNow(n.created_at, { addSuffix: true, locale: ptBR }),
         }))}
-        banner={banner}
+        banner={<>{banner}<InstallApp /></>}
       >
         {children}
       </AppShell>
