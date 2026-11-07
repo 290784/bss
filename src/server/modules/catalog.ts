@@ -156,6 +156,7 @@ export const SERVICE_PRESETS: Record<string, { name: string; category: string; p
   massage: [
     { name: "Massagem relaxante", category: "Massoterapia", price: 13000, minutes: 60, buffer: 15, returnDays: 15 },
     { name: "Massagem modeladora", category: "Massoterapia", price: 12000, minutes: 60, buffer: 15, returnDays: 7 },
+    { name: "Quick massage", category: "Massoterapia", price: 4500, minutes: 20, buffer: 5, returnDays: 7 },
   ],
 };
 
@@ -165,6 +166,7 @@ export const BUSINESS_TYPES: { id: string; label: string; presets: string[] }[] 
   { id: "nails", label: "Manicure / nail designer", presets: ["nails"] },
   { id: "lashes", label: "Lash designer", presets: ["lashes"] },
   { id: "brows", label: "Designer de sobrancelhas", presets: ["brows"] },
+  { id: "esthetician", label: "Esteticista (massagem, quick massage...)", presets: ["aesthetics", "massage"] },
   { id: "aesthetics", label: "Estética facial e corporal", presets: ["aesthetics"] },
   { id: "makeup", label: "Maquiadora", presets: ["makeup"] },
   { id: "waxing", label: "Depilação", presets: ["waxing"] },
