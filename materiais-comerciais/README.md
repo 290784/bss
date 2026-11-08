@@ -10,6 +10,7 @@ Tudo o que já foi criado para validar, abordar e comunicar, derivado da estrat�
 | `PLANILHA-PROSPECCAO.csv` | Modelo para registrar cada contato (abrir no Google Sheets ou Excel) |
 | `GUIA-LISTA-RIO.md` | Como montar a lista de 100 perfis no Rio de Janeiro, por região, com busca e cuidados de LGPD |
 | `PLACAR-SEMANAL.csv` | Placar de segunda-feira com os números da semana |
+| `PLANILHA-FINANCEIRA.xlsx` | MRR, CAC, churn, LTV, caixa e fôlego, mês a mês (preencha as células azuis; o gerador está em `financeiro/gerar.py`) |
 | `CALENDARIO-CONTEUDO-30-DIAS.md` | 30 dias de Reels, carrosséis, Stories e posts, com gancho, ideia, CTA e objetivo, mais exemplos prontos |
 | `visual/` | Peças visuais prontas (16 imagens PNG: foto de perfil, carrossel, post, Stories e capas de Reels). Abra `visual/visualizar.html` para ver tudo em uma galeria; há também a fonte para editar e o `LEIA-ME.md` |
 | `video/` | Roteiro (`ROTEIRO.md`) e o gravador do vídeo de apresentação, que usa o próprio app; o MP4 é gerado e não fica no git |

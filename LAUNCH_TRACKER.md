@@ -11,7 +11,7 @@ Regra: nenhuma tarefa vira [CONCLUÍDO] sem evidência verificada. Níveis de ve
 - Previsão de lançamento oficial: 01/02/2027 (primeira cobrança)
 - Foco geográfico: Rio de Janeiro (capital). Suporte: Pedro Chaves (horários a definir)
 - Objetivo atual: fechar o mínimo cobrável (WhatsApp real, cobrança, e-mail, importação) e começar as entrevistas de validação
-- Progresso geral: **33% (15 de 45 tarefas verificadas como concluídas)**
+- Progresso geral: **36% (16 de 45 tarefas verificadas como concluídas)**
 - Última atualização: 06/11/2026
 
 ## Dashboard de progresso
@@ -21,9 +21,9 @@ Regra: nenhuma tarefa vira [CONCLUÍDO] sem evidência verificada. Níveis de ve
 | Validação | 4 | 4 | 1 | 0 | 0 |
 | Marketing | 5 | 5 | 0 | 0 | 0 |
 | Comercial | 0 | 2 | 1 | 0 | 1 |
-| Financeiro | 0 | 1 | 0 | 0 | 3 |
+| Financeiro | 1 | 0 | 0 | 0 | 3 |
 | Legal | 0 | 4 | 0 | 0 | 0 |
-| **Total** | **15** | **19** | **4** | **2** | **5** |
+| **Total** | **16** | **18** | **4** | **2** | **5** |
 
 ## Diagnóstico real do produto (auditoria de 05/11/2026)
 | Área | Implementado | Testado | Em produção | Validado em ambiente real |
@@ -88,7 +88,7 @@ Achados da auditoria (com evidência):
 | M-08 | Marketing | [SUGESTÃO] Peças visuais dos demais dias e capas de destaques do Instagram | Média | [PENDENTE] | M-03 | Só os dias 1, 2, 4, 11 e 12 têm arte | Definir a ordem com você |
 | C-02 | Comercial | Página de preços e oferta de fundadora | Alta | [PENDENTE] | C-01 | Planos no código ainda mostram "preço em definição" | Atualizar a página depois da decisão |
 | C-03 | Comercial | Roteiro da demonstração de 15 min e da chamada de configuração de 20 min | Média | [PENDENTE] [SUGESTÃO] | nenhuma | Citados na estratégia, sem roteiro escrito | Redigir os dois roteiros |
-| F-04 | Financeiro | Planilha de acompanhamento (MRR, CAC, caixa) | Média | [PENDENTE] | P-12 | Nenhuma | Criar modelo a partir da seção 12 |
+| F-04 | Financeiro | Planilha de acompanhamento (MRR, CAC, caixa) | Média | [CONCLUÍDO] | P-12 | `materiais-comerciais/PLANILHA-FINANCEIRA.xlsx` (abas Leia-me, Premissas e Mensal): MRR, receita líquida, custos, resultado, caixa, churn, CAC, LTV, LTV/CAC, payback e fôlego, 12 meses; fórmulas conferidas à mão com números de teste (mês 1: 8 pagantes, MRR 632, CAC 100, fôlego 9,3) e sem erro em branco | Preencher as premissas depois de C-01 (preço), F-01 (taxa do provedor) e F-03 (orçamento); impostos ficam de fora (falar com a contabilidade) |
 | L-01 | Legal | Consultar o INPI sobre o nome "Gê" | Alta | [PENDENTE] | nenhuma | Nenhuma | Você ou um advogado consultarem |
 | L-02 | Legal | Abrir a empresa e definir o enquadramento fiscal com contador | Alta | [PENDENTE] | nenhuma | Nenhuma | Você falar com um contador; necessário para verificar a conta na Meta e emitir nota |
 | L-03 | Legal | Revisão jurídica de Termos, Privacidade e termo de tratamento de dados (operadora) | Média | [PENDENTE] | nenhuma | Páginas existem (27 e 35 linhas), sem revisão | Contratar revisão jurídica (precisa de sua aprovação) |
@@ -114,7 +114,7 @@ Achados da auditoria (com evidência):
 2. **V-04 e V-05: começar as entrevistas no Rio.** Monte os 100 perfis com o `GUIA-LISTA-RIO.md` e aprove o envio das primeiras 20 mensagens.
 3. **F-01 e F-02: escolher cobrança e e-mail.** São os últimos bloqueadores técnicos antes de cobrar.
 
-Tarefa que eu executo sozinha na próxima sessão: **M-08 [SUGESTÃO], artes dos próximos dias do calendário de conteúdo**, ou, se você preferir, **F-04** (planilha de MRR, CAC e caixa, agora que a P-12 existe). Diga qual.
+Tarefa que eu executo sozinha na próxima sessão: **M-08 [SUGESTÃO], artes dos próximos dias do calendário de conteúdo**. As demais pendentes dependem de você (aprovações, preço, perfis do Rio) ou de provedor escolhido.
 
 ## Histórico de execução
 | Data | Tarefa | Resultado | Arquivos alterados | Pendências encontradas |
@@ -131,3 +131,4 @@ Tarefa que eu executo sozinha na próxima sessão: **M-08 [SUGESTÃO], artes dos
 | 08/11/2026 | P-10: campo "como conheceu" e código por canal | Concluída e testada; progresso 29% (13 de 45). No mesmo período, a pedido do dono: opção Esteticista e Quick massage no cadastro (PR 81), app instalável PWA (PR 82) e abertura do painel com avisos em vidro escuro (PR 83), todos mesclados e com deploy verde | `src/domain/canal.ts`, `src/components/canal-capture.tsx`, `src/app/(auth)/*`, `tests/unit/canal.test.ts`, `materiais-comerciais/CODIGOS-DE-CANAL.md` | Os links já divulgados não têm código (só valem os novos); o painel de leitura é a P-12; PWA e abertura não foram testados em aparelho real |
 | 08/11/2026 | V-07: lista de espera na landing | Concluída e testada; progresso 31% (14 de 45). Seção com 3 campos e aceite de contato, botão "Quero testar" no topo, página da equipe e evento `waitlist.joined` com o canal | `db/migrations/0007_lista_espera.sql`, `src/app/lista-espera-actions.ts`, `src/app/waitlist-form.tsx`, `src/app/page.tsx`, `src/app/admin/lista-de-espera/page.tsx` | Guarda nome e WhatsApp de pessoas reais: o aceite está no formulário, mas a política de privacidade deve citar a lista (revisão jurídica sua, tarefa L); a página da equipe depende do acesso de administradora (P-04); prévia do `bss` na Vercel segue falhando por provisionamento |
 | 08/11/2026 | P-12: painel do fundador | Concluída e conferida com dados locais; progresso 33% (15 de 45). Página `/admin/painel` e consultas testadas (cadastros por canal, funil, ativação, lista de espera, reservas, assinaturas, contas em risco) | `src/server/modules/founder-kpis.ts`, `src/app/admin/painel/page.tsx`, `tests/integration/founder-kpis.test.ts` | Só abre depois da P-04; sem dados reais ainda (hoje só há cadastros de teste); "ativação" definida como 1 atendimento em até 7 dias, ajustável |
+| 08/11/2026 | F-04: planilha financeira | Concluída; progresso 36% (16 de 45). Planilha com premissas e 12 meses (MRR, CAC, churn, LTV, payback, caixa e fôlego); fórmulas conferidas à mão com um cenário de teste e a versão em branco sem erros | `materiais-comerciais/PLANILHA-FINANCEIRA.xlsx`, `materiais-comerciais/financeiro/gerar.py`, `materiais-comerciais/README.md` | O texto da seção 12 da estratégia não estava mais disponível para mim: montei pelas métricas padrão (MRR, CAC, churn, LTV, caixa); se a seção pedia outra coisa, me diga; células de preço e taxa em branco até C-01 e F-01 |
