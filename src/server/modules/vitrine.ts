@@ -77,7 +77,7 @@ const SERVICOS: Record<"cabelo" | "unhas" | "olhar", Svc[]> = {
 
 /** Equipe: a dona (cabelo) e duas profissionais; peso = participação nos atendimentos. */
 const EQUIPE = [
-  { nome: "Bia Monteiro", area: "cabelo" as const, cor: "#7c3aed", peso: 0.38, dias: [2, 3, 4, 5, 6] },
+  { nome: "Bibiu", area: "cabelo" as const, cor: "#7c3aed", peso: 0.38, dias: [2, 3, 4, 5, 6] },
   { nome: "Carla Souza", area: "unhas" as const, cor: "#c2410c", peso: 0.37, dias: [2, 3, 4, 5, 6], especialidade: "Nail designer" },
   { nome: "Dani Rocha", area: "olhar" as const, cor: "#0f766e", peso: 0.25, dias: [3, 4, 5, 6], especialidade: "Lash & sobrancelhas" },
 ];
@@ -179,7 +179,7 @@ export async function criarContaVitrine(sql: Sql, opts: { password: string; rese
   }
 
   const [user] = await sql<{ id: string }[]>`
-    insert into app.users (email, password_hash, full_name) values (${EMAIL}, ${await hashPassword(password)}, 'Bia Monteiro') returning id`;
+    insert into app.users (email, password_hash, full_name) values (${EMAIL}, ${await hashPassword(password)}, 'Bibiu') returning id`;
   const org = await withSystem((tx) => createOrganizationForUser(tx, user!.id,
     { name: "Salão Lumi", businessType: "salon", attends: true, ownerDisplayName: EQUIPE[0]!.nome, timezone: TZ, phone: "(11) 90000-0000" },
     { isDemo: true }), sql);
