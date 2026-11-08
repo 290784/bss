@@ -17,13 +17,13 @@ Regra: nenhuma tarefa vira [CONCLUÍDO] sem evidência verificada. Níveis de ve
 ## Dashboard de progresso
 | Área | Concluídas | Pendentes | Em andamento | Bloqueadas | Aguardando minha aprovação |
 | --- | --- | --- | --- | --- | --- |
-| Produto | 8 | 3 | 0 | 2 | 1 |
+| Produto | 8 | 2 | 1 | 2 | 1 |
 | Validação | 4 | 4 | 1 | 0 | 0 |
 | Marketing | 6 | 3 | 1 | 0 | 0 |
 | Comercial | 1 | 1 | 1 | 0 | 1 |
 | Financeiro | 1 | 0 | 0 | 0 | 3 |
 | Legal | 0 | 4 | 0 | 0 | 0 |
-| **Total** | **20** | **15** | **3** | **2** | **5** |
+| **Total** | **20** | **14** | **4** | **2** | **5** |
 
 ## Diagnóstico real do produto (auditoria de 05/11/2026)
 | Área | Implementado | Testado | Em produção | Validado em ambiente real |
@@ -71,7 +71,7 @@ Achados da auditoria (com evidência):
 ## Tarefas pendentes
 | ID | Área | Descrição | Prioridade | Status | Dependências | Evidência | Próxima ação |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| P-08 | Produto | E-mail transacional, verificação de e-mail e recuperação de senha | Alta | [PENDENTE] | F-02 | Sem biblioteca nem rota de e-mail | Depois da escolha do provedor |
+| P-08 | Produto | E-mail transacional, verificação de e-mail e recuperação de senha | Alta | [EM ANDAMENTO] | F-02 | Código pronto e testado: **esqueci minha senha** (`/esqueci-a-senha`, `/redefinir-senha`), **confirmação de e-mail** no cadastro (`/verificar-email`), tokens de uso único só com hash no banco, validade de 1 h (senha) e 7 dias (e-mail), resposta igual exista a conta ou não, limite de tentativas, redefinir derruba as sessões abertas; provedor Resend pronto para ligar por `RESEND_API_KEY` e `EMAIL_FROM`; 6 testes novos, suíte completa com 368 passando e fluxo conferido de ponta a ponta no servidor de desenvolvimento | Falta a **F-02** (você escolher e criar a conta do provedor e do domínio de envio); até lá, em produção, a tela avisa que a recuperação por e-mail ainda não está ativa e nada é enviado |
 | P-09 | Produto | Cobrança recorrente da assinatura (Pix e cartão) | Alta | [PENDENTE] | F-01 | Sem integração com provedor | Depois da escolha do provedor |
 | P-10 | Produto | Campo "como conheceu" e código por canal no cadastro | Média | [CONCLUÍDO] | nenhuma | Cadastro com lista "Como você conheceu a Gê?" e código `?c=` do primeiro link; testado de ponta a ponta: evento `signup.completed` gravou `{"canal":"ig-bio","conheceu":"instagram"}`; 177 testes unitários passam | Usar os códigos de `materiais-comerciais/CODIGOS-DE-CANAL.md` em todo link divulgado |
 | P-12 | Produto | Consultas do painel do fundador (KPIs) | Média | [CONCLUÍDO] | P-10 | Página `/admin/painel` (só administradora) com cadastros por canal e "como conheceu", funil de 30 dias (cadastro, negócio, onboarding, ativação em 7 dias), lista de espera, reservas online, assinaturas e contas em risco; consultas em `founder-kpis.ts`; 2 testes de integração passam; conferida com dados locais | Abre só depois de P-04; F-04 (MRR e CAC) usa estes números; P-11 pode usar a lista de contas em risco |
@@ -136,3 +136,4 @@ O que destrava o lançamento está descrito, passo a passo, em `materiais-comerc
 | 08/11/2026 | Adiantamento do que não depende de aprovação (pedido do dono): M-03, C-03 e guia de decisões | M-03 e C-03 concluídas (roteiros dos 12 primeiros dias; demonstração e configuração); `DECISOES-PARA-DESTRAVAR.md` com o passo a passo de P-04, P-06, V-04/V-05, C-01, F-01 a F-03 e jurídico; progresso 40% (18 de 45) | `materiais-comerciais/ROTEIROS-*.md`, `DECISOES-PARA-DESTRAVAR.md`, `LAUNCH_TRACKER.md` | Nada publicado nem enviado; dia 5 e dia 9 dependem de fatos reais; tarifas de provedores não verificadas (sem acesso às páginas oficiais); parágrafo de privacidade é só sugestão para revisão |
 | 08/11/2026 | P-14: exportação completa de dados | Concluída e testada; progresso 42% (19 de 45). CSV de agenda e de pagamentos, por período, com links nas configurações | `src/server/csv.ts`, `src/server/modules/exports.ts`, rotas `agenda/exportar` e `relatorios/exportar-pagamentos`, `tests/integration/exportacao.test.ts` | Limite de 20 mil linhas por arquivo; não exporta ainda serviços, equipe nem notas internas; revisão jurídica (L-03) pendente |
 | 08/11/2026 | P-11: alertas de baixo uso | Concluída e testada; progresso 44% (20 de 45). Dica de baixo uso na própria conta e lista de contas que pararam no painel do fundador | `src/server/modules/dicas.ts`, `src/server/modules/founder-kpis.ts`, `src/app/admin/painel/page.tsx`, testes de integração | Só alerta; não envia nada; limites de 10 e 14 dias são hipóteses a ajustar com os primeiros dados reais |
+| 08/11/2026 | P-08: e-mail transacional (parte de código) | Em andamento: recuperação de senha e confirmação de e-mail prontas e testadas, aguardando o provedor (F-02). Progresso segue 44% (20 de 45) | `src/server/email.ts`, `email-templates.ts`, `modules/email-tokens.ts`, `src/app/(auth)/*`, `db/migrations/0010_email_tokens.sql`, `docs/DEPLOY.md`, `tests/integration/email-tokens.test.ts` | Nenhum e-mail real foi enviado; depende de F-02 e de um domínio de envio verificado (SPF e DKIM); o cadastro ainda não bloqueia quem não confirmou o e-mail |
