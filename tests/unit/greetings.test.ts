@@ -37,3 +37,21 @@ describe("saudações do painel", () => {
     expect([...seen].sort()).toEqual([0, 1, 2, 4, 5, 6, 7]);
   });
 });
+
+import { periodoDoDia, saudacaoDoHorario } from "@/domain/greetings";
+
+describe("saudação pelo horário local", () => {
+  it("divide o dia em manhã, tarde e noite", () => {
+    expect([0, 4, 5, 11, 12, 17, 18, 23].map(periodoDoDia)).toEqual(["noite", "noite", "dia", "dia", "tarde", "tarde", "noite", "noite"]);
+  });
+  it("troca só o 'Bom dia' pela parte do dia, mantendo o resto da frase", () => {
+    expect(saudacaoDoHorario("Bom dia, visionária! ✨", 9)).toBe("Bom dia, visionária! ✨");
+    expect(saudacaoDoHorario("Bom dia, visionária! ✨", 14)).toBe("Boa tarde, visionária! ✨");
+    expect(saudacaoDoHorario("Bom dia, patroa! Hoje é dia de fazer acontecer!", 21)).toBe("Boa noite, patroa! Hoje é dia de fazer acontecer!");
+  });
+  it("preserva o alongamento e não mexe em frases sem 'Bom dia'", () => {
+    expect(saudacaoDoHorario("Bom diaa! Mais um dia pra crescer!", 15)).toBe("Boa tardee! Mais um dia pra crescer!");
+    expect(saudacaoDoHorario("Bom diaa! Mais um dia pra crescer!", 22)).toBe("Boa noitee! Mais um dia pra crescer!");
+    expect(saudacaoDoHorario("Fala, poderosa! Seu negócio não para!", 22)).toBe("Fala, poderosa! Seu negócio não para!");
+  });
+});

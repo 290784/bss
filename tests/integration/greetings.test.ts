@@ -123,4 +123,16 @@ describe("isolamento entre usuárias e empresas", () => {
     await expect(asTenant(sql, A.ownerId, A.orgId, (tx) => tx`update app.user_greetings set greeting_index = 0 where user_id = ${A.ownerId}`)).rejects.toThrow();
     await expect(asTenant(sql, A.ownerId, A.orgId, (tx) => tx`delete from app.user_greetings where user_id = ${A.ownerId}`)).rejects.toThrow();
   });
+
+  it("o 'Bom dia' segue a hora de Brasília, não a do servidor (UTC)", async () => {
+    const u = await addMember(sql, A.orgId, "manager");
+    // Mesma frase no mesmo dia (sorteio fixo): 09h de Brasília (12h UTC), 15h (18h UTC) e 20h (23h UTC).
+    const manha = await greet(A, u, at("2027-05-10T12:00:00Z"), "America/Sao_Paulo", () => 0);
+    const tarde = await greet(A, u, at("2027-05-10T18:00:00Z"), "America/Sao_Paulo", () => 0);
+    const noite = await greet(A, u, at("2027-05-10T23:00:00Z"), "America/Sao_Paulo", () => 0);
+    expect([manha.index, tarde.index, noite.index]).toEqual([manha.index, manha.index, manha.index]);
+    expect(manha.text).toBe("Bom dia, visionária! ✨");
+    expect(tarde.text).toBe("Boa tarde, visionária! ✨");
+    expect(noite.text).toBe("Boa noite, visionária! ✨");
+  });
 });

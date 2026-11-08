@@ -1,6 +1,6 @@
 import type { Tx } from "@/server/db";
-import { GREETINGS, pickGreetingIndex } from "@/domain/greetings";
-import { localDateKey } from "@/lib/time";
+import { GREETINGS, pickGreetingIndex, saudacaoDoHorario } from "@/domain/greetings";
+import { localDateKey, localTime } from "@/lib/time";
 
 export type DailyGreeting = { text: string; index: number; date: string };
 
@@ -14,9 +14,12 @@ export async function dailyGreeting(
   who: { organizationId: string; userId: string; timeZone: string },
   opts: { now?: Date; random?: () => number } = {},
 ): Promise<DailyGreeting> {
-  const date = localDateKey(opts.now ?? new Date(), who.timeZone);
+  const now = opts.now ?? new Date();
+  const date = localDateKey(now, who.timeZone);
+  // "Bom dia", "Boa tarde" ou "Boa noite" pela hora do fuso da empresa (Brasília, por padrão), não pela do servidor.
+  const hour = Number(localTime(now, who.timeZone).slice(0, 2));
   const existing = await readToday(tx, who, date);
-  if (existing !== null) return result(existing, date);
+  if (existing !== null) return result(existing, date, hour);
 
   // Evita repetir a última saudação que ela viu (a do dia anterior, quando abriu o painel naquele dia).
   const [prev] = await tx<{ greeting_index: number }[]>`
@@ -31,7 +34,7 @@ export async function dailyGreeting(
     values (${who.organizationId}, ${who.userId}, ${date}::date, ${chosen})
     on conflict (organization_id, user_id, local_date) do nothing
     returning greeting_index`;
-  return result(inserted?.greeting_index ?? (await readToday(tx, who, date)) ?? chosen, date);
+  return result(inserted?.greeting_index ?? (await readToday(tx, who, date)) ?? chosen, date, hour);
 }
 
 async function readToday(tx: Tx, who: { organizationId: string; userId: string }, date: string) {
@@ -41,4 +44,4 @@ async function readToday(tx: Tx, who: { organizationId: string; userId: string }
   return row?.greeting_index ?? null;
 }
 
-const result = (index: number, date: string): DailyGreeting => ({ text: GREETINGS[index]!, index, date });
+const result = (index: number, date: string, hour: number): DailyGreeting => ({ text: saudacaoDoHorario(GREETINGS[index]!, hour), index, date });

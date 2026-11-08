@@ -22,3 +22,21 @@ export function pickGreetingIndex(previous: number | null, random: () => number 
   const r = Math.min(Math.max(random(), 0), 0.999999999);
   return pool[Math.floor(r * pool.length)]!;
 }
+
+/** Parte do dia no horário local: 5h às 11h59 manhã, 12h às 17h59 tarde, o resto noite (madrugada inclusa). */
+export function periodoDoDia(hour: number): "dia" | "tarde" | "noite" {
+  return hour >= 5 && hour < 12 ? "dia" : hour >= 12 && hour < 18 ? "tarde" : "noite";
+}
+
+/**
+ * Ajusta o "Bom dia" da frase para a hora local (Bom dia, Boa tarde ou Boa noite). As frases gravadas no banco
+ * continuam as mesmas; só o texto mostrado muda. O alongamento ("Bom diaa") vira "Boa tardee" / "Boa noitee".
+ * Frases sem "Bom dia" (como "Fala, poderosa!") ficam como estão.
+ */
+export function saudacaoDoHorario(frase: string, hour: number): string {
+  const p = periodoDoDia(hour);
+  return frase.replace(/^Bom dia(a*)/, (_, extra: string) => {
+    const base = p === "dia" ? "Bom dia" : p === "tarde" ? "Boa tarde" : "Boa noite";
+    return base + base.slice(-1).repeat(extra.length);
+  });
+}
