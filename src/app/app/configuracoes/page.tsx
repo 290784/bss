@@ -189,7 +189,7 @@ export default async function SettingsPage({ searchParams }: { searchParams: Pro
         </div>
       )}
 
-      {tab === "conta" && <div className="max-w-2xl"><DangerZone userId={ctx.user.userId} /></div>}
+      {tab === "conta" && <div className="max-w-2xl"><DangerZone userId={ctx.user.userId} canExportAgenda={can(ctx.role, "agenda.manage")} canExportFinance={can(ctx.role, "finance.view")} /></div>}
     </div>
   );
 }
