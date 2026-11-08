@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Allura, Nunito, Playfair_Display } from "next/font/google";
 import "./globals.css";
+import { PwaRegister } from "@/components/pwa-register";
 import { TouchActive } from "@/components/ui/touch-active";
 
 // Nunito (texto e interface: arredondada, macia e legível), Playfair Display (títulos do app e da landing:
@@ -13,6 +14,9 @@ export const metadata: Metadata = {
   title: { default: "Gê — gestão de beleza que brilha", template: "%s · Gê" },
   description: "Agenda, clientes, agendamento online e indicadores para profissionais e negócios de beleza. Menos tempo administrando, menos horários perdidos e mais clientes voltando.",
   metadataBase: new URL(process.env.APP_URL ?? "http://localhost:3000"),
+  applicationName: "Gê",
+  appleWebApp: { capable: true, title: "Gê", statusBarStyle: "default" },
+  icons: { icon: [{ url: "/icon-192.png", sizes: "192x192", type: "image/png" }, { url: "/icon-512.png", sizes: "512x512", type: "image/png" }], apple: "/apple-touch-icon.png" },
 };
 
 export const viewport: Viewport = {
@@ -23,7 +27,7 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="pt-BR" data-theme="light" className={`${nunito.variable} ${playfair.variable} ${allura.variable}`} suppressHydrationWarning>
-      <body className="min-h-dvh"><TouchActive />{children}</body>
+      <body className="min-h-dvh"><TouchActive /><PwaRegister />{children}</body>
     </html>
   );
 }
