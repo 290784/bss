@@ -14,6 +14,8 @@ export type FounderKpis = {
   assinaturas: { status: string; contas: number }[];
   /** Contas (não demonstração) com 3 a 30 dias de cadastro e nenhum atendimento criado até agora. */
   contasEmRisco: { orgId: string; nome: string; email: string | null; diasDesdeCadastro: number }[];
+  /** Contas (não demonstração) que já usaram a agenda, mas faz 14 dias ou mais que nenhum horário novo foi criado. */
+  contasParadas: { orgId: string; nome: string; email: string | null; diasParada: number }[];
 };
 
 const n = (v: unknown) => Number(v ?? 0);
@@ -67,6 +69,14 @@ export async function loadFounderKpis(tx: Tx, now = new Date()): Promise<Founder
       and not exists (select 1 from app.appointments a where a.organization_id = o.id)
     order by o.created_at desc limit 20`;
 
+  const paradas = await tx<{ id: string; name: string; email: string | null; ultimo: Date }[]>`
+    select o.id, o.name, u.ultimo,
+      (select us.email from app.memberships m join app.users us on us.id = m.user_id where m.organization_id = o.id and m.role = 'owner' and m.status = 'active' order by m.created_at limit 1) as email
+    from app.organizations o
+    join (select organization_id, max(created_at) as ultimo from app.appointments where status <> 'cancelled' group by organization_id) u on u.organization_id = o.id
+    where not o.is_demo and u.ultimo < ${new Date(now.getTime() - 14 * 86_400_000)}
+    order by u.ultimo desc limit 20`;
+
   return {
     cadastros: { total: n(c?.total), ultimos7: n(c?.u7), ultimos30: n(c?.u30) },
     porCanal,
@@ -74,6 +84,7 @@ export async function loadFounderKpis(tx: Tx, now = new Date()): Promise<Founder
     listaEspera: { total: n(w?.total), ultimos7: n(w?.u7), porTipo },
     reservasOnline: { ultimos7: n(r?.u7), ultimos30: n(r?.u30) },
     assinaturas,
+    contasParadas: paradas.map((o) => ({ orgId: o.id, nome: o.name, email: o.email, diasParada: Math.floor((now.getTime() - o.ultimo.getTime()) / 86_400_000) })),
     contasEmRisco: risco.map((o) => ({ orgId: o.id, nome: o.name, email: o.email, diasDesdeCadastro: Math.floor((now.getTime() - o.created_at.getTime()) / 86_400_000) })),
   };
 }

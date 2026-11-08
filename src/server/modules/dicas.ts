@@ -408,6 +408,22 @@ export async function loadDicas(tx: Tx, orgId: string, timeZone: string, opts: {
     });
   }
 
+  // Baixo uso: já teve atendimentos, mas faz 10 dias ou mais que nenhum horário novo foi marcado (aviso para ela, sem dados de ninguém).
+  const [uso] = await tx<{ total: number; recentes: number; ultimo: Date | null }[]>`
+    select count(*)::int as total, count(*) filter (where created_at >= ${now}::timestamptz - interval '10 days')::int as recentes, max(created_at) as ultimo
+    from app.appointments where organization_id = ${orgId} and status <> 'cancelled'`;
+  if (uso && uso.total > 0 && uso.recentes === 0 && uso.ultimo) {
+    const dias = Math.floor((now.getTime() - uso.ultimo.getTime()) / 86_400_000);
+    dicas.push({
+      id: `baixo-uso-${todayKey.slice(0, 7)}`,
+      kind: "avisos",
+      title: `Faz ${dias} dias que nenhum horário novo foi marcado`,
+      detail: "A agenda ficou parada. Um empurrãozinho resolve: manda o seu link de agendamento no status do WhatsApp e no Instagram, e chama de volta quem já passou do tempo de voltar. 💛",
+      action: { label: "Marcar um horário", href: "/app/agenda" },
+      copy: { label: "Texto para o status", text: `Agenda aberta! Escolha seu serviço e o melhor horário pelo link: ${opts.bookingUrl}` },
+    });
+  }
+
   // ───────── Novas dicas ─────────
 
   // Horários livres ainda hoje: dá tempo de encaixar alguém (status do WhatsApp, lista de espera).
@@ -506,7 +522,7 @@ export async function loadDicas(tx: Tx, orgId: string, timeZone: string, opts: {
   const PRIORITY: [string, number][] = [
     ["confirmar-", 95], ["risco-falta-", 92], ["livres-hoje-", 90], ["aniversario-", 78], ["retorno-", 80], ["vip-sumida-", 76],
     ["segunda-visita-", 72], ["dia-fraco-", 68], ["receber-", 62], ["estoque-", 58], ["boas-vindas-", 55], ["fidelidade-", 50],
-    ["combo-", 46], ["upsell-", 44], ["reajuste-", 42], ["vips-", 36], ["cfg-link-", 34], ["cfg-retorno-", 26], ["cfg-aniversario-", 22], ["inventario-", 20],
+    ["combo-", 46], ["upsell-", 44], ["reajuste-", 42], ["vips-", 36], ["baixo-uso-", 66], ["cfg-link-", 34], ["cfg-retorno-", 26], ["cfg-aniversario-", 22], ["inventario-", 20],
   ];
   return dicas.map((d) => {
     let p = PRIORITY.find(([k]) => d.id.startsWith(k))?.[1] ?? 30;

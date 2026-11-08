@@ -11,19 +11,19 @@ Regra: nenhuma tarefa vira [CONCLUÍDO] sem evidência verificada. Níveis de ve
 - Previsão de lançamento oficial: 01/02/2027 (primeira cobrança)
 - Foco geográfico: Rio de Janeiro (capital). Suporte: Pedro Chaves (horários a definir)
 - Objetivo atual: fechar o mínimo cobrável (WhatsApp real, cobrança, e-mail, importação) e começar as entrevistas de validação
-- Progresso geral: **42% (19 de 45 tarefas verificadas como concluídas)**
+- Progresso geral: **44% (20 de 45 tarefas verificadas como concluídas)**
 - Última atualização: 08/11/2026
 
 ## Dashboard de progresso
 | Área | Concluídas | Pendentes | Em andamento | Bloqueadas | Aguardando minha aprovação |
 | --- | --- | --- | --- | --- | --- |
-| Produto | 7 | 3 | 1 | 2 | 1 |
+| Produto | 8 | 3 | 0 | 2 | 1 |
 | Validação | 4 | 4 | 1 | 0 | 0 |
 | Marketing | 6 | 3 | 1 | 0 | 0 |
 | Comercial | 1 | 1 | 1 | 0 | 1 |
 | Financeiro | 1 | 0 | 0 | 0 | 3 |
 | Legal | 0 | 4 | 0 | 0 | 0 |
-| **Total** | **19** | **15** | **4** | **2** | **5** |
+| **Total** | **20** | **15** | **3** | **2** | **5** |
 
 ## Diagnóstico real do produto (auditoria de 05/11/2026)
 | Área | Implementado | Testado | Em produção | Validado em ambiente real |
@@ -63,7 +63,7 @@ Achados da auditoria (com evidência):
 ## Tarefas em andamento
 | ID | Área | Descrição | Prioridade | Status | Dependências | Evidência | Próxima ação |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| P-11 | Produto | Checklist de ativação e alertas de baixo uso | Média | [EM ANDAMENTO] | P-12 | Dicas e eventos de onboarding existem; não há alerta de baixo uso nem lista de contas em risco | Definir o evento de ativação no banco e a lista diária de contas em risco |
+| P-11 | Produto | Checklist de ativação e alertas de baixo uso | Média | [CONCLUÍDO] | P-12 | Checklist de ativação no início (já existia); **dica de baixo uso** para a usuária (faz 10 dias ou mais sem horário novo, com texto pronto para o status e botão para a agenda); no painel do fundador, listas de **contas em risco** (3 a 30 dias, sem nenhum atendimento) e de **contas que pararam** (14 dias ou mais sem horário novo); ativação definida como 1 atendimento em até 7 dias; suíte completa com 362 testes passando | Nenhuma mensagem é enviada sozinha: a decisão de escrever para uma conta parada é sua |
 | P-14 | Produto | Exportação completa de dados (LGPD) | Média | [CONCLUÍDO] | L-03 | Exportação em CSV de clientes, **agenda** (`/app/agenda/exportar`) e **pagamentos e estornos** (`/app/relatorios/exportar-pagamentos`), por período (padrão: 12 meses), com data e hora no fuso da empresa, proteção contra fórmulas de planilha, auditoria e permissão (agenda: quem gerencia a agenda; pagamentos: quem vê o financeiro); links em Configurações, Conta e privacidade; 5 testes de integração e conferência das rotas logado | A revisão jurídica dos textos (L-03) segue separada |
 | C-04 | Comercial | Definir quem atende o suporte e em quais horários | Média | [EM ANDAMENTO] | nenhuma | Resposta de 05/11/2026: o suporte será **Pedro Chaves**. Horários ainda não informados | Você informar os dias e horários de atendimento |
 | V-06 | Validação | Conta de demonstração em produção | Alta | [EM ANDAMENTO] | P-04 | Script `seed-vitrine` e módulo `vitrine` existem; a variável de criação está desativada, e a existência da conta em produção não foi verificada | Você confirmar o login da conta de demonstração em produção, ou eu preparar a recriação com aprovação |
@@ -135,3 +135,4 @@ O que destrava o lançamento está descrito, passo a passo, em `materiais-comerc
 | 08/11/2026 | M-08: artes dos próximos dias do calendário | Em andamento: 25 peças novas (41 no total), conferidas visualmente. Progresso segue 36% (16 de 45), porque a M-08 só conclui quando os dias que dependem de fatos reais tiverem arte | `materiais-comerciais/visual/gerar.mjs`, `png/*`, `visualizar.html`, `LEIA-ME.md` | Dias 5, 9, 13, 18, 19, 20, 26, 29 e 30 dependem de entrevistas, beta e depoimentos reais; exemplos nas imagens são fictícios; nada publicado |
 | 08/11/2026 | Adiantamento do que não depende de aprovação (pedido do dono): M-03, C-03 e guia de decisões | M-03 e C-03 concluídas (roteiros dos 12 primeiros dias; demonstração e configuração); `DECISOES-PARA-DESTRAVAR.md` com o passo a passo de P-04, P-06, V-04/V-05, C-01, F-01 a F-03 e jurídico; progresso 40% (18 de 45) | `materiais-comerciais/ROTEIROS-*.md`, `DECISOES-PARA-DESTRAVAR.md`, `LAUNCH_TRACKER.md` | Nada publicado nem enviado; dia 5 e dia 9 dependem de fatos reais; tarifas de provedores não verificadas (sem acesso às páginas oficiais); parágrafo de privacidade é só sugestão para revisão |
 | 08/11/2026 | P-14: exportação completa de dados | Concluída e testada; progresso 42% (19 de 45). CSV de agenda e de pagamentos, por período, com links nas configurações | `src/server/csv.ts`, `src/server/modules/exports.ts`, rotas `agenda/exportar` e `relatorios/exportar-pagamentos`, `tests/integration/exportacao.test.ts` | Limite de 20 mil linhas por arquivo; não exporta ainda serviços, equipe nem notas internas; revisão jurídica (L-03) pendente |
+| 08/11/2026 | P-11: alertas de baixo uso | Concluída e testada; progresso 44% (20 de 45). Dica de baixo uso na própria conta e lista de contas que pararam no painel do fundador | `src/server/modules/dicas.ts`, `src/server/modules/founder-kpis.ts`, `src/app/admin/painel/page.tsx`, testes de integração | Só alerta; não envia nada; limites de 10 e 14 dias são hipóteses a ajustar com os primeiros dados reais |
