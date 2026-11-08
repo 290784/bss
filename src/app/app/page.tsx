@@ -13,6 +13,7 @@ import { formatMoney } from "@/lib/money";
 import { addDaysToKey, formatInTz, localDateKey, localTime, zonedDateTime } from "@/lib/time";
 import { cn } from "@/lib/cn";
 import { AvisosTicker } from "./avisos-ticker";
+import { AberturaAvisos, type AvisoAbertura } from "./abertura-avisos";
 import { loadDicas, type Dica } from "@/server/modules/dicas";
 import { CopyLink } from "./copy-link";
 import { NextClientCard } from "./next-client";
@@ -82,6 +83,17 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
   const upcoming = activeToday.filter((i) => (i.status === "pending" || i.status === "confirmed") && i.ends_at.getTime() > now);
   const next = upcoming[0];
 
+  // Avisos da abertura: confirmações pendentes de hoje, as dicas urgentes e um ponto de atenção (no máximo três).
+  const pendentes = activeToday.filter((i) => i.status === "pending" && i.ends_at.getTime() > now).length;
+  const avisosAbertura: AvisoAbertura[] = sp["bem-vinda"] ? [] : [
+    ...(canBook && pendentes > 0 ? [{ id: "confirmar", kind: "confirmar" as const, title: `${plural(pendentes, "cliente")} de hoje ${pendentes === 1 ? "ainda não confirmou" : "ainda não confirmaram"}`, detail: "Um lembrete agora evita buraco na agenda.", href: "/app/agenda", cta: "Ver na agenda" }] : []),
+    ...dicas.filter((x) => x.urgent).slice(0, 2).map((x) => ({
+      id: x.id, kind: x.kind, title: x.title, detail: x.detail, href: x.action?.href ?? `/app/dicas#dica-${x.id}`, cta: x.action?.label ?? "Ver dica",
+      value: x.value && x.value.cents > 0 ? formatMoney(x.value.cents) : undefined,
+    })),
+    ...trends.alerts.slice(0, 1).map((a, i) => ({ id: `alerta-${i}`, kind: "atencao" as const, title: a.title, detail: a.detail, href: "/app/relatorios#fica-de-olho", cta: "Ver relatório" })),
+  ].slice(0, 3);
+
   const shortcuts: { href: string; label: string; hint: string; art: IllustrationName; show: boolean }[] = [
     { href: "/app/agenda", label: "Marcar horário", hint: "Abre a agenda", art: "calendar-plus", show: canBook },
     { href: "/app/clientes?nova=1", label: "Nova cliente", hint: "Cadastro rápido", art: "user-plus", show: canBook && can(ctx.role, "clients.view") },
@@ -91,6 +103,7 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
 
   return (
     <div>
+      <AberturaAvisos name={firstName} dateLabel={formatInTz(new Date(), tz, { weekday: "long", day: "numeric", month: "long" })} items={avisosAbertura} />
       <PageHeader
         art="sparkles"
         title={sp["bem-vinda"] ? `Tudo pronto, ${firstName}` : greeting ? <GreetingTitle greeting={greeting} name={firstName} /> : `Oii, ${firstName}`}
