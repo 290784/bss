@@ -1,5 +1,7 @@
 import type { Viewport } from "next";
 import Link from "next/link";
+import { WaitlistForm } from "./waitlist-form";
+import { BUSINESS_TYPES } from "@/server/modules/catalog";
 import { ArrowRight, Check, Play } from "lucide-react";
 import { Illustration, type IllustrationName } from "@/components/ui/illustration";
 import { Logo } from "@/components/brand/logo";
@@ -88,6 +90,7 @@ export default async function LandingPage() {
               <Link href="/cadastro" className="btn-glow inline-flex h-[54px] items-center gap-2 rounded-full px-7 text-[17px] font-medium text-white">
                 Começar grátis <ArrowRight className="h-4 w-4" />
               </Link>
+              <a href="#quero-testar" className="inline-flex h-[54px] items-center rounded-full border border-gold-300 bg-surface/80 px-7 text-[17px] font-medium text-ink hover:border-gold-400">Quero testar</a>
               <a href="#agendamento-online" className="group inline-flex items-center gap-3 text-[15px] font-medium text-ink-soft hover:text-ink">
                 <span className="grid h-10 w-10 place-items-center rounded-full border border-gold-300 bg-surface text-gold-600 transition group-hover:scale-105"><Play className="h-4 w-4 translate-x-[1px] fill-current" /></span>
                 Ver como funciona
@@ -224,6 +227,14 @@ export default async function LandingPage() {
               </details>
             ))}
           </div>
+        </div>
+      </section>
+
+      <section id="quero-testar" className="mx-auto max-w-6xl px-4 pt-24">
+        <div data-theme="dark" className="bg-royal ring-glass border border-gold-line/40 relative overflow-hidden rounded-[36px] px-6 py-14 text-center text-white shadow-[0_40px_100px_-40px_rgb(100_35_80/0.9)]">
+          <h2 className={cn(sectionTitle, "relative mx-auto max-w-2xl")}>Quer testar com ajuda?</h2>
+          <p className="relative mx-auto mt-3 mb-8 max-w-xl text-[16px] text-white/75">Deixe seu contato e a gente te chama no WhatsApp para montar a sua agenda junto. Sem cartão, sem compromisso.</p>
+          <div className="relative"><WaitlistForm tipos={BUSINESS_TYPES.map(({ id, label }) => ({ id, label }))} /></div>
         </div>
       </section>
 
