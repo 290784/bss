@@ -19,11 +19,11 @@ Regra: nenhuma tarefa vira [CONCLUÍDO] sem evidência verificada. Níveis de ve
 | --- | --- | --- | --- | --- | --- |
 | Produto | 6 | 3 | 2 | 2 | 1 |
 | Validação | 4 | 4 | 1 | 0 | 0 |
-| Marketing | 5 | 5 | 0 | 0 | 0 |
+| Marketing | 5 | 4 | 1 | 0 | 0 |
 | Comercial | 0 | 2 | 1 | 0 | 1 |
 | Financeiro | 1 | 0 | 0 | 0 | 3 |
 | Legal | 0 | 4 | 0 | 0 | 0 |
-| **Total** | **16** | **18** | **4** | **2** | **5** |
+| **Total** | **16** | **17** | **5** | **2** | **5** |
 
 ## Diagnóstico real do produto (auditoria de 05/11/2026)
 | Área | Implementado | Testado | Em produção | Validado em ambiente real |
@@ -85,7 +85,7 @@ Achados da auditoria (com evidência):
 | M-04 | Marketing | Publicar conteúdos no Instagram e TikTok | Média | [PENDENTE] | M-03 e sua aprovação | Nenhuma | Aguardar roteiros |
 | M-05 | Marketing | Perfil do Instagram e TikTok (bio, link, destaques) | Média | [PENDENTE] | C-02 | Nenhuma | Você informar os perfis |
 | M-06 | Marketing | Lista de 10 escolas e educadoras de cílios e unhas para parceria | Média | [PENDENTE] | V-04 | Nenhuma | Montar a lista |
-| M-08 | Marketing | [SUGESTÃO] Peças visuais dos demais dias e capas de destaques do Instagram | Média | [PENDENTE] | M-03 | Só os dias 1, 2, 4, 11 e 12 têm arte | Definir a ordem com você |
+| M-08 | Marketing | [SUGESTÃO] Peças visuais dos demais dias e capas de destaques do Instagram | Média | [EM ANDAMENTO] | M-03 | Feitas 25 peças novas (41 no total, conferidas visualmente e sem estouro de borda): carrosséis dos dias 16 (6 telas) e 22 (5), Stories do dia 6, capas de Reels dos dias 3, 8, 10, 15, 17, 23, 24 e 25 e 5 capas de destaques | Faltam os dias que dependem de fatos que ainda não existem (5, 9, 13, 18, 19, 20, 26, 29 e 30); reposts (7, 14, 21, 28) não precisam de arte. Nada publicado |
 | C-02 | Comercial | Página de preços e oferta de fundadora | Alta | [PENDENTE] | C-01 | Planos no código ainda mostram "preço em definição" | Atualizar a página depois da decisão |
 | C-03 | Comercial | Roteiro da demonstração de 15 min e da chamada de configuração de 20 min | Média | [PENDENTE] [SUGESTÃO] | nenhuma | Citados na estratégia, sem roteiro escrito | Redigir os dois roteiros |
 | F-04 | Financeiro | Planilha de acompanhamento (MRR, CAC, caixa) | Média | [CONCLUÍDO] | P-12 | `materiais-comerciais/PLANILHA-FINANCEIRA.xlsx` (abas Leia-me, Premissas e Mensal): MRR, receita líquida, custos, resultado, caixa, churn, CAC, LTV, LTV/CAC, payback e fôlego, 12 meses; fórmulas conferidas à mão com números de teste (mês 1: 8 pagantes, MRR 632, CAC 100, fôlego 9,3) e sem erro em branco | Preencher as premissas depois de C-01 (preço), F-01 (taxa do provedor) e F-03 (orçamento); impostos ficam de fora (falar com a contabilidade) |
@@ -114,7 +114,7 @@ Achados da auditoria (com evidência):
 2. **V-04 e V-05: começar as entrevistas no Rio.** Monte os 100 perfis com o `GUIA-LISTA-RIO.md` e aprove o envio das primeiras 20 mensagens.
 3. **F-01 e F-02: escolher cobrança e e-mail.** São os últimos bloqueadores técnicos antes de cobrar.
 
-Tarefa que eu executo sozinha na próxima sessão: **M-08 [SUGESTÃO], artes dos próximos dias do calendário de conteúdo**. As demais pendentes dependem de você (aprovações, preço, perfis do Rio) ou de provedor escolhido.
+Não há mais tarefa que eu possa executar sozinha sem fatos novos: o resto da M-08 espera as entrevistas, o beta e os depoimentos. O que destrava o lançamento é a sua decisão em P-04, V-04/V-05, C-01, F-01 a F-03 e a política de privacidade.
 
 ## Histórico de execução
 | Data | Tarefa | Resultado | Arquivos alterados | Pendências encontradas |
@@ -132,3 +132,4 @@ Tarefa que eu executo sozinha na próxima sessão: **M-08 [SUGESTÃO], artes dos
 | 08/11/2026 | V-07: lista de espera na landing | Concluída e testada; progresso 31% (14 de 45). Seção com 3 campos e aceite de contato, botão "Quero testar" no topo, página da equipe e evento `waitlist.joined` com o canal | `db/migrations/0007_lista_espera.sql`, `src/app/lista-espera-actions.ts`, `src/app/waitlist-form.tsx`, `src/app/page.tsx`, `src/app/admin/lista-de-espera/page.tsx` | Guarda nome e WhatsApp de pessoas reais: o aceite está no formulário, mas a política de privacidade deve citar a lista (revisão jurídica sua, tarefa L); a página da equipe depende do acesso de administradora (P-04); prévia do `bss` na Vercel segue falhando por provisionamento |
 | 08/11/2026 | P-12: painel do fundador | Concluída e conferida com dados locais; progresso 33% (15 de 45). Página `/admin/painel` e consultas testadas (cadastros por canal, funil, ativação, lista de espera, reservas, assinaturas, contas em risco) | `src/server/modules/founder-kpis.ts`, `src/app/admin/painel/page.tsx`, `tests/integration/founder-kpis.test.ts` | Só abre depois da P-04; sem dados reais ainda (hoje só há cadastros de teste); "ativação" definida como 1 atendimento em até 7 dias, ajustável |
 | 08/11/2026 | F-04: planilha financeira | Concluída; progresso 36% (16 de 45). Planilha com premissas e 12 meses (MRR, CAC, churn, LTV, payback, caixa e fôlego); fórmulas conferidas à mão com um cenário de teste e a versão em branco sem erros | `materiais-comerciais/PLANILHA-FINANCEIRA.xlsx`, `materiais-comerciais/financeiro/gerar.py`, `materiais-comerciais/README.md` | O texto da seção 12 da estratégia não estava mais disponível para mim: montei pelas métricas padrão (MRR, CAC, churn, LTV, caixa); se a seção pedia outra coisa, me diga; células de preço e taxa em branco até C-01 e F-01 |
+| 08/11/2026 | M-08: artes dos próximos dias do calendário | Em andamento: 25 peças novas (41 no total), conferidas visualmente. Progresso segue 36% (16 de 45), porque a M-08 só conclui quando os dias que dependem de fatos reais tiverem arte | `materiais-comerciais/visual/gerar.mjs`, `png/*`, `visualizar.html`, `LEIA-ME.md` | Dias 5, 9, 13, 18, 19, 20, 26, 29 e 30 dependem de entrevistas, beta e depoimentos reais; exemplos nas imagens são fictícios; nada publicado |

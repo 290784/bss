@@ -134,6 +134,87 @@ add("reels-capa-dia04-cliente-marcando", S.w, S.h, { ...S },
   `<div style="margin:auto 0"><h1 style="font-size:128px">Veja uma cliente <span class="ouro">marcando sozinha</span>.</h1>
    <div style="margin-top:64px;display:flex;gap:20px;flex-wrap:wrap"><span class="chip">09:00</span><span class="chip" style="background:var(--ameixa);color:#fff;border-color:var(--ameixa)">10:30</span><span class="chip">14:00</span><span class="chip">16:30</span></div></div><div style="height:240px"></div>`);
 
+
+// ---------- M-08: próximos dias do calendário (só com o que o calendário já define; nada inventado) ----------
+const CHIP_AM = `style="background:transparent;color:#fbf5ec;border-color:rgba(227,200,143,.7)"`;
+// Carrossel do dia 16: "O que perguntar antes de marcar" (capa, 4 perguntas, fechamento; 1080x1350)
+const perguntas = [
+  { n: 1, titulo: "Qual serviço exatamente?", texto: "Alongamento novo, manutenção ou remoção? Cada um tem tempo e valor diferentes.", extra: `<div style="display:flex;flex-wrap:wrap;gap:16px"><span class="chip">Aplicação</span><span class="chip">Manutenção</span><span class="chip">Remoção</span></div>` },
+  { n: 2, titulo: "Quanto tempo vai levar?", texto: "Saber a duração evita atraso na agenda e cliente esperando na porta.", extra: `<div class="card" style="max-width:820px;padding:26px"><div class="linha"><span class="hora">14:00</span><div>Manutenção<small>vai até as 15:30</small></div></div></div>` },
+  { n: 3, titulo: "Quando é a manutenção?", texto: "Já deixe combinado o retorno. A cliente sai com o próximo horário em mente.", extra: `<div class="balao">Combinado: a manutenção é daqui a 3 semanas, certo?</div>` },
+  { n: 4, titulo: "E a política de atraso?", texto: "Tolerância, aviso para cancelar e remarcação ditos antes de marcar, por escrito.", extra: `<div style="display:flex;flex-wrap:wrap;gap:16px"><span class="chip">Tolerância de atraso</span><span class="chip">Aviso com antecedência</span></div>` },
+];
+add("carrossel-dia16-perguntar-antes-1", 1080, 1350, { classe: "ameixa" },
+  `${topo("Antes de marcar")}<div style="margin:auto 0"><div class="fio" style="background:var(--dourado-cl);margin-bottom:44px"></div>
+   <h1 style="font-size:116px">O que <span class="ouro">perguntar</span> antes de marcar</h1></div>
+   <div class="rodape"><span>Agenda cheia, cabeça leve.</span><span>arraste &rarr;</span></div>`);
+perguntas.forEach((q, i) => add(`carrossel-dia16-perguntar-antes-${i + 2}`, 1080, 1350, {},
+  `${topo("Antes de marcar")}<div style="margin:auto 0"><span class="serif ouro" style="font-size:210px;line-height:.9;display:block">${q.n}</span>
+   <h2 style="font-size:88px;margin-top:6px">${q.titulo}</h2><p class="corpo" style="margin-top:26px;max-width:900px;font-size:44px">${q.texto}</p><div style="margin-top:36px">${q.extra}</div></div>
+   <div class="rodape"><span>${i + 2} de 6</span><span>arraste &rarr;</span></div>`));
+add("carrossel-dia16-perguntar-antes-6", 1080, 1350, { classe: "ameixa" },
+  `${topo("")}<div style="margin:auto 0"><h1 style="font-size:120px">Salve para <span class="ouro">não esquecer</span>.</h1>
+   <p class="corpo" style="margin-top:44px;max-width:860px">Qual dessas perguntas você ainda não faz?</p></div>
+   <div class="rodape"><span>Agenda cheia, cabeça leve.</span><span>6 de 6</span></div>`);
+
+// Carrossel do dia 22: "Cliente sumida: 3 mensagens para trazer de volta" (capa, 3 mensagens, fechamento; 1080x1350)
+const msgs = [
+  { n: 1, titulo: "A lembrança", texto: "Mostre que você lembrou dela, sem cobrar nada.", msg: "Oi, Ana! Lembrei de você hoje. Como estão suas unhas? Se quiser, tenho um horário essa semana." },
+  { n: 2, titulo: "A novidade", texto: "Dê um motivo novo para voltar, no tom de conversa.", msg: "Oi, Ana! Chegou uma cor nova que combina com você. Quer dar uma olhada quando passar por aqui?" },
+  { n: 3, titulo: "A porta aberta", texto: "Sem pressão: deixe claro que ela é sempre bem-vinda.", msg: "Oi, Ana! Sem pressa nenhuma. Quando quiser voltar, é só me chamar que eu encaixo você." },
+];
+add("carrossel-dia22-cliente-sumida-1", 1080, 1350, { classe: "ameixa" },
+  `${topo("Cliente sumida")}<div style="margin:auto 0"><div class="fio" style="background:var(--dourado-cl);margin-bottom:44px"></div>
+   <h1 style="font-size:112px">3 mensagens para trazer a cliente <span class="ouro">de volta</span></h1></div>
+   <div class="rodape"><span>Agenda cheia, cabeça leve.</span><span>arraste &rarr;</span></div>`);
+msgs.forEach((m, i) => add(`carrossel-dia22-cliente-sumida-${i + 2}`, 1080, 1350, {},
+  `${topo("Cliente sumida")}<div style="margin:auto 0"><span class="serif ouro" style="font-size:190px;line-height:.9;display:block">${m.n}</span>
+   <h2 style="font-size:84px;margin-top:6px">${m.titulo}</h2><p class="corpo" style="margin-top:22px;max-width:900px;font-size:42px">${m.texto}</p>
+   <div class="balao" style="margin-top:40px">${m.msg}</div></div>
+   <div class="rodape"><span>${i + 2} de 5</span><span>arraste &rarr;</span></div>`));
+add("carrossel-dia22-cliente-sumida-5", 1080, 1350, { classe: "ameixa" },
+  `${topo("")}<div style="margin:auto 0"><h1 style="font-size:116px">Qual você vai <span class="ouro">mandar hoje</span>?</h1>
+   <p class="corpo" style="margin-top:44px;max-width:860px">Salve e escolha uma cliente que sumiu.</p></div>
+   <div class="rodape"><span>Agenda cheia, cabeça leve.</span><span>5 de 5</span></div>`);
+
+// Stories do dia 6: pergunta para enquete (o adesivo de enquete se coloca no próprio Instagram)
+add("stories-dia06-madrugada", S.w, S.h, { ...S },
+  `<div style="margin:auto 0"><div class="fio" style="margin-bottom:56px"></div><h1 style="font-size:116px">Quantas vezes você respondeu agendamento <span class="ouro">de madrugada</span>?</h1>
+   <p class="corpo" style="margin-top:48px;font-size:48px">Responda na enquete aqui embaixo.</p></div><div style="height:420px"></div>`);
+
+// Capas de Reels dos dias 3, 8, 10, 15, 17, 23, 24 e 25
+add("reels-capa-dia03-dona-de-negocio", S.w, S.h, { ...S, classe: "ameixa" },
+  `<div style="margin:auto 0"><h1 style="font-size:124px">Você é dona de <span class="ouro">negócio</span>, não só profissional.</h1>
+   <div style="margin-top:56px;display:flex;flex-direction:column;gap:18px;align-items:flex-start"><span class="chip" ${CHIP_AM}>Ticket médio</span><span class="chip" ${CHIP_AM}>Ocupação</span><span class="chip" ${CHIP_AM}>Retorno</span></div></div><div style="height:240px"></div>`);
+add("reels-capa-dia08-quanto-custa-uma-falta", S.w, S.h, { ...S },
+  `<div style="margin:auto 0"><h1 style="font-size:128px">Quanto custa uma <span class="ouro">falta</span>? Faça a conta.</h1>
+   <div style="margin-top:56px;display:flex;gap:16px;align-items:center;flex-wrap:wrap"><span class="chip">ticket</span><b style="font-size:44px">&times;</b><span class="chip">faltas por mês</span><b style="font-size:44px">&times;</b><span class="chip">12</span></div></div><div style="height:240px"></div>`);
+add("reels-capa-dia10-o-que-a-cliente-ve", S.w, S.h, { ...S, classe: "ameixa" },
+  `<div style="margin:auto 0"><h1 style="font-size:124px">O que a cliente vê <span class="ouro">no lembrete</span>.</h1>
+   <div class="balao" style="margin-top:56px;max-width:900px;background:#fff;color:var(--tinta)">Oi, Ana! Amanhã às 14h você tem seu horário. Confirma?</div>
+   <div style="margin-top:30px"><span class="botao b-ameixa" style="background:#e3c88f;color:#2a0d22">Confirmo</span></div></div><div style="height:240px"></div>`);
+add("reels-capa-dia15-caderno", S.w, S.h, { ...S },
+  `<div style="margin:auto 0"><h1 style="font-size:120px">Meu caderno tem <span class="ouro">três clientes</span> no mesmo horário.</h1>
+   <div class="card" style="margin-top:56px"><div class="linha"><span class="hora">14:00</span><div>Ana</div></div><div style="height:14px"></div><div class="linha"><span class="hora">14:00</span><div>Bia</div></div><div style="height:14px"></div><div class="linha faltou"><span class="hora">14:00</span><div>Carla</div></div></div></div><div style="height:240px"></div>`);
+add("reels-capa-dia17-link-na-bio", S.w, S.h, { ...S, classe: "ameixa" },
+  `<div style="margin:auto 0"><h1 style="font-size:128px">Link na bio: marque <span class="ouro">sem conversar</span>.</h1>
+   <div style="margin-top:56px"><span class="botao" style="background:#e3c88f;color:#2a0d22">Agendar agora</span></div></div><div style="height:240px"></div>`);
+add("reels-capa-dia23-antes-de-aumentar-o-preco", S.w, S.h, { ...S },
+  `<div style="margin:auto 0"><h1 style="font-size:124px"><span class="ouro">3 perguntas</span> antes de aumentar seu preço.</h1>
+   <div style="margin-top:56px;display:flex;flex-direction:column;gap:18px;align-items:flex-start"><span class="chip">Ocupação</span><span class="chip">Fila de espera</span><span class="chip">Margem</span></div></div><div style="height:240px"></div>`);
+add("reels-capa-dia24-quanto-entrou", S.w, S.h, { ...S, classe: "ameixa" },
+  `<div style="margin:auto 0"><h1 style="font-size:120px">Quanto entrou e <span class="ouro">quem sumiu</span>, em um olhar.</h1></div><div style="height:240px"></div>`);
+add("reels-capa-dia25-sabado-cheio", S.w, S.h, { ...S },
+  `<div style="margin:auto 0"><h1 style="font-size:124px"><span class="ouro">POV</span>: sábado cheio e todo mundo confirmou.</h1>
+   <div style="margin-top:56px;display:flex;gap:20px"><span class="chip">Confirmo</span><span class="chip">Confirmo</span><span class="chip">Confirmo</span></div></div><div style="height:240px"></div>`);
+
+// Capas de destaques do Instagram (1080x1920; o Instagram recorta em círculo no centro, por isso tudo fica dentro de 640 px)
+for (const [slug, linha1, linha2] of [["como-funciona", "Como", "funciona"], ["dicas", "Dicas", ""], ["beta", "Beta", ""], ["duvidas", "Dúvidas", ""], ["bastidores", "Bastidores", ""]])
+  add(`destaque-${slug}`, 1080, 1920, { classe: "ameixa", px: 0, py: 0 },
+    `<div style="display:grid;place-items:center;height:100%"><div style="width:700px;height:700px;border-radius:50%;border:4px solid rgba(227,200,143,.65);display:grid;place-items:center;text-align:center">
+     <div><span style="font-family:Allura;font-size:150px;line-height:1;color:#e3c88f;display:block">Gê</span>
+     <span class="serif" style="font-size:${linha1.length > 8 ? 84 : 104}px;display:block;margin-top:8px">${linha1}</span>${linha2 ? `<span class="serif" style="font-size:104px;display:block">${linha2}</span>` : ""}</div></div></div>`);
+
 // ---------- Escreve os HTMLs e renderiza os PNGs ----------
 const navegador = await chromium.launch();
 for (const p of pecas) {
@@ -156,10 +237,14 @@ import { readFileSync } from "node:fs";
 const b64 = (arq, tipo) => `data:${tipo};base64,${readFileSync(arq).toString("base64")}`;
 const GRUPOS = [
   { titulo: "Foto de perfil", nota: "Instagram e TikTok recortam em círculo; o “Gê” já fica no meio.", tam: "1080 × 1080", prefixo: "01-" },
-  { titulo: "Carrossel do dia 2: 5 jeitos de reduzir falta", nota: "7 telas: capa, os 5 jeitos e o fechamento. Poste na ordem.", tam: "1080 × 1350", prefixo: "carrossel-" },
+  { titulo: "Carrossel do dia 2: 5 jeitos de reduzir falta", nota: "7 telas: capa, os 5 jeitos e o fechamento. Poste na ordem.", tam: "1080 × 1350", prefixo: "carrossel-dia02" },
+  { titulo: "Carrossel do dia 16: o que perguntar antes de marcar", nota: "6 telas: capa, 4 perguntas e o fechamento.", tam: "1080 × 1350", prefixo: "carrossel-dia16" },
+  { titulo: "Carrossel do dia 22: cliente sumida, 3 mensagens", nota: "5 telas: capa, 3 mensagens e o fechamento. Troque “Ana” pelo nome da cliente ao mandar.", tam: "1080 × 1350", prefixo: "carrossel-dia22" },
   { titulo: "Post do dia 12", nota: "“Cobrar o que vale é profissionalismo.”", tam: "1080 × 1350", prefixo: "post-" },
-  { titulo: "Stories do dia 11: convite para o beta", nota: "Sequência de 5. “15 vagas” só vale se o beta existir; R$ 150 e 3 faltas são exemplo.", tam: "1080 × 1920", prefixo: "stories-" },
-  { titulo: "Capas de Reels", nota: "Dia 1 e dia 4. O título fica no miolo, longe das bordas.", tam: "1080 × 1920", prefixo: "reels-" },
+  { titulo: "Stories do dia 6: enquete da madrugada", nota: "Coloque o adesivo de enquete pelo Instagram no espaço de baixo.", tam: "1080 × 1920", prefixo: "stories-dia06" },
+  { titulo: "Stories do dia 11: convite para o beta", nota: "Sequência de 5. “15 vagas” só vale se o beta existir; R$ 150 e 3 faltas são exemplo.", tam: "1080 × 1920", prefixo: "stories-dia11" },
+  { titulo: "Capas de Reels", nota: "Dias 1, 3, 4, 8, 10, 15, 17, 23, 24 e 25. O título fica no miolo, longe das bordas.", tam: "1080 × 1920", prefixo: "reels-" },
+  { titulo: "Capas de destaques do Instagram", nota: "Como funciona, Dicas, Beta, Dúvidas e Bastidores. O Instagram recorta em círculo no centro.", tam: "1080 × 1920", prefixo: "destaque-" },
 ];
 const arquivos = readdirSync(PNG).filter((f) => f.endsWith(".png")).sort((a, b) => a.localeCompare(b, "pt", { numeric: true }));
 const secoes = GRUPOS.map((g) => {
