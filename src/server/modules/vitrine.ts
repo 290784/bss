@@ -179,7 +179,7 @@ export async function criarContaVitrine(sql: Sql, opts: { password: string; rese
   }
 
   const [user] = await sql<{ id: string }[]>`
-    insert into app.users (email, password_hash, full_name) values (${EMAIL}, ${await hashPassword(password)}, 'Bibiu') returning id`;
+    insert into app.users (email, password_hash, full_name, nickname) values (${EMAIL}, ${await hashPassword(password)}, 'Gabriela Olimpio', 'Bibiu') returning id`;
   const org = await withSystem((tx) => createOrganizationForUser(tx, user!.id,
     { name: "Salão Lumi", businessType: "salon", attends: true, ownerDisplayName: EQUIPE[0]!.nome, timezone: TZ, phone: "(11) 90000-0000" },
     { isDemo: true }), sql);

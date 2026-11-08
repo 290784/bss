@@ -12,6 +12,8 @@ export type SessionUser = {
   userId: string;
   email: string;
   fullName: string;
+  /** Como ela gosta de ser chamada na saudação; sem isso, vale o primeiro nome. */
+  nickname: string | null;
   activeOrganizationId: string | null;
 };
 
@@ -39,8 +41,8 @@ export const getSession = cache(async (): Promise<SessionUser | null> => {
   const token = (await cookies()).get(SESSION_COOKIE)?.value;
   if (!token || token.length > 100) return null;
   const rows = await withSystem(
-    (tx) => tx<{ id: string; user_id: string; email: string; full_name: string; active_organization_id: string | null; last_seen_at: Date }[]>`
-      select s.id, s.user_id, u.email, u.full_name, s.active_organization_id, s.last_seen_at
+    (tx) => tx<{ id: string; user_id: string; email: string; full_name: string; nickname: string | null; active_organization_id: string | null; last_seen_at: Date }[]>`
+      select s.id, s.user_id, u.email, u.full_name, u.nickname, s.active_organization_id, s.last_seen_at
       from app.sessions s join app.users u on u.id = s.user_id
       where s.token_hash = ${hashToken(token)} and s.expires_at > now()`,
   );
@@ -54,6 +56,7 @@ export const getSession = cache(async (): Promise<SessionUser | null> => {
     userId: row.user_id,
     email: row.email,
     fullName: row.full_name,
+    nickname: row.nickname,
     activeOrganizationId: row.active_organization_id,
   };
 });
