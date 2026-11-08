@@ -1,6 +1,7 @@
 "use client";
 import Link from "next/link";
-import { useActionState } from "react";
+import { useActionState, useEffect, useRef } from "react";
+import { CONHECEU } from "@/domain/canal";
 import { signIn, signUp } from "./actions";
 import { ActionForm, Checkbox, Field, FormMessage, Input, SubmitButton } from "@/components/ui/form";
 
@@ -27,6 +28,8 @@ export function SignInForm({ next }: { next?: string }) {
 export function SignUpForm() {
   const [state, action, pending] = useActionState(signUp, null);
   const fe = state && !state.ok ? state.fieldErrors : undefined;
+  const canalRef = useRef<HTMLInputElement>(null);
+  useEffect(() => { try { if (canalRef.current) canalRef.current.value = localStorage.getItem("ge-canal") ?? ""; } catch { /* sem canal */ } }, []);
   return (
     <ActionForm action={action} className="flex flex-col gap-4" noValidate>
       <FormMessage state={state} />
@@ -39,6 +42,13 @@ export function SignUpForm() {
       <Field label="Senha" htmlFor="password" error={fe?.password} hint="Pelo menos 10 caracteres, tá?">
         <Input id="password" name="password" type="password" autoComplete="new-password" required minLength={10} aria-invalid={!!fe?.password} />
       </Field>
+      <Field label="Como você conheceu a Gê? (opcional)" htmlFor="conheceu">
+        <select id="conheceu" name="conheceu" defaultValue="" className="h-11 w-full rounded-xl border border-line bg-surface px-3 text-[15px]">
+          <option value="">Prefiro não dizer</option>
+          {CONHECEU.map((c) => <option key={c.id} value={c.id}>{c.label}</option>)}
+        </select>
+      </Field>
+      <input type="hidden" name="canal" ref={canalRef} />
       <Checkbox
         name="acceptTerms"
         label={<>Li e aceito os <Link href="/termos" className="text-accent-text underline" target="_blank">termos de uso</Link> e a <Link href="/privacidade" className="text-accent-text underline" target="_blank">política de privacidade</Link>.</>}
