@@ -3,13 +3,7 @@ import { getAppContext, tenant } from "@/server/context";
 import { can } from "@/domain/permissions";
 import { listClients, SEGMENTS, type Segment } from "@/server/modules/clients";
 import { audit } from "@/server/modules/audit";
-
-const esc = (v: unknown) => {
-  const s = v === null || v === undefined ? "" : String(v);
-  // Evita injeção de fórmulas em planilhas (=, +, -, @).
-  const safe = /^[=+\-@]/.test(s) ? `'${s}` : s;
-  return /[",;\n]/.test(safe) ? `"${safe.replace(/"/g, '""')}"` : safe;
-};
+import { csvCell as esc } from "@/server/csv";
 
 export async function GET(request: Request) {
   const ctx = await getAppContext();
