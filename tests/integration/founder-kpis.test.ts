@@ -47,5 +47,10 @@ describe("painel do fundador (P-12)", () => {
     expect(k.reservasOnline).toEqual({ ultimos7: 1, ultimos30: 1 });
     expect(k.contasEmRisco.map((o) => o.nome)).toEqual(["Studio Bia"]);
     expect(k.contasEmRisco[0]!.diasDesdeCadastro).toBe(5);
+    // A Ana tem um atendimento criado agora: não está parada. Se esse horário fosse de 20 dias atrás, estaria.
+    expect(k.contasParadas).toEqual([]);
+    await sql`update app.appointments set created_at = now() - interval '20 days' where organization_id = ${ana.orgId}`;
+    const k2 = await withSystem((tx) => loadFounderKpis(tx), sql);
+    expect(k2.contasParadas.map((o) => [o.nome, o.diasParada])).toEqual([["Studio Ana", 20]]);
   });
 });

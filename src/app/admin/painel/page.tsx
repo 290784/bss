@@ -68,6 +68,14 @@ export default async function PainelFundadorPage() {
         </Card>
 
         <Card>
+          <CardHeader title="Contas que pararam" description="Já usaram a agenda, mas faz 14 dias ou mais sem horário novo. Vale perguntar o que travou." />
+          <ul className="divide-y divide-line/70 px-5 pb-4 sm:px-6">
+            {k.contasParadas.length === 0 && <li className="py-4 text-sm text-muted">Nenhuma conta parada.</li>}
+            {k.contasParadas.map((o) => <li key={o.orgId} className="py-3 text-sm"><b>{o.nome}</b> <span className="text-muted">· {o.email ?? "sem e-mail"} · há {o.diasParada} dias sem horário novo</span></li>)}
+          </ul>
+        </Card>
+
+        <Card>
           <CardHeader title="Lista de espera por atividade" description="" />
           <ul className="divide-y divide-line/70 px-5 pb-4 sm:px-6">
             {k.listaEspera.porTipo.length === 0 && <li className="py-4 text-sm text-muted">Ninguém na lista.</li>}

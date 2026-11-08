@@ -83,4 +83,24 @@ describe("dicas da Gê", () => {
     expect(dicas[0]!.urgent).toBe(true);
     for (let i = 1; i < dicas.length; i++) expect(dicas[i - 1]!.priority).toBeGreaterThanOrEqual(dicas[i]!.priority);
   });
+
+  it("baixo uso: avisa quando faz 10 dias ou mais sem horário novo e some quando ela marca de novo", async () => {
+    const C = await createOrg(sql, "Studio Parado");
+    const cli = (await sql<{ id: string }[]>`select id from app.clients where organization_id = ${C.orgId} limit 1`)[0]!.id;
+    const ends = new Date(Date.now() - 20 * DAY + 3_600_000);
+    await sql`insert into app.appointments (organization_id, professional_id, client_id, starts_at, ends_at, blocked_until, status, allow_overlap, created_at)
+      values (${C.orgId}, ${C.professionalId}, ${cli}, ${new Date(Date.now() - 20 * DAY)}, ${ends}, ${ends}, 'completed', true, ${new Date(Date.now() - 18 * DAY)})`;
+    const load2 = () => asTenant(sql, C.ownerId, C.orgId, (tx) => loadDicas(tx, C.orgId, "America/Sao_Paulo", { finance: true, bookingUrl: "https://ge.app/b/parado" }));
+    const d = (await load2()).find((x) => x.id.startsWith("baixo-uso-"));
+    expect(d?.title).toMatch(/Faz 18 dias/);
+    expect(d?.copy?.text).toContain("https://ge.app/b/parado");
+    expect(d?.urgent).toBe(false);
+    // Marcou um horário novo hoje: a dica some. E a conta sem nenhum atendimento nunca recebe esse aviso.
+    await sql`insert into app.appointments (organization_id, professional_id, client_id, starts_at, ends_at, blocked_until, status, allow_overlap)
+      values (${C.orgId}, ${C.professionalId}, ${cli}, ${new Date(Date.now() + 2 * DAY)}, ${new Date(Date.now() + 2 * DAY + 3_600_000)}, ${new Date(Date.now() + 2 * DAY + 3_600_000)}, 'confirmed', true)`;
+    expect((await load2()).some((x) => x.id.startsWith("baixo-uso-"))).toBe(false);
+    const D = await createOrg(sql, "Studio Novo");
+    const novo = await asTenant(sql, D.ownerId, D.orgId, (tx) => loadDicas(tx, D.orgId, "America/Sao_Paulo", { finance: true, bookingUrl: "x" }));
+    expect(novo.some((x) => x.id.startsWith("baixo-uso-"))).toBe(false);
+  });
 });
