@@ -11,19 +11,19 @@ Regra: nenhuma tarefa vira [CONCLUÍDO] sem evidência verificada. Níveis de ve
 - Previsão de lançamento oficial: 01/02/2027 (primeira cobrança)
 - Foco geográfico: Rio de Janeiro (capital). Suporte: Pedro Chaves (horários a definir)
 - Objetivo atual: fechar o mínimo cobrável (WhatsApp real, cobrança, e-mail, importação) e começar as entrevistas de validação
-- Progresso geral: **36% (16 de 45 tarefas verificadas como concluídas)**
-- Última atualização: 06/11/2026
+- Progresso geral: **40% (18 de 45 tarefas verificadas como concluídas)**
+- Última atualização: 08/11/2026
 
 ## Dashboard de progresso
 | Área | Concluídas | Pendentes | Em andamento | Bloqueadas | Aguardando minha aprovação |
 | --- | --- | --- | --- | --- | --- |
 | Produto | 6 | 3 | 2 | 2 | 1 |
 | Validação | 4 | 4 | 1 | 0 | 0 |
-| Marketing | 5 | 4 | 1 | 0 | 0 |
-| Comercial | 0 | 2 | 1 | 0 | 1 |
+| Marketing | 6 | 3 | 1 | 0 | 0 |
+| Comercial | 1 | 1 | 1 | 0 | 1 |
 | Financeiro | 1 | 0 | 0 | 0 | 3 |
 | Legal | 0 | 4 | 0 | 0 | 0 |
-| **Total** | **16** | **17** | **5** | **2** | **5** |
+| **Total** | **18** | **15** | **5** | **2** | **5** |
 
 ## Diagnóstico real do produto (auditoria de 05/11/2026)
 | Área | Implementado | Testado | Em produção | Validado em ambiente real |
@@ -81,13 +81,13 @@ Achados da auditoria (com evidência):
 | V-07 | Validação | Landing com botão "Quero testar" e lista de espera de 3 campos | Alta | [CONCLUÍDO] | P-10 | Seção "Quer testar com ajuda?" na landing (botão "Quero testar" também no topo) com 3 campos (nome, WhatsApp, o que faz) e aceite; migração `0007_lista_espera.sql`; repetir o número não duplica; guarda o canal; página da equipe `/admin/lista-de-espera`; testado de ponta a ponta | Depois do deploy, ler a lista em `/admin/lista-de-espera` (precisa de P-04 para o acesso de administradora) e chamar cada pessoa no WhatsApp |
 | V-08 | Validação | Teste de preço (Van Westendorp e ofertas de R$ 49, R$ 69, R$ 89) | Média | [PENDENTE] | C-01, V-05 | Perguntas no roteiro | Executar nas demonstrações |
 | V-09 | Validação | Recrutar 15 profissionais para o beta | Alta | [PENDENTE] | V-05, P-05 | Nenhuma | Convidar as entrevistadas que toparem |
-| M-03 | Marketing | Roteiros e legendas dos 12 primeiros conteúdos | Média | [PENDENTE] | nenhuma | Calendário pronto | Redigir roteiros dos 12 primeiros dias |
+| M-03 | Marketing | Roteiros e legendas dos 12 primeiros conteúdos | Média | [CONCLUÍDO] | nenhuma | `materiais-comerciais/ROTEIROS-12-PRIMEIROS-DIAS.md`: gancho, roteiro por cena, legenda, CTA e arte de cada um dos 12 dias (reposts incluídos); dias 5, 9 e 11 marcados com o que depende de fatos reais | Você aprovar a publicação (M-04) e preencher os pontos `[ ... ]` do dia 5 |
 | M-04 | Marketing | Publicar conteúdos no Instagram e TikTok | Média | [PENDENTE] | M-03 e sua aprovação | Nenhuma | Aguardar roteiros |
 | M-05 | Marketing | Perfil do Instagram e TikTok (bio, link, destaques) | Média | [PENDENTE] | C-02 | Nenhuma | Você informar os perfis |
 | M-06 | Marketing | Lista de 10 escolas e educadoras de cílios e unhas para parceria | Média | [PENDENTE] | V-04 | Nenhuma | Montar a lista |
 | M-08 | Marketing | [SUGESTÃO] Peças visuais dos demais dias e capas de destaques do Instagram | Média | [EM ANDAMENTO] | M-03 | Feitas 25 peças novas (41 no total, conferidas visualmente e sem estouro de borda): carrosséis dos dias 16 (6 telas) e 22 (5), Stories do dia 6, capas de Reels dos dias 3, 8, 10, 15, 17, 23, 24 e 25 e 5 capas de destaques | Faltam os dias que dependem de fatos que ainda não existem (5, 9, 13, 18, 19, 20, 26, 29 e 30); reposts (7, 14, 21, 28) não precisam de arte. Nada publicado |
 | C-02 | Comercial | Página de preços e oferta de fundadora | Alta | [PENDENTE] | C-01 | Planos no código ainda mostram "preço em definição" | Atualizar a página depois da decisão |
-| C-03 | Comercial | Roteiro da demonstração de 15 min e da chamada de configuração de 20 min | Média | [PENDENTE] [SUGESTÃO] | nenhuma | Citados na estratégia, sem roteiro escrito | Redigir os dois roteiros |
+| C-03 | Comercial | Roteiro da demonstração de 15 min e da chamada de configuração de 20 min | Média | [CONCLUÍDO] [SUGESTÃO] | nenhuma | `materiais-comerciais/ROTEIROS-DEMONSTRACAO-E-CONFIGURACAO.md`: demonstração de 15 min e chamada de configuração de 20 min, com perguntas, o que nunca fazer e o que registrar | Usar nas primeiras conversas (V-05) |
 | F-04 | Financeiro | Planilha de acompanhamento (MRR, CAC, caixa) | Média | [CONCLUÍDO] | P-12 | `materiais-comerciais/PLANILHA-FINANCEIRA.xlsx` (abas Leia-me, Premissas e Mensal): MRR, receita líquida, custos, resultado, caixa, churn, CAC, LTV, LTV/CAC, payback e fôlego, 12 meses; fórmulas conferidas à mão com números de teste (mês 1: 8 pagantes, MRR 632, CAC 100, fôlego 9,3) e sem erro em branco | Preencher as premissas depois de C-01 (preço), F-01 (taxa do provedor) e F-03 (orçamento); impostos ficam de fora (falar com a contabilidade) |
 | L-01 | Legal | Consultar o INPI sobre o nome "Gê" | Alta | [PENDENTE] | nenhuma | Nenhuma | Você ou um advogado consultarem |
 | L-02 | Legal | Abrir a empresa e definir o enquadramento fiscal com contador | Alta | [PENDENTE] | nenhuma | Nenhuma | Você falar com um contador; necessário para verificar a conta na Meta e emitir nota |
@@ -114,7 +114,7 @@ Achados da auditoria (com evidência):
 2. **V-04 e V-05: começar as entrevistas no Rio.** Monte os 100 perfis com o `GUIA-LISTA-RIO.md` e aprove o envio das primeiras 20 mensagens.
 3. **F-01 e F-02: escolher cobrança e e-mail.** São os últimos bloqueadores técnicos antes de cobrar.
 
-Não há mais tarefa que eu possa executar sozinha sem fatos novos: o resto da M-08 espera as entrevistas, o beta e os depoimentos. O que destrava o lançamento é a sua decisão em P-04, V-04/V-05, C-01, F-01 a F-03 e a política de privacidade.
+O que destrava o lançamento está descrito, passo a passo, em `materiais-comerciais/DECISOES-PARA-DESTRAVAR.md` (P-04, P-06, V-04/V-05, C-01, F-01 a F-03, jurídico). Sem as suas respostas, eu só avanço no que não depende de aprovação (hoje: P-14, exportação de agenda e pagamentos).
 
 ## Histórico de execução
 | Data | Tarefa | Resultado | Arquivos alterados | Pendências encontradas |
@@ -133,3 +133,4 @@ Não há mais tarefa que eu possa executar sozinha sem fatos novos: o resto da M
 | 08/11/2026 | P-12: painel do fundador | Concluída e conferida com dados locais; progresso 33% (15 de 45). Página `/admin/painel` e consultas testadas (cadastros por canal, funil, ativação, lista de espera, reservas, assinaturas, contas em risco) | `src/server/modules/founder-kpis.ts`, `src/app/admin/painel/page.tsx`, `tests/integration/founder-kpis.test.ts` | Só abre depois da P-04; sem dados reais ainda (hoje só há cadastros de teste); "ativação" definida como 1 atendimento em até 7 dias, ajustável |
 | 08/11/2026 | F-04: planilha financeira | Concluída; progresso 36% (16 de 45). Planilha com premissas e 12 meses (MRR, CAC, churn, LTV, payback, caixa e fôlego); fórmulas conferidas à mão com um cenário de teste e a versão em branco sem erros | `materiais-comerciais/PLANILHA-FINANCEIRA.xlsx`, `materiais-comerciais/financeiro/gerar.py`, `materiais-comerciais/README.md` | O texto da seção 12 da estratégia não estava mais disponível para mim: montei pelas métricas padrão (MRR, CAC, churn, LTV, caixa); se a seção pedia outra coisa, me diga; células de preço e taxa em branco até C-01 e F-01 |
 | 08/11/2026 | M-08: artes dos próximos dias do calendário | Em andamento: 25 peças novas (41 no total), conferidas visualmente. Progresso segue 36% (16 de 45), porque a M-08 só conclui quando os dias que dependem de fatos reais tiverem arte | `materiais-comerciais/visual/gerar.mjs`, `png/*`, `visualizar.html`, `LEIA-ME.md` | Dias 5, 9, 13, 18, 19, 20, 26, 29 e 30 dependem de entrevistas, beta e depoimentos reais; exemplos nas imagens são fictícios; nada publicado |
+| 08/11/2026 | Adiantamento do que não depende de aprovação (pedido do dono): M-03, C-03 e guia de decisões | M-03 e C-03 concluídas (roteiros dos 12 primeiros dias; demonstração e configuração); `DECISOES-PARA-DESTRAVAR.md` com o passo a passo de P-04, P-06, V-04/V-05, C-01, F-01 a F-03 e jurídico; progresso 40% (18 de 45) | `materiais-comerciais/ROTEIROS-*.md`, `DECISOES-PARA-DESTRAVAR.md`, `LAUNCH_TRACKER.md` | Nada publicado nem enviado; dia 5 e dia 9 dependem de fatos reais; tarifas de provedores não verificadas (sem acesso às páginas oficiais); parágrafo de privacidade é só sugestão para revisão |
