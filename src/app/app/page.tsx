@@ -69,7 +69,7 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
   });
 
   const greeting = await greetingPromise;
-  const firstName = ctx.user.fullName.split(" ")[0]!;
+  const firstName = ctx.user.nickname?.trim() || ctx.user.fullName.split(" ")[0]!;
   const activation = [
     { done: setup.services > 0, label: "Cadastre seus serviços", href: "/app/servicos" },
     { done: setup.hours > 0, label: "Defina seus horários", href: "/app/equipe" },
