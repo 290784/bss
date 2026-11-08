@@ -6,6 +6,7 @@ import { hashPassword, verifyPassword, DUMMY_HASH } from "@/server/auth/password
 import { clientIp, createSession } from "@/server/auth/session";
 import { rateLimit } from "@/server/rate-limit";
 import { trackEvent } from "@/server/modules/audit";
+import { normalizeCanal, normalizeConheceu } from "@/domain/canal";
 import type { ActionState } from "@/server/errors";
 
 const safeNext = (v: FormDataEntryValue | null) => {
@@ -32,7 +33,9 @@ export async function signUp(_: ActionState, form: FormData): Promise<ActionStat
     const [u] = await withSystem((tx) => tx<{ id: string }[]>`
       insert into app.users (email, password_hash, full_name) values (${email}, ${hash}, ${fullName}) returning id`);
     userId = u!.id;
-    await withSystem((tx) => trackEvent(tx, "signup.completed", null, userId));
+    // Origem do cadastro (sem dados pessoais): código do canal do link e a resposta de "como conheceu".
+    const canal = normalizeCanal(form.get("canal")), conheceu = normalizeConheceu(form.get("conheceu"));
+    await withSystem((tx) => trackEvent(tx, "signup.completed", null, userId, { ...(canal ? { canal } : {}), ...(conheceu ? { conheceu } : {}) }));
   } catch (err) {
     if (pgErrorCode(err) === PG_UNIQUE_VIOLATION)
       return { ok: false, message: "Você já tem conta com esse e-mail! É só entrar.", fieldErrors: { email: ["Esse e-mail já tem conta."] } };

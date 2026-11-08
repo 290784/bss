@@ -11,19 +11,19 @@ Regra: nenhuma tarefa vira [CONCLUÍDO] sem evidência verificada. Níveis de ve
 - Previsão de lançamento oficial: 01/02/2027 (primeira cobrança)
 - Foco geográfico: Rio de Janeiro (capital). Suporte: Pedro Chaves (horários a definir)
 - Objetivo atual: fechar o mínimo cobrável (WhatsApp real, cobrança, e-mail, importação) e começar as entrevistas de validação
-- Progresso geral: **27% (12 de 45 tarefas verificadas como concluídas)**
+- Progresso geral: **29% (13 de 45 tarefas verificadas como concluídas)**
 - Última atualização: 06/11/2026
 
 ## Dashboard de progresso
 | Área | Concluídas | Pendentes | Em andamento | Bloqueadas | Aguardando minha aprovação |
 | --- | --- | --- | --- | --- | --- |
-| Produto | 4 | 5 | 2 | 2 | 1 |
+| Produto | 5 | 4 | 2 | 2 | 1 |
 | Validação | 3 | 5 | 1 | 0 | 0 |
 | Marketing | 5 | 5 | 0 | 0 | 0 |
 | Comercial | 0 | 2 | 1 | 0 | 1 |
 | Financeiro | 0 | 1 | 0 | 0 | 3 |
 | Legal | 0 | 4 | 0 | 0 | 0 |
-| **Total** | **12** | **22** | **4** | **2** | **5** |
+| **Total** | **13** | **21** | **4** | **2** | **5** |
 
 ## Diagnóstico real do produto (auditoria de 05/11/2026)
 | Área | Implementado | Testado | Em produção | Validado em ambiente real |
@@ -73,7 +73,7 @@ Achados da auditoria (com evidência):
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | P-08 | Produto | E-mail transacional, verificação de e-mail e recuperação de senha | Alta | [PENDENTE] | F-02 | Sem biblioteca nem rota de e-mail | Depois da escolha do provedor |
 | P-09 | Produto | Cobrança recorrente da assinatura (Pix e cartão) | Alta | [PENDENTE] | F-01 | Sem integração com provedor | Depois da escolha do provedor |
-| P-10 | Produto | Campo "como conheceu" e código por canal no cadastro | Média | [PENDENTE] | nenhuma | Busca em `src` sem resultado | Adicionar campo e evento de funil |
+| P-10 | Produto | Campo "como conheceu" e código por canal no cadastro | Média | [CONCLUÍDO] | nenhuma | Cadastro com lista "Como você conheceu a Gê?" e código `?c=` do primeiro link; testado de ponta a ponta: evento `signup.completed` gravou `{"canal":"ig-bio","conheceu":"instagram"}`; 177 testes unitários passam | Usar os códigos de `materiais-comerciais/CODIGOS-DE-CANAL.md` em todo link divulgado |
 | P-12 | Produto | Consultas do painel do fundador (KPIs) | Média | [PENDENTE] | P-10 | 7 eventos de funil registrados | Criar consultas e planilha de acompanhamento |
 | P-13 | Produto | Backup do banco e monitoramento de erros | Alta | [PENDENTE] | F-03 | Banco é Neon via Vercel; plano e backup não verificados | Você informar o plano do Neon; eu propor monitoramento |
 | V-04 | Validação | Lista de 100 lash e nail designers do Rio de Janeiro | Alta | [PENDENTE] | nenhuma (cidade definida em 05/11/2026) | Planilha modelo e `materiais-comerciais/GUIA-LISTA-RIO.md` prontos; a lista em si não existe | Você (ou quem indicar) montar os 100 perfis seguindo o guia; eu não acesso o Instagram daqui |
@@ -114,7 +114,7 @@ Achados da auditoria (com evidência):
 2. **V-04 e V-05: começar as entrevistas no Rio.** Monte os 100 perfis com o `GUIA-LISTA-RIO.md` e aprove o envio das primeiras 20 mensagens.
 3. **F-01 e F-02: escolher cobrança e e-mail.** São os últimos bloqueadores técnicos antes de cobrar.
 
-Tarefa que eu executo sozinha na próxima sessão: **P-10, campo "como conheceu" e código por canal** (destrava V-07, a lista de espera, e P-12, os KPIs).
+Tarefa que eu executo sozinha na próxima sessão: **V-07, landing com botão "Quero testar" e lista de espera de 3 campos** (a P-10 já está pronta). Em seguida, P-12 (consultas do painel do fundador).
 
 ## Histórico de execução
 | Data | Tarefa | Resultado | Arquivos alterados | Pendências encontradas |
@@ -128,3 +128,4 @@ Tarefa que eu executo sozinha na próxima sessão: **P-10, campo "como conheceu"
 | 06/11/2026 | Parte visual (pedido do dono): M-07 | 16 peças geradas e conferidas; progresso 23% (10 de 43; duas tarefas novas marcadas [SUGESTÃO]) | `materiais-comerciais/visual/*`, `materiais-comerciais/README.md`, `LAUNCH_TRACKER.md` | Dados de exemplo nas imagens (nomes, R$ 150); "15 vagas no beta" só vale se o beta existir; publicar depende de aprovação (M-04) |
 | 06/11/2026 | Vídeo de apresentação (pedido do dono): M-09 | Gravado com o app real (mesmas fontes, animações e interações); 145 s; progresso 25% (11 de 44). Duas correções no caminho: indicador de desenvolvimento do Next escondido e rotas aquecidas antes de gravar | `materiais-comerciais/video/gravar.mjs`, `ROTEIRO.md`, `exemplo-clientes.csv`, `LAUNCH_TRACKER.md` | Sem áudio (a fala sugerida está no roteiro); a cena do WhatsApp mostra o pedido de conexão, não conversa real (P-05 pendente); sem preços na tela (C-01) |
 | 06/11/2026 | Vídeo no iPhone 17 Pro Max (pedido do dono): M-10 | Gravado com o app real emulando o aparelho (440×956 pt, toques, sem círculo; enquadramento das seções corrigido); 148 s, vertical; progresso 27% (12 de 45). Corrigido no caminho: toque no atendimento da agenda no celular e montagem das legendas (de 7 minutos para menos de 1) | `materiais-comerciais/video/gravar-iphone.mjs`, `materiais-comerciais/video/ROTEIRO.md`, `LAUNCH_TRACKER.md` | É emulação do tamanho e do toque do iPhone no Chromium, não o Safari real; sem áudio; sem preços na tela (C-01); WhatsApp ainda não validado (P-05) |
+| 08/11/2026 | P-10: campo "como conheceu" e código por canal | Concluída e testada; progresso 29% (13 de 45). No mesmo período, a pedido do dono: opção Esteticista e Quick massage no cadastro (PR 81), app instalável PWA (PR 82) e abertura do painel com avisos em vidro escuro (PR 83), todos mesclados e com deploy verde | `src/domain/canal.ts`, `src/components/canal-capture.tsx`, `src/app/(auth)/*`, `tests/unit/canal.test.ts`, `materiais-comerciais/CODIGOS-DE-CANAL.md` | Os links já divulgados não têm código (só valem os novos); o painel de leitura é a P-12; PWA e abertura não foram testados em aparelho real |

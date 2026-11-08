@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Allura, Nunito, Playfair_Display } from "next/font/google";
 import "./globals.css";
+import { CanalCapture } from "@/components/canal-capture";
 import { PwaRegister } from "@/components/pwa-register";
 import { TouchActive } from "@/components/ui/touch-active";
 
@@ -27,7 +28,7 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="pt-BR" data-theme="light" className={`${nunito.variable} ${playfair.variable} ${allura.variable}`} suppressHydrationWarning>
-      <body className="min-h-dvh"><TouchActive /><PwaRegister />{children}</body>
+      <body className="min-h-dvh"><TouchActive /><PwaRegister /><CanalCapture />{children}</body>
     </html>
   );
 }
