@@ -14,6 +14,11 @@ Abra **`visualizar.html`** com duplo clique (funciona sem internet; está tudo d
 | `stories-dia11-1.png` a `-5.png` | 1080 × 1920 | Sequência de 5 Stories do dia 11 (convite para o beta) |
 | `reels-capa-dia01-ela-avisou.png` | 1080 × 1920 | Capa do Reels do dia 1 |
 | `reels-capa-dia04-cliente-marcando.png` | 1080 × 1920 | Capa do Reels do dia 4 |
+| `carrossel-dia16-perguntar-antes-1.png` a `-6.png` | 1080 × 1350 | Carrossel do dia 16: "O que perguntar antes de marcar" (capa, 4 perguntas e fechamento) |
+| `carrossel-dia22-cliente-sumida-1.png` a `-5.png` | 1080 × 1350 | Carrossel do dia 22: "Cliente sumida: 3 mensagens para trazer de volta" (capa, 3 mensagens e fechamento) |
+| `stories-dia06-madrugada.png` | 1080 × 1920 | Stories do dia 6: pergunta da enquete (o adesivo se coloca no Instagram, no espaço de baixo) |
+| `reels-capa-dia03`, `dia08`, `dia10`, `dia15`, `dia17`, `dia23`, `dia24`, `dia25` | 1080 × 1920 | Capas de Reels desses dias (títulos do calendário) |
+| `destaque-como-funciona`, `-dicas`, `-beta`, `-duvidas`, `-bastidores` | 1080 × 1920 | Capas de destaques do Instagram (recorte em círculo no centro) |
 
 O carrossel tem 7 telas, e não 6 como o calendário descreve: são 5 jeitos mais capa e fechamento.
 
@@ -34,4 +39,6 @@ Precisa do Playwright instalado (`npm install -D playwright` e `npx playwright i
 As três fontes (Playfair Display, Nunito e Allura) estão em `fontes/` e têm licença SIL Open Font License, que permite uso comercial e redistribuição.
 
 ## O que ainda não existe
-Capas de destaques do Instagram, peças dos dias restantes do calendário e vídeos de demonstração (gravação de tela do produto). Tarefa M-08 do `LAUNCH_TRACKER.md`.
+Peças dos dias que dependem de fatos que ainda não existem: dias 5 e 13 (bastidores reais), 9, 18, 20, 29 (entrevistas feitas e autorizadas), 19, 26 e 30 (beta aberto e depoimento autorizado). Os dias de repost (7, 14, 21, 28) não precisam de arte. Os vídeos dos Reels são gravações da tela do produto (ver `../video/`). Tarefa M-08 do `LAUNCH_TRACKER.md`.
+
+**Cuidado:** nomes como Ana, Bia e Carla e os horários nas imagens são fictícios, de propósito. Nada daqui foi publicado: publicar depende da sua aprovação (M-04).
