@@ -20,6 +20,7 @@ variáveis estiverem marcadas também para Preview.
 | `APP_URL` | URL pública, ex.: `https://ge.vercel.app` |
 | `DEFAULT_TIMEZONE` | `America/Sao_Paulo` |
 | `CRON_SECRET` | valor aleatório longo (a Vercel envia no cabeçalho do cron) |
+| `RESEND_API_KEY` e `EMAIL_FROM` | e-mail transacional (recuperação de senha e confirmação de e-mail). Só valem se o provedor escolhido na F-02 for o Resend; `EMAIL_FROM` é um remetente de domínio verificado, como `Gê <nao-responda@seudominio.com.br>`. Sem elas, em produção, a tela "Esqueci minha senha" avisa que a recuperação por e-mail ainda não está ativa (nada é enviado) |
 | `NEXT_PUBLIC_CONTACT_EMAIL` | opcional — e-mail real de contato |
 
 ## Plano Hobby (gratuito)
