@@ -19,11 +19,11 @@ Regra: nenhuma tarefa vira [CONCLUÍDO] sem evidência verificada. Níveis de ve
 | --- | --- | --- | --- | --- | --- |
 | Produto | 8 | 2 | 1 | 2 | 1 |
 | Validação | 4 | 4 | 1 | 0 | 0 |
-| Marketing | 6 | 3 | 1 | 0 | 0 |
+| Marketing | 6 | 2 | 2 | 0 | 0 |
 | Comercial | 1 | 1 | 1 | 0 | 1 |
 | Financeiro | 1 | 0 | 0 | 0 | 3 |
 | Legal | 0 | 4 | 0 | 0 | 0 |
-| **Total** | **20** | **14** | **4** | **2** | **5** |
+| **Total** | **20** | **13** | **5** | **2** | **5** |
 
 ## Diagnóstico real do produto (auditoria de 05/11/2026)
 | Área | Implementado | Testado | Em produção | Validado em ambiente real |
@@ -84,7 +84,7 @@ Achados da auditoria (com evidência):
 | M-03 | Marketing | Roteiros e legendas dos 12 primeiros conteúdos | Média | [CONCLUÍDO] | nenhuma | `materiais-comerciais/ROTEIROS-12-PRIMEIROS-DIAS.md`: gancho, roteiro por cena, legenda, CTA e arte de cada um dos 12 dias (reposts incluídos); dias 5, 9 e 11 marcados com o que depende de fatos reais | Você aprovar a publicação (M-04) e preencher os pontos `[ ... ]` do dia 5 |
 | M-04 | Marketing | Publicar conteúdos no Instagram e TikTok | Média | [PENDENTE] | M-03 e sua aprovação | Nenhuma | Aguardar roteiros |
 | M-05 | Marketing | Perfil do Instagram e TikTok (bio, link, destaques) | Média | [PENDENTE] | C-02 | Nenhuma | Você informar os perfis |
-| M-06 | Marketing | Lista de 10 escolas e educadoras de cílios e unhas para parceria | Média | [PENDENTE] | V-04 | Nenhuma | Montar a lista |
+| M-06 | Marketing | Lista de 10 escolas e educadoras de cílios e unhas para parceria | Média | [EM ANDAMENTO] | V-04 | `materiais-comerciais/PARCERIAS-ESCOLAS-RIO.md` e `PLANILHA-PARCERIAS.csv`: **4 de 10** com fonte pública (Senac RJ, Sebrae Rio, Instituto Embelleze, Thomas Beauty), com o que falta confirmar em cada um; método para achar os outros 6 (Google Maps, hashtags, pergunta "com quem você aprendeu?" nas entrevistas) e rascunho da primeira mensagem | Completar os 6 que faltam e confirmar os 4; escolas e educadoras do Rio não puderam ser verificadas por busca na web; nada foi contatado |
 | M-08 | Marketing | [SUGESTÃO] Peças visuais dos demais dias e capas de destaques do Instagram | Média | [EM ANDAMENTO] | M-03 | Feitas 25 peças novas (41 no total, conferidas visualmente e sem estouro de borda): carrosséis dos dias 16 (6 telas) e 22 (5), Stories do dia 6, capas de Reels dos dias 3, 8, 10, 15, 17, 23, 24 e 25 e 5 capas de destaques | Faltam os dias que dependem de fatos que ainda não existem (5, 9, 13, 18, 19, 20, 26, 29 e 30); reposts (7, 14, 21, 28) não precisam de arte. Nada publicado |
 | C-02 | Comercial | Página de preços e oferta de fundadora | Alta | [PENDENTE] | C-01 | Planos no código ainda mostram "preço em definição" | Atualizar a página depois da decisão |
 | C-03 | Comercial | Roteiro da demonstração de 15 min e da chamada de configuração de 20 min | Média | [CONCLUÍDO] [SUGESTÃO] | nenhuma | `materiais-comerciais/ROTEIROS-DEMONSTRACAO-E-CONFIGURACAO.md`: demonstração de 15 min e chamada de configuração de 20 min, com perguntas, o que nunca fazer e o que registrar | Usar nas primeiras conversas (V-05) |
@@ -137,3 +137,4 @@ O que destrava o lançamento está descrito, passo a passo, em `materiais-comerc
 | 08/11/2026 | P-14: exportação completa de dados | Concluída e testada; progresso 42% (19 de 45). CSV de agenda e de pagamentos, por período, com links nas configurações | `src/server/csv.ts`, `src/server/modules/exports.ts`, rotas `agenda/exportar` e `relatorios/exportar-pagamentos`, `tests/integration/exportacao.test.ts` | Limite de 20 mil linhas por arquivo; não exporta ainda serviços, equipe nem notas internas; revisão jurídica (L-03) pendente |
 | 08/11/2026 | P-11: alertas de baixo uso | Concluída e testada; progresso 44% (20 de 45). Dica de baixo uso na própria conta e lista de contas que pararam no painel do fundador | `src/server/modules/dicas.ts`, `src/server/modules/founder-kpis.ts`, `src/app/admin/painel/page.tsx`, testes de integração | Só alerta; não envia nada; limites de 10 e 14 dias são hipóteses a ajustar com os primeiros dados reais |
 | 08/11/2026 | P-08: e-mail transacional (parte de código) | Em andamento: recuperação de senha e confirmação de e-mail prontas e testadas, aguardando o provedor (F-02). Progresso segue 44% (20 de 45) | `src/server/email.ts`, `email-templates.ts`, `modules/email-tokens.ts`, `src/app/(auth)/*`, `db/migrations/0010_email_tokens.sql`, `docs/DEPLOY.md`, `tests/integration/email-tokens.test.ts` | Nenhum e-mail real foi enviado; depende de F-02 e de um domínio de envio verificado (SPF e DKIM); o cadastro ainda não bloqueia quem não confirmou o e-mail |
+| 09/11/2026 | M-06: parcerias com escolas e educadoras | Em andamento: 4 de 10 com fonte pública e método para os 6 restantes; progresso segue 44% (20 de 45) | `materiais-comerciais/PARCERIAS-ESCOLAS-RIO.md`, `PLANILHA-PARCERIAS.csv` | Busca na web não achou lista confiável de escolas e educadoras do Rio; não inventei nomes; nada contatado |
