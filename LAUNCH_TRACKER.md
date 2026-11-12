@@ -11,19 +11,19 @@ Regra: nenhuma tarefa vira [CONCLUÍDO] sem evidência verificada. Níveis de ve
 - Previsão de lançamento oficial: 01/02/2027 (primeira cobrança)
 - Foco geográfico: Rio de Janeiro (capital). Suporte: Pedro Chaves (horários a definir)
 - Objetivo atual: fechar o mínimo cobrável (WhatsApp real, cobrança, e-mail, importação) e começar as entrevistas de validação
-- Progresso geral: **46% (21 de 46 tarefas verificadas como concluídas)**
+- Progresso geral: **48% (22 de 46 tarefas verificadas como concluídas)**
 - Última atualização: 08/11/2026
 
 ## Dashboard de progresso
 | Área | Concluídas | Pendentes | Em andamento | Bloqueadas | Aguardando minha aprovação |
 | --- | --- | --- | --- | --- | --- |
-| Produto | 8 | 1 | 2 | 2 | 1 |
+| Produto | 9 | 1 | 2 | 2 | 0 |
 | Validação | 5 | 4 | 1 | 0 | 0 |
 | Marketing | 6 | 2 | 2 | 0 | 0 |
 | Comercial | 1 | 1 | 1 | 0 | 1 |
 | Financeiro | 1 | 0 | 0 | 0 | 3 |
 | Legal | 0 | 4 | 0 | 0 | 0 |
-| **Total** | **21** | **12** | **6** | **2** | **5** |
+| **Total** | **22** | **12** | **6** | **2** | **4** |
 
 ## Diagnóstico real do produto (auditoria de 05/11/2026)
 | Área | Implementado | Testado | Em produção | Validado em ambiente real |
@@ -50,6 +50,7 @@ Achados da auditoria (com evidência):
 | P-01 | Produto | Agenda sem conflito, agendamento online, CRM leve, pagamentos manuais e indicadores | Alta | [CONCLUÍDO] | Testado: `npx vitest run` 21 arquivos, 319 testes passam (05/11/2026); em produção: deploy `bss` com sucesso. Não validado com cliente real | 05/11/2026 |
 | P-02 | Produto | Motor de mensagens e conversa por WhatsApp (código) | Alta | [CONCLUÍDO] | Testes `automacoes-*`, `whatsapp.test.ts` passam com a Meta simulada. Validação real em P-05 | 05/11/2026 |
 | P-03 | Produto | WhatsApp por salão: conexão assistida, token criptografado, área `/admin/whatsapp` | Alta | [CONCLUÍDO] | PRs 66, 67 e 70 mesclados; deploy com sucesso; `whatsapp-por-salao.test.ts` passa. Faltam variáveis de produção (P-04) | 05/11/2026 |
+| P-04 | Produto | Configurar em produção `WHATSAPP_ENCRYPTION_KEY` e `PLATFORM_ADMIN_USER_IDS` | Crítica | [CONCLUÍDO] | `PLATFORM_ADMIN_USER_IDS` (código da conta da dona) e `WHATSAPP_ENCRYPTION_KEY` (28 caracteres, secreta) cadastradas em Production e conferidas pelos nomes na Vercel; redeploy de Produção feito depois delas; a dona abriu o painel do fundador em produção | 12/11/2026 |
 | P-07 | Produto | Importação de clientes por planilha (CSV) | Alta | [CONCLUÍDO] | PR 73 mesclado em 06/11/2026; deploy `bss` e `studio-manoella-lopes` com sucesso no commit 013a0d5 (o build aplica as migrações e compila a rota). Testes: `tests/unit/client-import.test.ts` (19) e `tests/integration/importar-clientes.test.ts` (9); fluxo rodado no navegador em desenvolvimento. Não pude abrir o app em produção daqui (rede bloqueada); falta validar com uma planilha real | 06/11/2026 |
 | M-07 | Marketing | [SUGESTÃO] Peças visuais dos primeiros conteúdos: foto de perfil, carrossel do dia 2, post do dia 12, Stories do dia 11 e capas de Reels dos dias 1 e 4 | Média | [CONCLUÍDO] | 16 imagens PNG em `materiais-comerciais/visual/png/` geradas e conferidas visualmente (tamanhos 1080×1080, 1080×1350 e 1080×1920; script `gerar.mjs` checa estouro de borda); fontes e HTML editáveis na mesma pasta. Nada publicado | 06/11/2026 |
 | M-09 | Marketing | [SUGESTÃO] Vídeo de apresentação do produto (2 min 25 s) gravado a partir do próprio app | Média | [CONCLUÍDO] | `materiais-comerciais/video/gravar.mjs` gerou `ge-apresentacao.mp4` (1280×720, 145 s, 7 MB); quadros revisados um a um (página de vendas, painel, importação, WhatsApp, celular da cliente, cartão final). Roteiro e falas em `materiais-comerciais/video/ROTEIRO.md`. O MP4 não está no git (arquivo gerado; refaz com o script) | 06/11/2026 |
@@ -104,7 +105,6 @@ Achados da auditoria (com evidência):
 ## Aguardando sua aprovação
 | ID | Área | Descrição | Prioridade | Status | Por que precisa de você | Próxima ação |
 | --- | --- | --- | --- | --- | --- | --- |
-| P-04 | Produto | Configurar em produção `WHATSAPP_ENCRYPTION_KEY` e `PLATFORM_ADMIN_USER_IDS` | Crítica | [AGUARDANDO MINHA APROVAÇÃO] | Altera configuração de produção. O código de conta é seu e aparece em Configurações, Conta e privacidade | Você aprovar que eu cadastre a chave e informar o código de conta, ou cadastrar você mesma |
 | C-01 | Comercial | Definir o preço inicial do Pro a testar (R$ 49, R$ 69 ou R$ 89) | Alta | [AGUARDANDO MINHA APROVAÇÃO] | Decisão comercial sua | Responder |
 | F-01 | Financeiro | Escolher o provedor de cobrança recorrente (Asaas, Iugu, Pagar.me ou Stripe) | Alta | [AGUARDANDO MINHA APROVAÇÃO] | Contratar ferramenta | Eu comparo tarifas oficiais quando houver acesso às páginas; você escolhe |
 | F-02 | Financeiro | Escolher o provedor de e-mail transacional | Alta | [AGUARDANDO MINHA APROVAÇÃO] | Contratar ferramenta | Você escolher (Resend ou Postmark são os citados) |
@@ -142,3 +142,4 @@ O que destrava o lançamento está descrito, passo a passo, em `materiais-comerc
 | 12/11/2026 | Automação da lista de espera no Make (pedido do dono): V-10 [SUGESTÃO] | Concluída e testada em produção; progresso 46% (21 de 46). Planilha criada, cenário ligado, Telegram avisando. Make conectado à sessão (conector do claude.ai), Gmail descartado (o Make não aceita Gmail pessoal por esse caminho) | `src/server/make-webhook.ts` (PR 99), `docs/DEPLOY.md`, `LAUNCH_TRACKER.md`; no Make: webhook, cenário e planilha | Nome e WhatsApp passam por Make, Google e Telegram: a política de privacidade ainda não cita isso (L-03); a linha de teste ficou na planilha e no banco de produção; o cenário depende da conta `aemacucar@gmail.com` do Make; o webhook é secreto |
 | 12/11/2026 | L-03: material para a revisão jurídica da privacidade | Preparado o mapa dos dados (usuárias, clientes finais, lista de espera, origem do cadastro, e-mail, exportações), os operadores (Vercel, Neon, Make, Google, Telegram, Meta), rascunhos de parágrafos e 7 perguntas para o revisor. A política publicada não foi alterada; progresso segue 46% (21 de 46) | `materiais-comerciais/RASCUNHO-PRIVACIDADE-PARA-REVISAO.md`, `LAUNCH_TRACKER.md` | Não é parecer jurídico; a política ainda não cita a lista de espera nem o tratamento por Make, Google e Telegram; não divulgar a landing antes da revisão |
 | 12/11/2026 | P-13 e lista de espera: apoio ao dono | Lista de espera ganhou **remover pessoa** (com confirmação e auditoria só com o código) e **baixar CSV** na página da equipe; app ganhou `/api/saude` para monitoramento; guia de backup e monitoramento. P-13 em andamento; progresso segue 46% (21 de 46) | `src/server/modules/waitlist.ts`, `src/app/admin/lista-de-espera/*`, `src/app/api/saude/route.ts`, `docs/BACKUP-E-MONITORAMENTO.md`, `tests/integration/lista-espera-admin.test.ts` | Plano e backups do Neon não verificados; remover do banco não apaga a linha da planilha do Make (aviso na tela); as páginas da equipe só abrem depois da P-04 |
+| 12/11/2026 | P-04: variáveis de produção e acesso de administradora | Concluída: `PLATFORM_ADMIN_USER_IDS` cadastrada por mim (com aprovação por escrito) e `WHATSAPP_ENCRYPTION_KEY` cadastrada pela própria dona (o segredo nunca passou pelo chat); redeploy de Produção; painel do fundador, lista de espera e `/api/saude` abrem em produção; progresso 48% (22 de 46). Guia da Meta e do agendador escrito (`materiais-comerciais/WHATSAPP-META-PASSO-A-PASSO.md`) | `LAUNCH_TRACKER.md`, `materiais-comerciais/WHATSAPP-META-PASSO-A-PASSO.md` | P-05 segue bloqueada: precisa de conta da Meta e número de teste; P-06 precisa do `CRON_SECRET` novo na Vercel e no GitHub; a Vercel está no plano Hobby (uso comercial exige Pro pelos termos, confirmar antes de cobrar) |
