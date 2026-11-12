@@ -11,19 +11,19 @@ Regra: nenhuma tarefa vira [CONCLUÍDO] sem evidência verificada. Níveis de ve
 - Previsão de lançamento oficial: 01/02/2027 (primeira cobrança)
 - Foco geográfico: Rio de Janeiro (capital). Suporte: Pedro Chaves (horários a definir)
 - Objetivo atual: fechar o mínimo cobrável (WhatsApp real, cobrança, e-mail, importação) e começar as entrevistas de validação
-- Progresso geral: **44% (20 de 45 tarefas verificadas como concluídas)**
+- Progresso geral: **46% (21 de 46 tarefas verificadas como concluídas)**
 - Última atualização: 08/11/2026
 
 ## Dashboard de progresso
 | Área | Concluídas | Pendentes | Em andamento | Bloqueadas | Aguardando minha aprovação |
 | --- | --- | --- | --- | --- | --- |
 | Produto | 8 | 2 | 1 | 2 | 1 |
-| Validação | 4 | 4 | 1 | 0 | 0 |
+| Validação | 5 | 4 | 1 | 0 | 0 |
 | Marketing | 6 | 2 | 2 | 0 | 0 |
 | Comercial | 1 | 1 | 1 | 0 | 1 |
 | Financeiro | 1 | 0 | 0 | 0 | 3 |
 | Legal | 0 | 4 | 0 | 0 | 0 |
-| **Total** | **20** | **13** | **5** | **2** | **5** |
+| **Total** | **21** | **13** | **5** | **2** | **5** |
 
 ## Diagnóstico real do produto (auditoria de 05/11/2026)
 | Área | Implementado | Testado | Em produção | Validado em ambiente real |
@@ -81,6 +81,7 @@ Achados da auditoria (com evidência):
 | V-07 | Validação | Landing com botão "Quero testar" e lista de espera de 3 campos | Alta | [CONCLUÍDO] | P-10 | Seção "Quer testar com ajuda?" na landing (botão "Quero testar" também no topo) com 3 campos (nome, WhatsApp, o que faz) e aceite; migração `0007_lista_espera.sql`; repetir o número não duplica; guarda o canal; página da equipe `/admin/lista-de-espera`; testado de ponta a ponta | Depois do deploy, ler a lista em `/admin/lista-de-espera` (precisa de P-04 para o acesso de administradora) e chamar cada pessoa no WhatsApp |
 | V-08 | Validação | Teste de preço (Van Westendorp e ofertas de R$ 49, R$ 69, R$ 89) | Média | [PENDENTE] | C-01, V-05 | Perguntas no roteiro | Executar nas demonstrações |
 | V-09 | Validação | Recrutar 15 profissionais para o beta | Alta | [PENDENTE] | V-05, P-05 | Nenhuma | Convidar as entrevistadas que toparem |
+| V-10 | Validação | [SUGESTÃO] Automação no Make da lista de espera: planilha do Google e aviso no Telegram para o dono | Média | [CONCLUÍDO] | Testado de ponta a ponta em produção: formulário da landing → app (variável `MAKE_WAITLIST_WEBHOOK_URL`) → webhook do Make → linha na planilha "Gê - lista de espera" → mensagem no Telegram; execução real de 12/11/2026 com 3 operações e sucesso; gravação em texto puro (sem executar fórmulas); só o pedido marcado como `waitlist.joined` passa | 12/11/2026 |
 | M-03 | Marketing | Roteiros e legendas dos 12 primeiros conteúdos | Média | [CONCLUÍDO] | nenhuma | `materiais-comerciais/ROTEIROS-12-PRIMEIROS-DIAS.md`: gancho, roteiro por cena, legenda, CTA e arte de cada um dos 12 dias (reposts incluídos); dias 5, 9 e 11 marcados com o que depende de fatos reais | Você aprovar a publicação (M-04) e preencher os pontos `[ ... ]` do dia 5 |
 | M-04 | Marketing | Publicar conteúdos no Instagram e TikTok | Média | [PENDENTE] | M-03 e sua aprovação | Nenhuma | Aguardar roteiros |
 | M-05 | Marketing | Perfil do Instagram e TikTok (bio, link, destaques) | Média | [PENDENTE] | C-02 | Nenhuma | Você informar os perfis |
@@ -138,3 +139,4 @@ O que destrava o lançamento está descrito, passo a passo, em `materiais-comerc
 | 08/11/2026 | P-11: alertas de baixo uso | Concluída e testada; progresso 44% (20 de 45). Dica de baixo uso na própria conta e lista de contas que pararam no painel do fundador | `src/server/modules/dicas.ts`, `src/server/modules/founder-kpis.ts`, `src/app/admin/painel/page.tsx`, testes de integração | Só alerta; não envia nada; limites de 10 e 14 dias são hipóteses a ajustar com os primeiros dados reais |
 | 08/11/2026 | P-08: e-mail transacional (parte de código) | Em andamento: recuperação de senha e confirmação de e-mail prontas e testadas, aguardando o provedor (F-02). Progresso segue 44% (20 de 45) | `src/server/email.ts`, `email-templates.ts`, `modules/email-tokens.ts`, `src/app/(auth)/*`, `db/migrations/0010_email_tokens.sql`, `docs/DEPLOY.md`, `tests/integration/email-tokens.test.ts` | Nenhum e-mail real foi enviado; depende de F-02 e de um domínio de envio verificado (SPF e DKIM); o cadastro ainda não bloqueia quem não confirmou o e-mail |
 | 09/11/2026 | M-06: parcerias com escolas e educadoras | Em andamento: 4 de 10 com fonte pública e método para os 6 restantes; progresso segue 44% (20 de 45) | `materiais-comerciais/PARCERIAS-ESCOLAS-RIO.md`, `PLANILHA-PARCERIAS.csv` | Busca na web não achou lista confiável de escolas e educadoras do Rio; não inventei nomes; nada contatado |
+| 12/11/2026 | Automação da lista de espera no Make (pedido do dono): V-10 [SUGESTÃO] | Concluída e testada em produção; progresso 46% (21 de 46). Planilha criada, cenário ligado, Telegram avisando. Make conectado à sessão (conector do claude.ai), Gmail descartado (o Make não aceita Gmail pessoal por esse caminho) | `src/server/make-webhook.ts` (PR 99), `docs/DEPLOY.md`, `LAUNCH_TRACKER.md`; no Make: webhook, cenário e planilha | Nome e WhatsApp passam por Make, Google e Telegram: a política de privacidade ainda não cita isso (L-03); a linha de teste ficou na planilha e no banco de produção; o cenário depende da conta `aemacucar@gmail.com` do Make; o webhook é secreto |
