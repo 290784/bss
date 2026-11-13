@@ -3,6 +3,7 @@
 Tempo total: cerca de 4 horas, em 2 dias. Só comece a prospectar depois do **Módulo 8 (checklist)**. Tudo aqui vem dos arquivos desta pasta e do código; onde algo **não está definido**, o texto diz "em definição" e você deve dizer o mesmo à cliente.
 
 ## Trilha de estudo
+
 | Dia | Módulo | Tempo | O que fazer |
 | --- | --- | --- | --- |
 | 1 | 1. Quem compra e por quê | 30 min | Ler abaixo e responder às perguntas de fixação |
@@ -24,6 +25,7 @@ Tempo total: cerca de 4 horas, em 2 dias. Só comece a prospectar depois do **M�
 
 ## Módulo 2. O produto na prática (só o que existe)
 Antes de estudar, **use**: cadastre-se em teste, crie 2 serviços, 1 cliente e 1 agendamento, abra o link de agendamento no celular e importe uma planilha pequena.
+
 | Recurso | O que ela ganha | Onde mostrar |
 | --- | --- | --- |
 | Agenda por dia, semana e mês, por profissional | Sem conflito de horário; considera duração, limpeza, pausas e bloqueios | Slide 6 |
@@ -37,6 +39,7 @@ Antes de estudar, **use**: cadastre-se em teste, crie 2 serviços, 1 cliente e 1
 **Também existe:** teste de 14 dias com recursos do Studio, sem cartão; funciona no navegador (sem instalar); dados isolados por negócio; exportação de dados.
 
 ## Módulo 3. Planos (fatos do sistema)
+
 | | Solo | Pro | Studio | Business |
 | --- | --- | --- | --- | --- |
 | Profissionais | 1 | até 2 | até 10 | até 100 |
@@ -48,6 +51,7 @@ Antes de estudar, **use**: cadastre-se em teste, crie 2 serviços, 1 cliente e 1
 - Regra de recomendação: **o menor plano que resolve a dor hoje**. Quem atende sozinha e quer lembrete automático precisa do Pro (o Solo não inclui).
 
 ## Módulo 4. Diga / nunca diga
+
 | Pode dizer | Nunca diga |
 | --- | --- |
 | "Ajuda a reduzir faltas e horários vagos" | "Você vai faturar mais" / "elimina faltas" |
@@ -60,12 +64,19 @@ Se não souber: "vou confirmar e te respondo hoje". Depois anote em `BSS_COMMERC
 
 ## Módulo 5. A conversa
 Estrutura de 15 a 20 min (detalhe no `BSS_CALL_SCRIPTS.md`):
-1. **Abrir (1 min):** nome, tempo, objetivo. 2. **Descobrir (4 min):** quantas pessoas atendem, onde marcam hoje, quantas faltas por mês, quanto vale um atendimento. 3. **Mostrar só o que responde à dor (6 min).** 4. **Recomendar o plano (2 min).** 5. **Fechar o próximo passo (2 min):** criar a conta junto, agora. Link com o código `call-vendas`.
+
+1. **Abrir (1 min):** nome, tempo, objetivo.
+2. **Descobrir (4 min):** quantas pessoas atendem, onde marcam hoje, quantas faltas por mês, quanto vale um atendimento.
+3. **Mostrar só o que responde à dor (6 min).**
+4. **Recomendar o plano (2 min).**
+5. **Fechar o próximo passo (2 min):** criar a conta junto, agora. Link com o código `call-vendas`.
+
 Perguntas boas: "Qual dessas situações mais te incomoda?" · "Como a cliente marca hoje?" · "O que acontece quando alguém falta?"
 Depois da call: registre dor, plano sugerido, objeção e próximo contato.
 
 ## Módulo 6. Objeções
 Estude as 6 mais comuns (manual completo no `BSS_OBJECTION_HANDLING.md`). Fórmula: **ouvir, confirmar, responder em 2 frases, perguntar.**
+
 | Objeção | Ideia da resposta | Pergunta de volta |
 | --- | --- | --- |
 | "Está caro" | O valor ainda está em definição; o teste é grátis e sem cartão | "O que você gostaria de ver funcionando para valer a pena?" |
@@ -76,7 +87,17 @@ Estude as 6 mais comuns (manual completo no `BSS_OBJECTION_HANDLING.md`). Fórmu
 | "Quero desconto" | Não há desconto definido; o teste é a condição | "Ficou alguma dúvida do que o plano entrega?" |
 
 ## Módulo 7. Prova (gabarito no fim)
-1. Quantas profissionais cabem no Pro? 2. O Solo inclui lembrete automático? 3. Quanto custa o plano Studio? 4. O WhatsApp já funciona com o número de qualquer cliente hoje? 5. Quanto tempo dura o teste e precisa de cartão? 6. A gestão de várias unidades existe? 7. Uma cliente pergunta se tem desconto de lançamento. O que responde? 8. O que acontece quando o teste termina sem plano ativo? 9. Que recurso do Studio já é liberado em todos os planos? 10. Qual é o link com código que você envia?
+
+1. Quantas profissionais cabem no Pro?
+2. O Solo inclui lembrete automático?
+3. Quanto custa o plano Studio?
+4. O WhatsApp já funciona com o número de qualquer cliente hoje?
+5. Quanto tempo dura o teste e precisa de cartão?
+6. A gestão de várias unidades existe?
+7. Uma cliente pergunta se tem desconto de lançamento. O que responde?
+8. O que acontece quando o teste termina sem plano ativo?
+9. Que recurso do Studio já é liberado em todos os planos?
+10. Qual é o link com código que você envia?
 
 **Simulações (com outra pessoa):** (A) manicure que atende sozinha e "vai pensar"; (B) dona de salão com 4 profissionais que pergunta preço; (C) lash designer que já usa outro sistema e pergunta pelo WhatsApp. Critério de aprovação: não inventar nada, descobrir a dor antes de mostrar, terminar com o próximo passo combinado.
 
@@ -89,4 +110,14 @@ Estude as 6 mais comuns (manual completo no `BSS_OBJECTION_HANDLING.md`). Fórmu
 - [ ] Tenho o link de cadastro com código e um jeito de registrar cada call
 
 ## Gabarito
-1. Até 2. 2. Não (só Pro, Studio e Business). 3. Em definição: não há preço oficial. 4. Não: ainda não foi validado com a Meta; é ativado com a equipe. 5. 14 dias, sem cartão. 6. Não: está em desenvolvimento. 7. Não há desconto definido; o teste grátis é a condição; avisamos antes de qualquer cobrança. 8. Sem plano ativo, o acesso fica só para consulta e exportação (sem novos agendamentos). 9. Relatórios por profissional (aparece como de Studio/Business na landing, mas o sistema libera para todos). 10. O link de cadastro com `?c=call-vendas` (`presentation/dados-comerciais.js`).
+
+1. Até 2 profissionais.
+2. Não (só Pro, Studio e Business).
+3. Em definição: não há preço oficial.
+4. Não: ainda não foi validado com a Meta; é ativado com a equipe.
+5. 14 dias, sem cartão.
+6. Não: está em desenvolvimento.
+7. Não há desconto definido; o teste grátis é a condição; avisamos antes de qualquer cobrança.
+8. Sem plano ativo, o acesso fica só para consulta e exportação (sem novos agendamentos).
+9. Relatórios por profissional (aparece como de Studio/Business na landing, mas o sistema libera para todos).
+10. O link de cadastro com `?c=call-vendas` (`presentation/dados-comerciais.js`).
