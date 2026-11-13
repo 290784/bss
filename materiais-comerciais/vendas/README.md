@@ -10,7 +10,7 @@ Apresentação para chamadas por compartilhamento de tela e manuais do vendedor.
 5. PDF: `?imprimir` + imprimir em 1920×1080. Prontos em `exports/` (PDF de 23 páginas; PPTX com imagens dos slides e as notas, **não editável**).
 
 ## Documentos (`documents/`)
-Planos comparativo, playbook de upsell, manual de objeções (18), roteiros de call (10/20/30 min), fechamento, guia do vendedor e pendências comerciais.
+Estudo do vendedor (comece por aqui), planos comparativo, playbook de upsell, manual de objeções (18), roteiros de call (10/20/30 min), fechamento, guia do vendedor e pendências comerciais.
 
 ## Telas
 `capturar.mjs` refaz as capturas reais da conta de demonstração (dados fictícios): `BASE_URL=... VITRINE_PASSWORD=... node capturar.mjs`.
