@@ -1,0 +1,26 @@
+/* NOTAS PRIVADAS DO VENDEDOR — carregado somente no modo apresentador (?apresentador). Nunca aparece na tela compartilhada. */
+window.NOTAS_PRIVADAS = [
+/*1*/ "Abertura (30s). Cumprimente, confirme o nome e o tempo disponível. Pergunte: \"Posso te mostrar em 15 min e você me diz se faz sentido?\". Não fale de preço agora.",
+/*2*/ "Pergunta-chave: \"Qual dessas mais te incomoda hoje?\". Deixe ela falar. Anote a dor principal: ela define o plano e o fechamento. Não corrija, valide.",
+/*3*/ "A conta usa números DELA (valor do atendimento e faltas por mês). É exemplo hipotético, não promessa. Diga: \"A Gê ajuda a reduzir\", nunca \"elimina\" nem garante resultado.",
+/*4*/ "Apresente em uma frase: agenda + relacionamento num lugar só. Foque só nos 4 pilares. Evite listar tudo.",
+/*5*/ "Reforce: 4 passos, poucos minutos. Ofereça configurar junto. Funciona no navegador, sem instalar.",
+/*6*/ "Demo da agenda (dados fictícios, diga isso). Mostre: dia/semana, sem conflito, previsto do dia. Pergunte quantas pessoas atendem na agenda dela.",
+/*7*/ "Abra o atendimento. Destaque confirmar/concluir/falta, sinal e pagamento, comprovante. Sugestão de serviço extra: mencione só se ela vende combos.",
+/*8*/ "Este é o momento 'uau': a cliente marca sozinha. Pergunte onde ela recebe pedidos hoje (Instagram? WhatsApp?). Link vai na bio.",
+/*9*/ "Se ela já usa outro sistema/caderno: importação por planilha com prévia. Cliente sumida = oportunidade de reativar.",
+/*10*/ "Indicadores explicados. Não prometa crescimento. Mostre onde ela vê recebido/previsto e ocupação.",
+/*11*/ "SEJA HONESTO: WhatsApp pelo número do negócio exige ativação conosco (Meta ainda em validação). Não prometa data. Hoje o teste cobre agenda, link, clientes e indicadores.",
+/*12*/ "Resuma os benefícios na linguagem da dor que ela disse no slide 2. Use as palavras dela.",
+/*13*/ "Confiança: dados isolados por negócio, consentimento, exportação. Se perguntarem de LGPD/contrato formal: diga que a revisão jurídica está em andamento; não invente documentos.",
+/*14*/ "Preços NÃO definidos. Não cite valores. Diga: \"Os valores estão em definição; você testa 14 dias e é avisada antes de qualquer cobrança.\" Business: gestão de unidades em desenvolvimento.",
+/*15*/ "Tabela só com o que existe. Não afirme que relatórios por profissional ou limite de unidades é bloqueado por plano se ela perguntar detalhes: consulte BSS_COMMERCIAL_PENDING (itens C1–C7).",
+/*16*/ "Faça as 2 perguntas e recomende o MENOR plano que resolve a dor. Sem empurrar plano maior. Registre a escolha.",
+/*17*/ "Só se ela perguntar 'e os outros planos?'. Caso contrário, pule rápido.",
+/*18*/ "Mostre que não precisa decidir tudo agora. Dados continuam no mesmo lugar ao mudar de plano.",
+/*19*/ "Evolução por sinal real (confirmações, equipe, 2º endereço). Nada de pressão.",
+/*20*/ "Condição oficial: 14 dias grátis, Studio, sem cartão, aviso antes de cobrar. Sem desconto/oferta inventados. Se perguntar valor: \"em definição\" e ofereça avisar primeiro.",
+/*21*/ "Use só as dúvidas que ela ainda não levantou. Objeções detalhadas: BSS_OBJECTION_HANDLING.",
+/*22*/ "Peça o compromisso: \"Posso criar sua conta agora, comigo, em 5 minutos?\". O link já mede a origem (call-vendas). Silêncio depois da pergunta.",
+/*23*/ "Combine data/hora do próximo contato antes de desligar. Suporte: canal/horário ainda não definidos, não prometa SLA. Registre a call no seu controle."
+];

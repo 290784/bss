@@ -1,0 +1,323 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Gê · Apresentação comercial</title>
+<link rel="stylesheet" href="styles/deck.css">
+</head>
+<body>
+<div id="palco">
+
+<!-- 01 CAPA -->
+<section class="slide escuro" data-titulo="Capa" style="justify-content:center">
+  <div style="font-family:Allura,cursive;font-size:250px;line-height:.9;color:var(--ouro-cl);margin-left:-8px">Gê</div>
+  <h1 style="margin-top:6px">Agenda cheia,<br><span class="ouro">cabeça leve.</span></h1>
+  <div class="fio"></div>
+  <p class="lead" style="max-width:1300px">A agenda e a gestão do seu negócio de beleza, num lugar só.</p>
+  <div style="display:flex;gap:16px;margin-top:46px;flex-wrap:wrap"><span class="chip">Agenda</span><span class="chip">Link de agendamento</span><span class="chip">Clientes</span><span class="chip">Indicadores</span></div>
+  <div class="rodape" style="justify-content:flex-start;gap:26px"><span>Teste grátis por 14 dias</span><span>·</span><span>sem cartão de crédito</span></div>
+</section>
+
+<!-- 02 DORES -->
+<section class="slide claro" data-titulo="O dia a dia de quem trabalha com beleza">
+  <div class="eyebrow">Reconhece alguma?</div>
+  <h2>O dia a dia de quem trabalha com beleza</h2><div class="fio"></div>
+  <div class="grade g3" style="flex:1;align-content:start">
+    <div class="cartao"><div class="icone"><i data-ic="clock"></i></div><h3>A cliente esquece o horário</h3><p>E o horário fica vago em cima da hora.</p></div>
+    <div class="cartao"><div class="icone"><i data-ic="message"></i></div><h3>Agenda em mil conversas</h3><p>Caderno, WhatsApp e memória, tudo misturado.</p></div>
+    <div class="cartao"><div class="icone"><i data-ic="bell"></i></div><h3>Confirmar um por um</h3><p>Todo dia, à mão, para cada cliente.</p></div>
+    <div class="cartao"><div class="icone"><i data-ic="calendar"></i></div><h3>Horário vago que não volta</h3><p>Sem aviso, não dá para encaixar outra pessoa.</p></div>
+    <div class="cartao"><div class="icone"><i data-ic="chart"></i></div><h3>Sem saber como o mês vai</h3><p>Quanto entrou, quanto está previsto e quem faltou.</p></div>
+    <div class="cartao"><div class="icone"><i data-ic="users"></i></div><h3>Cliente que some</h3><p>E ninguém percebe até ser tarde.</p></div>
+  </div>
+  <div class="rodape"><span class="marca">Gê</span><span class="num"></span></div>
+</section>
+
+<!-- 03 CUSTO -->
+<section class="slide escuro" data-titulo="Um horário vago é dinheiro que não volta">
+  <div class="eyebrow">O custo da desorganização</div>
+  <h2>Um horário vago é <span class="ouro">dinheiro que não volta</span></h2><div class="fio"></div>
+  <div class="calc">
+    <div>
+      <label for="c-ticket">Quanto vale um atendimento seu (R$)?</label>
+      <input id="c-ticket" type="number" min="0" value="150" inputmode="numeric">
+      <label for="c-faltas">Quantas faltas por mês?</label>
+      <input id="c-faltas" type="number" min="0" value="3" inputmode="numeric">
+      <span class="hip">Exemplo hipotético: troque pelos seus números</span>
+    </div>
+    <div class="saida"><div class="suave" style="font-size:30px;font-weight:800;margin-bottom:12px">Deixa de entrar por ano</div><div class="v" id="c-saida">R$ 5.400</div><div class="f" id="c-formula">150 × 3 faltas por mês × 12 meses</div></div>
+  </div>
+  <p class="lead" style="margin-top:34px;font-size:32px">A Gê ajuda a <b>reduzir</b> faltas e horários vagos, com lembrete e confirmação.</p>
+  <div class="rodape"><span class="marca">Gê</span><span class="num"></span></div>
+</section>
+
+<!-- 04 A GÊ -->
+<section class="slide claro" data-titulo="A Gê">
+  <div class="eyebrow">Conheça a Gê</div>
+  <h2>A agenda e o relacionamento do seu negócio, <span class="ouro">num lugar só</span></h2><div class="fio"></div>
+  <p class="lead">Menos tempo administrando, menos horários perdidos e mais clientes voltando.</p>
+  <div class="grade g4" style="margin-top:46px">
+    <div class="cartao"><div class="icone"><i data-ic="calendar"></i></div><h3>Agenda sem conflito</h3><p>Por dia, semana e mês, por profissional.</p></div>
+    <div class="cartao"><div class="icone"><i data-ic="link"></i></div><h3>Link de agendamento</h3><p>Para a bio do Instagram: as clientes marcam sozinhas.</p></div>
+    <div class="cartao"><div class="icone"><i data-ic="users"></i></div><h3>Ficha da cliente</h3><p>Histórico, última visita e quem está sumida.</p></div>
+    <div class="cartao"><div class="icone"><i data-ic="chart"></i></div><h3>Indicadores explicados</h3><p>Cada número com a explicação de como é calculado.</p></div>
+  </div>
+  <p class="suave" style="margin-top:34px;font-size:27px">Para cabeleireiras, manicures, lash designers, sobrancelhistas, esteticistas, maquiadoras, depiladoras, massoterapeutas e clínicas.</p>
+  <div class="rodape"><span class="marca">Gê</span><span class="num"></span></div>
+</section>
+
+<!-- 05 COMO FUNCIONA -->
+<section class="slide claro" data-titulo="Como funciona">
+  <div class="eyebrow">Como funciona</div>
+  <h2>Do cadastro ao primeiro agendamento em poucos minutos</h2><div class="fio"></div>
+  <div class="fluxo">
+    <div class="passo"><div class="n">1</div><h3>Cadastro</h3><p>Poucos minutos. 14 dias grátis, sem cartão.</p></div>
+    <div class="passo"><div class="n">2</div><h3>Configuração</h3><p>Negócio, horários e serviços, guiado. Importe suas clientes por planilha.</p></div>
+    <div class="passo"><div class="n">3</div><h3>Agenda e link</h3><p>Suas clientes marcam sozinhas, só em horários livres.</p></div>
+    <div class="passo"><div class="n">4</div><h3>Acompanhamento</h3><p>Lembrete com confirmação, indicadores e dicas.</p></div>
+  </div>
+  <div class="nota-honesta" style="margin-top:56px">A Gê funciona no navegador do celular, tablet ou computador. Não precisa instalar nada.</div>
+  <div class="rodape"><span class="marca">Gê</span><span class="num"></span></div>
+</section>
+
+<!-- 06 DEMO AGENDA -->
+<section class="slide claro" data-titulo="Demonstração: agenda">
+  <div class="eyebrow">Demonstração · Agenda</div>
+  <h2 style="font-size:66px">Agenda por profissional, <span class="ouro">sem conflito</span></h2><div class="fio" style="margin:20px 0 26px"></div>
+  <div class="duas" style="grid-template-columns:600px 1fr;gap:56px">
+    <ul><li>Visão por dia, semana e mês</li><li>Considera duração, tempo de limpeza, pausas e bloqueios</li><li>Mostra quanto está previsto e quem tem horário livre</li><li>Encaixe só quando você decidir</li></ul>
+    <div><div class="moldura"><div class="barra"><i></i><i></i><i></i></div><img src="screenshots/agenda-dia.png" alt="Agenda do dia da Gê"></div><div class="legenda">Tela real da Gê · dados fictícios de demonstração</div></div>
+  </div>
+  <div class="rodape"><span class="marca">Gê</span><span class="num"></span></div>
+</section>
+
+<!-- 07 DEMO ATENDIMENTO -->
+<section class="slide claro" data-titulo="Demonstração: atendimento">
+  <div class="eyebrow">Demonstração · Atendimento</div>
+  <h2 style="font-size:66px">Tudo do atendimento <span class="ouro">num toque</span></h2><div class="fio" style="margin:20px 0 26px"></div>
+  <div class="duas" style="grid-template-columns:600px 1fr;gap:56px">
+    <ul><li>Serviços, duração e valor</li><li>Confirmar, concluir ou marcar falta</li><li>Registrar sinal e pagamento</li><li>Comprovante para a cliente salvar e confirmar presença</li><li>Sugestão de serviço extra</li></ul>
+    <div><div class="moldura"><div class="barra"><i></i><i></i><i></i></div><img src="screenshots/agenda-atendimento.png" alt="Atendimento aberto na Gê"></div><div class="legenda">Tela real da Gê · dados fictícios de demonstração</div></div>
+  </div>
+  <div class="rodape"><span class="marca">Gê</span><span class="num"></span></div>
+</section>
+
+<!-- 08 DEMO CLIENTE MARCA -->
+<section class="slide escuro" data-titulo="Demonstração: a cliente marca sozinha">
+  <div class="eyebrow">Demonstração · Agendamento online</div>
+  <h2 style="font-size:66px">A cliente <span class="ouro">marca sozinha</span></h2><div class="fio" style="margin:20px 0 26px"></div>
+  <div class="duas" style="grid-template-columns:760px 1fr;gap:70px">
+    <ul style="color:#efe2e9"><li>Um link para a bio do Instagram e para o WhatsApp</li><li>Ela vê só horários livres, no seu expediente</li><li>Você decide se confirma na hora ou revisa antes</li><li>Sem instalar nada</li></ul>
+    <div><div class="duplo"><div class="celular"><img src="screenshots/cliente-pagina-publica.png" alt="Página de agendamento"></div><div class="celular" style="margin-top:50px"><img src="screenshots/cliente-escolhe-horario.png" alt="Cliente escolhendo o horário"></div></div><div class="legenda">Tela real da Gê, vista pela cliente · dados fictícios de demonstração</div></div>
+  </div>
+  <div class="rodape"><span class="marca">Gê</span><span class="num"></span></div>
+</section>
+
+<!-- 09 DEMO CLIENTES -->
+<section class="slide claro" data-titulo="Demonstração: clientes e importação">
+  <div class="eyebrow">Demonstração · Clientes</div>
+  <h2 style="font-size:66px">Suas clientes, <span class="ouro">sem recomeçar do zero</span></h2><div class="fio" style="margin:20px 0 26px"></div>
+  <div class="duas" style="grid-template-columns:600px 1fr;gap:56px">
+    <ul><li>Ficha com histórico e última visita</li><li>Quem está sumida e quem são as mais fiéis</li><li>Importe a lista de outro sistema por planilha, com prévia antes de gravar</li><li>Exporte quando quiser</li></ul>
+    <div><div class="moldura"><div class="barra"><i></i><i></i><i></i></div><img src="screenshots/clientes-importar.png" alt="Importação de clientes"></div><div class="legenda">Tela real da Gê · dados fictícios de demonstração</div></div>
+  </div>
+  <div class="rodape"><span class="marca">Gê</span><span class="num"></span></div>
+</section>
+
+<!-- 10 DEMO PAINEL -->
+<section class="slide claro" data-titulo="Demonstração: painel e relatórios">
+  <div class="eyebrow">Demonstração · Indicadores</div>
+  <h2 style="font-size:66px">Veja como o negócio está indo, <span class="ouro">em um olhar</span></h2><div class="fio" style="margin:20px 0 26px"></div>
+  <div class="duas" style="grid-template-columns:560px 1fr;gap:50px">
+    <ul><li>Recebido, previsto e a receber</li><li>Ocupação, faltas, ticket médio e clientes novas</li><li>Como está cada profissional</li><li>Dicas da Gê com base nos seus dados</li></ul>
+    <div><div class="duplo" style="gap:26px"><div style="flex:1"><div class="moldura"><div class="barra"><i></i><i></i><i></i></div><img src="screenshots/inicio.png" alt="Início"></div></div><div style="flex:1"><div class="moldura"><div class="barra"><i></i><i></i><i></i></div><img src="screenshots/relatorios.png" alt="Relatórios"></div></div></div><div class="legenda">Telas reais da Gê · dados fictícios de demonstração</div></div>
+  </div>
+  <div class="rodape"><span class="marca">Gê</span><span class="num"></span></div>
+</section>
+
+<!-- 11 DEMO WHATSAPP -->
+<section class="slide claro" data-titulo="Demonstração: lembrete no WhatsApp">
+  <div class="eyebrow">Demonstração · Lembrete com confirmação</div>
+  <h2 style="font-size:66px">Lembrete na véspera, <span class="ouro">confirmação com um toque</span></h2><div class="fio" style="margin:20px 0 22px"></div>
+  <div class="duas" style="grid-template-columns:640px 1fr;gap:56px">
+    <div>
+      <ul><li>Sai às 9h do dia anterior</li><li>A cliente toca em “Confirmo” e a agenda muda sozinha</li><li>Pode pedir para remarcar</li><li>Oferta de serviço extra dentro da conversa</li></ul>
+      <div class="nota-honesta">Pelo número do seu próprio negócio. É ativado junto com a nossa equipe, numa chamada rápida. Até lá, nenhuma mensagem é enviada sem você saber.</div>
+    </div>
+    <div><div class="moldura"><div class="barra"><i></i><i></i><i></i></div><img src="screenshots/whatsapp-automacoes.png" alt="Automações do WhatsApp"></div><div class="legenda">Tela real da Gê · exemplo de conversa com dados fictícios</div></div>
+  </div>
+  <div class="rodape"><span class="marca">Gê</span><span class="num"></span></div>
+</section>
+
+<!-- 12 BENEFICIOS -->
+<section class="slide escuro" data-titulo="Benefícios">
+  <div class="eyebrow">O que muda no seu dia</div>
+  <h2>Benefícios que você sente <span class="ouro">na rotina</span></h2><div class="fio"></div>
+  <div class="grade g3" style="flex:1;align-content:start">
+    <div class="cartao"><div class="icone"><i data-ic="calendar"></i></div><h3>Organização</h3><p>Agenda única, sem conflito de horário.</p></div>
+    <div class="cartao"><div class="icone"><i data-ic="clock"></i></div><h3>Economia de tempo</h3><p>A cliente marca sozinha; o lembrete confirma por você.</p></div>
+    <div class="cartao"><div class="icone"><i data-ic="check"></i></div><h3>Melhor gestão da agenda</h3><p>Pausas, bloqueios e horários livres considerados.</p></div>
+    <div class="cartao"><div class="icone"><i data-ic="heart"></i></div><h3>Relacionamento</h3><p>Histórico, quem sumiu e quem é fiel.</p></div>
+    <div class="cartao"><div class="icone"><i data-ic="wallet"></i></div><h3>Controle do negócio</h3><p>Sinal, pagamentos, estornos e indicadores.</p></div>
+    <div class="cartao"><div class="icone"><i data-ic="shield"></i></div><h3>Profissionalização</h3><p>Comprovante, página própria e dados no lugar.</p></div>
+  </div>
+  <div class="rodape"><span class="marca">Gê</span><span class="num"></span></div>
+</section>
+
+<!-- 13 SEUS DADOS -->
+<section class="slide claro" data-titulo="Seus dados">
+  <div class="eyebrow">Confiança</div>
+  <h2>Seus dados são <span class="ouro">seus</span></h2><div class="fio"></div>
+  <div class="grade g2" style="flex:1;align-content:start">
+    <div class="cartao"><div class="icone"><i data-ic="shield"></i></div><h3>Cada negócio vê só o seu</h3><p>Isolamento dos dados aplicado no próprio banco de dados.</p></div>
+    <div class="cartao"><div class="icone"><i data-ic="check"></i></div><h3>Você controla os consentimentos</h3><p>Mensagens promocionais só com consentimento da cliente.</p></div>
+    <div class="cartao"><div class="icone"><i data-ic="users"></i></div><h3>Acesso por função</h3><p>Dona, gerente, recepção e profissional veem o que lhes cabe.</p></div>
+    <div class="cartao"><div class="icone"><i data-ic="wallet"></i></div><h3>Exporte quando quiser</h3><p>Clientes, agenda e pagamentos em planilha. Cancelar nunca apaga o financeiro.</p></div>
+  </div>
+  <div class="rodape"><span class="marca">Gê</span><span class="num"></span></div>
+</section>
+
+<!-- 14 PLANOS -->
+<section class="slide claro" data-titulo="Os planos">
+  <div class="eyebrow">Planos</div>
+  <h2 style="font-size:70px">Planos para cada momento do seu negócio</h2><div class="fio" style="margin:20px 0 28px"></div>
+  <div class="grade g4" id="planos-cards" style="flex:1;align-content:stretch">
+    <div class="cartao plano" data-plano="solo"><div class="nome">Solo</div><div class="tag">Para quem atende sozinha</div><ul><li>1 profissional</li><li>1 unidade</li><li>Agenda, clientes e agendamento online</li><li class="x">Sem automações de WhatsApp</li></ul><div class="preco" data-preco="solo"></div></div>
+    <div class="cartao plano" data-plano="pro"><div class="nome">Pro</div><div class="tag">Mais automações para crescer</div><ul><li>Até 2 profissionais</li><li>1 unidade</li><li>Tudo do Solo</li><li>Automações de WhatsApp</li></ul><div class="preco" data-preco="pro"></div></div>
+    <div class="cartao plano" data-plano="studio"><div class="nome">Studio</div><div class="tag">Para equipes</div><ul><li>Até 10 profissionais</li><li>1 unidade</li><li>Tudo do Pro</li><li>Relatórios por profissional</li></ul><div class="preco" data-preco="studio"></div></div>
+    <div class="cartao plano" data-plano="business"><div class="nome">Business</div><div class="tag">Várias unidades</div><ul><li>Até 100 profissionais</li><li class="e">Várias unidades: em desenvolvimento</li><li>Tudo do Studio</li></ul><div class="preco" data-preco="business"></div></div>
+  </div>
+  <p class="suave" style="font-size:25px;margin-top:20px">Durante o teste de 14 dias você usa os recursos do plano Studio.</p>
+  <div class="rodape"><span class="marca">Gê</span><span class="num"></span></div>
+</section>
+
+<!-- 15 COMPARACAO -->
+<section class="slide claro" data-titulo="Comparação entre planos">
+  <div class="eyebrow">Comparação</div>
+  <h2 style="font-size:66px">Os planos lado a lado</h2><div class="fio" style="margin:18px 0 22px"></div>
+  <table class="tab">
+    <thead><tr><th></th><th>Solo<small>Entrada</small></th><th>Pro<small>Intermediário</small></th><th>Studio<small>Equipes</small></th><th>Business<small>Unidades</small></th></tr></thead>
+    <tbody>
+      <tr><td>Profissionais</td><td>1</td><td>até 2</td><td>até 10</td><td>até 100</td></tr>
+      <tr><td>Agenda, clientes e link de agendamento</td><td class="sim">✓</td><td class="sim">✓</td><td class="sim">✓</td><td class="sim">✓</td></tr>
+      <tr><td>Lembrete com confirmação (WhatsApp)</td><td class="nao">–</td><td class="sim">✓</td><td class="sim">✓</td><td class="sim">✓</td></tr>
+      <tr><td>Relatórios por profissional</td><td class="nao">–</td><td class="nao">–</td><td class="sim">✓</td><td class="sim">✓</td></tr>
+      <tr><td>Várias unidades</td><td class="nao">–</td><td class="nao">–</td><td class="nao">–</td><td class="em">em desenvolvimento</td></tr>
+      <tr id="linha-preco"><td>Valor mensal</td><td data-preco="solo"></td><td data-preco="pro"></td><td data-preco="studio"></td><td data-preco="business"></td></tr>
+    </tbody>
+  </table>
+  <p class="suave" style="font-size:24px;margin-top:16px">Planos em definição. Teste de 14 dias com os recursos do Studio, sem cartão.</p>
+  <div class="rodape"><span class="marca">Gê</span><span class="num"></span></div>
+</section>
+
+<!-- 16 QUAL PLANO -->
+<section class="slide claro rec" data-titulo="Qual plano faz mais sentido?">
+  <div class="eyebrow">Vamos achar o seu</div>
+  <h2 style="font-size:66px">Qual plano faz mais sentido <span class="ouro">para você?</span></h2><div class="fio" style="margin:18px 0 26px"></div>
+  <div class="grade" style="grid-template-columns:1.1fr 1fr;gap:56px;align-items:start">
+    <div>
+      <div class="pergunta"><b>1. Quantas pessoas atendem na agenda?</b><div class="opcoes" id="q-pessoas"><button class="opcao" data-v="1">Só eu</button><button class="opcao" data-v="2">2 pessoas</button><button class="opcao" data-v="3">3 a 10</button><button class="opcao" data-v="u">Mais de uma unidade</button></div></div>
+      <div class="pergunta"><b>2. Quer lembrete com confirmação automática?</b><div class="opcoes" id="q-lembrete"><button class="opcao" data-v="s">Sim</button><button class="opcao" data-v="n">Não, só organizar</button></div></div>
+      <p class="suave" style="font-size:26px">Recomendamos o <b>menor plano que resolve a sua dor hoje</b> e mostramos quando você vai precisar subir.</p>
+    </div>
+    <div class="resultado" id="resultado"><div class="rn">Responda ao lado</div><p>Escolha as opções e veja a sugestão.</p></div>
+  </div>
+  <div class="rodape"><span class="marca">Gê</span><span class="num"></span></div>
+</section>
+
+<!-- 17 VANTAGENS -->
+<section class="slide escuro" data-titulo="Por que cada plano existe">
+  <div class="eyebrow">Para quem é cada plano</div>
+  <h2 style="font-size:68px">Cada plano existe <span class="ouro">por um motivo</span></h2><div class="fio" style="margin:18px 0 26px"></div>
+  <div class="grade g4" style="flex:1;align-content:start">
+    <div class="cartao"><h3>Solo</h3><p><b>Para quem atende sozinha</b> e quer sair do caderno.<br><br>Resolve: agenda confusa e clientes soltas em conversas.</p></div>
+    <div class="cartao"><h3>Pro</h3><p><b>Para quem quer parar de confirmar à mão.</b><br><br>Resolve: faltas e tempo gasto com lembrete. Até 2 pessoas.</p></div>
+    <div class="cartao"><h3>Studio</h3><p><b>Para equipes de até 10.</b><br><br>Resolve: várias agendas, conflito de horário e a visão de cada profissional.</p></div>
+    <div class="cartao"><h3>Business</h3><p><b>Para vários endereços.</b><br><br>Em desenvolvimento: gestão de várias unidades. Já comporta até 100 profissionais.</p></div>
+  </div>
+  <div class="rodape"><span class="marca">Gê</span><span class="num"></span></div>
+</section>
+
+<!-- 18 CRESCIMENTO -->
+<section class="slide claro" data-titulo="Possibilidades de crescimento">
+  <div class="eyebrow">Crescimento</div>
+  <h2 style="font-size:68px">Comece pequeno, <span class="ouro">cresça sem trocar de sistema</span></h2><div class="fio" style="margin:18px 0 26px"></div>
+  <div class="escada">
+    <div class="degrau"><h3>Solo</h3><p>Você atende sozinha e organiza a agenda.</p><div class="quando">Sobe quando: quer lembrete automático ou uma ajudante.</div></div><div class="seta">›</div>
+    <div class="degrau"><h3>Pro</h3><p>Lembrete com confirmação e até 2 pessoas.</p><div class="quando">Sobe quando: a equipe passa de 2.</div></div><div class="seta">›</div>
+    <div class="degrau"><h3>Studio</h3><p>Equipe de até 10 numa agenda só.</p><div class="quando">Sobe quando: abrir outra unidade.</div></div><div class="seta">›</div>
+    <div class="degrau"><h3>Business</h3><p>Várias unidades (em desenvolvimento).</p><div class="quando">Sob consulta.</div></div>
+  </div>
+  <p class="lead" style="margin-top:40px;font-size:32px">Suas clientes, agenda e histórico continuam no mesmo lugar quando o plano muda.</p>
+  <div class="rodape"><span class="marca">Gê</span><span class="num"></span></div>
+</section>
+
+<!-- 19 EVOLUCAO -->
+<section class="slide escuro" data-titulo="Quando faz sentido evoluir">
+  <div class="eyebrow">Evolução por necessidade</div>
+  <h2 style="font-size:68px">Evoluir de plano é <span class="ouro">consequência, não pressão</span></h2><div class="fio" style="margin:18px 0 26px"></div>
+  <div class="grade g3" style="flex:1;align-content:start">
+    <div class="cartao"><h3>Sinal: confirmações pendentes</h3><p>Você gasta tempo confirmando e ainda tem faltas. O <b>Pro</b> confirma por você.</p></div>
+    <div class="cartao"><h3>Sinal: equipe crescendo</h3><p>A 3ª profissional não entra no Pro. O <b>Studio</b> comporta a equipe e mostra cada uma.</p></div>
+    <div class="cartao"><h3>Sinal: segundo endereço</h3><p>Anotamos o seu interesse no <b>Business</b> e avisamos quando a gestão de unidades estiver pronta.</p></div>
+  </div>
+  <p class="lead" style="margin-top:34px;font-size:32px">Nossa regra: <b>o menor plano que resolve a sua dor hoje.</b></p>
+  <div class="rodape"><span class="marca">Gê</span><span class="num"></span></div>
+</section>
+
+<!-- 20 INVESTIMENTO -->
+<section class="slide claro" data-titulo="Investimento" id="slide-invest">
+  <div class="eyebrow">Investimento</div>
+  <h2 style="font-size:70px">Comece sem risco</h2><div class="fio" style="margin:18px 0 28px"></div>
+  <div id="invest-corpo" style="flex:1"></div>
+  <div class="rodape"><span class="marca">Gê</span><span class="num"></span></div>
+</section>
+
+<!-- 21 DUVIDAS -->
+<section class="slide claro" data-titulo="Dúvidas comuns">
+  <div class="eyebrow">Dúvidas comuns</div>
+  <h2 style="font-size:68px">O que mais perguntam</h2><div class="fio" style="margin:18px 0 26px"></div>
+  <div class="grade g3" style="flex:1;align-content:start;gap:22px">
+    <div class="cartao"><h3 style="font-size:32px">É difícil de usar?</h3><p>O cadastro leva poucos minutos e a agenda já nasce configurada. Nossa equipe pode configurar com você.</p></div>
+    <div class="cartao"><h3 style="font-size:32px">Já tenho outra agenda ou sistema.</h3><p>Importe suas clientes por planilha e teste em paralelo por 14 dias.</p></div>
+    <div class="cartao"><h3 style="font-size:32px">Serve para quem atende sozinha?</h3><p>Sim. Se a equipe crescer, é só adicionar profissionais.</p></div>
+    <div class="cartao"><h3 style="font-size:32px">Preciso instalar algo?</h3><p>Não. Funciona no navegador do celular, tablet ou computador.</p></div>
+    <div class="cartao"><h3 style="font-size:32px">E se eu não gostar?</h3><p>O teste é grátis, sem cartão. Seus dados você exporta quando quiser.</p></div>
+    <div class="cartao"><h3 style="font-size:32px">Quanto custa?</h3><p>Os valores estão em definição. Avisamos antes de qualquer cobrança.</p></div>
+  </div>
+  <div class="rodape"><span class="marca">Gê</span><span class="num"></span></div>
+</section>
+
+<!-- 22 FECHAMENTO -->
+<section class="slide escuro" data-titulo="Fechamento" style="justify-content:center">
+  <div class="eyebrow">Vamos começar?</div>
+  <h1 style="font-size:100px">Comece hoje,<br><span class="ouro">sem risco.</span></h1><div class="fio"></div>
+  <p class="lead" style="max-width:1400px">14 dias grátis com os recursos do Studio, sem cartão. Eu configuro a sua agenda com você.</p>
+  <div style="margin-top:50px"><a class="cta" id="cta-cadastro" href="#" target="_blank" rel="noopener">Criar minha conta grátis <span>→</span></a></div>
+  <p class="suave" style="margin-top:30px;font-size:28px">Avisamos antes de qualquer cobrança.</p>
+  <div class="rodape"><span class="marca">Gê</span><span class="num"></span></div>
+</section>
+
+<!-- 23 PROXIMOS PASSOS -->
+<section class="slide claro" data-titulo="Próximos passos">
+  <div class="eyebrow">Depois de hoje</div>
+  <h2 style="font-size:70px">Seus próximos passos</h2><div class="fio" style="margin:18px 0 28px"></div>
+  <div class="fluxo" style="grid-template-columns:repeat(5,1fr)">
+    <div class="passo"><div class="n">1</div><h3 style="font-size:36px">Cadastro</h3><p style="font-size:26px">Crie a conta em poucos minutos.</p></div>
+    <div class="passo"><div class="n">2</div><h3 style="font-size:36px">Configuração</h3><p style="font-size:26px">Chamada rápida com a nossa equipe para deixar tudo pronto.</p></div>
+    <div class="passo"><div class="n">3</div><h3 style="font-size:36px">Primeira semana</h3><p style="font-size:26px">Link na bio e suas clientes importadas.</p></div>
+    <div class="passo"><div class="n">4</div><h3 style="font-size:36px">WhatsApp</h3><p style="font-size:26px">Você pede em Configurações; a equipe conecta com você.</p></div>
+    <div class="passo"><div class="n">5</div><h3 style="font-size:36px">Suporte</h3><p style="font-size:26px" id="suporte-texto">Suporte da equipe da Gê durante o teste.</p></div>
+  </div>
+  <div class="rodape"><span class="marca">Gê</span><span class="num"></span></div>
+</section>
+
+</div>
+<div id="progresso"></div>
+<div id="ajuda"><div><b>Atalhos</b><br><kbd>→</kbd> <kbd>Espaço</kbd> próximo · <kbd>←</kbd> anterior<br><kbd>Home</kbd> <kbd>End</kbd> primeiro / último<br>número + <kbd>Enter</kbd> ir ao slide<br><kbd>F</kbd> tela cheia · <kbd>P</kbd> modo apresentador<br><kbd>?</kbd> fechar esta ajuda</div></div>
+<div id="pv"></div>
+<script src="dados-comerciais.js"></script>
+<script src="scripts/deck.js"></script>
+</body>
+</html>
