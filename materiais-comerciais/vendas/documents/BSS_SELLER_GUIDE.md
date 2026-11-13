@@ -9,6 +9,7 @@ Este guia explica, em ordem, como preparar e conduzir uma call usando o material
 | --- | --- | --- |
 | `presentation/index.html` | Apresentação visual (23 slides) | Durante a call, com tela compartilhada |
 | `presentation/dados-comerciais.js` | Preços, pagamento e suporte (hoje vazios) | **Antes** da call, se algum já estiver definido |
+| `documents/BSS_ESTUDO_DO_VENDEDOR.md` | Trilha de estudo, prova e checklist de liberação | **Antes da primeira prospecção** |
 | `documents/BSS_CALL_SCRIPTS.md` | Roteiros de 10, 20 e 30 minutos | Preparação e condução |
 | `documents/BSS_PLANOS_COMPARATIVO.md` | Planos, diferenças e perfis | Para recomendar o plano |
 | `documents/BSS_UPSELL_PLAYBOOK.md` | Upgrade por necessidade | Com clientes já em uso |
