@@ -11,8 +11,8 @@ Regra: nenhuma tarefa vira [CONCLUÍDO] sem evidência verificada. Níveis de ve
 - Previsão de lançamento oficial: 01/02/2027 (primeira cobrança)
 - Foco geográfico: Rio de Janeiro (capital). Suporte: Pedro Chaves (horários a definir)
 - Objetivo atual: fechar o mínimo cobrável (WhatsApp real, cobrança, e-mail, importação) e começar as entrevistas de validação
-- Progresso geral: **48% (22 de 46 tarefas verificadas como concluídas)**
-- Última atualização: 08/11/2026
+- Progresso geral: **47% (22 de 47 tarefas verificadas como concluídas)**
+- Última atualização: 13/11/2026
 
 ## Dashboard de progresso
 | Área | Concluídas | Pendentes | Em andamento | Bloqueadas | Aguardando minha aprovação |
@@ -20,10 +20,10 @@ Regra: nenhuma tarefa vira [CONCLUÍDO] sem evidência verificada. Níveis de ve
 | Produto | 9 | 1 | 2 | 2 | 0 |
 | Validação | 5 | 3 | 2 | 0 | 0 |
 | Marketing | 6 | 2 | 2 | 0 | 0 |
-| Comercial | 1 | 1 | 1 | 0 | 1 |
+| Comercial | 1 | 1 | 2 | 0 | 1 |
 | Financeiro | 1 | 0 | 0 | 0 | 3 |
 | Legal | 0 | 4 | 0 | 0 | 0 |
-| **Total** | **22** | **11** | **7** | **2** | **4** |
+| **Total** | **22** | **11** | **8** | **2** | **4** |
 
 ## Diagnóstico real do produto (auditoria de 05/11/2026)
 | Área | Implementado | Testado | Em produção | Validado em ambiente real |
@@ -90,6 +90,7 @@ Achados da auditoria (com evidência):
 | M-08 | Marketing | [SUGESTÃO] Peças visuais dos demais dias e capas de destaques do Instagram | Média | [EM ANDAMENTO] | M-03 | Feitas 25 peças novas (41 no total, conferidas visualmente e sem estouro de borda): carrosséis dos dias 16 (6 telas) e 22 (5), Stories do dia 6, capas de Reels dos dias 3, 8, 10, 15, 17, 23, 24 e 25 e 5 capas de destaques | Faltam os dias que dependem de fatos que ainda não existem (5, 9, 13, 18, 19, 20, 26, 29 e 30); reposts (7, 14, 21, 28) não precisam de arte. Nada publicado |
 | C-02 | Comercial | Página de preços e oferta de fundadora | Alta | [PENDENTE] | C-01 | Planos no código ainda mostram "preço em definição" | Atualizar a página depois da decisão |
 | C-03 | Comercial | Roteiro da demonstração de 15 min e da chamada de configuração de 20 min | Média | [CONCLUÍDO] [SUGESTÃO] | nenhuma | `materiais-comerciais/ROTEIROS-DEMONSTRACAO-E-CONFIGURACAO.md`: demonstração de 15 min e chamada de configuração de 20 min, com perguntas, o que nunca fazer e o que registrar | Usar nas primeiras conversas (V-05) |
+| C-05 | Comercial | [SUGESTÃO] Material de vendas para chamadas: apresentação de 23 slides com modo apresentador, PDF/PPTX e 7 manuais (planos, upsell, objeções, roteiros 10/20/30 min, fechamento, guia do vendedor, pendências) | Média | [EM ANDAMENTO] | C-01, C-02, C-04, F-01 | `materiais-comerciais/vendas/`: apresentação web (`presentation/index.html`, 1920×1080, atalhos, tela cheia, sincronização com modo apresentador `?apresentador` com notas só lá, `?imprimir`), 14 telas reais da demo, `exports/BSS_PITCH_DECK.pdf` (23 páginas) e `.pptx` (imagens, não editável); QA em navegador: 23 slides sem estouro e sem erro de console, notas ausentes na tela do cliente | Preços, pagamento, oferta e horário de suporte ficam como "em definição" (editar `dados-comerciais.js`); revisão sua das afirmações em `documents/BSS_COMMERCIAL_PENDING.md`; testar a chamada de verdade (V-05) |
 | F-04 | Financeiro | Planilha de acompanhamento (MRR, CAC, caixa) | Média | [CONCLUÍDO] | P-12 | `materiais-comerciais/PLANILHA-FINANCEIRA.xlsx` (abas Leia-me, Premissas e Mensal): MRR, receita líquida, custos, resultado, caixa, churn, CAC, LTV, LTV/CAC, payback e fôlego, 12 meses; fórmulas conferidas à mão com números de teste (mês 1: 8 pagantes, MRR 632, CAC 100, fôlego 9,3) e sem erro em branco | Preencher as premissas depois de C-01 (preço), F-01 (taxa do provedor) e F-03 (orçamento); impostos ficam de fora (falar com a contabilidade) |
 | L-01 | Legal | Consultar o INPI sobre o nome "Gê" | Alta | [PENDENTE] | nenhuma | Nenhuma | Você ou um advogado consultarem |
 | L-02 | Legal | Abrir a empresa e definir o enquadramento fiscal com contador | Alta | [PENDENTE] | nenhuma | Nenhuma | Você falar com um contador; necessário para verificar a conta na Meta e emitir nota |
@@ -144,3 +145,4 @@ O que destrava o lançamento está descrito, passo a passo, em `materiais-comerc
 | 12/11/2026 | P-13 e lista de espera: apoio ao dono | Lista de espera ganhou **remover pessoa** (com confirmação e auditoria só com o código) e **baixar CSV** na página da equipe; app ganhou `/api/saude` para monitoramento; guia de backup e monitoramento. P-13 em andamento; progresso segue 46% (21 de 46) | `src/server/modules/waitlist.ts`, `src/app/admin/lista-de-espera/*`, `src/app/api/saude/route.ts`, `docs/BACKUP-E-MONITORAMENTO.md`, `tests/integration/lista-espera-admin.test.ts` | Plano e backups do Neon não verificados; remover do banco não apaga a linha da planilha do Make (aviso na tela); as páginas da equipe só abrem depois da P-04 |
 | 12/11/2026 | P-04: variáveis de produção e acesso de administradora | Concluída: `PLATFORM_ADMIN_USER_IDS` cadastrada por mim (com aprovação por escrito) e `WHATSAPP_ENCRYPTION_KEY` cadastrada pela própria dona (o segredo nunca passou pelo chat); redeploy de Produção; painel do fundador, lista de espera e `/api/saude` abrem em produção; progresso 48% (22 de 46). Guia da Meta e do agendador escrito (`materiais-comerciais/WHATSAPP-META-PASSO-A-PASSO.md`) | `LAUNCH_TRACKER.md`, `materiais-comerciais/WHATSAPP-META-PASSO-A-PASSO.md` | P-05 segue bloqueada: precisa de conta da Meta e número de teste; P-06 precisa do `CRON_SECRET` novo na Vercel e no GitHub; a Vercel está no plano Hobby (uso comercial exige Pro pelos termos, confirmar antes de cobrar) |
 | 13/11/2026 | V-08: planilha do teste de preço | Em andamento: planilha pronta e conferida (a execução do teste depende das conversas, V-05). Progresso segue 48% (22 de 46) | `materiais-comerciais/PLANILHA-TESTE-DE-PRECO.xlsx`, `materiais-comerciais/financeiro/gerar_preco.py`, `materiais-comerciais/README.md` | Resultado só vale com 10 respostas ou mais (ideal 20+); respostas de quem acabou de ver uma boa demonstração tendem a aceitar preço maior |
+| 13/11/2026 | Material de vendas (pedido do dono): C-05 [SUGESTÃO] | Em andamento: apresentação de 23 slides, PDF e PPTX, 7 documentos; progresso 47% (22 de 47), pois a tarefa só conclui após as definições comerciais e uma chamada real | `materiais-comerciais/vendas/*`, `LAUNCH_TRACKER.md` | Sem preços, pagamento, oferta, horário de suporte (C-01, C-02, F-01, C-04); WhatsApp ainda não validado (P-05); gestão de várias unidades e bloqueio de relatórios por plano não existem no app (itens C1–C7 do documento de pendências); PPTX é de imagens; modo apresentador testado só no Chromium |
