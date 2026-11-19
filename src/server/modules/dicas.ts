@@ -53,6 +53,7 @@ const MATERIAL: { match: RegExp; label: string; items: string[] }[] = [
   { match: /depila|cera|laser/i, label: "depilação", items: ["cera", "espátulas", "lenços e óleo pós-depilação"] },
   { match: /limpeza de pele|peeling|facial|est[ée]tica|drenagem|massagem/i, label: "estética", items: ["algodão e gaze", "ácidos e máscaras", "óleo de massagem", "lençol descartável"] },
   { match: /maquia|make/i, label: "maquiagem", items: ["base nos tons mais usados", "demaquilante", "esponjas e pincéis higienizados"] },
+  { match: /exame de vista|arma[çc][ãa]o|[óo]culos|lentes?|grau/i, label: "ótica", items: ["lentes de contato de teste", "líquido e estojos para lentes", "plaquetas, parafusos e hastes", "flanelas e spray de limpeza", "kit de ajuste de armação"] },
 ];
 
 export async function loadDicas(tx: Tx, orgId: string, timeZone: string, opts: { finance: boolean; bookingUrl: string }, now = new Date()) {

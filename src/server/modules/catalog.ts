@@ -158,6 +158,18 @@ export const SERVICE_PRESETS: Record<string, { name: string; category: string; p
     { name: "Massagem modeladora", category: "Massoterapia", price: 12000, minutes: 60, buffer: 15, returnDays: 7 },
     { name: "Quick massage", category: "Massoterapia", price: 4500, minutes: 20, buffer: 5, returnDays: 7 },
   ],
+  optics: [
+    { name: "Exame de vista (com profissional habilitado)", category: "Exame", price: 8000, minutes: 30, buffer: 10, returnDays: 365 },
+    { name: "Retorno para conferir o grau", category: "Exame", price: 0, minutes: 20, buffer: 5 },
+    { name: "Escolha de armação e lentes", category: "Atendimento", price: 3000, minutes: 40, buffer: 10 },
+    { name: "Atendimento infantil: armação e lentes", category: "Atendimento", price: 3000, minutes: 45, buffer: 10, returnDays: 180 },
+    { name: "Retirada e ajuste do óculos novo", category: "Pós-venda", price: 2000, minutes: 20, buffer: 5 },
+    { name: "Ajuste e manutenção de armação", category: "Pós-venda", price: 2000, minutes: 15, buffer: 5, returnDays: 180 },
+    { name: "Troca de plaquetas e parafusos", category: "Pós-venda", price: 2500, minutes: 20, buffer: 5 },
+    { name: "Limpeza e higienização de óculos", category: "Pós-venda", price: 1500, minutes: 15, buffer: 5, returnDays: 90 },
+    { name: "Adaptação de lentes de contato", category: "Lentes de contato", price: 6000, minutes: 30, buffer: 10, returnDays: 180 },
+    { name: "Reposição de lentes de contato", category: "Lentes de contato", price: 5000, minutes: 15, buffer: 5, returnDays: 90 },
+  ],
 };
 
 export const BUSINESS_TYPES: { id: string; label: string; presets: string[] }[] = [
@@ -172,6 +184,7 @@ export const BUSINESS_TYPES: { id: string; label: string; presets: string[] }[] 
   { id: "waxing", label: "Depilação", presets: ["waxing"] },
   { id: "massage", label: "Massoterapia", presets: ["massage"] },
   { id: "clinic", label: "Clínica de estética", presets: ["aesthetics", "massage"] },
+  { id: "optics", label: "Ótica", presets: ["optics"] },
 ];
 
 export function presetsFor(businessType: string) {

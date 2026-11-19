@@ -196,7 +196,7 @@ function ProfessionalDialog({ pro, services, onClose, onSaved }: { pro: Pro | nu
       <div className="flex flex-col gap-4">
         {error && <FormMessage state={{ ok: false, message: error }} />}
         <Field label="Nome de exibição" htmlFor="pn"><Input id="pn" value={name} onChange={(e) => setName(e.target.value)} /></Field>
-        <Field label="Especialidade" htmlFor="ps" optional><Input id="ps" value={specialty} onChange={(e) => setSpecialty(e.target.value)} placeholder="Ex.: Nail designer, lash, cabeleireira" /></Field>
+        <Field label="Especialidade" htmlFor="ps" optional><Input id="ps" value={specialty} onChange={(e) => setSpecialty(e.target.value)} placeholder="Ex.: Nail designer, lash, cabeleireira, optometrista" /></Field>
         <fieldset>
           <legend className="mb-1.5 text-[13px] font-medium text-ink-soft">Cor na agenda</legend>
           <div className="flex flex-wrap gap-2">
