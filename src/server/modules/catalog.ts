@@ -160,10 +160,15 @@ export const SERVICE_PRESETS: Record<string, { name: string; category: string; p
   ],
   optics: [
     { name: "Exame de vista (com profissional habilitado)", category: "Exame", price: 8000, minutes: 30, buffer: 10, returnDays: 365 },
+    { name: "Retorno para conferir o grau", category: "Exame", price: 0, minutes: 20, buffer: 5 },
     { name: "Escolha de armação e lentes", category: "Atendimento", price: 3000, minutes: 40, buffer: 10 },
+    { name: "Atendimento infantil: armação e lentes", category: "Atendimento", price: 3000, minutes: 45, buffer: 10, returnDays: 180 },
     { name: "Retirada e ajuste do óculos novo", category: "Pós-venda", price: 2000, minutes: 20, buffer: 5 },
     { name: "Ajuste e manutenção de armação", category: "Pós-venda", price: 2000, minutes: 15, buffer: 5, returnDays: 180 },
+    { name: "Troca de plaquetas e parafusos", category: "Pós-venda", price: 2500, minutes: 20, buffer: 5 },
+    { name: "Limpeza e higienização de óculos", category: "Pós-venda", price: 1500, minutes: 15, buffer: 5, returnDays: 90 },
     { name: "Adaptação de lentes de contato", category: "Lentes de contato", price: 6000, minutes: 30, buffer: 10, returnDays: 180 },
+    { name: "Reposição de lentes de contato", category: "Lentes de contato", price: 5000, minutes: 15, buffer: 5, returnDays: 90 },
   ],
 };
 

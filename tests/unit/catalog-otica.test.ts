@@ -7,11 +7,18 @@ describe("tipo de negócio Ótica", () => {
   });
   it("traz serviços sugeridos com preço, duração e categoria", () => {
     const s = presetsFor("optics");
-    expect(s.length).toBeGreaterThanOrEqual(4);
+    expect(s.length).toBeGreaterThanOrEqual(8);
     for (const x of s) {
-      expect(x.price).toBeGreaterThan(0);
+      expect(x.price).toBeGreaterThanOrEqual(0);
       expect(x.minutes).toBeGreaterThan(0);
       expect(x.category).toBeTruthy();
     }
+  });
+});
+
+describe("serviços da ótica com retorno sugerido", () => {
+  it("exame de vista lembra a cliente em 12 meses", () => {
+    const exame = presetsFor("optics").find((s) => s.name.startsWith("Exame de vista"));
+    expect(exame?.returnDays).toBe(365);
   });
 });
